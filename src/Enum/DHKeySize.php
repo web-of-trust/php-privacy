@@ -1,0 +1,50 @@
+<?php declare(strict_types=1);
+/**
+ * This file is part of the PHP PG library.
+ *
+ * © Nguyen Van Nguyen <nguyennv1981@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace OpenPGP\Enum;
+
+/**
+ * DHKeySize enum
+ *
+ * @package    OpenPGP
+ * @category   Enum
+ * @author     Nguyen Van Nguyen - nguyennv1981@gmail.com
+ * @copyright  Copyright © 2023-present by Nguyen Van Nguyen.
+ */
+enum DHKeySize
+{
+    case L1024_N160;
+
+    case L2048_N224;
+
+    case L2048_N256;
+
+    case L3072_N256;
+
+    public function lSize(): int
+    {
+        return match($this) {
+            DHKeySize::L1024_N160 => 1024,
+            DHKeySize::L2048_N224 => 2048,
+            DHKeySize::L2048_N256 => 2048,
+            DHKeySize::L3072_N256 => 3072,
+        };
+    }
+
+    public function nSize(): int
+    {
+        return match($this) {
+            DHKeySize::L1024_N160 => 160,
+            DHKeySize::L2048_N224 => 224,
+            DHKeySize::L2048_N256 => 256,
+            DHKeySize::L3072_N256 => 256,
+        };
+    }
+}
