@@ -10,12 +10,10 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\DH;
-use phpseclib3\Crypt\EC;
+use phpseclib3\Crypt\{DH, EC};
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
-use OpenPGP\Enum\KeyAlgorithm;
-use OpenPGP\Enum\KeyAlgorithm;
+use OpenPGP\Enum\{HashAlgorithm, KeyAlgorithm};
 
 /**
  * ECDHSessionKeyCryptor class.

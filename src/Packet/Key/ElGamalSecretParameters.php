@@ -83,7 +83,7 @@ class ElGamalSecretParameters implements KeyParametersInterface
     {
         return implode([
             pack('n', $this->exponent->getLength()),
-            $this->exponent->toBytes(true),
+            $this->exponent->toBytes(),
         ]);
     }
 }

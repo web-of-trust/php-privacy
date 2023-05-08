@@ -65,8 +65,8 @@ class ElGamalSessionKeyCryptor implements SessionKeyCryptorInterface
     public function decrypt(ElGamalSecretParameters $keyParams): SessionKey
     {
         $decrypted = $keyParams->getPrivateKey()->decrypt(implode([
-            $this->gamma->toBytes(true),
-            $this->phi->toBytes(true),
+            $this->gamma->toBytes(),
+            $this->phi->toBytes(),
         ]));
         return SessionKey::fromBytes($decrypted);
     }
@@ -78,9 +78,9 @@ class ElGamalSessionKeyCryptor implements SessionKeyCryptorInterface
     {
         return implode([
             pack('n', $this->gamma->getLength()),
-            $this->gamma->toBytes(true),
+            $this->gamma->toBytes(),
             pack('n', $this->phi->getLength()),
-            $this->phi->toBytes(true),
+            $this->phi->toBytes(),
         ]);
     }
 }

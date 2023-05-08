@@ -10,8 +10,8 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Crypt\DSA\PrivateKey;
+use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Math\BigInteger;
 
 use OpenPGP\Enum\HashAlgorithm;
@@ -81,7 +81,7 @@ class DSASecretParameters implements SignableParametersInterface
     {
         return implode([
             pack('n', $this->exponent->getLength()),
-            $this->exponent->toBytes(true),
+            $this->exponent->toBytes(),
         ]);
     }
 }

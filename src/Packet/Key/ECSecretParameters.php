@@ -75,7 +75,7 @@ abstract class ECSecretParameters implements KeyParametersInterface
     {
         return implode([
             pack('n', $this->d->getLength()),
-            $this->d->toBytes(true),
+            $this->d->toBytes(),
         ]);
     }
 }

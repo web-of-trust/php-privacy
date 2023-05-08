@@ -10,9 +10,7 @@
 
 namespace OpenPGP\Packet\Key;
 
-use OpenPGP\Enum\HashAlgorithm;
-use OpenPGP\Enum\S2kType;
-use OpenPGP\Enum\SymmetricAlgorithm;
+use OpenPGP\Enum\{HashAlgorithm, S2kType, SymmetricAlgorithm};
 
 /**
  * S2K class

@@ -10,8 +10,8 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Crypt\DSA\PublicKey;
+use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Math\BigInteger;
 
 use OpenPGP\Common\Helper;

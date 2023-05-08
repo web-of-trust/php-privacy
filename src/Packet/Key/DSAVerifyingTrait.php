@@ -10,8 +10,8 @@
 
 namespace OpenPGP\Packet\Key;
 
+use OpenPGP\Common\Helper;
 use OpenPGP\Enum\HashAlgorithm;
-use OpenPGP\Helper;
 
 /**
  * DSA verifying trait

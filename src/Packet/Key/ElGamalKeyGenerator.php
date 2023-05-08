@@ -11,8 +11,8 @@
 namespace OpenPGP\Packet\Key;
 
 use phpseclib3\Crypt\Common\PrivateKey;
-use OpenPGP\Enum\DHKeySize;
 use OpenPGP\Cryptor\Asymmetric\ElGamal;
+use OpenPGP\Enum\DHKeySize;
 
 /**
  * ElGamal key generator class

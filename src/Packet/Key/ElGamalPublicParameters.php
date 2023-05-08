@@ -12,8 +12,8 @@ namespace OpenPGP\Packet\Key;
 
 use phpseclib3\Math\BigInteger;
 
-use OpenPGP\Cryptor\Asymmetric\ElGamalPublicKey;
 use OpenPGP\Common\Helper;
+use OpenPGP\Cryptor\Asymmetric\ElGamalPublicKey;
 
 /**
  * ElGamal public parameters class
