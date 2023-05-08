@@ -21,9 +21,9 @@ namespace OpenPGP\Enum;
  */
 enum SupportFeature: int
 {
-    case modificationDetection = 1;
+    case ModificationDetection = 1;
 
-    case aeadEncryptedData = 2;
+    case AeadEncryptedData = 2;
 
-    case version5PublicKey = 3;
+    case Version5PublicKey = 3;
 }

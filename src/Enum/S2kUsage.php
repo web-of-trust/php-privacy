@@ -24,7 +24,7 @@ enum S2kUsage: int
 
     case Checksum = 255;
 
-    case SHA1 = 254;
+    case Sha1 = 254;
 
     case AeadProtect = 253;
 }

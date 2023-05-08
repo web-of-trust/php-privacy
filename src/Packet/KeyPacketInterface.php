@@ -49,7 +49,7 @@ interface KeyPacketInterface
      * 
      * @return KeyParametersInterface
      */
-    function getKeyParameters(): KeyParametersInterface;
+    function getKeyParameters(): ?KeyParametersInterface;
 
     /**
      * Gets fingerprint

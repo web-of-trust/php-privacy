@@ -30,19 +30,19 @@ enum KeyAlgorithm: int
 
     case ElGamal = 16;
 
-    case DSA = 17;
+    case Dsa = 17;
 
-    case ECDH = 18;
+    case Ecdh = 18;
 
-    case ECDSA = 19;
+    case EcDsa = 19;
 
     case ElgamalEncryptSign = 20;
 
     case DiffieHellman = 21;
 
-    case EdDSA = 22;
+    case EdDsa = 22;
 
-    case AEDH = 23;
+    case Aedh = 23;
 
-    case AEDSA = 24;
+    case AeDsa = 24;
 }

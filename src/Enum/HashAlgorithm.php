@@ -20,32 +20,32 @@ namespace OpenPGP\Enum;
  */
 enum HashAlgorithm: int
 {
-    case UNKNOWN = 0;
+    case Unknown = 0;
 
-	case MD5 = 1;
+	case Md5 = 1;
 
-	case SHA1 = 2;
+	case Sha1 = 2;
 
-	case RIPEMD160 = 3;
+	case Ripemd160 = 3;
 
-	case SHA256 = 8;
+	case Sha256 = 8;
 
-	case SHA384 = 9;
+	case Sha384 = 9;
 
-	case SHA512 = 10;
+	case Sha512 = 10;
 
-	case SHA224 = 11;
+	case Sha224 = 11;
 
     public function digestSize(): int
     {
         return match($this) {
-            self::MD5 => 16,
-            self::SHA1 => 20,
-            self::RIPEMD160 => 20,
-            self::SHA256 => 32,
-            self::SHA384 => 48,
-            self::SHA512 => 64,
-            self::SHA224 => 28,
+            self::Md5 => 16,
+            self::Sha1 => 20,
+            self::Ripemd160 => 20,
+            self::Sha256 => 32,
+            self::Sha384 => 48,
+            self::Sha512 => 64,
+            self::Sha224 => 28,
         };
     }
 }

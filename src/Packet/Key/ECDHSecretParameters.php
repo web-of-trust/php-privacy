@@ -36,4 +36,18 @@ class ECDHSecretParameters extends ECSecretParameters
     {
         parent::__construct($d, $publicParams);
     }
+
+    /**
+     * Reads parameters from bytes
+     *
+     * @param string $bytes
+     * @param ECDHPublicParameters $publicParams
+     * @return ECDHSecretParameters
+     */
+    public static function fromBytes(
+        string $bytes, ECDHPublicParameters $publicParams
+    ): ElGamalSecretParameters
+    {
+        return ECDHSecretParameters(Helper::readMPI($bytes), $publicParams);
+    }
 }

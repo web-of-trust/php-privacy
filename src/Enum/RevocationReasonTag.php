@@ -24,25 +24,25 @@ enum RevocationReasonTag: int
     /**
      * No reason specified (key revocations or cert revocations)
      */
-    case noReason = 0;
+    case NoReason = 0;
 
     /**
      * Key is superseded (key revocations)
      */
-    case keySuperseded = 1;
+    case KeySuperseded = 1;
 
     /**
      * Key material has been compromised (key revocations)
      */
-    case keyCompromised = 2;
+    case KeyCompromised = 2;
 
     /**
      * Key is retired and no longer used (key revocations)
      */
-    case keyRetired = 3;
+    case KeyRetired = 3;
 
     /**
      * User ID information is no longer valid (cert revocations)
      */
-    case userIDInvalid = 32;
+    case UserIDInvalid = 32;
 }

@@ -112,7 +112,7 @@ class S2K
     }
 
     /**
-     * Serializes s2k information
+     * Serializes s2k information to binary string
      * 
      * @return string
      */

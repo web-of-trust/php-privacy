@@ -86,19 +86,9 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
 
         // A series of values comprising the key material.
         // This is algorithm-specific and described in section XXXX.
-        $keyParameters = match($keyAlgorithm) {
-            KeyAlgorithm::RsaEncryptSign => RSAPublicParameters::fromBytes(substr($bytes, $offset)),
-            KeyAlgorithm::RsaEncrypt => RSAPublicParameters::fromBytes(substr($bytes, $offset)),
-            KeyAlgorithm::RsaSign => RSAPublicParameters::fromBytes(substr($bytes, $offset)),
-            KeyAlgorithm::DSA => DSAPublicParameters::fromBytes(substr($bytes, $offset)),
-            KeyAlgorithm::ElGamal => ElGamalPublicParameters::fromBytes(substr($bytes, $offset)),
-            KeyAlgorithm::ECDSA => ECDSAPublicParameters::fromBytes(substr($bytes, $offset)),
-            KeyAlgorithm::ECDH => ECDHPublicParameters::fromBytes(substr($bytes, $offset)),
-            KeyAlgorithm::EdDSA => ECDSAPublicParameters::fromBytes(substr($bytes, $offset)),
-            default => throw new \UnexpectedValueException(
-                "Unsupported PGP public key algorithm encountered",
-            ),
-        };
+        $keyParameters = self::readKeyParameters(
+            substr($bytes, $offset), $keyAlgorithm
+        );
 
         return new PublicKey($creationTime, $keyParameters, $keyAlgorithm);
     }
@@ -143,7 +133,7 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
     /**
      * {@inheritdoc}
      */
-    public function getKeyParameters(): KeyParametersInterface
+    public function getKeyParameters(): ?KeyParametersInterface
     {
         return $this->keyParameters;
     }
@@ -177,5 +167,24 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
             pack('n', strlen($bytes)),
             $bytes,
         ]);
+    }
+
+    private static function readKeyParameters(
+        string $bytes, KeyAlgorithm $keyAlgorithm
+    ): KeyParametersInterface
+    {
+        return match($keyAlgorithm) {
+            KeyAlgorithm::RsaEncryptSign => RSAPublicParameters::fromBytes($bytes),
+            KeyAlgorithm::RsaEncrypt => RSAPublicParameters::fromBytes($bytes),
+            KeyAlgorithm::RsaSign => RSAPublicParameters::fromBytes($bytes),
+            KeyAlgorithm::ElGamal => ElGamalPublicParameters::fromBytes($bytes),
+            KeyAlgorithm::Dsa => DSAPublicParameters::fromBytes($bytes),
+            KeyAlgorithm::Ecdh => ECDHPublicParameters::fromBytes($bytes),
+            KeyAlgorithm::EcDsa => ECDSAPublicParameters::fromBytes($bytes),
+            KeyAlgorithm::EdDsa => ECDSAPublicParameters::fromBytes($bytes),
+            default => throw new \UnexpectedValueException(
+                "Unsupported PGP public key algorithm encountered",
+            ),
+        };
     }
 }

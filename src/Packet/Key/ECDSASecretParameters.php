@@ -38,4 +38,18 @@ class ECDSASecretParameters extends ECSecretParameters implements SignableParame
     {
         parent::__construct($d, $publicParams);
     }
+
+    /**
+     * Reads parameters from bytes
+     *
+     * @param string $bytes
+     * @param ECDSAPublicParameters $publicParams
+     * @return ECDSASecretParameters
+     */
+    public static function fromBytes(
+        string $bytes, ECDSAPublicParameters $publicParams
+    ): ElGamalSecretParameters
+    {
+        return ECDSASecretParameters(Helper::readMPI($bytes), $publicParams);
+    }
 }

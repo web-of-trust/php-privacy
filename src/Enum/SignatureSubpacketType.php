@@ -20,59 +20,59 @@ namespace OpenPGP\Enum;
  */
 enum SignatureSubpacketType: int
 {
-    case signatureCreationTime = 2;
+    case SignatureCreationTime = 2;
 
-    case signatureExpirationTime = 3;
+    case SignatureExpirationTime = 3;
 
-    case exportableCertification = 4;
+    case ExportableCertification = 4;
 
-    case trustSignature = 5;
+    case TrustSignature = 5;
 
-    case regularExpression = 6;
+    case RegularExpression = 6;
 
-    case revocable = 7;
+    case Revocable = 7;
 
-    case keyExpirationTime = 9;
+    case KeyExpirationTime = 9;
 
-    case placeholderBackwardCompatibility = 10;
+    case PlaceholderBackwardCompatibility = 10;
 
-    case preferredSymmetricAlgorithms = 11;
+    case PreferredSymmetricAlgorithms = 11;
 
-    case revocationKey = 12;
+    case RevocationKey = 12;
 
-    case issuerKeyID = 13;
+    case IssuerKeyID = 13;
 
-    case notationData = 20;
+    case NotationData = 20;
 
-    case preferredHashAlgorithms = 21;
+    case PreferredHashAlgorithms = 21;
 
-    case preferredCompressionAlgorithms = 22;
+    case PreferredCompressionAlgorithms = 22;
 
-    case keyServerPreferences = 23;
+    case KeyServerPreferences = 23;
 
-    case preferredKeyServer = 24;
+    case PreferredKeyServer = 24;
 
-    case primaryUserID = 25;
+    case PrimaryUserID = 25;
 
-    case policyURI = 26;
+    case PolicyURI = 26;
 
-    case keyFlags = 27;
+    case KeyFlags = 27;
 
-    case signerUserID = 28;
+    case SignerUserID = 28;
 
-    case revocationReason = 29;
+    case RevocationReason = 29;
 
-    case features = 30;
+    case Features = 30;
 
-    case signatureTarget = 31;
+    case SignatureTarget = 31;
 
-    case embeddedSignature = 32;
+    case EmbeddedSignature = 32;
 
-    case issuerFingerprint = 33;
+    case IssuerFingerprint = 33;
 
-    case preferredAEADAlgorithms = 34;
+    case PreferredAEADAlgorithms = 34;
 
-    case intendedRecipientFingerprint = 35;
+    case IntendedRecipientFingerprint = 35;
 
-    case attestedCertifications = 37;
+    case AttestedCertifications = 37;
 }

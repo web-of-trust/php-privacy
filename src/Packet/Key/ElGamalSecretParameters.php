@@ -11,6 +11,7 @@
 namespace OpenPGP\Packet\Key;
 
 use phpseclib3\Math\BigInteger;
+
 use OpenPGP\Cryptor\Asymmetric\ElGamalPrivateKey;
 use OpenPGP\Common\Helper;
 
@@ -41,7 +42,10 @@ class ElGamalSecretParameters implements KeyParametersInterface
     )
     {
         $this->privateKey = ElGamalPrivateKey(
-            $exponent, $publicParams->getExponent(), $publicParams->getPrime(), $publicParams->getGenerator()
+            $exponent,
+            $publicParams->getExponent(),
+            $publicParams->getPrime(),
+            $publicParams->getGenerator()
         );
     }
 
@@ -49,11 +53,14 @@ class ElGamalSecretParameters implements KeyParametersInterface
      * Reads parameters from bytes
      *
      * @param string $bytes
+     * @param ElGamalPublicParameters $publicParams
      * @return ElGamalSecretParameters
      */
-    public static function fromBytes(string $bytes): ElGamalSecretParameters
+    public static function fromBytes(
+        string $bytes, ElGamalPublicParameters $publicParams
+    ): ElGamalSecretParameters
     {
-        return ElGamalSecretParameters(Helper::readMPI($bytes));
+        return ElGamalSecretParameters(Helper::readMPI($bytes), $publicParams);
     }
 
     /**

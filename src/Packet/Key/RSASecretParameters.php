@@ -14,6 +14,7 @@ use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Crypt\RSA\PrivateKey;
 use phpseclib3\Math\BigInteger;
 
+use OpenPGP\Common\Helper;
 use OpenPGP\Enum\HashAlgorithm;
 
 /**
@@ -56,6 +57,33 @@ class RSASecretParameters implements SignableParametersInterface
             'p' => $primeP,
             'q' => $primeQ,
         ]);
+    }
+
+    /**
+     * Reads parameters from bytes
+     *
+     * @param string $bytes
+     * @param RSAPublicParameters $publicParams
+     * @return RSASecretParameters
+     */
+    public static function fromBytes(
+        string $bytes, RSAPublicParameters $publicParams
+    ): RSASecretParameters
+    {
+        $exponent = Helper::readMPI($bytes);
+
+        $offset = $exponent->getLengthInBytes() + 2;
+        $primeP = Helper::readMPI(substr($bytes, $offset));
+
+        $offset += $primeP->getLengthInBytes() + 2;
+        $primeQ = Helper::readMPI(substr($bytes, $offset));
+
+        $offset += $primeQ->getLengthInBytes() + 2;
+        $coefficients = Helper::readMPI(substr($bytes, $offset));
+
+        return new RSASecretParameters(
+            $exponent, $primeP, $primeQ, $coefficients, $publicParams
+        );
     }
 
     /**

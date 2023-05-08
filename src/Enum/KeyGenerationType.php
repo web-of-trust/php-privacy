@@ -20,8 +20,8 @@ namespace OpenPGP\Enum;
  */
 enum KeyGenerationType
 {
-    case RSA;
-    case DSA;
-    case ECDSA;
-    case EdDSA;
+    case Rsa;
+    case Dsa;
+    case EcDsa;
+    case EdDsa;
 }

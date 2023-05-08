@@ -55,6 +55,20 @@ class DSASecretParameters implements SignableParametersInterface
     }
 
     /**
+     * Reads parameters from bytes
+     *
+     * @param string $bytes
+     * @param DSAPublicParameters $publicParams
+     * @return DSASecretParameters
+     */
+    public static function fromBytes(
+        string $bytes, DSAPublicParameters $publicParams
+    ): ElGamalSecretParameters
+    {
+        return DSASecretParameters(Helper::readMPI($bytes), $publicParams);
+    }
+
+    /**
      * Gets exponent x
      *
      * @return BigInteger
