@@ -55,14 +55,16 @@ class ArmorTest extends OpenPGPTestCase
     {
         $data = random_bytes(100);
         $text = $this->faker->sentence(100);
-        $hashAlgo = $this->faker->randomElement(HashAlgorithm::cases());
+        $hashAlgo = $this->faker->randomElement(HashAlgorithm::cases())->name;
         $armored = Armor::encode(
-            ArmorType::SignedMessage, $data, $text, $hashAlgo->name
+            ArmorType::SignedMessage, $data, $text, $hashAlgo
         );
 
         preg_match('/BEGIN PGP SIGNED MESSAGE/', $armored, $matches);
         preg_match('/BEGIN PGP SIGNATURE/', $armored, $beginMatches);
         preg_match('/END PGP SIGNATURE/', $armored, $endMatches);
+        preg_match("/Hash: $hashAlgo/", $armored, $hashMatches);
+
         $this->assertTrue(!empty($matches));
         $this->assertTrue(!empty($beginMatches));
         $this->assertTrue(!empty($endMatches));
