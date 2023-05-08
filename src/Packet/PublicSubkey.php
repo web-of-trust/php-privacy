@@ -60,7 +60,7 @@ class PublicSubkey extends PublicKey implements KeyPacketInterface
         return new PublicSubkey(
             $publicKey->getCreationTime(),
             $publicKey->getKeyParameters(),
-            $publicKey->getAlgorithm(),
+            $publicKey->getKeyAlgorithm(),
         );
     }
 }
