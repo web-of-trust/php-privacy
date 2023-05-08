@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Packet\Key;
 
-use OpenPGP\Helper;
+use OpenPGP\Common\Helper;
 
 /**
  * ECDSA public parameters class
@@ -33,7 +33,7 @@ class ECDSAPublicParameters extends ECPublicParameters implements VerifiablePara
     public static function fromBytes(string $bytes): ECDSAPublicParameters
     {
         $length = ord($bytes[0]);
-        return ECDSAPublicParameters(
+        return new ECDSAPublicParameters(
             substr($bytes, 1, $length),
             Helper::readMPI(substr($bytes, $length + 1))
         );

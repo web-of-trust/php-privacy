@@ -11,10 +11,8 @@
 namespace OpenPGP\Packet\Key;
 
 use phpseclib3\Math\BigInteger;
-
-use OpenPGP\Enum\HashAlgorithm;
-use OpenPGP\Enum\SymmetricAlgorithm;
-use OpenPGP\Helper;
+use OpenPGP\Common\Helper;
+use OpenPGP\Enum\{HashAlgorithm, SymmetricAlgorithm};
 
 /**
  * ECDH public parameters class
@@ -54,16 +52,21 @@ class ECDHPublicParameters extends ECPublicParameters
      */
     public static function fromBytes(string $bytes): ECDHPublicParameters
     {
-        $length = ord($bytes[0]);
-        $oid = substr($bytes, 1, $length);
-        $q = Helper::readMPI(substr($bytes, $length + 1));
-        $kdfBytes = substr($bytes, $q->getLengthInBytes() + $length + 1);
-        return ECDHPublicParameters(
+        $offset = 0;
+        $length = ord($bytes[$offset++]);
+        $oid = substr($bytes, $offset, $length);
+
+        $offset += $length;
+        $q = Helper::readMPI(substr($bytes, $offset));
+
+        $offset += $q->getLengthInBytes() + 2;
+        $kdfBytes = substr($bytes, $offset);
+        return new ECDHPublicParameters(
             $oid,
             $q,
-            ord($kdfBytes[1]),
             HashAlgorithm::from(ord($kdfBytes[2])),
-            SymmetricAlgorithm::from(ord($kdfBytes[3]))
+            SymmetricAlgorithm::from(ord($kdfBytes[3])),
+            ord($kdfBytes[1])
         );
     }
 
@@ -104,6 +107,7 @@ class ECDHPublicParameters extends ECPublicParameters
     {
         return implode([
             parent::encode(),
+            "\x3",
             chr($this->reserved),
             chr($this->kdfHash->value),
             chr($this->kdfSymmetric->value),

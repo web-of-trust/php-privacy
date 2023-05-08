@@ -31,10 +31,10 @@ enum S2kType: int
     public function packetLength(): int
     {
         return match($this) {
-            S2kType::Simple => 2,
-            S2kType::Salted => 10,
-            S2kType::Iterated => 11,
-            S2kType::GNU => 6,
+            self::Simple => 2,
+            self::Salted => 10,
+            self::Iterated => 11,
+            self::GNU => 6,
         };
     }
 }

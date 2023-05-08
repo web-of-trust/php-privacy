@@ -55,18 +55,18 @@ enum SymmetricAlgorithm: int
     public function keySize(): int
     {
         return match($this) {
-            SymmetricAlgorithm::Plaintext => 0,
-            SymmetricAlgorithm::Idea => 128,
-            SymmetricAlgorithm::TripleDes => 192,
-            SymmetricAlgorithm::Cast5 => 128,
-            SymmetricAlgorithm::Blowfish => 128,
-            SymmetricAlgorithm::Aes128 => 128,
-            SymmetricAlgorithm::Aes192 => 192,
-            SymmetricAlgorithm::Aes256 => 256,
-            SymmetricAlgorithm::Twofish => 256,
-            SymmetricAlgorithm::Camellia128 => 128,
-            SymmetricAlgorithm::Camellia192 => 192,
-            SymmetricAlgorithm::Camellia256 => 256,
+            self::Plaintext => 0,
+            self::Idea => 128,
+            self::TripleDes => 192,
+            self::Cast5 => 128,
+            self::Blowfish => 128,
+            self::Aes128 => 128,
+            self::Aes192 => 192,
+            self::Aes256 => 256,
+            self::Twofish => 256,
+            self::Camellia128 => 128,
+            self::Camellia192 => 192,
+            self::Camellia256 => 256,
         };
     }
 
@@ -77,7 +77,7 @@ enum SymmetricAlgorithm: int
      */
     public function keySizeInByte(): int
     {
-        return ($this->keySize() + 7) >> 3
+        return ($this->keySize() + 7) >> 3;
     }
 
     /**
@@ -88,18 +88,18 @@ enum SymmetricAlgorithm: int
     public function blockSize(): int
     {
         return match($this) {
-            SymmetricAlgorithm::Plaintext => 0,
-            SymmetricAlgorithm::Idea => 8,
-            SymmetricAlgorithm::TripleDes => 8,
-            SymmetricAlgorithm::Cast5 => 8,
-            SymmetricAlgorithm::Blowfish => 16,
-            SymmetricAlgorithm::Aes128 => 16,
-            SymmetricAlgorithm::Aes192 => 16,
-            SymmetricAlgorithm::Aes256 => 16,
-            SymmetricAlgorithm::Twofish => 16,
-            SymmetricAlgorithm::Camellia128 => 16,
-            SymmetricAlgorithm::Camellia192 => 16,
-            SymmetricAlgorithm::Camellia256 => 16,
+            self::Plaintext => 0,
+            self::Idea => 8,
+            self::TripleDes => 8,
+            self::Cast5 => 8,
+            self::Blowfish => 16,
+            self::Aes128 => 16,
+            self::Aes192 => 16,
+            self::Aes256 => 16,
+            self::Twofish => 16,
+            self::Camellia128 => 16,
+            self::Camellia192 => 16,
+            self::Camellia256 => 16,
         };
     }
 
@@ -111,28 +111,28 @@ enum SymmetricAlgorithm: int
     public function cipherEngine(): BlockCipher
     {
         return match($this) {
-            SymmetricAlgorithm::Plaintext => throw new \RuntimeException(
+            self::Plaintext => throw new \RuntimeException(
                 'Symmetric algorithm "Plaintext" is unsupported.'
             ),
-            SymmetricAlgorithm::Idea => throw new \RuntimeException(
+            self::Idea => throw new \RuntimeException(
                 'Symmetric algorithm "Idea" is unsupported'
             ),
-            SymmetricAlgorithm::TripleDes => new \phpseclib3\Crypt\TripleDES('cfb'),
-            SymmetricAlgorithm::Cast5 => throw new \RuntimeException(
+            self::TripleDes => new \phpseclib3\Crypt\TripleDES('cfb'),
+            self::Cast5 => throw new \RuntimeException(
                 'Symmetric algorithm "Cast5" is unsupported'
             ),
-            SymmetricAlgorithm::Blowfish => new \phpseclib3\Crypt\Blowfish('cfb'),
-            SymmetricAlgorithm::Aes128 => new \phpseclib3\Crypt\AES('cfb'),
-            SymmetricAlgorithm::Aes192 => new \phpseclib3\Crypt\AES('cfb'),
-            SymmetricAlgorithm::Aes256 => new \phpseclib3\Crypt\AES('cfb'),
-            SymmetricAlgorithm::Twofish => new \phpseclib3\Crypt\Twofish('cfb'),
-            SymmetricAlgorithm::Camellia128 => throw new \RuntimeException(
+            self::Blowfish => new \phpseclib3\Crypt\Blowfish('cfb'),
+            self::Aes128 => new \phpseclib3\Crypt\AES('cfb'),
+            self::Aes192 => new \phpseclib3\Crypt\AES('cfb'),
+            self::Aes256 => new \phpseclib3\Crypt\AES('cfb'),
+            self::Twofish => new \phpseclib3\Crypt\Twofish('cfb'),
+            self::Camellia128 => throw new \RuntimeException(
                 'Symmetric algorithm "Camellia" is unsupported'
             ),
-            SymmetricAlgorithm::Camellia192 => throw new \RuntimeException(
+            self::Camellia192 => throw new \RuntimeException(
                 'Symmetric algorithm "Camellia" is unsupported'
             ),
-            SymmetricAlgorithm::Camellia256 => throw new \RuntimeException(
+            self::Camellia256 => throw new \RuntimeException(
                 'Symmetric algorithm "Camellia" is unsupported'
             ),
         };

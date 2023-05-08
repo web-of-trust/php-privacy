@@ -31,20 +31,20 @@ enum DHKeySize
     public function lSize(): int
     {
         return match($this) {
-            DHKeySize::L1024_N160 => 1024,
-            DHKeySize::L2048_N224 => 2048,
-            DHKeySize::L2048_N256 => 2048,
-            DHKeySize::L3072_N256 => 3072,
+            self::L1024_N160 => 1024,
+            self::L2048_N224 => 2048,
+            self::L2048_N256 => 2048,
+            self::L3072_N256 => 3072,
         };
     }
 
     public function nSize(): int
     {
         return match($this) {
-            DHKeySize::L1024_N160 => 160,
-            DHKeySize::L2048_N224 => 224,
-            DHKeySize::L2048_N256 => 256,
-            DHKeySize::L3072_N256 => 256,
+            self::L1024_N160 => 160,
+            self::L2048_N224 => 224,
+            self::L2048_N256 => 256,
+            self::L3072_N256 => 256,
         };
     }
 }

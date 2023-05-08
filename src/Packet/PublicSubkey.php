@@ -11,14 +11,7 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\{KeyAlgorithm, PacketTag};
-use OpenPGP\Packet\Key\{
-    KeyParametersInterface,
-    RSAPublicParameters,
-    DSAPublicParameters,
-    ElGamalPublicParameters,
-    ECDHPublicParameters,
-    ECDSAPublicParameters,
-};
+use OpenPGP\Packet\Key\KeyParametersInterface;
 
 /**
  * Public sub key packet class

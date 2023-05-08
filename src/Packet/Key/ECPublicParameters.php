@@ -17,7 +17,6 @@ use phpseclib3\File\ASN1;
 use phpseclib3\Math\BigInteger;
 
 use OpenPGP\Enum\CurveOid;
-use OpenPGP\Helper;
 
 /**
  * EC public parameters class
@@ -51,7 +50,7 @@ abstract class ECPublicParameters implements KeyParametersInterface
         $this->curveOid = CurveOid::from(ASN1::decodeOID($oid));
         $curve = $this->curveOid->getCurve();
         $key = PKCS8::savePublicKey(
-            $curve, PKCS8::extractPoint("\0" . $q->toBytes(true), $curve)
+            $curve, PKCS8::extractPoint("\0" . $q->toBytes(), $curve)
         );
         $this->publicKey = EC::loadFormat('PKCS8', $key);
     }
@@ -95,7 +94,7 @@ abstract class ECPublicParameters implements KeyParametersInterface
             chr(strlen($this->oid)),
             $this->oid,
             pack('n', $this->q->getLength()),
-            $this->q->toBytes(true),
+            $this->q->toBytes(),
         ]);
     }
 }
