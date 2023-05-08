@@ -10,7 +10,6 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\EC\Formats\Keys\MontgomeryPublic;
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
 use phpseclib3\Crypt\EC\PublicKey;
 use phpseclib3\Crypt\EC;
