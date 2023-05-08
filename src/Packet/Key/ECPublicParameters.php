@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Packet\Key;
 
+use phpseclib3\Crypt\EC\Formats\Keys\MontgomeryPublic;
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
 use phpseclib3\Crypt\EC\PublicKey;
 use phpseclib3\Crypt\EC;
@@ -47,12 +48,24 @@ abstract class ECPublicParameters implements KeyParametersInterface
         private BigInteger $q
     )
     {
+        $format = 'PKCS8';
         $this->curveOid = CurveOid::from(ASN1::decodeOID($oid));
         $curve = $this->curveOid->getCurve();
-        $key = PKCS8::savePublicKey(
-            $curve, PKCS8::extractPoint("\0" . $q->toBytes(), $curve)
-        );
-        $this->publicKey = EC::loadFormat('PKCS8', $key);
+        if ($this->curveOid === CurveOid::Ed25519) {
+            $key = PKCS8::savePublicKey(
+                $curve, PKCS8::extractPoint(substr($q->toBytes(), 1), $curve)
+            );
+        }
+        elseif ($this->curveOid === CurveOid::Curve25519) {
+            $key = substr($q->toBytes(), 1);
+            $format = 'MontgomeryPublic';
+        }
+        else {
+            $key = PKCS8::savePublicKey(
+                $curve, PKCS8::extractPoint("\0" . $q->toBytes(), $curve)
+            );
+        }
+        $this->publicKey = EC::loadFormat($format, $key);
     }
 
     /**

@@ -126,4 +126,25 @@ EOT;
         $this->assertSame('457b5979545fba09be179db808a55bdb1d673d5d', bin2hex($publicSubkey->getFingerprint()));
         $this->assertSame('08a55bdb1d673d5d', bin2hex($publicSubkey->getKeyID()));
     }
+
+
+    public function testEdDSACurve25519PublicKey()
+    {
+        $data = <<<EOT
+BGRYXQUWCSsGAQQB2kcPAQEHQLvR0VoiVSt3+xzxSSQrR7/yrMzQG8OXueMhIkQb0UPM
+EOT;
+        $publicKey = PublicKey::fromBytes(base64_decode($data));
+        $this->assertSame('1c4116eb2b58cfa196c57ddbbdff135160c56a0b', bin2hex($publicKey->getFingerprint()));
+        $this->assertSame('bdff135160c56a0b', bin2hex($publicKey->getKeyID()));
+    }
+
+    public function testECDHCurve25519PublicSubkey()
+    {
+        $data = <<<EOT
+BGRYXQUSCisGAQQBl1UBBQEBB0BCbUFNqFZKpFLBB339cZrp7udovohvVMiG7qP9+ij6AQMBCAc=
+EOT;
+        $publicSubkey = PublicSubkey::fromBytes(base64_decode($data));
+        $this->assertSame('8efa53a375fc569aa9ca564a044eac93f0b69ea0', bin2hex($publicSubkey->getFingerprint()));
+        $this->assertSame('044eac93f0b69ea0', bin2hex($publicSubkey->getKeyID()));
+    }
 }

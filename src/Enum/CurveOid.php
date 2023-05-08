@@ -19,8 +19,8 @@ use phpseclib3\Crypt\EC\Curves\{
     brainpoolP256r1,
     brainpoolP384r1,
     brainpoolP512r1,
-    ed25519,
-    curve25519,
+    Ed25519,
+    Curve25519,
 };
 
 /**
@@ -61,8 +61,8 @@ enum CurveOid: string
             self::BrainpoolP256r1 => new brainpoolP256r1(),
             self::BrainpoolP384r1 => new brainpoolP384r1(),
             self::BrainpoolP512r1 => brainpoolP512r1(),
-            self::Ed25519 => new ed25519(),
-            self::Curve25519 => new curve25519(),
+            self::Ed25519 => new Ed25519(),
+            self::Curve25519 => new Curve25519(),
         };
     }
 
