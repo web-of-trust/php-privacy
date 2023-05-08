@@ -14,7 +14,8 @@ use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Crypt\RSA\PublicKey;
 use phpseclib3\Math\BigInteger;
 
-use OpenPGP\Helper;
+use OpenPGP\Common\Helper;
+use OpenPGP\Enum\HashAlgorithm;
 
 /**
  * RSA public parameters class
@@ -59,7 +60,7 @@ class RSAPublicParameters implements VerifiableParametersInterface
     {
         $modulus = Helper::readMPI($bytes);
         $exponent = Helper::readMPI(substr($bytes, $modulus->getLengthInBytes() + 2));
-        return RSAPublicParameters($modulus, $exponent);
+        return new RSAPublicParameters($modulus, $exponent);
     }
 
     /**
@@ -99,9 +100,9 @@ class RSAPublicParameters implements VerifiableParametersInterface
     {
         return implode([
             pack('n', $this->modulus->getLength()),
-            $this->modulus->toBytes(true),
+            $this->modulus->toBytes(),
             pack('n', $this->exponent->getLength()),
-            $this->exponent->toBytes(true),
+            $this->exponent->toBytes(),
         ]);
     }
 
@@ -115,7 +116,7 @@ class RSAPublicParameters implements VerifiableParametersInterface
     ): bool
     {
         return $this->publicKey->withHash($hash->name)->verify(
-            $message, Helper::readMPI($signature).toBytes(true)
+            $message, Helper::readMPI($signature).toBytes()
         );
     }
 }

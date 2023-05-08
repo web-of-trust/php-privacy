@@ -10,7 +10,7 @@ use OpenPGP\Enum\ArmorType;
 use OpenPGP\Enum\HashAlgorithm;
 
 /**
- * Testcase class for ArmorTest.
+ * Testcase class for Armor test.
  */
 class ArmorTest extends OpenPGPTestCase
 {

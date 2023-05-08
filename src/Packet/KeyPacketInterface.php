@@ -42,7 +42,7 @@ interface KeyPacketInterface
      * 
      * @return KeyAlgorithm
      */
-    function getAlgorithm(): KeyAlgorithm;
+    function getKeyAlgorithm(): KeyAlgorithm;
 
     /**
      * Gets key parameters

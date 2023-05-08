@@ -44,17 +44,17 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
      *
      * @param int $creationTime
      * @param KeyParametersInterface $keyParameters
-     * @param KeyAlgorithm $algorithm
+     * @param KeyAlgorithm $keyAlgorithm
      * @return self
      */
     public function __construct(
         private int $creationTime,
         private KeyParametersInterface $keyParameters,
-        private KeyAlgorithm $algorithm = KeyAlgorithm::RsaEncryptSign
+        private KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign
     )
     {
         parent::__construct(PacketTag::PublicKey);
-        $this->fingerprint = hash('SHA1', $this->signBytes());
+        $this->fingerprint = sha1($this->signBytes(), true);
         $this->keyID = substr($this->fingerprint, 12, 8);
     }
 
@@ -77,15 +77,16 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
         }
 
         // A four-octet number denoting the time that the key was created.
-        $creationTime = unpack('N', substr($bytes, $offset, 4));
+        $unpacked = unpack('N', substr($bytes, $offset, 4));
+        $creationTime = reset($unpacked);
         $offset += 4;
 
         // A one-octet number denoting the public-key algorithm of this key.
-        $algorithm = KeyAlgorithm::from(ord($bytes[$offset++]));
+        $keyAlgorithm = KeyAlgorithm::from(ord($bytes[$offset++]));
 
         // A series of values comprising the key material.
         // This is algorithm-specific and described in section XXXX.
-        $publicParams = match($algorithm) {
+        $keyParameters = match($keyAlgorithm) {
             KeyAlgorithm::RsaEncryptSign => RSAPublicParameters::fromBytes(substr($bytes, $offset)),
             KeyAlgorithm::RsaEncrypt => RSAPublicParameters::fromBytes(substr($bytes, $offset)),
             KeyAlgorithm::RsaSign => RSAPublicParameters::fromBytes(substr($bytes, $offset)),
@@ -99,7 +100,7 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
             ),
         };
 
-        return PublicKey($creationTime, $publicParams, $algorithm);
+        return new PublicKey($creationTime, $keyParameters, $keyAlgorithm);
     }
 
     /**
@@ -110,8 +111,8 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
         return implode([
             chr(self::KEY_VERSION),
             pack('N', $this->creationTime),
-            chr($this->algorithm->value),
-            $this->publicParams->encode(),
+            chr($this->keyAlgorithm->value),
+            $this->keyParameters->encode(),
         ]);
     }
 
@@ -134,9 +135,9 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
     /**
      * {@inheritdoc}
      */
-    public function getAlgorithm(): KeyAlgorithm
+    public function getKeyAlgorithm(): KeyAlgorithm
     {
-        return $this->algorithm;
+        return $this->keyAlgorithm;
     }
 
     /**
@@ -170,10 +171,10 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
      */
     public function signBytes(): string
     {
-        $bytes = toBytes();
+        $bytes = $this->toBytes();
         return implode([
             "\x99",
-            pack('N', strlen($bytes)),
+            pack('n', strlen($bytes)),
             $bytes,
         ]);
     }

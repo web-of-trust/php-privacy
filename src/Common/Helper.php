@@ -30,8 +30,9 @@ final class Helper
      */
     public static function readMPI(string $bytes): BigInteger
     {
-        $bitLength = unpack('n', substr($bytes, 2));
-        return self::bin2BigInt(substr($bytes, 2, ($bitLength + 7) >> 3));
+        $unpacked = unpack('n', substr($bytes,0 , 2));
+        $bitLength = reset($unpacked);
+        return self::bin2BigInt(substr($bytes, 2, self::bit2ByteLength($bitLength)));
     }
 
     /**
@@ -43,5 +44,16 @@ final class Helper
     public static function bin2BigInt(string $bytes): BigInteger
     {
         return new BigInteger(bin2hex($bytes), 16);
+    }
+
+    /**
+     * Converts bit to byte length
+     *
+     * @param int $bitLength
+     * @return int
+     */
+    public static function bit2ByteLength(int $bitLength): int
+    {
+        return ($bitLength + 7) >> 3;
     }
 }
