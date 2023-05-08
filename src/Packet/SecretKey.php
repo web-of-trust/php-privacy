@@ -10,7 +10,10 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Enum\{KeyAlgorithm, PacketTag, S2kUsage, SymmetricAlgorithm};
+use phpseclib3\Crypt\Random;
+use OpenPGP\Enum\{
+    HashAlgorithm, KeyAlgorithm, PacketTag, S2kType, S2kUsage, SymmetricAlgorithm
+};
 use OpenPGP\Packet\Key\{
     KeyParametersInterface,
     RSASecretParameters,
@@ -32,7 +35,7 @@ use OpenPGP\Packet\Key\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class SecretKey extends AbstractPacket implements KeyPacketInterface
+class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 {
     private KeyParametersInterface? $keyParameters;
 
@@ -93,6 +96,22 @@ class SecretKey extends AbstractPacket implements KeyPacketInterface
             $iv = substr($bytes, $offset, $symmetric->blockSize());
             $offset += $symmetric->blockSize();
         }
+
+        $keyParameters = null;
+        $keyData = substr($bytes, $offset);
+        if ($s2kUsage === S2kUsage::None) {
+            $keyParameters = self::readKeyParameters($keyData, $publicKey);
+        }
+
+        return new SecretKey(
+            $publicKey,
+            $s2kUsage,
+            $symmetric,
+            $s2k,
+            $iv,
+            $keyData,
+            $keyParameters,
+        );
     }
 
     /**
@@ -116,6 +135,150 @@ class SecretKey extends AbstractPacket implements KeyPacketInterface
                 chr(S2kUsage::None->value),
                 $this->keyData,
             ]);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVersion(): int
+    {
+        return $this->publicKey->getVersion();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCreationTime(): int
+    {
+        return $this->publicKey->getCreationTime();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getKeyAlgorithm(): KeyAlgorithm
+    {
+        return $this->publicKey->getKeyAlgorithm();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getKeyParameters(): ?KeyParametersInterface
+    {
+        return $this->keyParameters;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFingerprint(): string
+    {
+        return $this->publicKey->getFingerprint();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getKeyID(): string
+    {
+        return $this->publicKey->getKeyID();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSignBytes(): string
+    {
+        return $this->publicKey->getSignBytes();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPublicKey(): SecretKeyPacketInterface
+    {
+        return $this->publicKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function encrypt(
+        string $passphrase,
+        S2kUsage $s2kUsage = S2kUsage::Sha1,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        HashAlgorithm $hash = HashAlgorithm::Sha1,
+        S2kType $s2kType = S2kType::Iterated
+    ): SecretKeyPacketInterface
+    {
+        if ($this->keyParameters instanceof KeyParametersInterface ) {
+            $s2k = new S2K(Random::string(S2K::SALT_LENGTH), $s2kType, $hash);
+            $iv = Random::string($symmetric->blockSize());
+            $key = $s2k->produceKey(
+                $passphrase,
+                $symmetric->keySizeInByte()
+            );
+            $cipher = $symmetric->cipherEngine();
+            $cipher->setIV($iv)->setKey($key);
+
+            $clearText = $this->keyParameters->toBytes();
+            $encrypted = $cipher->encrypt(implode([
+                $clearText,
+                sha1($clearText, true),
+            ]));
+            return new SecretKey(
+                $this->publicKey,
+                $s2kUsage,
+                $symmetric,
+                $s2k,
+                $iv,
+                $encrypted,
+                $keyParameters,
+            );
+        }
+        else {
+            return $this;
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function decrypt(string $passphrase): SecretKeyPacketInterface
+    {
+        if ($this->keyParameters instanceof KeyParametersInterface ) {
+            return $this;
+        }
+        else {
+            $key = $this->s2k->produceKey(
+                $passphrase,
+                $this->symmetric->keySizeInByte()
+            );
+            $cipher = $this->symmetric->cipherEngine();
+            $cipher->setKey($key);
+            $decrypted = $cipher->decrypt($this->keyData);
+            $clearText = substr($decrypted, 0, HashAlgorithm::Sha1->digestSize());
+            $hashText = substr(
+                $decrypted, strlen($decrypted) - HashAlgorithm::Sha1->digestSize()
+            );
+            $hashed = sha1($clearText, true);
+            if ($hashed !== $hashText) {
+                throw new \InvalidArgumentException('Incorrect key passphrase');
+            }
+            
+            $keyParameters = self::readKeyParameters($clearText, $this->publicKey);
+
+            return new SecretKey(
+                $this->publicKey,
+                $this->s2kUsage,
+                $this->symmetric,
+                $this->s2k,
+                $this->iv,
+                $this->keyData,
+                $keyParameters,
+            );
         }
     }
 

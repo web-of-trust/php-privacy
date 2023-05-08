@@ -130,6 +130,7 @@ class SymEncryptedSessionKey extends AbstractPacket
     /**
      * Decrypts session key
      *
+     * @param string $password
      * @return SymEncryptedSessionKey
      */
     public function decrypt(string $password): SymEncryptedSessionKey

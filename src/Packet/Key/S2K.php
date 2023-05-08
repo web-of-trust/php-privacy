@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Packet\Key;
 
-use OpenPGP\Enum\{HashAlgorithm, S2kType, SymmetricAlgorithm};
+use OpenPGP\Enum\{HashAlgorithm, S2kType};
 
 /**
  * S2K class
@@ -29,6 +29,11 @@ use OpenPGP\Enum\{HashAlgorithm, S2kType, SymmetricAlgorithm};
  */
 class S2K
 {
+    /**
+     * Default salt length
+     */
+    const SALT_LENGTH = 8;
+
     /**
      * Exponent bias, defined in RFC4880
      */
@@ -49,7 +54,7 @@ class S2K
     public function __construct(
         private string $salt,
         private S2kType $type = S2kType::Iterated,
-        private HashAlgorithm $hash = HashAlgorithm::SHA1,
+        private HashAlgorithm $hash = HashAlgorithm::Sha1,
         private int $itCount = self::DEFAULT_IT_COUNT
     )
     {

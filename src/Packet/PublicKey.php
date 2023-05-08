@@ -54,7 +54,7 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
     )
     {
         parent::__construct(PacketTag::PublicKey);
-        $this->fingerprint = sha1($this->signBytes(), true);
+        $this->fingerprint = sha1($this->getSignBytes(), true);
         $this->keyID = substr($this->fingerprint, 12, 8);
     }
 
@@ -159,7 +159,7 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
      *
      * @return string
      */
-    public function signBytes(): string
+    public function getSignBytes(): string
     {
         $bytes = $this->toBytes();
         return implode([
