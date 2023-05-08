@@ -65,7 +65,7 @@ class ElGamalPublicParameters implements KeyParametersInterface
         $offset += $generator->getLengthInBytes() + 2;
         $exponent = Helper::readMPI(substr($bytes, $offset));
 
-        return ElGamalPublicParameters($prime, $generator, $exponent);
+        return new ElGamalPublicParameters($prime, $generator, $exponent);
     }
 
     /**
@@ -115,11 +115,11 @@ class ElGamalPublicParameters implements KeyParametersInterface
     {
         return implode([
             pack('n', $this->prime->getLength()),
-            $this->prime->toBytes(true),
+            $this->prime->toBytes(),
             pack('n', $this->generator->getLength()),
-            $this->generator->toBytes(true),
+            $this->generator->toBytes(),
             pack('n', $this->exponent->getLength()),
-            $this->exponent->toBytes(true),
+            $this->exponent->toBytes(),
         ]);
     }
 }

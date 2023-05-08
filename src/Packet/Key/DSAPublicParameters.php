@@ -14,7 +14,7 @@ use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Crypt\DSA\PublicKey;
 use phpseclib3\Math\BigInteger;
 
-use OpenPGP\Helper;
+use OpenPGP\Common\Helper;
 
 /**
  * DSA public parameters class
@@ -76,7 +76,7 @@ class DSAPublicParameters implements VerifiableParametersInterface
         $offset += $generator->getLengthInBytes() + 2;
         $exponent = Helper::readMPI(substr($bytes, $offset));
 
-        return DSAPublicParameters($prime, $order, $generator, $exponent);
+        return new DSAPublicParameters($prime, $order, $generator, $exponent);
     }
 
     /**

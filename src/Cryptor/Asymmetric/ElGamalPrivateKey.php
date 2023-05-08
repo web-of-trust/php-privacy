@@ -10,7 +10,6 @@
 
 namespace OpenPGP\Cryptor\Asymmetric;
 
-use phpseclib3\Crypt\Common\PrivateKey;
 use phpseclib3\Math\BigInteger;
 
 /**
@@ -21,7 +20,7 @@ use phpseclib3\Math\BigInteger;
  * @author     Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright  Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class ElGamalPrivateKey extends ElGamal implements PrivateKey
+class ElGamalPrivateKey extends ElGamal
 {
     /**
      * Constructor
@@ -83,5 +82,16 @@ class ElGamalPrivateKey extends ElGamal implements PrivateKey
             $prime->subtract(self::$one->add($this->getX())), $prime
         )->multiply($phi)->divide($prime);
         return substr($m->toBytes(), 0, $outputSize);
+    }
+
+    /**
+     * Returns the private key
+     *
+     * @param string $type
+     * @param array $options optional
+     * @return string
+     */
+    public function toString($type, array $options = [])
+    {
     }
 }

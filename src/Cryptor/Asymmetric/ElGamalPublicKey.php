@@ -10,7 +10,6 @@
 
 namespace OpenPGP\Cryptor\Asymmetric;
 
-use phpseclib3\Crypt\Common\PublicKey;
 use phpseclib3\Math\BigInteger;
 
 /**
@@ -21,7 +20,7 @@ use phpseclib3\Math\BigInteger;
  * @author     Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright  Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class ElGamalPublicKey extends ElGamal implements PublicKey
+class ElGamalPublicKey extends ElGamal
 {
     /**
      * Encryption
@@ -31,7 +30,7 @@ class ElGamalPublicKey extends ElGamal implements PublicKey
      */
     public function encrypt(string $plainText): string
     {
-        $inputSize = ($this->getBitSize() - 1) ~/ 8;
+        $inputSize = (int) (($this->getBitSize() - 1) / 8);
         $outputSize = 2 * (($this->getBitSize() + 7) >> 3);
 
         if (strlen($plainText) > $inputSize) {
@@ -44,7 +43,7 @@ class ElGamalPublicKey extends ElGamal implements PublicKey
             throw new \InvalidArgumentException('input too large for ' . self::ALGORITHM . ' cipher.');
         }
 
-        $byteLength = $outputSize ~/ 2;
+        $byteLength = (int) ($outputSize / 2);
         do {
             $k = BigInteger::randomRange(self::$one, $prime->subtract(self::$one));
             $gamma = $this->getGenerator()->modPow($k, $prime);
@@ -55,5 +54,16 @@ class ElGamalPublicKey extends ElGamal implements PublicKey
             substr($gamma->toBytes(true), 0, $byteLength),
             substr($phi->toBytes(true), 0, $byteLength),
         ]);
+    }
+
+    /**
+     * Returns the public key
+     *
+     * @param string $type
+     * @param array $options optional
+     * @return string
+     */
+    public function toString($type, array $options = [])
+    {
     }
 }
