@@ -40,6 +40,18 @@ abstract class AbstractPacket implements PacketInterface
     }
 
     /**
+     * Sets packet tag
+     * 
+     * @param PacketTag $tag
+     * @return self
+     */
+    protected function setTag(PacketTag $tag): self
+    {
+        $this->tag = $tag;
+        return $this;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function encode(): string

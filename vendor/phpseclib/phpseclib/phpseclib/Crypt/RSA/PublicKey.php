@@ -3,8 +3,6 @@
 /**
  * RSA Public Key
  *
- * @category  Crypt
- * @package   RSA
  * @author    Jim Wigginton <terrafrost@php.net>
  * @copyright 2015 Jim Wigginton
  * @license   http://www.opensource.org/licenses/mit-license.html  MIT License
@@ -13,26 +11,24 @@
 
 namespace phpseclib3\Crypt\RSA;
 
-use phpseclib3\Crypt\RSA;
-use phpseclib3\Math\BigInteger;
-use phpseclib3\File\ASN1;
 use phpseclib3\Common\Functions\Strings;
-use phpseclib3\Crypt\Hash;
-use phpseclib3\Exception\NoKeyLoadedException;
-use phpseclib3\Exception\UnsupportedFormatException;
-use phpseclib3\Crypt\Random;
 use phpseclib3\Crypt\Common;
-use phpseclib3\File\ASN1\Maps\DigestInfo;
+use phpseclib3\Crypt\Hash;
+use phpseclib3\Crypt\Random;
+use phpseclib3\Crypt\RSA;
 use phpseclib3\Crypt\RSA\Formats\Keys\PSS;
+use phpseclib3\Exception\UnsupportedAlgorithmException;
+use phpseclib3\Exception\UnsupportedFormatException;
+use phpseclib3\File\ASN1;
+use phpseclib3\File\ASN1\Maps\DigestInfo;
+use phpseclib3\Math\BigInteger;
 
 /**
  * Raw RSA Key Handler
  *
- * @package RSA
  * @author  Jim Wigginton <terrafrost@php.net>
- * @access  public
  */
-class PublicKey extends RSA implements Common\PublicKey
+final class PublicKey extends RSA implements Common\PublicKey
 {
     use Common\Traits\Fingerprint;
 
@@ -52,7 +48,6 @@ class PublicKey extends RSA implements Common\PublicKey
      *
      * See {@link http://tools.ietf.org/html/rfc3447#section-5.2.2 RFC3447#section-5.2.2}.
      *
-     * @access private
      * @param \phpseclib3\Math\BigInteger $s
      * @return bool|\phpseclib3\Math\BigInteger
      */
@@ -69,7 +64,6 @@ class PublicKey extends RSA implements Common\PublicKey
      *
      * See {@link http://tools.ietf.org/html/rfc3447#section-8.2.2 RFC3447#section-8.2.2}.
      *
-     * @access private
      * @param string $m
      * @param string $s
      * @throws \LengthException if the RSA modulus is too short
@@ -97,16 +91,32 @@ class PublicKey extends RSA implements Common\PublicKey
 
         // EMSA-PKCS1-v1_5 encoding
 
+        $exception = false;
+
         // If the encoding operation outputs "intended encoded message length too short," output "RSA modulus
         // too short" and stop.
         try {
             $em2 = $this->emsa_pkcs1_v1_5_encode($m, $this->k);
+            $r1 = hash_equals($em, $em2);
         } catch (\LengthException $e) {
+            $exception = true;
+        }
+
+        try {
+            $em3 = $this->emsa_pkcs1_v1_5_encode_without_null($m, $this->k);
+            $r2 = hash_equals($em, $em3);
+        } catch (\LengthException $e) {
+            $exception = true;
+        } catch (UnsupportedAlgorithmException $e) {
+            $r2 = false;
+        }
+
+        if ($exception) {
             throw new \LengthException('RSA modulus too short');
         }
 
         // Compare
-        return hash_equals($em, $em2);
+        return $r1 || $r2;
     }
 
     /**
@@ -122,7 +132,6 @@ class PublicKey extends RSA implements Common\PublicKey
      * $rsa->getLastPadding() and get RSA::PADDING_RELAXED_PKCS1 back instead of
      * RSA::PADDING_PKCS1... that means BER encoding was used.
      *
-     * @access private
      * @param string $m
      * @param string $s
      * @return bool
@@ -188,6 +197,10 @@ class PublicKey extends RSA implements Common\PublicKey
             return false;
         }
 
+        if (isset($decoded['digestAlgorithm']['parameters']) && $decoded['digestAlgorithm']['parameters'] !== ['null' => '']) {
+            return false;
+        }
+
         $hash = $decoded['digestAlgorithm']['algorithm'];
         $hash = substr($hash, 0, 3) == 'id-' ?
             substr($hash, 3) :
@@ -204,7 +217,6 @@ class PublicKey extends RSA implements Common\PublicKey
      *
      * See {@link http://tools.ietf.org/html/rfc3447#section-9.1.2 RFC3447#section-9.1.2}.
      *
-     * @access private
      * @param string $m
      * @param string $em
      * @param int $emBits
@@ -251,7 +263,6 @@ class PublicKey extends RSA implements Common\PublicKey
      *
      * See {@link http://tools.ietf.org/html/rfc3447#section-8.1.2 RFC3447#section-8.1.2}.
      *
-     * @access private
      * @param string $m
      * @param string $s
      * @return bool|string
@@ -306,7 +317,6 @@ class PublicKey extends RSA implements Common\PublicKey
      *
      * See {@link http://tools.ietf.org/html/rfc3447#section-7.2.1 RFC3447#section-7.2.1}.
      *
-     * @access private
      * @param string $m
      * @param bool $pkcs15_compat optional
      * @throws \LengthException if strlen($m) > $this->k - 11
@@ -329,7 +339,7 @@ class PublicKey extends RSA implements Common\PublicKey
         while (strlen($ps) != $psLen) {
             $temp = Random::string($psLen - strlen($ps));
             $temp = str_replace("\x00", '', $temp);
-            $ps.= $temp;
+            $ps .= $temp;
         }
         $type = 2;
         $em = chr(0) . chr($type) . $ps . chr(0) . $m;
@@ -350,7 +360,6 @@ class PublicKey extends RSA implements Common\PublicKey
      * See {@link http://tools.ietf.org/html/rfc3447#section-7.1.1 RFC3447#section-7.1.1} and
      * {http://en.wikipedia.org/wiki/Optimal_Asymmetric_Encryption_Padding OAES}.
      *
-     * @access private
      * @param string $m
      * @throws \LengthException if strlen($m) > $this->k - 2 * $this->hLen - 2
      * @return string
@@ -396,7 +405,6 @@ class PublicKey extends RSA implements Common\PublicKey
      *
      * See {@link http://tools.ietf.org/html/rfc3447#section-5.1.1 RFC3447#section-5.1.1}.
      *
-     * @access private
      * @param \phpseclib3\Math\BigInteger $m
      * @return bool|\phpseclib3\Math\BigInteger
      */
@@ -413,7 +421,6 @@ class PublicKey extends RSA implements Common\PublicKey
      *
      * Doesn't use padding and is not recommended.
      *
-     * @access private
      * @param string $m
      * @return bool|string
      * @throws \LengthException if strlen($m) > $this->k
@@ -437,7 +444,6 @@ class PublicKey extends RSA implements Common\PublicKey
      * be concatenated together.
      *
      * @see self::decrypt()
-     * @access public
      * @param string $plaintext
      * @return bool|string
      * @throws \LengthException if the RSA modulus is too short
@@ -472,7 +478,7 @@ class PublicKey extends RSA implements Common\PublicKey
 
         if ($type == PSS::class) {
             if ($this->signaturePadding == self::SIGNATURE_PSS) {
-                $options+= [
+                $options += [
                     'hash' => $this->hash->getHash(),
                     'MGFHash' => $this->mgfHash->getHash(),
                     'saltLength' => $this->getSaltLength()
@@ -492,7 +498,7 @@ class PublicKey extends RSA implements Common\PublicKey
      */
     public function asPrivateKey()
     {
-        $new = new PrivateKey;
+        $new = new PrivateKey();
         $new->exponent = $this->exponent;
         $new->modulus = $this->modulus;
         $new->k = $this->k;

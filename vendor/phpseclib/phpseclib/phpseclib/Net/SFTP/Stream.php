@@ -7,8 +7,6 @@
  *
  * PHP version 5
  *
- * @category  Net
- * @package   SFTP
  * @author    Jim Wigginton <terrafrost@php.net>
  * @copyright 2013 Jim Wigginton
  * @license   http://www.opensource.org/licenses/mit-license.html  MIT License
@@ -24,11 +22,9 @@ use phpseclib3\Net\SSH2;
 /**
  * SFTP Stream Wrapper
  *
- * @package SFTP
  * @author  Jim Wigginton <terrafrost@php.net>
- * @access  public
  */
-class Stream extends SFTP
+class Stream
 {
     /**
      * SFTP instances
@@ -37,13 +33,12 @@ class Stream extends SFTP
      *
      * @var array
      */
-    static $instances;
+    public static $instances;
 
     /**
      * SFTP instance
      *
      * @var object
-     * @access private
      */
     private $sftp;
 
@@ -51,7 +46,6 @@ class Stream extends SFTP
      * Path
      *
      * @var string
-     * @access private
      */
     private $path;
 
@@ -59,7 +53,6 @@ class Stream extends SFTP
      * Mode
      *
      * @var string
-     * @access private
      */
     private $mode;
 
@@ -67,7 +60,6 @@ class Stream extends SFTP
      * Position
      *
      * @var int
-     * @access private
      */
     private $pos;
 
@@ -75,7 +67,6 @@ class Stream extends SFTP
      * Size
      *
      * @var int
-     * @access private
      */
     private $size;
 
@@ -83,7 +74,6 @@ class Stream extends SFTP
      * Directory entries
      *
      * @var array
-     * @access private
      */
     private $entries;
 
@@ -91,7 +81,6 @@ class Stream extends SFTP
      * EOF flag
      *
      * @var bool
-     * @access private
      */
     private $eof;
 
@@ -101,7 +90,6 @@ class Stream extends SFTP
      * Technically this needs to be publicly accessible so PHP can set it directly
      *
      * @var resource
-     * @access public
      */
     public $context;
 
@@ -109,7 +97,6 @@ class Stream extends SFTP
      * Notification callback function
      *
      * @var callable
-     * @access public
      */
     private $notification;
 
@@ -118,7 +105,6 @@ class Stream extends SFTP
      *
      * @param string $protocol The wrapper name to be registered.
      * @return bool True on success, false otherwise.
-     * @access public
      */
     public static function register($protocol = 'sftp')
     {
@@ -131,7 +117,6 @@ class Stream extends SFTP
     /**
      * The Constructor
      *
-     * @access public
      */
     public function __construct()
     {
@@ -150,21 +135,20 @@ class Stream extends SFTP
      *
      * @param string $path
      * @return string
-     * @access private
      */
     protected function parse_path($path)
     {
         $orig = $path;
         extract(parse_url($path) + ['port' => 22]);
         if (isset($query)) {
-            $path.= '?' . $query;
+            $path .= '?' . $query;
         } elseif (preg_match('/(\?|\?#)$/', $orig)) {
-            $path.= '?';
+            $path .= '?';
         }
         if (isset($fragment)) {
-            $path.= '#' . $fragment;
+            $path .= '#' . $fragment;
         } elseif ($orig[strlen($orig) - 1] == '#') {
-            $path.= '#';
+            $path .= '#';
         }
 
         if (!isset($host)) {
@@ -255,7 +239,6 @@ class Stream extends SFTP
      * @param int $options
      * @param string $opened_path
      * @return bool
-     * @access public
      */
     private function _stream_open($path, $mode, $options, &$opened_path)
     {
@@ -297,7 +280,6 @@ class Stream extends SFTP
      *
      * @param int $count
      * @return mixed
-     * @access public
      */
     private function _stream_read($count)
     {
@@ -329,7 +311,7 @@ class Stream extends SFTP
             $this->eof = true;
             return false;
         }
-        $this->pos+= strlen($result);
+        $this->pos += strlen($result);
 
         return $result;
     }
@@ -338,8 +320,7 @@ class Stream extends SFTP
      * Write to stream
      *
      * @param string $data
-     * @return mixed
-     * @access public
+     * @return int|false
      */
     private function _stream_write($data)
     {
@@ -361,7 +342,7 @@ class Stream extends SFTP
         if ($result === false) {
             return false;
         }
-        $this->pos+= strlen($data);
+        $this->pos += strlen($data);
         if ($this->pos > $this->size) {
             $this->size = $this->pos;
         }
@@ -373,7 +354,6 @@ class Stream extends SFTP
      * Retrieve the current position of a stream
      *
      * @return int
-     * @access public
      */
     private function _stream_tell()
     {
@@ -391,7 +371,6 @@ class Stream extends SFTP
      * will return false. do fread($fp, 1) and feof() will then return true.
      *
      * @return bool
-     * @access public
      */
     private function _stream_eof()
     {
@@ -404,21 +383,20 @@ class Stream extends SFTP
      * @param int $offset
      * @param int $whence
      * @return bool
-     * @access public
      */
     private function _stream_seek($offset, $whence)
     {
         switch ($whence) {
             case SEEK_SET:
-                if ($offset >= $this->size || $offset < 0) {
+                if ($offset < 0) {
                     return false;
                 }
                 break;
             case SEEK_CUR:
-                $offset+= $this->pos;
+                $offset += $this->pos;
                 break;
             case SEEK_END:
-                $offset+= $this->size;
+                $offset += $this->size;
         }
 
         $this->pos = $offset;
@@ -433,7 +411,6 @@ class Stream extends SFTP
      * @param int $option
      * @param mixed $var
      * @return bool
-     * @access public
      */
     private function _stream_metadata($path, $option, $var)
     {
@@ -447,7 +424,9 @@ class Stream extends SFTP
         //     and https://github.com/php/php-src/blob/master/main/php_streams.h#L592
         switch ($option) {
             case 1: // PHP_STREAM_META_TOUCH
-                return $this->sftp->touch($path, $var[0], $var[1]);
+                $time = isset($var[0]) ? $var[0] : null;
+                $atime = isset($var[1]) ? $var[1] : null;
+                return $this->sftp->touch($path, $time, $atime);
             case 2: // PHP_STREAM_OWNER_NAME
             case 3: // PHP_STREAM_GROUP_NAME
                 return false;
@@ -465,7 +444,6 @@ class Stream extends SFTP
      *
      * @param int $cast_as
      * @return resource
-     * @access public
      */
     private function _stream_cast($cast_as)
     {
@@ -477,7 +455,6 @@ class Stream extends SFTP
      *
      * @param int $operation
      * @return bool
-     * @access public
      */
     private function _stream_lock($operation)
     {
@@ -494,7 +471,6 @@ class Stream extends SFTP
      * @param string $path_from
      * @param string $path_to
      * @return bool
-     * @access public
      */
     private function _rename($path_from, $path_to)
     {
@@ -546,7 +522,6 @@ class Stream extends SFTP
      * @param string $path
      * @param int $options
      * @return bool
-     * @access public
      */
     private function _dir_opendir($path, $options)
     {
@@ -563,7 +538,6 @@ class Stream extends SFTP
      * Read entry from directory handle
      *
      * @return mixed
-     * @access public
      */
     private function _dir_readdir()
     {
@@ -577,7 +551,6 @@ class Stream extends SFTP
      * Rewind directory handle
      *
      * @return bool
-     * @access public
      */
     private function _dir_rewinddir()
     {
@@ -589,7 +562,6 @@ class Stream extends SFTP
      * Close directory handle
      *
      * @return bool
-     * @access public
      */
     private function _dir_closedir()
     {
@@ -605,7 +577,6 @@ class Stream extends SFTP
      * @param int $mode
      * @param int $options
      * @return bool
-     * @access public
      */
     private function _mkdir($path, $mode, $options)
     {
@@ -628,7 +599,6 @@ class Stream extends SFTP
      * @param string $path
      * @param int $options
      * @return bool
-     * @access public
      */
     private function _rmdir($path, $options)
     {
@@ -646,7 +616,6 @@ class Stream extends SFTP
      * See <http://php.net/fflush>. Always returns true because \phpseclib3\Net\SFTP doesn't cache stuff before writing
      *
      * @return bool
-     * @access public
      */
     private function _stream_flush()
     {
@@ -657,7 +626,6 @@ class Stream extends SFTP
      * Retrieve information about a file resource
      *
      * @return mixed
-     * @access public
      */
     private function _stream_stat()
     {
@@ -673,7 +641,6 @@ class Stream extends SFTP
      *
      * @param string $path
      * @return bool
-     * @access public
      */
     private function _unlink($path)
     {
@@ -695,7 +662,6 @@ class Stream extends SFTP
      * @param string $path
      * @param int $flags
      * @return mixed
-     * @access public
      */
     private function _url_stat($path, $flags)
     {
@@ -717,7 +683,6 @@ class Stream extends SFTP
      *
      * @param int $new_size
      * @return bool
-     * @access public
      */
     private function _stream_truncate($new_size)
     {
@@ -741,7 +706,6 @@ class Stream extends SFTP
      * @param int $arg1
      * @param int $arg2
      * @return bool
-     * @access public
      */
     private function _stream_set_option($option, $arg1, $arg2)
     {
@@ -751,7 +715,6 @@ class Stream extends SFTP
     /**
      * Close an resource
      *
-     * @access public
      */
     private function _stream_close()
     {
@@ -770,9 +733,8 @@ class Stream extends SFTP
      * @param string $name
      * @param array $arguments
      * @return mixed
-     * @access public
      */
-    public function __call($name, $arguments)
+    public function __call($name, array $arguments)
     {
         if (defined('NET_SFTP_STREAM_LOGGING')) {
             echo $name . '(';

@@ -11,6 +11,7 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\KeyAlgorithm;
+use OpenPGP\Packet\Key\KeyParametersInterface;
 
 /**
  * Key packet interface
@@ -37,18 +38,18 @@ interface KeyPacketInterface
     function getCreationTime(): int;
 
     /**
-     * Gets expiration days
-     * 
-     * @return int
-     */
-    function getExpirationDays(): int;
-
-    /**
      * Gets key algorithm
      * 
      * @return KeyAlgorithm
      */
     function getAlgorithm(): KeyAlgorithm;
+
+    /**
+     * Gets key parameters
+     * 
+     * @return KeyParametersInterface
+     */
+    function getKeyParameters(): KeyParametersInterface;
 
     /**
      * Gets fingerprint
@@ -63,11 +64,4 @@ interface KeyPacketInterface
      * @return string
      */
     function getKeyID(): string;
-
-    /**
-     * Gets public key
-     * 
-     * @return PublicKey
-     */
-    function getPublicKey(): PublicKey;
 }

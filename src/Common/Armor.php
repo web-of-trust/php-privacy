@@ -43,7 +43,7 @@ final class Armor
     const SIGNATURE_END   = "-----END PGP SIGNATURE-----\n";
 
     const SPLIT_PATTERN      = '/^-----[^-]+-----$/';
-    const EMPTY_LINE_PATTERN = '/^[ \f\r\t\u00a0\u2000-\u200a\u202f\u205f\u3000]*$/';
+    const EMPTY_LINE_PATTERN = '/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/';
     const LIME_SPLIT_PATTERN = '/\r\n|\n|\r/';
     const HEADER_PATTERN     = '/^([^\s:]|[^\s:][^:]*[^\s:]): .+$/';
     const BEGIN_PATTERN      = '/^-----BEGIN PGP (MESSAGE, PART \d+\/\d+|MESSAGE, PART \d+|SIGNED MESSAGE|MESSAGE|PUBLIC KEY BLOCK|PRIVATE KEY BLOCK|SIGNATURE)-----$/';
@@ -131,41 +131,40 @@ final class Armor
         $lines = preg_split(self::LIME_SPLIT_PATTERN, $armoredText);
         foreach ($lines as $line) {
             if ($type === null && preg_match(self::SPLIT_PATTERN, $line)) {
-                $type = self::_parseType($line);
+                $type = self::parseType($line);
             }
             else {
                 if (preg_match(self::HEADER_PATTERN, $line)) {
                     $headers[] = $line;
                 }
                 elseif (!$textDone && $type == ArmorType::SignedMessage) {
-                      if (!preg_match(self::SPLIT_PATTERN, $line)) {
+                    if (!preg_match(self::SPLIT_PATTERN, $line)) {
                         $textLines[] = preg_replace('/^- /', '', $line);
-                      }
-                      else {
+                    }
+                    else {
                         $textDone = true;
-                      }
+                    }
                 }
                 elseif (!preg_match(self::SPLIT_PATTERN, $line)) {
-                      if (preg_match(self::EMPTY_LINE_PATTERN, $line)) {
+                    if (preg_match(self::EMPTY_LINE_PATTERN, $line)) {
                         continue;
-                      }
-                      if (strpos($line, '=') === 0) {
+                    }
+                    if (strpos($line, '=') === 0) {
                         $checksum = substr($line, 1);
-                      }
-                      else {
+                    }
+                    else {
                         $dataLines[] = $line;
-                      }
+                    }
                 }
             }
         }
 
-        $text = implode(self::CRLF, $textLines);
         $data = base64_decode(implode($dataLines));
-        if (($checksum != self::_crc24Checksum($data)) && (!empty($checksum) || $checksumRequired)) {
-          throw new \UnexpectedValueException('Ascii armor integrity check failed');
+        if (($checksum != self::crc24Checksum($data)) && (!empty($checksum) || $checksumRequired)) {
+            throw new \UnexpectedValueException('Ascii armor integrity check failed');
         }
 
-        return new Armor($type, $headers, $data, $text);
+        return new Armor($type, $headers, $data, trim(implode(self::CRLF, $textLines)));
     }
 
     /**
@@ -193,54 +192,54 @@ final class Armor
         $result = match($type) {
             ArmorType::MultipartSection => [
                 sprintf(self::MULTIPART_SECTION_MESSAGE_BEGIN, $partIndex, $partTotal),
-                self::_addHeader($customComment) . self::EOL,
+                self::addHeader($customComment) . self::EOL,
                 chunk_split(base64_encode($data), self::TRUNK, self::EOL) . self::EOL,
-                '=' . _crc24Checksum() . self::EOL,
+                '=' . self::crc24Checksum($data) . self::EOL,
                 sprintf(self::MULTIPART_SECTION_MESSAGE_END, $partIndex, $partTotal),
             ],
             ArmorType::MultipartLast => [
                 sprintf(self::MULTIPART_LAST_MESSAGE_BEGIN, $partIndex),
-                self::_addHeader($customComment) . self::EOL,
+                self::addHeader($customComment) . self::EOL,
                 chunk_split(base64_encode($data), self::TRUNK, self::EOL) . self::EOL,
-                '=' . _crc24Checksum() . self::EOL,
+                '=' . self::crc24Checksum($data) . self::EOL,
                 sprintf(self::MULTIPART_LAST_MESSAGE_END, $partIndex),
             ],
             ArmorType::SignedMessage => [
                 self::SIGNED_MESSAGE_BEGIN,
                 "Hash: $hashAlgo" . self::EOL . self::EOL,
-                str_replace($text, '-', '- -') . self::EOL,
+                str_replace('-', '- -', $text) . self::EOL,
                 self::SIGNATURE_BEGIN,
-                self::_addHeader($customComment) . self::EOL,
+                self::addHeader($customComment) . self::EOL,
                 chunk_split(base64_encode($data), self::TRUNK, self::EOL) . self::EOL,
-                '=' . _crc24Checksum() . self::EOL,
+                '=' . self::crc24Checksum($data) . self::EOL,
                 self::SIGNATURE_END,
             ],
             ArmorType::Message => [
                 self::MESSAGE_BEGIN,
-                self::_addHeader($customComment) . self::EOL,
+                self::addHeader($customComment) . self::EOL,
                 chunk_split(base64_encode($data), self::TRUNK, self::EOL) . self::EOL,
-                '=' . _crc24Checksum($data) . self::EOL,
+                '=' . self::crc24Checksum($data) . self::EOL,
                 self::MESSAGE_END,
             ],
             ArmorType::PublicKey => [
                 self::PUBLIC_KEY_BLOCK_BEGIN,
-                self::_addHeader($customComment) . self::EOL,
+                self::addHeader($customComment) . self::EOL,
                 chunk_split(base64_encode($data), self::TRUNK, self::EOL) . self::EOL,
-                '=' . _crc24Checksum($data) . self::EOL,
+                '=' . self::crc24Checksum($data) . self::EOL,
                 self::PUBLIC_KEY_BLOCK_END,
             ],
             ArmorType::PrivateKey => [
                 self::PRIVATE_KEY_BLOCK_BEGIN,
-                self::_addHeader($customComment) . self::EOL,
+                self::addHeader($customComment) . self::EOL,
                 chunk_split(base64_encode($data), self::TRUNK, self::EOL) . self::EOL,
-                '=' . _crc24Checksum($data) . self::EOL,
+                '=' . self::crc24Checksum($data) . self::EOL,
                 self::PRIVATE_KEY_BLOCK_END,
             ],
             ArmorType::Signature => [
                 self::SIGNATURE_BEGIN,
-                self::_addHeader($customComment) . self::EOL,
+                self::addHeader($customComment) . self::EOL,
                 chunk_split(base64_encode($data), self::TRUNK, self::EOL) . self::EOL,
-                '=' . _crc24Checksum($data) . self::EOL,
+                '=' . self::crc24Checksum($data) . self::EOL,
                 self::SIGNATURE_END,
             ],
         };
@@ -253,21 +252,20 @@ final class Armor
      * @param string $armoredText
      * @return ArmorType
      */
-    private static function _parseType(string $armoredText): ArmorType
+    private static function parseType(string $armoredText): ArmorType
     {
-        preg_match_all(self::BEGIN_PATTERN, $armoredText, $matches);
+        preg_match(self::BEGIN_PATTERN, $armoredText, $matches);
         if (empty($matches)) {
             throw new \InvalidArgumentException('Unknown ASCII armor type');
         }
-        $match = $matches[0];
-        $type = match (true) {
-            preg_match('/MESSAGE, PART \d+\/\d+/', $match) => ArmorType::MultipartSection,
-            preg_match('/MESSAGE, PART \d+/', $match) => ArmorType::MultipartLast,
-            preg_match('/SIGNED MESSAGE/', $match) => ArmorType::SignedMessage,
-            preg_match('/MESSAGE/', $match) => ArmorType::Message,
-            preg_match('/PUBLIC KEY BLOCK/', $match) => ArmorType::PublicKey,
-            preg_match('/PRIVATE KEY BLOCK/', $match) => ArmorType::PrivateKey,
-            preg_match('/SIGNATURE/', $match) => ArmorType::Signature,
+        $type = match (1) {
+            preg_match('/MESSAGE, PART \d+\/\d+/', $matches[0]) => ArmorType::MultipartSection,
+            preg_match('/MESSAGE, PART \d+/', $matches[0]) => ArmorType::MultipartLast,
+            preg_match('/SIGNED MESSAGE/', $matches[0]) => ArmorType::SignedMessage,
+            preg_match('/MESSAGE/', $matches[0]) => ArmorType::Message,
+            preg_match('/PUBLIC KEY BLOCK/', $matches[0]) => ArmorType::PublicKey,
+            preg_match('/PRIVATE KEY BLOCK/', $matches[0]) => ArmorType::PrivateKey,
+            preg_match('/SIGNATURE/', $matches[0]) => ArmorType::Signature,
         };
         return $type ?? ArmorType::MultipartSection;
     }
@@ -278,7 +276,7 @@ final class Armor
      * @param string $customComment
      * @return string
      */
-    private static function _addHeader(string $customComment = ''): string
+    private static function addHeader(string $customComment = ''): string
     {
         $headers = [
             'Version: ' . OpenPGP::VERSION . self::EOL,
@@ -296,7 +294,7 @@ final class Armor
      * @param string $data
      * @return string
      */
-    private static function _crc24Checksum(string $data): string
+    private static function crc24Checksum(string $data): string
     {
         $crc = 0xb704ce;
         for ($i = 0; $i < strlen($data); $i++) {
@@ -308,6 +306,6 @@ final class Armor
                 }
             }
         }
-        base64_encode(substr(pack('N', $crc & 0xffffff), 1));
+        return base64_encode(substr(pack('N', $crc & 0xffffff), 1));
     }
 }

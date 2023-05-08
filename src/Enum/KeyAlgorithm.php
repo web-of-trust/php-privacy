@@ -28,7 +28,7 @@ enum KeyAlgorithm: int
 
     case RsaSign = 3;
 
-    case Elgamal = 16;
+    case ElGamal = 16;
 
     case DSA = 17;
 
