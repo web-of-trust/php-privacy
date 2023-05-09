@@ -45,7 +45,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
     )
     {
         parent::__construct(PacketTag::LiteralData);
-        $this->time = empty($time) ? time() ? $time;
+        $this->time = empty($time) ? time() : $time;
     }
 
     /**
@@ -68,8 +68,8 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
         $offset += 4;
         $data = substr($bytes, $offset);
 
-        return LiteralData(
-            $data, $format, $time, $filename
+        return new LiteralData(
+            $data, $format, $filename, $time
         );
     }
 
@@ -82,8 +82,8 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
      */
     public static function fromText(string $text, int $time = 0): LiteralData
     {
-        return LiteralData(
-            $text, LiteralFormat::Utf8, empty($time) ? time() : $time
+        return new LiteralData(
+            $text, LiteralFormat::Utf8, '', empty($time) ? time() : $time
         );
     }
 

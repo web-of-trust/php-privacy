@@ -25,13 +25,13 @@ class PacketReader
     /**
      * Constructor
      *
-     * @param PacketTag $tag
+     * @param PacketTag $packetTag
      * @param string $data
      * @param int $offset
      * @return self
      */
     public function __construct(
-        private PacketTag $tag,
+        private PacketTag $packetTag,
         private string $data = '',
         private int $offset = 0
     )
@@ -43,9 +43,9 @@ class PacketReader
      * 
      * @return PacketTag
      */
-    public function getTag(): PacketTag
+    public function getPacketTag(): PacketTag
     {
-        return $this->tag;
+        return $this->packetTag;
     }
 
     /**
@@ -145,7 +145,7 @@ class PacketReader
             }
         }
 
-        return PacketReader(
+        return new PacketReader(
             $tag,
             substr($bytes, $offset, $packetLength),
             $offset + $packetLength

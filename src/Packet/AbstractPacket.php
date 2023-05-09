@@ -56,7 +56,7 @@ abstract class AbstractPacket implements PacketInterface
      */
     public function encode(): string
     {
-        $bodyBytes = toBytes();
+        $bodyBytes = $this->toBytes();
         $bodyLen = strlen($bodyBytes);
         $data = [];
 

@@ -59,7 +59,7 @@ class CompressedData extends AbstractPacket
     {
         $algorithm = CompressionAlgorithm::from(ord($bytes[0]));
         $compressed = substr($bytes, 1);
-        return CompressedData(
+        return new CompressedData(
             $compressed, self::decompress($compressed, $algorithm), $algorithm
         );
     }
@@ -72,14 +72,15 @@ class CompressedData extends AbstractPacket
      * @return CompressedData
      */
     public static function fromPacketList(
-        PacketList $packets, CompressionAlgorithm $algorithm = CompressionAlgorithm::Uncompressed
+        PacketList $packets,
+        CompressionAlgorithm $algorithm = CompressionAlgorithm::Uncompressed
     ): CompressedData
     {
-        return CompressedData(
+        return new CompressedData(
             self::compress($packets, $algorithm),
             $packets,
-            $algorithm,
-        )
+            $algorithm
+        );
     }
 
     /**
@@ -129,8 +130,8 @@ class CompressedData extends AbstractPacket
     {
         return match($algorithm) {
             CompressionAlgorithm::Uncompressed => $packets->encode(),
-            CompressionAlgorithm::Zip => \gzdeflate($packets->encode()),
-            CompressionAlgorithm::Zlib => \gzcompress($packets->encode()),
+            CompressionAlgorithm::Zip => \gzdeflate($packets->encode(), self::DEFLATE_LEVEL),
+            CompressionAlgorithm::Zlib => \gzcompress($packets->encode(), self::DEFLATE_LEVEL),
             CompressionAlgorithm::BZip2 => \bzcompress($packets->encode()),
         };
     }

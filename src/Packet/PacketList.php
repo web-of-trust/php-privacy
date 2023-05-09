@@ -32,7 +32,7 @@ class PacketList implements \IteratorAggregate, \Countable
      */
     public function __construct(array $packets = [])
     {
-        $this->packets = new ArrayIterator(array_filter(
+        $this->packets = new \ArrayIterator(array_filter(
             $packets, static fn ($packet) => $packet instanceof PacketInterface
         ));
     }
@@ -109,7 +109,7 @@ class PacketList implements \IteratorAggregate, \Countable
                     break;
             }
         }
-        return PacketList($packets);
+        return new PacketList($packets);
     }
 
     /**
@@ -120,7 +120,7 @@ class PacketList implements \IteratorAggregate, \Countable
     public function encode(): string
     {
         $bytes = '';
-        foreach ($packets as $packet) {
+        foreach ($this->packets as $packet) {
             $bytes .= $packet->encode();
         }
         return $bytes;

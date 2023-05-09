@@ -10,7 +10,7 @@ use OpenPGP\Packet\UserID;
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
- * Testcase class for public key packet.
+ * Testcase class for user id & attribute packet.
  */
 class UserIDTest extends OpenPGPTestCase
 {
