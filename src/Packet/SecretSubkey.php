@@ -10,7 +10,9 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Enum\{PacketTag, S2kUsage, SymmetricAlgorithm};
+use OpenPGP\Enum\{
+    HashAlgorithm, PacketTag, S2kType, S2kUsage, SymmetricAlgorithm
+};
 use OpenPGP\Packet\Key\{KeyParametersInterface, S2K};
 
 /**
@@ -79,22 +81,62 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
     /**
      * {@inheritdoc}
      */
+    public function encrypt(
+        string $passphrase,
+        S2kUsage $s2kUsage = S2kUsage::Sha1,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        HashAlgorithm $hash = HashAlgorithm::Sha1,
+        S2kType $s2kType = S2kType::Iterated
+    ): SecretKeyPacketInterface
+    {
+        if ($this->getKeyParameters() instanceof KeyParametersInterface ) {
+            $secretKey = parent::encrypt(
+                $passphrase, $s2kUsage, $symmetric, $hash, $s2kType
+            );
+            $publicKey = $secretKey->getPublicKey();
+            return new SecretSubkey(
+                new PublicSubkey(
+                    $publicKey->getCreationTime(),
+                    $publicKey->getKeyParameters(),
+                    $publicKey->getKeyAlgorithm(),
+                ),
+                $secretKey->getS2kUsage(),
+                $secretKey->getSymmetric(),
+                $secretKey->getS2K(),
+                $secretKey->getIV(),
+                $secretKey->getKeyData(),
+                $secretKey->getKeyParameters()
+            );
+        }
+        else {
+            return $this;
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function decrypt(string $passphrase): SecretKeyPacketInterface
     {
-        $secretKey = parent::decrypt($passphrase);
-        $publicKey = $secretKey->getPublicKey();
-        return new SecretSubkey(
-            new PublicSubkey(
-                $publicKey->getCreationTime(),
-                $publicKey->getKeyParameters(),
-                $publicKey->getKeyAlgorithm(),
-            ),
-            $secretKey->getS2kUsage(),
-            $secretKey->getSymmetric(),
-            $secretKey->getS2K(),
-            $secretKey->getIV(),
-            $secretKey->getKeyData(),
-            $secretKey->getKeyParameters()
-        );
+        if ($this->getKeyParameters() instanceof KeyParametersInterface ) {
+            return $this;
+        }
+        else {
+            $secretKey = parent::decrypt($passphrase);
+            $publicKey = $secretKey->getPublicKey();
+            return new SecretSubkey(
+                new PublicSubkey(
+                    $publicKey->getCreationTime(),
+                    $publicKey->getKeyParameters(),
+                    $publicKey->getKeyAlgorithm(),
+                ),
+                $secretKey->getS2kUsage(),
+                $secretKey->getSymmetric(),
+                $secretKey->getS2K(),
+                $secretKey->getIV(),
+                $secretKey->getKeyData(),
+                $secretKey->getKeyParameters()
+            );
+        }
     }
 }
