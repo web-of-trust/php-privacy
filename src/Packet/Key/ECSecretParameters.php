@@ -45,7 +45,7 @@ abstract class ECSecretParameters implements KeyParametersInterface
     )
     {
         $format = 'PKCS8';
-        $curveOid = $this->publicParams->getCurveOid();
+        $curveOid = $publicParams->getCurveOid();
         if ($curveOid === CurveOid::Ed25519) {
             $params = PKCS8::load($publicParams->getPublicKey()->toString($format));
             $arr = $params['curve']->extractSecret($d->toBytes());
