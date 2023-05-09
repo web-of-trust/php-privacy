@@ -100,7 +100,8 @@ class PacketReader
                     $packetLength = (ord($bytes[$pos++]) << 8) | ord($bytes[$pos++]);
                     break;
                 case 2:
-                    $packetLength = unpack('N', substr($bytes, $pos++, 4));
+                    $unpacked = unpack('N', substr($bytes, $pos++, 4));
+                    $packetLength = reset($unpacked);
                     $pos += 4;
                     break;
             }
@@ -131,14 +132,16 @@ class PacketReader
                     break;
                   }
                   else {
-                    $partialLen = unpack('N', substr($bytes, $partialPos++, 4));
+                    $unpacked = unpack('N', substr($bytes, $partialPos++, 4));
+                    $partialLen = reset($unpacked);
                     $partialPos += $partialLen + 4;
                   }
                 }
                 $packetLength = $partialPos - $pos;
             }
             else {
-                $packetLength = unpack('N', substr($bytes, $pos++, 4));
+                $unpacked = unpack('N', substr($bytes, $pos++, 4));
+                $packetLength = reset($unpacked);
                 $pos += 4;
             }
         }
