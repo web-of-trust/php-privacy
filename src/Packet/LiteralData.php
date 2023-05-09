@@ -133,23 +133,11 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
     public function toBytes(): string
     {
         return implode([
-            $this->getHeaderBytes(),
-            $this->getSignBytes(),
-        ]);
-    }
-
-    /**
-     * Gets header bytes
-     *
-     * @return string
-     */
-    public function getHeaderBytes(): string
-    {
-        return implode([
             chr($this->format->value),
             chr(strlen($this->filename)),
             $this->filename,
             pack('N', $this->time),
+            $this->getSignBytes(),
         ]);
     }
 
