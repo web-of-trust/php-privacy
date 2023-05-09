@@ -26,9 +26,9 @@ interface SecretKeyPacketInterface extends KeyPacketInterface
     /**
      * Gets public key packet
      *
-     * @return SecretKeyPacketInterface
+     * @return KeyPacketInterface
      */
-    function getPublicKey(): SecretKeyPacketInterface
+    function getPublicKey(): KeyPacketInterface;
 
     /**
      * Encrypts secret key with passphrase
@@ -55,5 +55,5 @@ interface SecretKeyPacketInterface extends KeyPacketInterface
      * @param string $passphrase
      * @return SecretKeyPacketInterface
      */
-    function decrypt(string $passphrase): SecretKeyPacketInterface
+    function decrypt(string $passphrase): SecretKeyPacketInterface;
 }

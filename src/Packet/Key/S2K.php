@@ -113,7 +113,7 @@ class S2K
                 $itCount = ord($bytes[10]);
                 break;
         }
-        return S2K($salt, $type, $hash, $itCount);
+        return new S2K($salt, $type, $hash, $itCount);
     }
 
     /**
@@ -124,10 +124,15 @@ class S2K
     public function toBytes(): string
     {
         return match($this->type) {
-            ArmorType::Simple => chr($this->type->value) . chr($this->hash->value),
-            ArmorType::Salted => chr($this->type->value) . chr($this->hash->value) . $this->salt,
-            ArmorType::Iterated => chr($this->type->value) . chr($this->hash->value) . $this->salt . chr($this->itCount),
-            ArmorType::GNU => chr($this->type->value) . 'GNU' . chr(1),
+            S2kType::Simple => chr($this->type->value) . chr($this->hash->value),
+            S2kType::Salted => chr($this->type->value) . chr($this->hash->value) . $this->salt,
+            S2kType::Iterated => implode([
+                chr($this->type->value),
+                chr($this->hash->value),
+                $this->salt,
+                chr($this->itCount),
+            ]),
+            S2kType::GNU => chr($this->type->value) . 'GNU' . chr(1),
         };
     }
 
@@ -143,16 +148,16 @@ class S2K
     ): ?string
     {
         return match($this->type) {
-            ArmorType::Simple => $this->hash($passphrase, $keyLen),
-            ArmorType::Salted => $this->hash($this->salt . $passphrase, $keyLen),
-            ArmorType::Iterated => $this->hash($this->iterate($this->salt . $passphrase), $keyLen),
+            S2kType::Simple => $this->hash($passphrase, $keyLen),
+            S2kType::Salted => $this->hash($this->salt . $passphrase, $keyLen),
+            S2kType::Iterated => $this->hash($this->iterate($this->salt . $passphrase), $keyLen),
         };
     }
 
     private function iterate(string $data): string
     {
         if(strlen($data) >= $this->count) return $data;
-        $data = str_repeat($data, ceil($this->count / strlen($data)));
+        $data = str_repeat($data, (int) ceil($this->count / strlen($data)));
         return substr($data, 0, $this->count);
     }
 

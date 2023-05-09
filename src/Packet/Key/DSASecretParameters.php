@@ -14,6 +14,7 @@ use phpseclib3\Crypt\DSA\PrivateKey;
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Math\BigInteger;
 
+use OpenPGP\Common\Helper;
 use OpenPGP\Enum\HashAlgorithm;
 
 /**
@@ -42,7 +43,7 @@ class DSASecretParameters implements SignableParametersInterface
      */
     public function __construct(
         private BigInteger $exponent,
-        DSAPublicParameters $publicParams
+        private DSAPublicParameters $publicParams
     )
     {
         $this->privateKey = PublicKeyLoader::loadPrivateKey([
@@ -63,9 +64,9 @@ class DSASecretParameters implements SignableParametersInterface
      */
     public static function fromBytes(
         string $bytes, DSAPublicParameters $publicParams
-    ): ElGamalSecretParameters
+    ): DSASecretParameters
     {
-        return DSASecretParameters(Helper::readMPI($bytes), $publicParams);
+        return new DSASecretParameters(Helper::readMPI($bytes), $publicParams);
     }
 
     /**
@@ -86,6 +87,54 @@ class DSASecretParameters implements SignableParametersInterface
     public function getPrivateKey(): PrivateKey
     {
         return $this->privateKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isValid(): bool
+    {
+        $zero = new BigInteger(0);
+        $one = new BigInteger(1);
+        $two = new BigInteger(2);
+
+        $prime = $this->publicParams->getPrime();
+        $order = $this->publicParams->getOrder();
+        $generator = $this->publicParams->getGenerator();
+        $exponent = $this->publicParams->getExponent();
+
+        // Check that 1 < g < p
+        if ($generator->compare($one) <= 0 || $generator->compare($prime) >= 0) {
+            return false;
+        }
+
+        // Check that subgroup order q divides p-1
+        list(, $c) = $prime->subtract($one)->divide($order);
+        if (!$c->equals($zero)) {
+            return false;
+        }
+
+        // g has order q
+        // Check that g ** q = 1 mod p
+        if (!$generator->modPow($order, $prime)->equals($one)) {
+            return false;
+        }
+
+        // Check q is large and probably prime (we mainly want to avoid small factors)
+        $qSize = $order->getLength();
+        if ($qSize < 150 || !$order->isPrime()) {
+            return false;
+        }
+
+        // Re-derive public key y' = g ** x mod p
+        // Expect y == y'
+        // Blinded exponentiation computes g**{rq + x} to compare to y
+        $r = BigInteger::randomRange(
+            $two->bitwise_leftShift($qSize - 1), $two->bitwise_leftShift($qSize)
+        );
+        $rqx = $order->multiply($r)->add($this->exponent);
+
+        return $exponent->equals($generator->modPow($rqx, $prime));
     }
 
     /**

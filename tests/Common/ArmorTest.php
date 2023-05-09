@@ -2,8 +2,8 @@
 
 namespace OpenPGP\Tests\Common;
 
+use phpseclib3\Crypt\Random;
 use PHPUnit\Framework\TestCase;;
-
 use OpenPGP\Tests\OpenPGPTestCase;
 use OpenPGP\Common\Armor;
 use OpenPGP\Enum\ArmorType;
@@ -16,7 +16,7 @@ class ArmorTest extends OpenPGPTestCase
 {
     public function testMultipartSection()
     {
-        $data = random_bytes(100);
+        $data = Random::string(100);
         $partIndex = $this->faker->unique()->randomDigit();
         $partTotal = $this->faker->unique()->randomDigit();
         $armored = Armor::encode(
@@ -35,7 +35,7 @@ class ArmorTest extends OpenPGPTestCase
 
     public function testMultipartLast()
     {
-        $data = random_bytes(100);
+        $data = Random::string(100);
         $partIndex = $this->faker->randomDigit();
         $armored = Armor::encode(
             ArmorType::MultipartLast, $data, '', '', $partIndex
@@ -53,7 +53,7 @@ class ArmorTest extends OpenPGPTestCase
 
     public function testSignedMessage()
     {
-        $data = random_bytes(100);
+        $data = Random::string(100);
         $text = $this->faker->sentence(100);
         $hashAlgo = $this->faker->randomElement(HashAlgorithm::cases())->name;
         $armored = Armor::encode(
@@ -77,7 +77,7 @@ class ArmorTest extends OpenPGPTestCase
 
     public function testMessage()
     {
-        $data = random_bytes(100);
+        $data = Random::string(100);
         $armored = Armor::encode(
             ArmorType::Message, $data
         );
@@ -94,7 +94,7 @@ class ArmorTest extends OpenPGPTestCase
 
     public function testPublicKey()
     {
-        $data = random_bytes(100);
+        $data = Random::string(100);
         $armored = Armor::encode(
             ArmorType::PublicKey, $data
         );
@@ -111,7 +111,7 @@ class ArmorTest extends OpenPGPTestCase
 
     public function testPrivateKey()
     {
-        $data = random_bytes(100);
+        $data = Random::string(100);
         $armored = Armor::encode(
             ArmorType::PrivateKey, $data
         );
@@ -128,7 +128,7 @@ class ArmorTest extends OpenPGPTestCase
 
     public function testSignature()
     {
-        $data = random_bytes(100);
+        $data = Random::string(100);
         $armored = Armor::encode(
             ArmorType::Signature, $data
         );

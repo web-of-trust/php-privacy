@@ -21,6 +21,13 @@ namespace OpenPGP\Packet\Key;
 interface KeyParametersInterface
 {
     /**
+     * Returns key parameters is valid
+     * 
+     * @return bool
+     */
+    function isValid(): bool;
+
+    /**
      * Serializes key parameters to bytes
      * 
      * @return string

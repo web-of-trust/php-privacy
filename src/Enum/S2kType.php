@@ -24,7 +24,7 @@ enum S2kType: int
 
     case Salted = 1;
 
-    case Iterated = 2;
+    case Iterated = 3;
 
     case GNU = 101;
 

@@ -68,7 +68,7 @@ class ElGamalPrivateKey extends ElGamal
     public function decrypt(string $cipherText): string
     {
         $inputSize = 2 * (($this->getBitSize() + 7) >> 3);
-        $outputSize = ($this->getBitSize() - 1) ~/ 8;
+        $outputSize = (int) (($this->getBitSize() - 1) / 8);
 
         $length = strlen($cipherText);
         if ($length > $inputSize) {
@@ -76,8 +76,8 @@ class ElGamalPrivateKey extends ElGamal
         }
 
         $prime = $this->getPrime();
-        $gamma = $this->bits2int(substr($cipherText, 0, $length ~/ 2));
-        $phi = $this->bits2int(substr($cipherText, $length ~/ 2));
+        $gamma = $this->bits2int(substr($cipherText, 0, (int) ($length / 2)));
+        $phi = $this->bits2int(substr($cipherText, (int) ($length / 2)));
         list(, $m) = $gamma->modPow(
             $prime->subtract(self::$one->add($this->getX())), $prime
         )->multiply($phi)->divide($prime);
@@ -93,5 +93,11 @@ class ElGamalPrivateKey extends ElGamal
      */
     public function toString($type, array $options = [])
     {
+        return json_encode([
+            'p' => $this->getPrime(),
+            'g' => $this->getGenerator(),
+            'x' => $this->getX(),
+            'y' => $this->getY(),
+        ]);
     }
 }

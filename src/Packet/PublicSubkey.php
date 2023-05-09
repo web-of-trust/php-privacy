@@ -21,23 +21,23 @@ use OpenPGP\Packet\Key\KeyParametersInterface;
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class PublicSubkey extends PublicKey implements KeyPacketInterface
+class PublicSubkey extends PublicKey implements SubkeyPacketInterface
 {
     /**
      * Constructor
      *
      * @param int $creationTime
-     * @param KeyParametersInterface $publicParams
+     * @param KeyParametersInterface $keyParameters
      * @param KeyAlgorithm $algorithm
      * @return self
      */
     public function __construct(
         int $creationTime,
-        KeyParametersInterface $publicParams,
+        KeyParametersInterface $keyParameters,
         KeyAlgorithm $algorithm = KeyAlgorithm::RsaEncryptSign
     )
     {
-        parent::__construct($creationTime, $publicParams, $algorithm);
+        parent::__construct($creationTime, $keyParameters, $algorithm);
         $this->setTag(PacketTag::PublicSubkey);
     }
 

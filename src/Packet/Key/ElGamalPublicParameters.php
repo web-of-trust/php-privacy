@@ -111,6 +111,14 @@ class ElGamalPublicParameters implements KeyParametersInterface
     /**
      * {@inheritdoc}
      */
+    public function isValid(): bool
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function encode(): string
     {
         return implode([

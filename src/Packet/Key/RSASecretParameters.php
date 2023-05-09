@@ -47,7 +47,7 @@ class RSASecretParameters implements SignableParametersInterface
         private BigInteger $primeP,
         private BigInteger $primeQ,
         private BigInteger $coefficients,
-        RSAPublicParameters $publicParams
+        private RSAPublicParameters $publicParams
     )
     {
         $this->privateKey = PublicKeyLoader::loadPrivateKey([
@@ -134,6 +134,33 @@ class RSASecretParameters implements SignableParametersInterface
     public function getCoefficients(): BigInteger
     {
         return $this->coefficients;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isValid(): bool
+    {
+        $one = new BigInteger(1);
+        $two = new BigInteger(2);
+        // expect pq = n
+        if (!$this->primeP->multiply($this->primeQ)->equals($this->publicParams->getModulus())) {
+            return false;
+        }
+
+        // expect p*u = 1 mod q
+        list(, $c) = $this->primeP->multiply($this->coefficients)->divide($this->primeQ);
+        if (!$c->equals($one)) {
+            return false;
+        }
+
+        $nSizeOver3 = floor($this->publicParams->getModulus()->getLength() / 3);
+        $r = BigInteger::randomRange($one, $two->bitwise_leftShift($nSizeOver3));
+        $rde = $r->multiply($this->exponent)->multiply($this->publicParams->getExponent());
+
+        list(, $p) = $rde->divide($this->primeP->subtract($one));
+        list(, $q) = $rde->divide($this->primeQ->subtract($one));
+        return $p->equals($r) && $q->equals($r);
     }
 
     /**

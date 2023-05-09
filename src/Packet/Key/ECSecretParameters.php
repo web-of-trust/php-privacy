@@ -12,7 +12,10 @@ namespace OpenPGP\Packet\Key;
 
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
 use phpseclib3\Crypt\EC\PrivateKey;
+use phpseclib3\Crypt\EC;
 use phpseclib3\Math\BigInteger;
+
+use OpenPGP\Enum\CurveOid;
 
 /**
  * EC secret parameters class
@@ -38,14 +41,29 @@ abstract class ECSecretParameters implements KeyParametersInterface
      */
     public function __construct(
         private BigInteger $d,
-        ECPublicParameters $publicParams
+        private ECPublicParameters $publicParams
     )
     {
-        $params = PKCS8::load($publicParams->getPublicKey()->toString('PKCS8'));
-        $key = PKCS8::savePrivateKey(
-            $d, $params['curve'], $params['QA']
-        );
-        $this->privateKey = EC::loadFormat('PKCS8', $key);
+        $format = 'PKCS8';
+        $curveOid = $this->publicParams->getCurveOid();
+        if ($curveOid === CurveOid::Ed25519) {
+            $params = PKCS8::load($publicParams->getPublicKey()->toString('PKCS8'));
+            $arr = $params['curve']->extractSecret($d->toBytes());
+            $key = PKCS8::savePrivateKey(
+                $arr['dA'], $params['curve'], $params['QA'], $arr['secret']
+            );
+        }
+        elseif ($curveOid === CurveOid::Curve25519) {
+            $key = strrev($d->toBytes());
+            $format = 'MontgomeryPrivate';
+        }
+        else {
+            $params = PKCS8::load($publicParams->getPublicKey()->toString('PKCS8'));
+            $key = PKCS8::savePrivateKey(
+                $d, $params['curve'], $params['QA']
+            );
+        }
+        $this->privateKey = EC::loadFormat($format, $key);
     }
 
     /**
@@ -66,6 +84,25 @@ abstract class ECSecretParameters implements KeyParametersInterface
     public function getPrivateKey(): PrivateKey
     {
         return $this->privateKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isValid(): bool
+    {
+        $curveOid = $this->publicParams->getCurveOid();
+        if ($curveOid === CurveOid::Ed25519 || $curveOid === CurveOid::Curve25519) {
+            $dG = new BigInteger(bin2hex("\x40" . $this->privateKey->getEncodedCoordinates()), 16);
+            return $this->publicParams->getQ()->equals($dG);
+        }
+        else {
+            $curve = $curveOid->getCurve();
+            $QA = $curve->multiplyPoint($curve->getBasePoint(), $this->d);
+            $params = PKCS8::load($this->publicParams->getPublicKey()->toString('PKCS8'));
+            return $QA[0]->toBigInteger()->equals($params['QA'][0]->toBigInteger()) &&
+                   $QA[1]->toBigInteger()->equals($params['QA'][1]->toBigInteger());
+        }
     }
 
     /**

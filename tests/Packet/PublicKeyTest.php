@@ -7,7 +7,7 @@ use OpenPGP\Packet\PublicSubkey;
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
- * Testcase class for Public key packet.
+ * Testcase class for public key packet.
  */
 class PublicKeyTest extends OpenPGPTestCase
 {

@@ -65,5 +65,10 @@ class ElGamalPublicKey extends ElGamal
      */
     public function toString($type, array $options = [])
     {
+        return json_encode([
+            'p' => $this->getPrime(),
+            'g' => $this->getGenerator(),
+            'y' => $this->getY(),
+        ]);
     }
 }

@@ -37,7 +37,7 @@ use OpenPGP\Packet\Key\{
  */
 class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 {
-    private KeyParametersInterface? $keyParameters;
+    private ?KeyParametersInterface $keyParameters;
 
     /**
      * Constructor
@@ -56,7 +56,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         private S2kUsage $s2kUsage = S2kUsage::Sha1,
         private SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         private ?S2K $s2k = null,
-        private string $iv = ''
+        private string $iv = '',
         private string $keyData = '',
         ?KeyParametersInterface $keyParameters = null
     )
@@ -83,7 +83,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             case S2kUsage::Checksum:
             case S2kUsage::Sha1:
                 $symmetric = SymmetricAlgorithm::from(ord($bytes[$offset++]));
-                $s2k = S2K::fromBytes(substr($bytes, $offset++));
+                $s2k = S2K::fromBytes(substr($bytes, $offset));
                 $offset += $s2k->getLength();
                 break;
             default:
@@ -110,7 +110,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             $s2k,
             $iv,
             $keyData,
-            $keyParameters,
+            $keyParameters
         );
     }
 
@@ -197,7 +197,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     /**
      * {@inheritdoc}
      */
-    public function getPublicKey(): SecretKeyPacketInterface
+    public function getPublicKey(): KeyPacketInterface
     {
         return $this->publicKey;
     }
@@ -216,12 +216,12 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         if ($this->keyParameters instanceof KeyParametersInterface ) {
             $s2k = new S2K(Random::string(S2K::SALT_LENGTH), $s2kType, $hash);
             $iv = Random::string($symmetric->blockSize());
-            $key = $s2k->produceKey(
+            $cipher = $symmetric->cipherEngine();
+            $cipher->setIV($iv);
+            $cipher->setKey($s2k->produceKey(
                 $passphrase,
                 $symmetric->keySizeInByte()
-            );
-            $cipher = $symmetric->cipherEngine();
-            $cipher->setIV($iv)->setKey($key);
+            ));
 
             $clearText = $this->keyParameters->toBytes();
             $encrypted = $cipher->encrypt(implode([
@@ -235,7 +235,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $s2k,
                 $iv,
                 $encrypted,
-                $keyParameters,
+                $keyParameters
             );
         }
         else {
@@ -252,22 +252,22 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             return $this;
         }
         else {
-            $key = $this->s2k->produceKey(
+            $cipher = $this->symmetric->cipherEngine();
+            $cipher->setIV($this->iv);
+            $cipher->setKey($this->s2k->produceKey(
                 $passphrase,
                 $this->symmetric->keySizeInByte()
-            );
-            $cipher = $this->symmetric->cipherEngine();
-            $cipher->setKey($key);
+            ));
             $decrypted = $cipher->decrypt($this->keyData);
-            $clearText = substr($decrypted, 0, HashAlgorithm::Sha1->digestSize());
-            $hashText = substr(
-                $decrypted, strlen($decrypted) - HashAlgorithm::Sha1->digestSize()
-            );
+
+            $length = strlen($decrypted) - HashAlgorithm::Sha1->digestSize();
+            $clearText = substr($decrypted, 0, $length);
+            $hashText = substr($decrypted, $length);
             $hashed = sha1($clearText, true);
             if ($hashed !== $hashText) {
                 throw new \InvalidArgumentException('Incorrect key passphrase');
             }
-            
+
             $keyParameters = self::readKeyParameters($clearText, $this->publicKey);
 
             return new SecretKey(
@@ -277,9 +277,59 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $this->s2k,
                 $this->iv,
                 $this->keyData,
-                $keyParameters,
+                $keyParameters
             );
         }
+    }
+
+    /**
+     * Gets S2k usage
+     * 
+     * @return S2kUsage
+     */
+    public function getS2kUsage(): S2kUsage
+    {
+        return $this->s2kUsage;
+    }
+
+    /**
+     * Gets symmetric algorithm
+     * 
+     * @return SymmetricAlgorithm
+     */
+    public function getSymmetric(): SymmetricAlgorithm
+    {
+        return $this->symmetric;
+    }
+
+    /**
+     * Gets string 2 key
+     * 
+     * @return S2K
+     */
+    public function getS2K(): ?S2K
+    {
+        return $this->s2k;
+    }
+
+    /**
+     * Gets initialization vector
+     * 
+     * @return string
+     */
+    public function getIV(): string
+    {
+        return $this->iv;
+    }
+
+    /**
+     * Gets key data
+     * 
+     * @return string
+     */
+    public function getKeyData(): string
+    {
+        return $this->keyData;
     }
 
     private static function readKeyParameters(
@@ -294,8 +344,8 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             KeyAlgorithm::ElGamal => ElGamalSecretParameters::fromBytes($bytes, $publicKey->getKeyParameters()),
             KeyAlgorithm::Dsa => DSASecretParameters::fromBytes($bytes, $publicKey->getKeyParameters()),
             KeyAlgorithm::Ecdh => ECDHSecretParameters::fromBytes($bytes, $publicKey->getKeyParameters()),
-            KeyAlgorithm::EcDsa => ECDHSecretParameters::fromBytes($bytes, $publicKey->getKeyParameters()),
-            KeyAlgorithm::EdDsa => ECDHSecretParameters::fromBytes($bytes, $publicKey->getKeyParameters()),
+            KeyAlgorithm::EcDsa => ECDSASecretParameters::fromBytes($bytes, $publicKey->getKeyParameters()),
+            KeyAlgorithm::EdDsa => ECDSASecretParameters::fromBytes($bytes, $publicKey->getKeyParameters()),
             default => throw new \UnexpectedValueException(
                 "Unsupported PGP public key algorithm encountered",
             ),

@@ -11,6 +11,7 @@
 namespace OpenPGP\Packet\Key;
 
 use phpseclib3\Math\BigInteger;
+use OpenPGP\Common\Helper;
 
 /**
  * ECDSA secret parameters class
@@ -48,8 +49,8 @@ class ECDSASecretParameters extends ECSecretParameters implements SignableParame
      */
     public static function fromBytes(
         string $bytes, ECDSAPublicParameters $publicParams
-    ): ElGamalSecretParameters
+    ): ECDSASecretParameters
     {
-        return ECDSASecretParameters(Helper::readMPI($bytes), $publicParams);
+        return new ECDSASecretParameters(Helper::readMPI($bytes), $publicParams);
     }
 }

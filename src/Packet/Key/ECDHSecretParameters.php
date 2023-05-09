@@ -11,6 +11,7 @@
 namespace OpenPGP\Packet\Key;
 
 use phpseclib3\Math\BigInteger;
+use OpenPGP\Common\Helper;
 
 /**
  * ECDH secret parameters class
@@ -46,8 +47,8 @@ class ECDHSecretParameters extends ECSecretParameters
      */
     public static function fromBytes(
         string $bytes, ECDHPublicParameters $publicParams
-    ): ElGamalSecretParameters
+    ): ECDHSecretParameters
     {
-        return ECDHSecretParameters(Helper::readMPI($bytes), $publicParams);
+        return new ECDHSecretParameters(Helper::readMPI($bytes), $publicParams);
     }
 }
