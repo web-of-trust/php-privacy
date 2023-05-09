@@ -11,6 +11,7 @@
 namespace OpenPGP\Packet\Key;
 
 use phpseclib3\Math\BigInteger;
+use OpenPGP\Common\Helper;
 
 /**
  * ElGamalSessionKeyCryptor class.

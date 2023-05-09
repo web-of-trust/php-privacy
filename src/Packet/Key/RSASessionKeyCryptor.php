@@ -61,7 +61,7 @@ class RSASessionKeyCryptor implements SessionKeyCryptorInterface
     {
         $privateKey = $keyParams->getPrivateKey()->withPadding(RSA::ENCRYPTION_PKCS1);
         $decrypted = $privateKey->decrypt(
-            $this->encrypted->toBytes(true)
+            $this->encrypted->toBytes()
         );
         return SessionKey::fromBytes($decrypted);
     }
@@ -73,7 +73,7 @@ class RSASessionKeyCryptor implements SessionKeyCryptorInterface
     {
         return implode([
             pack('n', $this->encrypted->getLength()),
-            $this->encrypted->toBytes(true),
+            $this->encrypted->toBytes(),
         ]);
     }
 }

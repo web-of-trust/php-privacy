@@ -143,6 +143,7 @@ class RSASecretParameters implements SignableParametersInterface
     {
         $one = new BigInteger(1);
         $two = new BigInteger(2);
+
         // expect pq = n
         if (!$this->primeP->multiply($this->primeQ)->equals($this->publicParams->getModulus())) {
             return false;
@@ -170,13 +171,13 @@ class RSASecretParameters implements SignableParametersInterface
     {
         return implode([
             pack('n', $this->exponent->getLength()),
-            $this->exponent->toBytes(true),
+            $this->exponent->toBytes(),
             pack('n', $this->primeP->getLength()),
-            $this->primeP->toBytes(true),
+            $this->primeP->toBytes(),
             pack('n', $this->primeQ->getLength()),
-            $this->primeQ->toBytes(true),
+            $this->primeQ->toBytes(),
             pack('n', $this->coefficients->getLength()),
-            $this->coefficients->toBytes(true),
+            $this->coefficients->toBytes(),
         ]);
     }
 
