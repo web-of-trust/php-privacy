@@ -11,8 +11,7 @@
 namespace OpenPGP\Packet\Signature;
 
 use OpenPGP\Enum\SignatureSubpacketType;
-use OpenPGP\Packet\Signature;
-use OpenPGP\Packet\SignatureSubpacket;
+use OpenPGP\Packet\{Signature, SignatureSubpacket};
 
 /**
  * EmbeddedSignature sub-packet class

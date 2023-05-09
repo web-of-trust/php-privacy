@@ -67,6 +67,7 @@ class KeyExpirationTime extends SignatureSubpacket
      */
     public function getExpirationTime(): int
     {
-        return unpack('N', substr($this->data, 0, 4));
+        $unpacked = unpack('N', substr($this->data, 0, 4));
+        return reset($unpacked);
     }
 }

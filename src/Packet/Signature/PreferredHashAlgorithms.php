@@ -10,8 +10,7 @@
 
 namespace OpenPGP\Packet\Signature;
 
-use OpenPGP\Enum\HashAlgorithm;
-use OpenPGP\Enum\SignatureSubpacketType;
+use OpenPGP\Enum\{HashAlgorithm, SignatureSubpacketType};
 use OpenPGP\Packet\SignatureSubpacket;
 
 /**

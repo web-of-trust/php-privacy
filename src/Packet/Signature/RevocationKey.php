@@ -10,9 +10,7 @@
 
 namespace OpenPGP\Packet\Signature;
 
-use OpenPGP\Enum\KeyAlgorithm;
-use OpenPGP\Enum\RevocationKeyTag;
-use OpenPGP\Enum\SignatureSubpacketType;
+use OpenPGP\Enum\{KeyAlgorithm, RevocationKeyTag, SignatureSubpacketType};
 use OpenPGP\Packet\SignatureSubpacket;
 
 /**
