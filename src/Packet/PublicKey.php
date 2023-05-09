@@ -31,7 +31,7 @@ use OpenPGP\Packet\Key\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class PublicKey extends AbstractPacket implements KeyPacketInterface
+class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigningInterface
 {
 	const KEY_VERSION = 4;
 
@@ -155,9 +155,7 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
     }
 
     /**
-     * Gets bytes for sign
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getSignBytes(): string
     {

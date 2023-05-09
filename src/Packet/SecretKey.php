@@ -35,7 +35,7 @@ use OpenPGP\Packet\Key\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
+class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForSigningInterface
 {
     private ?KeyParametersInterface $keyParameters;
 

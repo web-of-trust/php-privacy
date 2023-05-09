@@ -27,7 +27,7 @@ use OpenPGP\Enum\PacketTag;
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class UserAttribute extends AbstractPacket
+class UserAttribute extends AbstractPacket implements ForSigningInterface
 {
     private array $attributes = [];
 
@@ -90,11 +90,9 @@ class UserAttribute extends AbstractPacket
     }
 
     /**
-     * Gets bytes for sign
-     *
-     * @return string
+     * {@inheritdoc}
      */
-    public function signBytes(): string
+    public function getSignBytes(): string
     {
         $bytes = $this->toBytes();
         return implode([

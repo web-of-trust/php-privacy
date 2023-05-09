@@ -24,25 +24,28 @@ use OpenPGP\Enum\PacketTag;
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class LiteralData extends AbstractPacket
+class LiteralData extends AbstractPacket implements ForSigningInterface
 {
+    private int $time;
+
     /**
      * Constructor
      *
      * @param string $data
      * @param LiteralFormat $format
-     * @param string $text
+     * @param string $filename
+     * @param int $time
      * @return self
      */
     public function __construct(
         private string $data,
         private LiteralFormat $format = LiteralFormat::Utf8,
-        private int $time = 0,
-        private string $text = '',
-        private string $filename = ''
+        private string $filename = '',
+        int $time = 0
     )
     {
         parent::__construct(PacketTag::LiteralData);
+        $this->time = empty($time) ? time() ? $time;
     }
 
     /**
@@ -59,14 +62,14 @@ class LiteralData extends AbstractPacket
         $filename = substr($bytes, $offset, $length);
 
         $offset += $length;
-        $time = unpack('N', substr($bytes, $offset, 4));
+        $unpacked = unpack('N', substr($bytes, $offset, 4));
+        $time = reset($unpacked);
 
         $offset += 4;
         $data = substr($bytes, $offset);
-        $text = ($format == LiteralFormat::Text || $format == LiteralFormat::Utf8) ? $data : '';
 
         return LiteralData(
-            $data, $format, $time, $text, $filename
+            $data, $format, $time, $filename
         );
     }
 
@@ -80,18 +83,8 @@ class LiteralData extends AbstractPacket
     public static function fromText(string $text, int $time = 0): LiteralData
     {
         return LiteralData(
-            $text, LiteralFormat::Utf8, $time, $text
+            $text, LiteralFormat::Utf8, empty($time) ? time() : $time
         );
-    }
-
-    /**
-     * Gets data
-     *
-     * @return string
-     */
-    public function getData(): string
-    {
-        return $this->data;
     }
 
     /**
@@ -105,26 +98,6 @@ class LiteralData extends AbstractPacket
     }
 
     /**
-     * Gets time
-     *
-     * @return int
-     */
-    public function getTime(): int
-    {
-        return $this->time;
-    }
-
-    /**
-     * Gets text
-     *
-     * @return string
-     */
-    public function getText(): string
-    {
-        return $this->text;
-    }
-
-    /**
      * Gets filename
      *
      * @return string
@@ -135,17 +108,42 @@ class LiteralData extends AbstractPacket
     }
 
     /**
+     * Gets time
+     *
+     * @return int
+     */
+    public function getTime(): int
+    {
+        return $this->time;
+    }
+
+    /**
+     * Gets data
+     *
+     * @return string
+     */
+    public function getData(): string
+    {
+        return $this->data;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function toBytes(): string
     {
         return implode([
-            $this->headerBytes(),
-            $this->signBytes(),
+            $this->getHeaderBytes(),
+            $this->getSignBytes(),
         ]);
     }
 
-    public function headerBytes(): string
+    /**
+     * Gets header bytes
+     *
+     * @return string
+     */
+    public function getHeaderBytes(): string
     {
         return implode([
             chr($this->format->value),
@@ -156,12 +154,15 @@ class LiteralData extends AbstractPacket
     }
 
     /**
-     * Gets bytes for sign
-     *
-     * @return string
+     * {@inheritdoc}
      */
-    public function signBytes(): string
+    public function getSignBytes(): string
     {
-        return !empty($this->data) ? $this->data : preg_replace('/\r?\n/', "\r\n", $this->text);
+        if ($this->format == LiteralFormat::Text || $this->format == LiteralFormat::Utf8) {
+            return preg_replace('/\r?\n/', "\r\n", $this->data);
+        }
+        else {
+            return $this->data;
+        }
     }
 }
