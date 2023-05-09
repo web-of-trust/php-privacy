@@ -2,7 +2,6 @@
 
 namespace OpenPGP\Tests\Packet;
 
-use phpseclib3\Crypt\Random;
 use OpenPGP\Enum\CompressionAlgorithm;
 use OpenPGP\Packet\CompressedData;
 use OpenPGP\Packet\LiteralData;
