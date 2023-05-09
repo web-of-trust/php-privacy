@@ -87,31 +87,30 @@ class SubpacketReader
      */
     public static function read(string $bytes, int $offset = 0): SubpacketReader
     {
-        $pos = $offset;
-        $header = ord($bytes[$pos++]);
+        $header = ord($bytes[$offset++]);
         if ($header < 192) {
             return new SubpacketReader(
-                ord($bytes[$pos]),
-                substr($bytes, $pos + 1, $header - 1),
-                $pos + $header
+                ord($bytes[$offset]),
+                substr($bytes, $offset + 1, $header - 1),
+                $offset + $header
             );
         }
         elseif ($header < 255) {
-            $length = (($header - 192) << 8) + (ord($bytes[$pos++])) + 192;
+            $length = (($header - 192) << 8) + (ord($bytes[$offset++])) + 192;
             return new SubpacketReader(
-                ord($bytes[$pos]),
-                substr($bytes, $pos + 1, $length - 1),
-                $pos + $length,
+                ord($bytes[$offset]),
+                substr($bytes, $offset + 1, $length - 1),
+                $offset + $length,
             );
         }
         elseif ($header == 255) {
-            $unpacked = unpack('N', substr($bytes, $pos, 4));
+            $unpacked = unpack('N', substr($bytes, $offset, 4));
             $length = reset($unpacked);
-            $pos += 4;
+            $offset += 4;
             return new SubpacketReader(
-                $bytes[$pos],
-                substr($bytes, $pos + 1, $length - 1),
-                $pos + $length,
+                $bytes[$offset],
+                substr($bytes, $offset + 1, $length - 1),
+                $offset + $length,
                 true,
             );
         }

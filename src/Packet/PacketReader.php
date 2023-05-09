@@ -83,73 +83,72 @@ class PacketReader
           );
         }
 
-        $pos = $offset;
-        $headerByte = ord($bytes[$pos++]);
+        $headerByte = ord($bytes[$offset++]);
         $oldFormat = (($headerByte & 0x40) != 0) ? false : true;
         $tagByte = $oldFormat ? ($headerByte & 0x3f) >> 2 : $headerByte & 0x3f;
         $tag = PacketTag::from($tagByte);
 
-        $packetLength = strlen($bytes) - $offset;
+        $packetLength = strlen($bytes) - $offset - 1;
         if ($oldFormat) {
             $lengthType = $headerByte & 0x03;
             switch ($lengthType) {
                 case 0:
-                    $packetLength = ord($bytes[$pos++]);
+                    $packetLength = ord($bytes[$offset++]);
                     break;
                 case 1:
-                    $packetLength = (ord($bytes[$pos++]) << 8) | ord($bytes[$pos++]);
+                    $packetLength = (ord($bytes[$offset++]) << 8) | ord($bytes[$offset++]);
                     break;
                 case 2:
-                    $unpacked = unpack('N', substr($bytes, $pos++, 4));
+                    $unpacked = unpack('N', substr($bytes, $offset++, 4));
                     $packetLength = reset($unpacked);
-                    $pos += 4;
+                    $offset += 4;
                     break;
             }
         }
         else {
-            if (ord($bytes[$pos]) < 192) {
-                $packetLength = ord($bytes[$pos++]);
+            if (ord($bytes[$offset]) < 192) {
+                $packetLength = ord($bytes[$offset++]);
             }
-            elseif (ord($bytes[$pos]) > 191 && ord($bytes[$pos]) < 224) {
-                $packetLength = ((ord($bytes[$pos++]) - 192) << 8) + (ord($bytes[$pos++])) + 192;
+            elseif (ord($bytes[$offset]) > 191 && ord($bytes[$offset]) < 224) {
+                $packetLength = ((ord($bytes[$offset++]) - 192) << 8) + (ord($bytes[$offset++])) + 192;
             }
-            elseif (ord($bytes[$pos]) > 223 && ord($bytes[$pos]) < 255) {
-                $partialPos = $pos + 1 << (ord($bytes[$pos++]) & 0x1f);
+            elseif (ord($bytes[$offset]) > 223 && ord($bytes[$offset]) < 255) {
+                $pos = $offset + 1 << (ord($bytes[$offset++]) & 0x1f);
                 while (true) {
-                  if (ord($bytes[$pos]) < 192) {
-                    $partialLen = ord($bytes[$partialPos++]);
-                    $partialPos += $partialLen;
+                  if (ord($bytes[$offset]) < 192) {
+                    $partialLen = ord($bytes[$pos++]);
+                    $pos += $partialLen;
                     break;
                   }
-                  elseif (ord($bytes[$partialPos]) > 191 && ord($bytes[$partialPos]) < 224) {
-                    $partialLen = ((ord($bytes[$partialPos++]) - 192) << 8) + (ord($bytes[$partialPos++])) + 192;
-                    $partialPos += $partialLen;
+                  elseif (ord($bytes[$pos]) > 191 && ord($bytes[$pos]) < 224) {
+                    $partialLen = ((ord($bytes[$pos++]) - 192) << 8) + (ord($bytes[$pos++])) + 192;
+                    $pos += $partialLen;
                     break;
                   }
-                  elseif (ord($bytes[$partialPos]) > 223 && ord($bytes[$partialPos]) < 255) {
-                    $partialLen = 1 << (ord($bytes[$partialPos++]) & 0x1f);
-                    $partialPos += $partialLen;
+                  elseif (ord($bytes[$pos]) > 223 && ord($bytes[$pos]) < 255) {
+                    $partialLen = 1 << (ord($bytes[$pos++]) & 0x1f);
+                    $pos += $partialLen;
                     break;
                   }
                   else {
-                    $unpacked = unpack('N', substr($bytes, $partialPos++, 4));
+                    $unpacked = unpack('N', substr($bytes, $pos++, 4));
                     $partialLen = reset($unpacked);
-                    $partialPos += $partialLen + 4;
+                    $pos += $partialLen + 4;
                   }
                 }
-                $packetLength = $partialPos - $pos;
+                $packetLength = $pos - $offset;
             }
             else {
-                $unpacked = unpack('N', substr($bytes, $pos++, 4));
+                $unpacked = unpack('N', substr($bytes, $offset++, 4));
                 $packetLength = reset($unpacked);
-                $pos += 4;
+                $offset += 4;
             }
         }
 
         return PacketReader(
             $tag,
-            substr($bytes, $pos, $packetLength),
-            $pos + $packetLength
+            substr($bytes, $offset, $packetLength),
+            $offset + $packetLength
         );
     }
 }
