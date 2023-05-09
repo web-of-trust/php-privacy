@@ -63,12 +63,12 @@ class UserAttribute extends AbstractPacket
                 switch ($reader->getType()) {
                     case ImageUserAttribute::JPEG:
                         $attributes[] = new ImageUserAttribute(
-                            $reader->getData(), $reader->getIsLong()
+                            $reader->getData(), $reader->isLong()
                         );
                         break;
                     default:
                         $attributes[] = new UserAttributeSubpacket(
-                            $reader->getType(), $reader->getData(), $reader->getIsLong()
+                            $reader->getType(), $reader->getData(), $reader->isLong()
                         );
                         break;
                 }
@@ -83,7 +83,7 @@ class UserAttribute extends AbstractPacket
     public function toBytes(): string
     {
         $bytes = '';
-        foreach ($attributes as $attr) {
+        foreach ($this->attributes as $attr) {
             $bytes .= $attr->encode();
         }
         return $bytes;

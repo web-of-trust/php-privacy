@@ -34,9 +34,15 @@ class ImageUserAttribute extends UserAttributeSubpacket
         parent::__construct(self::JPEG, $data, $isLong);
     }
 
+    /**
+     * Read image user attribute from byte string
+     *
+     * @param string $imageData
+     * @return ImageUserAttribute
+     */
     public static function fromImageData(string $imageData): ImageUserAttribute
     {
-        return ImageUserAttribute(implode([
+        return new ImageUserAttribute(implode([
             "\x10\x00\x01",
             chr(self::JPEG),
             str_repeat(chr(0), 12),
