@@ -61,21 +61,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
      */
     public static function fromBytes(string $bytes): SecretSubkey
     {
-        $secretKey = SecretKey::fromBytes($bytes);
-        $publicKey = $secretKey->getPublicKey();
-        return new SecretSubkey(
-            new PublicSubkey(
-                $publicKey->getCreationTime(),
-                $publicKey->getKeyParameters(),
-                $publicKey->getKeyAlgorithm(),
-            ),
-            $secretKey->getS2kUsage(),
-            $secretKey->getSymmetric(),
-            $secretKey->getS2K(),
-            $secretKey->getIV(),
-            $secretKey->getKeyData(),
-            $secretKey->getKeyParameters()
-        );
+        return self::fromSecretKey(SecretKey::fromBytes($bytes));
     }
 
     /**
@@ -93,20 +79,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
             $secretKey = parent::encrypt(
                 $passphrase, $s2kUsage, $symmetric, $hash, $s2kType
             );
-            $publicKey = $secretKey->getPublicKey();
-            return new SecretSubkey(
-                new PublicSubkey(
-                    $publicKey->getCreationTime(),
-                    $publicKey->getKeyParameters(),
-                    $publicKey->getKeyAlgorithm(),
-                ),
-                $secretKey->getS2kUsage(),
-                $secretKey->getSymmetric(),
-                $secretKey->getS2K(),
-                $secretKey->getIV(),
-                $secretKey->getKeyData(),
-                $secretKey->getKeyParameters()
-            );
+            return self::fromSecretKey($secretKey);
         }
         else {
             return $this;
@@ -122,21 +95,25 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
             return $this;
         }
         else {
-            $secretKey = parent::decrypt($passphrase);
-            $publicKey = $secretKey->getPublicKey();
-            return new SecretSubkey(
-                new PublicSubkey(
-                    $publicKey->getCreationTime(),
-                    $publicKey->getKeyParameters(),
-                    $publicKey->getKeyAlgorithm(),
-                ),
-                $secretKey->getS2kUsage(),
-                $secretKey->getSymmetric(),
-                $secretKey->getS2K(),
-                $secretKey->getIV(),
-                $secretKey->getKeyData(),
-                $secretKey->getKeyParameters()
-            );
+            return self::fromSecretKey(parent::decrypt($passphrase));
         }
+    }
+
+    private static function fromSecretKey(SecretKey $secretKey): SecretSubkey
+    {
+        $publicKey = $secretKey->getPublicKey();
+        return new SecretSubkey(
+            new PublicSubkey(
+                $publicKey->getCreationTime(),
+                $publicKey->getKeyParameters(),
+                $publicKey->getKeyAlgorithm(),
+            ),
+            $secretKey->getS2kUsage(),
+            $secretKey->getSymmetric(),
+            $secretKey->getS2K(),
+            $secretKey->getIV(),
+            $secretKey->getKeyData(),
+            $secretKey->getKeyParameters()
+        );
     }
 }
