@@ -103,7 +103,7 @@ abstract class KeyWrapper
         }
 
         if (self::IV !== $a) {
-            throw new \RuntimeException('Integrity check failed.');
+            throw new \UnexpectedValueException('Integrity check failed.');
         }
 
         return $r;

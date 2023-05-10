@@ -8,7 +8,7 @@ use OpenPGP\Packet\Key\AesKeyWrapper;
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
- * Testcase class for compression packet.
+ * Testcase class for key wrappe.
  */
 class KeyWrapperTest extends OpenPGPTestCase
 {

@@ -82,6 +82,26 @@ class S2K
     }
 
     /**
+     * Gets salt
+     *
+     * @return string
+     */
+    public function getSalt(): string
+    {
+        return $this->salt;
+    }
+
+    /**
+     * Gets iteration count
+     *
+     * @return string
+     */
+    public function getItCount(): int
+    {
+        return $this->itCount;
+    }
+
+    /**
      * Gets packet length
      *
      * @return int
