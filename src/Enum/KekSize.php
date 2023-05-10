@@ -20,9 +20,9 @@ namespace OpenPGP\Enum;
  */
 enum KekSize: int
 {
-    case S8 = 8;
-
     case S16 = 16;
+
+    case S24 = 24;
 
     case S32 = 32;
 }

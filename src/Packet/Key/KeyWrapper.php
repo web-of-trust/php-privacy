@@ -38,6 +38,7 @@ abstract class KeyWrapper
         private KekSize $kekSize
     )
     {
+        $this->cipher->disablePadding();
     }
 
     /**
@@ -54,16 +55,19 @@ abstract class KeyWrapper
 
         $a = self::IV;
         $r = $key;
-        $n = strlen($key) ~/ 8;
+        $n = intval(strlen($key) / 8);
         for ($j = 0; $j <= 5; $j++) {
-            for ($i = 1; $i < $n; $i++) { 
-                $buffer = implode([$a, substr($r, ($i - 1) * 8, 8)]);
+            for ($i = 1; $i <= $n; $i++) { 
+                $buffer = implode([
+                    $a,
+                    substr($r, ($i - 1) * 8, 8),
+                ]);
                 $buffer = $this->cipher->encrypt($buffer);
 
                 $a = substr($buffer, 0, 8);
                 $a[7] = chr(ord($a[7]) ^ ($n * $j + $i) & 0xff);
 
-                $r = implode([substr($r, 0, 8), buffer($r, 8, 8)]);
+                $r = substr_replace($r, substr($buffer, 8, 8), ($i - 1) * 8, 8);
             }
         }
         return implode([$a, $r]);
@@ -82,18 +86,26 @@ abstract class KeyWrapper
         $this->cipher->setKey($kek);
 
         $a = substr($wrappedKey, 0, 8);
-        $r = substr($wrappedKey, 8, 8);
-        $n = (strlen($wrappedKey) ~/ 8) - 1;
+        $r = substr($wrappedKey, 8);
+        $n = intval(strlen($wrappedKey) / 8) - 1;
         for ($j = 5; $j >= 0; $j--) {
             for ($i = $n; $i >= 1; $i--) {
                 $a[7] = chr(ord($a[7]) ^ ($n * $j + $i) & 0xff);
-                $buffer = implode([$a, substr($r, ($i - 1) * 8, 8)]);
+                $buffer = implode([
+                    $a,
+                    substr($r, ($i - 1) * 8, 8),
+                ]);
                 $buffer = $this->cipher->decrypt($buffer);
 
                 $a = substr($buffer, 0, 8);
-                $r = implode([substr($r, 0, 8), buffer($r, 8, 8)]);
+                $r = substr_replace($r, substr($buffer, 8, 8), ($i - 1) * 8, 8);
             }
         }
+
+        if (self::IV !== $a) {
+            throw new \RuntimeException('Integrity check failed.');
+        }
+
         return $r;
     }
 
@@ -104,12 +116,12 @@ abstract class KeyWrapper
                 "Key encryption key size must be $this->kekSize->value bytes."
             );
         }
-        if (strlen($wrappedKey) < 16) {
+        if (strlen($key) < 16) {
             throw new \InvalidArgumentException(
                 'Key length must be at least 16 octets.'
             );
         }
-        if (strlen($wrappedKey) % 8 != 0) {
+        if (strlen($key) % 8 != 0) {
             throw new \InvalidArgumentException(
                 'Key length must be a multiple of 64 bits.'
             );
