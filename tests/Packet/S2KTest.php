@@ -2,7 +2,6 @@
 
 namespace OpenPGP\Tests\Packet;
 
-use phpseclib3\Crypt\Random;
 use OpenPGP\Enum\HashAlgorithm;
 use OpenPGP\Enum\S2kType;
 use OpenPGP\Enum\SymmetricAlgorithm;
