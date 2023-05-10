@@ -70,7 +70,7 @@ class SymEncryptedSessionKey extends AbstractPacket
         // A one-octet version number. The only currently defined version is 4.
         $version = ord($bytes[$offset++]);
         if ($version != self::VERSION) {
-            throw new \InvalidArgumentException(
+            throw new \UnexpectedValueException(
                 "Version $version of the SKESK packet is unsupported."
             );
         }

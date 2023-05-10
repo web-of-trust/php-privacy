@@ -43,6 +43,17 @@ class ModificationDetectionCode extends AbstractPacket
     }
 
     /**
+     * Read modification detection code packet from byte string
+     *
+     * @param string $bytes
+     * @return ModificationDetectionCode
+     */
+    public static function fromBytes(string $bytes): ModificationDetectionCode
+    {
+        return new ModificationDetectionCode($bytes);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function toBytes(): string

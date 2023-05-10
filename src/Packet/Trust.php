@@ -41,6 +41,17 @@ class Trust extends AbstractPacket
     }
 
     /**
+     * Read trust packet from byte string
+     *
+     * @param string $bytes
+     * @return Trust
+     */
+    public static function fromBytes(string $bytes): Trust
+    {
+        return new Trust($bytes);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function toBytes(): string

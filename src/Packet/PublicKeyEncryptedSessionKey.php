@@ -1,1 +1,201 @@
-<?php
+<?php declare(strict_types=1);
+/**
+ * This file is part of the PHP PG library.
+ *
+ * © Nguyen Van Nguyen <nguyennv1981@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace OpenPGP\Packet;
+
+use phpseclib3\Crypt\Random;
+use OpenPGP\Enum\{KeyAlgorithm, PacketTag, SymmetricAlgorithm};
+use OpenPGP\Packet\Key\{SessionKey, SessionKeyParametersInterface};
+
+/**
+ * PublicKeyEncryptedSessionKey represents a Public-Key Encrypted Session Key packet.
+ * See RFC 4880, section 5.1.
+ * 
+ * A Public-Key Encrypted Session Key packet holds the session key used to encrypt a message.
+ * Zero or more Public-Key Encrypted Session Key packets and/or Symmetric-Key Encrypted Session Key
+ * packets may precede a Symmetrically Encrypted Data Packet, which holds an encrypted message.
+ * The message is encrypted with the session key, and the session key is itself
+ * encrypted and stored in the Encrypted Session Key packet(s).
+ * The Symmetrically Encrypted Data Packet is preceded by one Public-Key Encrypted
+ * Session Key packet for each OpenPGP key to which the message is encrypted.
+ * The recipient of the message finds a session key that is encrypted to their public key,
+ * decrypts the session key, and then uses the session key to decrypt the message.
+ * 
+ * @package   OpenPGP
+ * @category  Packet
+ * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
+ * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
+ */
+class PublicKeyEncryptedSessionKey extends AbstractPacket
+{
+    const VERSION = 3;
+
+    /**
+     * Constructor
+     *
+     * @param string $publicKeyID
+     * @param KeyAlgorithm $publicKeyAlgorithm
+     * @param SessionKeyParametersInterface $sessionKeyParameters
+     * @param SessionKey $sessionKey
+     * @return self
+     */
+    public function __construct(
+        private string $publicKeyID,
+        private KeyAlgorithm $publicKeyAlgorithm,
+        private SessionKeyParametersInterface $sessionKeyParameters,
+        private ?SessionKey $sessionKey = null
+    )
+    {
+        parent::__construct(PacketTag::PublicKeyEncryptedSessionKey);
+    }
+
+    /**
+     * Read PKESK packet from byte string
+     *
+     * @param string $bytes
+     * @return PublicKeyEncryptedSessionKey
+     */
+    public static function fromBytes(string $bytes): PublicKeyEncryptedSessionKey
+    {
+        $offset = 0;
+        $version = ord($bytes[$offset++]);
+        if ($version !== self::VERSION) {
+            throw new \UnexpectedValueException(
+                "Version $version of the PKESK packet is unsupported.",
+            );
+        }
+
+        $keyID = substr($bytes, $offset, 8);
+        $offset += 8;
+        $keyAlgorithm = KeyAlgorithm::from(ord($bytes[$offset++]));
+
+        return new PublicKeyEncryptedSessionKey(
+            $keyID,
+            $keyAlgorithm,
+            self::readParameters(
+                substr($bytes, $offset), $keyAlgorithm
+            )
+        );
+    }
+
+    /**
+     * Encrypt session key
+     *
+     * @param PublicKey $publicKey
+     * @param SymmetricAlgorithm $symmetric
+     * @return PublicKeyEncryptedSessionKey
+     */
+    public static function encryptSessionKey(
+        PublicKey $publicKey,
+        SymmetricAlgorithm $skSymmetric = SymmetricAlgorithm::Aes256
+    ): PublicKeyEncryptedSessionKey
+    {
+        $sessionKey = new SessionKey(
+            Random::string($skSymmetric->keySizeInByte()), $skSymmetric
+        );
+        return new PublicKeyEncryptedSessionKey(
+            $publicKey->getKeyID(),
+            $publicKey->getKeyAlgorithm(),
+            self::buildParameters($sessionKey, $publicKey),
+            $sessionKey
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toBytes(): string
+    {
+        return implode([
+            chr(self::VERSION),
+            $this->publicKeyID,
+            chr($this->publicKeyAlgorithm->value),
+            $this->sessionKeyParameters->encode(),
+        ]);
+    }
+
+    /**
+     * Gets public key ID
+     *
+     * @return string
+     */
+    public function getPublicKeyID(): string
+    {
+        return $this->publicKeyID;
+    }
+
+    /**
+     * Gets public key algorithm
+     *
+     * @return KeyAlgorithm
+     */
+    public function getPublicKeyAlgorithm(): KeyAlgorithm
+    {
+        return $this->publicKeyAlgorithm;
+    }
+
+    /**
+     * Gets session key parameters
+     *
+     * @return SessionKeyParametersInterface
+     */
+    public function getSessionKeyParameters(): SessionKeyParametersInterface
+    {
+        return $this->sessionKeyParameters;
+    }
+
+    /**
+     * Gets session key
+     *
+     * @return SessionKey
+     */
+    public function getSessionKey(): ?SessionKey
+    {
+        return $this->sessionKey;
+    }
+
+    /**
+     * Decrypts session key
+     *
+     * @param SecretKey $secretKey
+     * @return PublicKeyEncryptedSessionKey
+     */
+    public function decrypt(SecretKey $secretKey): PublicKeyEncryptedSessionKey
+    {
+        if ($this->sessionKey instanceof SessionKey) {
+            return $this;
+        }
+        else {
+            // code...
+        }
+    }
+
+    private static function buildParameters(
+        SessionKey $sessionKey, PublicKey $publicKey
+    ): SessionKeyParametersInterface
+    {
+
+    }
+
+    private static function readParameters(
+        string $bytes, KeyAlgorithm $keyAlgorithm
+    ): SessionKeyParametersInterface
+    {
+        return match($keyAlgorithm) {
+            KeyAlgorithm::RsaEncryptSign => RSASessionKeyParameters::fromBytes($bytes),
+            KeyAlgorithm::RsaEncrypt => RSASessionKeyParameters::fromBytes($bytes),
+            KeyAlgorithm::ElGamal => ElGamalSessionKeyParameters::fromBytes($bytes),
+            KeyAlgorithm::Ecdh => ECDHSessionKeyParameters::fromBytes($bytes),
+            default => throw new \UnexpectedValueException(
+                "Public key algorithm $keyAlgorithm->name of the PKESK packet is unsupported."
+            ),
+        };
+    }
+}

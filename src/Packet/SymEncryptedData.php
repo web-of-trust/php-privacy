@@ -134,7 +134,7 @@ class SymEncryptedData extends AbstractPacket
     ): SymEncryptedData
     {
         if (!$allowUnauthenticated) {
-          throw new \RuntimeException('Message is not authenticated.');
+          throw new \UnexpectedValueException('Message is not authenticated.');
         }
         $blockSize = $symmetric->blockSize();
         $cipher = $symmetric->cipherEngine();

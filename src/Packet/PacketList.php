@@ -80,7 +80,7 @@ class PacketList implements \IteratorAggregate, \Countable
                     $packets[] = SymEncryptedData::fromBytes($reader->getData());
                     break;
                 case PacketTag::Marker:
-                    $packets[] = Marker::fromBytes($reader->getData());
+                    $packets[] = new Marker();
                     break;
                 case PacketTag::LiteralData:
                     $packets[] = LiteralData::fromBytes($reader->getData());
@@ -119,11 +119,9 @@ class PacketList implements \IteratorAggregate, \Countable
      */
     public function encode(): string
     {
-        $bytes = '';
-        foreach ($this->packets as $packet) {
-            $bytes .= $packet->encode();
-        }
-        return $bytes;
+        return implode(
+            array_map(static fn ($packet) => $packet->encode(), $this->packets->getArrayCopy())
+        );
     }
 
     /**

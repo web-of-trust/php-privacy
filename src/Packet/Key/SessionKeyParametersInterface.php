@@ -11,19 +11,19 @@
 namespace OpenPGP\Packet\Key;
 
 /**
- * Session key cryptor interface
+ * Session key parameters interface
  * 
  * @package   OpenPGP
  * @category  Packet
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface SessionKeyCryptorInterface
+interface SessionKeyParametersInterface
 {
     /**
-     * Encrypts session key
+     * Serializes session key parameters to bytes
      * 
-     * @return SessionKeyCryptorInterface
+     * @return string
      */
-    function encrypt(SessionKey $sessionKey): SessionKeyCryptorInterface;
+    function encode(): string;
 }

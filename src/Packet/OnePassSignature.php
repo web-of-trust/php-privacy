@@ -73,7 +73,11 @@ class OnePassSignature extends AbstractPacket
         $keyAlgorithm = KeyAlgorithm::from(ord($bytes[$offset++]));
         $issuerKeyID = substr($bytes, $offset, 8);
         return OnePassSignaturePacket(
-            $signatureType, $hashAlgorithm, $keyAlgorithm, $issuerKeyID, ord($bytes[$offset + 8])
+            $signatureType,
+            $hashAlgorithm,
+            $keyAlgorithm,
+            $issuerKeyID,
+            ord($bytes[$offset + 8])
         );
     }
 

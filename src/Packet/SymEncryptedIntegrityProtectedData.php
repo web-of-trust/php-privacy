@@ -64,6 +64,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
 
         return new SymEncryptedIntegrityProtectedData(substr($bytes, 1));
     }
+
     /**
      * Encrypts packet list
      *
@@ -152,7 +153,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
         $realHash = substr($decrypted, $digestSize);
         $toHash = substr($decrypted, 0, $digestSize);
         if ($realHash !== sha1($toHash, true)) {
-            throw new \RuntimeException('Modification detected.');
+            throw new \UnexpectedValueException('Modification detected.');
         }
 
         return new SymEncryptedIntegrityProtectedData(
