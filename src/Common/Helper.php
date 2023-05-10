@@ -10,7 +10,9 @@
 
 namespace OpenPGP\Common;
 
+use phpseclib3\Crypt\Random;
 use phpseclib3\Math\BigInteger;
+use OpenPGP\Enum\SymmetricAlgorithm;
 
 /**
  * Helper class
@@ -55,5 +57,21 @@ final class Helper
     public static function bit2ByteLength(int $bitLength): int
     {
         return ($bitLength + 7) >> 3;
+    }
+
+    /**
+     * Generates random prefix
+     *
+     * @param SymmetricAlgorithm $symmetric
+     * @return string
+     */
+    public static function generatePrefix(
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::aes256
+    ): string
+    {
+        $size = $symmetric->blockSize();
+        $prefix = Random::string($size);
+        $repeat = $prefix[$size - 2] . $prefix[$size - 1];
+        return $prefix . $repeat;
     }
 }
