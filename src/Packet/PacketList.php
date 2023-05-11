@@ -125,19 +125,15 @@ class PacketList implements \IteratorAggregate, \Countable
     }
 
     /**
-     * Gets packet iterator
-     *
-     * @return Traversable
+     * {@inheritdoc}
      */
-    public function getIterator(): \Traversable
+    public function getIterator(): \Iterator
     {
         return $this->packets;
     }
 
     /**
-     * Counts packets
-     *
-     * @return int
+     * {@inheritdoc}
      */
     public function count(): int
     {
