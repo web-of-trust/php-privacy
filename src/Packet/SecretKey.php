@@ -37,8 +37,6 @@ use OpenPGP\Packet\Key\{
  */
 class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForSigningInterface
 {
-    private ?KeyParametersInterface $keyParameters;
-
     /**
      * Constructor
      *
@@ -58,20 +56,19 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
         private ?S2K $s2k = null,
         private string $iv = '',
         private string $keyData = '',
-        ?KeyParametersInterface $keyParameters = null
+        private ?KeyParametersInterface $keyParameters = null
     )
     {
         parent::__construct(PacketTag::SecretKey);
-        $this->keyParameters = $keyParameters;
     }
 
     /**
      * Read secret key packets from byte string
      *
      * @param string $bytes
-     * @return SecretKey
+     * @return SecretKeyPacketInterface
      */
-    public static function fromBytes(string $bytes): SecretKey
+    public static function fromBytes(string $bytes): SecretKeyPacketInterface
     {
         $publicKey = PublicKey::fromBytes($bytes);
         $offset = strlen($publicKey->toBytes());
@@ -112,6 +109,13 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
             $keyData,
             $keyParameters
         );
+    }
+
+    public static function generate(
+        KeyAlgorithm $algorithm
+    ): SecretKeyPacketInterface
+    {
+
     }
 
     /**

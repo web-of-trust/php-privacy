@@ -57,9 +57,9 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
      * Read secret subkey packets from byte string
      *
      * @param string $bytes
-     * @return SecretSubkey
+     * @return SecretKeyPacketInterface
      */
-    public static function fromBytes(string $bytes): SecretSubkey
+    public static function fromBytes(string $bytes): SecretKeyPacketInterface
     {
         return self::fromSecretKey(SecretKey::fromBytes($bytes));
     }
@@ -99,7 +99,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         }
     }
 
-    private static function fromSecretKey(SecretKey $secretKey): SecretSubkey
+    private static function fromSecretKey(SecretKey $secretKey): SecretKeyPacketInterface
     {
         $publicKey = $secretKey->getPublicKey();
         return new SecretSubkey(

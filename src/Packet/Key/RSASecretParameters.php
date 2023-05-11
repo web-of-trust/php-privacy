@@ -10,12 +10,13 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib3\Crypt\RSA;
 use phpseclib3\Crypt\RSA\PrivateKey;
+use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Math\BigInteger;
 
 use OpenPGP\Common\Helper;
-use OpenPGP\Enum\HashAlgorithm;
+use OpenPGP\Enum\{HashAlgorithm, RSAKeySize};
 
 /**
  * RSA secret parameters class
@@ -83,6 +84,24 @@ class RSASecretParameters implements SignableParametersInterface
 
         return new RSASecretParameters(
             $exponent, $primeP, $primeQ, $coefficients, $publicParams
+        );
+    }
+
+    /**
+     * Generates parameters by using RSA create key
+     *
+     * @param RSAKeySize $keySize
+     * @return RSASecretParameters
+     */
+    public static function generate(RSAKeySize $keySize)
+    {
+        $rawKey = RSA::createKey($keySize->value)->toString('Raw');
+        return new RSASecretParameters(
+            $rawKey['d'],
+            $rawKey['primes'][1],
+            $rawKey['primes'][2],
+            $rawKey['coefficients'],
+            new RSAPublicParameters($rawKey['n'], $rawKey['e'])
         );
     }
 

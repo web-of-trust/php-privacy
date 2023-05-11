@@ -62,9 +62,9 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
      * Read public key packets from byte string
      *
      * @param string $bytes
-     * @return PublicKey
+     * @return KeyPacketInterface
      */
-    public static function fromBytes(string $bytes): PublicKey
+    public static function fromBytes(string $bytes): KeyPacketInterface
     {
         $offset = 0;
 

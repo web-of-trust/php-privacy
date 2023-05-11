@@ -11,11 +11,12 @@
 namespace OpenPGP\Packet\Key;
 
 use phpseclib3\Crypt\DSA\PrivateKey;
+use phpseclib3\Crypt\DSA;
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Math\BigInteger;
 
 use OpenPGP\Common\Helper;
-use OpenPGP\Enum\HashAlgorithm;
+use OpenPGP\Enum\{DHKeySize, HashAlgorithm};
 
 /**
  * DSA secret parameters class
@@ -53,6 +54,26 @@ class DSASecretParameters implements SignableParametersInterface
             'y' => $publicParams->getExponent(),
             'x' => $exponent,
         ]);
+    }
+
+    /**
+     * Generates parameters by using RSA create key
+     *
+     * @param DHKeySize $keySize
+     * @return RSASecretParameters
+     */
+    public static function generate(DHKeySize $keySize)
+    {
+        $rawKey = DSA::createKey($keySize->lSize(), $keySize->nSize())->toString('Raw');
+        return new DSASecretParameters(
+            $rawKey['x'],
+            new DSAPublicParameters(
+                $rawKey['p'],
+                $rawKey['q'],
+                $rawKey['g'],
+                $rawKey['y']
+            )
+        );
     }
 
     /**
