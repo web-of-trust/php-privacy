@@ -112,7 +112,7 @@ class SymEncryptedSessionKey extends AbstractPacket
             $password,
             $symmetric->keySizeInByte()
         ));
-        $cipher->setIV(str_repeat("\0", $symmetric->blockSize()));
+        $cipher->setIV(str_repeat("\x0", $symmetric->blockSize()));
 
         return new SymEncryptedSessionKey(
             $s2k,
@@ -178,7 +178,7 @@ class SymEncryptedSessionKey extends AbstractPacket
                 $password,
                 $this->symmetric->keySizeInByte()
             ));
-            $cipher->setIV(str_repeat("\0", $this->symmetric->blockSize()));
+            $cipher->setIV(str_repeat("\x0", $this->symmetric->blockSize()));
             $decrypted = $cipher->decrypt($this->encrypted);
             $sessionKeySymmetric = SymmetricAlgorithm::from(ord($decrypted[0]));
             return new SymEncryptedSessionKey(
