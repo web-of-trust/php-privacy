@@ -28,8 +28,8 @@ class ElGamalSessionKeyParameters implements SessionKeyParametersInterface
     /**
      * Constructor
      *
-     * @param BigInteger $gamma
-     * @param BigInteger $phi
+     * @param BigInteger $gamma MPI of Elgamal (Diffie-Hellman) value g**k mod p.
+     * @param BigInteger $phi MPI of Elgamal (Diffie-Hellman) value m * y**k mod p.
      * @return self
      */
     public function __construct(
@@ -115,9 +115,27 @@ class ElGamalSessionKeyParameters implements SessionKeyParametersInterface
      */
     public function decrypt(ElGamalPrivateKey $privateKey): SessionKey
     {
-        return SessionKey::fromBytes($privateKey->decrypt(implode([
-            $this->gamma->toBytes(),
-            $this->phi->toBytes(),
-        ])));
+        return SessionKey::fromBytes(self::pkcs1Decode(
+            $privateKey->decrypt(implode([
+                $this->gamma->toBytes(),
+                $this->phi->toBytes(),
+            ]))
+        ));
+    }
+
+    /**
+     * Remove pkcs1 padding from a message
+     * 
+     * @return string
+     */
+    private static function pkcs1Decode(string $message)
+    {
+        $offset = 2;
+        $separatorNotFound = 1;
+        for ($j = $offset; $j < strlen($message); $j++) {
+            $separatorNotFound &= (ord($message[$j]) != 0) ? 1 : 0;
+            $offset += $separatorNotFound;
+        }
+        return substr($message, $offset + 1);
     }
 }
