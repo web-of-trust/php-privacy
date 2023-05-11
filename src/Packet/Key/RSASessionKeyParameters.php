@@ -10,6 +10,8 @@
 
 namespace OpenPGP\Packet\Key;
 
+use phpseclib3\Crypt\RSA\PrivateKey;
+use phpseclib3\Crypt\RSA\PublicKey;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 
@@ -36,7 +38,7 @@ class RSASessionKeyParameters implements SessionKeyParametersInterface
     }
 
     /**
-     * Read encrypted session key from byte string
+     * Reads encrypted session key from byte string
      *
      * @param string $bytes
      * @return RSASessionKeyParameters
@@ -44,6 +46,26 @@ class RSASessionKeyParameters implements SessionKeyParametersInterface
     public static function fromBytes(string $bytes): RSASessionKeyParameters
     {
         return new RSASessionKeyParameters(Helper::readMPI($bytes));
+    }
+
+    /**
+     * Produces parameters by encrypting session key
+     *
+     * @param SessionKey $sessionKey
+     * @param PublicKey $publicKey
+     * @return RSASessionKeyParameters
+     */
+    public static function produceParameters(
+        SessionKey $sessionKey, PublicKey $publicKey
+    ): RSASessionKeyParameters
+    {
+        $publicKey->withPadding(RSA::ENCRYPTION_PKCS1);
+        return new RSASessionKeyParameters(
+            Helper::bin2BigInt($publicKey->encrypt(implode([
+                $sessionKey->encode(),
+                $sessionKey->computeChecksum(),
+            ])))
+        );
     }
 
     /**
@@ -65,5 +87,19 @@ class RSASessionKeyParameters implements SessionKeyParametersInterface
     public function getEncrypted(): BigInteger
     {
         return $this->encrypted;
+    }
+
+    /**
+     * Decrypts session key by using private key
+     *
+     * @param PrivateKey $privateKey
+     * @return SessionKey
+     */
+    public function decrypt(PrivateKey $privateKey): SessionKey
+    {
+        $privateKey->withPadding(RSA::ENCRYPTION_PKCS1);
+        return SessionKey::fromBytes($privateKey->decrypt(
+            $this->encrypted->toBytes()
+        ));
     }
 }

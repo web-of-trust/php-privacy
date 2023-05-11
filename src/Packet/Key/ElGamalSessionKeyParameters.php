@@ -12,6 +12,8 @@ namespace OpenPGP\Packet\Key;
 
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
+use OpenPGP\Cryptor\Asymmetric\ElGamalPrivateKey;
+use OpenPGP\Cryptor\Asymmetric\ElGamalPublicKey;
 
 /**
  * ElGamalSessionKeyParameters class.
@@ -51,6 +53,28 @@ class ElGamalSessionKeyParameters implements SessionKeyParametersInterface
     }
 
     /**
+     * Produces parameters by encrypting session key
+     *
+     * @param SessionKey $sessionKey
+     * @param ElGamalPublicKey $publicKey
+     * @return ElGamalSessionKeyParameters
+     */
+    public static function produceParameters(
+        SessionKey $sessionKey, ElGamalPublicKey $publicKey
+    ): ElGamalSessionKeyParameters
+    {
+        $encrypted = $publicKey->encrypt(implode([
+            $sessionKey->encode(),
+            $sessionKey->computeChecksum(),
+        ]));
+        $size = ($publicKey->getBitSize() + 7) >> 3;
+        return new ElGamalSessionKeyParameters(
+            Helper::bin2BigInt(strlen($encrypted, 0, $size)),
+            Helper::bin2BigInt(strlen($encrypted, $size, $size))
+        );
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function encode(): string
@@ -81,5 +105,19 @@ class ElGamalSessionKeyParameters implements SessionKeyParametersInterface
     public function getPhi(): BigInteger
     {
         return $this->phi;
+    }
+
+    /**
+     * Decrypts session key by using private key
+     *
+     * @param ElGamalPrivateKey $privateKey
+     * @return SessionKey
+     */
+    public function decrypt(ElGamalPrivateKey $privateKey): SessionKey
+    {
+        return SessionKey::fromBytes($privateKey->decrypt(implode([
+            $this->gamma->toBytes(),
+            $this->phi->toBytes(),
+        ])));
     }
 }

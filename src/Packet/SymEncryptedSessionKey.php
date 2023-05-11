@@ -92,34 +92,31 @@ class SymEncryptedSessionKey extends AbstractPacket
      * Encrypt session key
      *
      * @param string $password
-     * @param SymmetricAlgorithm $ekSymmetric
-     * @param SymmetricAlgorithm $skSymmetric
+     * @param SessionKey $sessionKey
+     * @param SymmetricAlgorithm $symmetric
      * @param HashAlgorithm $hash
      * @param S2kType $s2kType
      * @return SymEncryptedSessionKey
      */
     public static function encryptSessionKey(
         string $password,
-        SymmetricAlgorithm $ekSymmetric = SymmetricAlgorithm::Aes128,
-        SymmetricAlgorithm $skSymmetric = SymmetricAlgorithm::Aes128,
+        SessionKey $sessionKey,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         HashAlgorithm $hash = HashAlgorithm::Sha1,
         S2kType $s2kType = S2kType::Iterated
     ): SymEncryptedSessionKey
     {
         $s2k = new S2K(Random::string(S2K::SALT_LENGTH), $s2kType, $hash);
-        $cipher = $ekSymmetric->cipherEngine();
+        $cipher = $symmetric->cipherEngine();
         $cipher->setKey($s2k->produceKey(
             $password,
-            $ekSymmetric->keySizeInByte()
+            $symmetric->keySizeInByte()
         ));
-        $cipher->setIV(str_repeat("\0", $ekSymmetric->blockSize()));
-        $sessionKey = new SessionKey(
-            Random::string($skSymmetric->keySizeInByte()), $skSymmetric
-        );
+        $cipher->setIV(str_repeat("\0", $symmetric->blockSize()));
 
         return new SymEncryptedSessionKey(
             $s2k,
-            $ekSymmetric,
+            $symmetric,
             $cipher->encrypt($sessionKey->encode()),
             $sessionKey
         );

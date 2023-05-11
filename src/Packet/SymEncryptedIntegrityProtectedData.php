@@ -76,7 +76,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
     public static function encryptPackets(
         string $key,
         PacketList $packets,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): SymEncryptedIntegrityProtectedData
     {
         $toHash = implode([
@@ -122,7 +122,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
      */
     public function encrypt(
         string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): SymEncryptedIntegrityProtectedData
     {
         if ($this->packets instanceof PacketList) {
@@ -140,7 +140,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
      */
     public function decrypt(
         string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): SymEncryptedIntegrityProtectedData
     {
         $blockSize = $symmetric->blockSize();

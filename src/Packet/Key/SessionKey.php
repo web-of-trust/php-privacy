@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Packet\Key;
 
+use phpseclib3\Crypt\Random;
 use OpenPGP\Enum\SymmetricAlgorithm;
 
 /**
@@ -31,7 +32,7 @@ class SessionKey
      */
     public function __construct(
         private string $encryptionKey,
-        private SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
+        private SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     )
     {
     }
@@ -56,6 +57,22 @@ class SessionKey
         }
 
         return $sessionKey;
+    }
+
+    /**
+     * Produces session key specify by symmetric algorithm
+     *
+     * @param SymmetricAlgorithm $symmetric
+     * @return SessionKey
+     */
+    public static function produceKey(
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+    ): SessionKey
+    {
+        return new SessionKey(
+            Random::string($symmetric->keySizeInByte()),
+            $symmetric
+        );
     }
 
     /**
