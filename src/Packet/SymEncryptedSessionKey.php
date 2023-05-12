@@ -173,19 +173,26 @@ class SymEncryptedSessionKey extends AbstractPacket
         if (null != $this->sessionKey) {
             return $this;
         } else {
-            $cipher = $this->symmetric->cipherEngine();
-            $cipher->setKey($this->s2k->produceKey(
+            $key = $this->s2k->produceKey(
                 $password,
                 $this->symmetric->keySizeInByte()
-            ));
-            $cipher->setIV(str_repeat("\x0", $this->symmetric->blockSize()));
-            $decrypted = $cipher->decrypt($this->encrypted);
-            $sessionKeySymmetric = SymmetricAlgorithm::from(ord($decrypted[0]));
+            );
+            if (empty($this->encrypted)) {
+                $sessionKey = new SessionKey($key, $this->symmetric);
+            }
+            else {
+                $cipher = $this->symmetric->cipherEngine();
+                $cipher->setKey($key);
+                $cipher->setIV(str_repeat("\x0", $this->symmetric->blockSize()));
+                $decrypted = $cipher->decrypt($this->encrypted);
+                $sessionKeySymmetric = SymmetricAlgorithm::from(ord($decrypted[0]));
+                $sessionKey = new SessionKey(substr($decrypted, 1), $sessionKeySymmetric);
+            }
             return new SymEncryptedSessionKey(
                 $this->s2k,
                 $this->symmetric,
                 $this->encrypted,
-                new SessionKey(substr($decrypted, 1), $sessionKeySymmetric)
+                $sessionKey,
             );
         }
     }
