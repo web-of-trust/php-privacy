@@ -37,7 +37,7 @@ class ModificationDetectionCode extends AbstractPacket
      * @param string $data
      * @return self
      */
-    public function __construct(private string $data)
+    public function __construct(private readonly string $data)
     {
         parent::__construct(PacketTag::ModificationDetectionCode);
     }

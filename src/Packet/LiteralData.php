@@ -26,7 +26,7 @@ use OpenPGP\Enum\PacketTag;
  */
 class LiteralData extends AbstractPacket implements ForSigningInterface
 {
-    private int $time;
+    private readonly int $time;
 
     /**
      * Constructor
@@ -38,9 +38,9 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
      * @return self
      */
     public function __construct(
-        private string $data,
-        private LiteralFormat $format = LiteralFormat::Utf8,
-        private string $filename = '',
+        private readonly string $data,
+        private readonly LiteralFormat $format = LiteralFormat::Utf8,
+        private readonly string $filename = '',
         int $time = 0
     )
     {

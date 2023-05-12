@@ -28,7 +28,7 @@ class ElGamalSecretParameters implements KeyParametersInterface
     /**
      * ElGamal private key
      */
-    private ElGamalPrivateKey $privateKey;
+    private readonly ElGamalPrivateKey $privateKey;
 
     /**
      * Constructor
@@ -38,11 +38,12 @@ class ElGamalSecretParameters implements KeyParametersInterface
      * @return self
      */
     public function __construct(
-        private BigInteger $exponent,
-        private ElGamalPublicParameters $publicParams
+        private readonly BigInteger $exponent,
+        private readonly ElGamalPublicParameters $publicParams,
+        ?ElGamalPrivateKey $privateKey = null
     )
     {
-        $this->privateKey = new ElGamalPrivateKey(
+        $this->privateKey = $privateKey ?? new ElGamalPrivateKey(
             $exponent,
             $publicParams->getExponent(),
             $publicParams->getPrime(),
@@ -65,6 +66,27 @@ class ElGamalSecretParameters implements KeyParametersInterface
     }
 
     /**
+     * Generates parameters by using ElGamal create key
+     *
+     * @param DHKeySize $keySize
+     * @return ElGamalSecretParameters
+     */
+    public static function generate(DHKeySize $keySize): ElGamalSecretParameters
+    {
+        $privateKey = ElGamal::createKey($keySize->lSize(), $keySize->nSize());
+        return new ElGamalSecretParameters(
+            $privateKey->getX(),
+            new DSAPublicParameters(
+                $privateKey->getPrime(),
+                $privateKey->getGenerator(),
+                $privateKey->getY(),
+                $privateKey->getPublicKey(),
+            ),
+            $privateKey
+        );
+    }
+
+    /**
      * Gets private key
      *
      * @return ElGamalPrivateKey
@@ -82,6 +104,14 @@ class ElGamalSecretParameters implements KeyParametersInterface
     public function getExponent(): BigInteger
     {
         return $this->exponent;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPublicParams(): KeyParametersInterface
+    {
+        return $this->publicParams;
     }
 
     /**

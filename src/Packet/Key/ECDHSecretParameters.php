@@ -10,6 +10,10 @@
 
 namespace OpenPGP\Packet\Key;
 
+use phpseclib3\Crypt\EC;
+use phpseclib3\Crypt\EC\PrivateKey;
+use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
+use phpseclib3\File\ASN1;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 
@@ -32,10 +36,11 @@ class ECDHSecretParameters extends ECSecretParameters
      */
     public function __construct(
         BigInteger $d,
-        ECDHPublicParameters $publicParams
+        ECDHPublicParameters $publicParams,
+        ?PrivateKey $privateKey = null
     )
     {
-        parent::__construct($d, $publicParams);
+        parent::__construct($d, $publicParams, $privateKey);
     }
 
     /**
@@ -50,5 +55,48 @@ class ECDHSecretParameters extends ECSecretParameters
     ): ECDHSecretParameters
     {
         return new ECDHSecretParameters(Helper::readMPI($bytes), $publicParams);
+    }
+
+    /**
+     * Generates parameters by using EC create key
+     *
+     * @param CurveOid $curveOid
+     * @return ECDHSecretParameters
+     */
+    public static function generate(CurveOid $curveOid): ECDHSecretParameters
+    {
+        if ($curveOid !== CurveOid::Ed25519) {
+            $privateKey = EC::createKey($curveOid->name);
+            if ($curveOid === CurveOid::Curve25519) {
+                $d = Helper::bin2BigInt(
+                    strrev($privateKey->toString('MontgomeryPrivate'))
+                );
+                $q = Helper::bin2BigInt(
+                    "\x40" . $privateKey->getEncodedCoordinates()
+                );
+            }
+            else {
+                $key = PKCS8::load($privateKey->toString('PKCS8'));
+                $d = $key['dA'];
+                $q = Helper::bin2BigInt($privateKey->getEncodedCoordinates());
+            }
+            return new ECDHSecretParameters(
+                $d,
+                new ECDSAPublicParameters(
+                    ASN1::encodeOID($curveOid->value),
+                    $q,
+                    $curveOid->hashAlgorithm(),
+                    $curveOid->symmetricAlgorithm(),
+                    ECDHPublicParameters::DEFAULT_RESERVED,
+                    $privateKey->getPublicKey()
+                ),
+                $privateKey,
+            );
+        }
+        else {
+            throw new \InvalidArgumentException(
+                'Ed25519 is not supported for ECDH key generation'
+            );
+        }
     }
 }

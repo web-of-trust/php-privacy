@@ -10,6 +10,10 @@
 
 namespace OpenPGP\Packet\Key;
 
+use phpseclib3\Crypt\EC;
+use phpseclib3\Crypt\EC\PrivateKey;
+use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
+use phpseclib3\File\ASN1;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 
@@ -30,14 +34,16 @@ class ECDSASecretParameters extends ECSecretParameters implements SignableParame
      *
      * @param BigInteger $d
      * @param ECDSAPublicParameters $publicParams
+     * @param PrivateKey $privateKey
      * @return self
      */
     public function __construct(
         BigInteger $d,
-        ECDSAPublicParameters $publicParams
+        ECDSAPublicParameters $publicParams,
+        ?PrivateKey $privateKey = null
     )
     {
-        parent::__construct($d, $publicParams);
+        parent::__construct($d, $publicParams, $privateKey);
     }
 
     /**
@@ -51,6 +57,47 @@ class ECDSASecretParameters extends ECSecretParameters implements SignableParame
         string $bytes, ECDSAPublicParameters $publicParams
     ): ECDSASecretParameters
     {
-        return new ECDSASecretParameters(Helper::readMPI($bytes), $publicParams);
+        return new ECDSASecretParameters(
+            Helper::readMPI($bytes),
+            $publicParams
+        );
+    }
+
+    /**
+     * Generates parameters by using EC create key
+     *
+     * @param CurveOid $curve
+     * @return ECDSASecretParameters
+     */
+    public static function generate(CurveOid $curveOid): ECDSASecretParameters
+    {
+        if ($curveOid !== CurveOid::Curve25519) {
+            $privateKey = EC::createKey($curveOid->name);
+            $key = PKCS8::load($privateKey->toString('PKCS8'));
+            if ($curveOid === CurveOid::Ed25519) {
+                $d = Helper::bin2BigInt($key['secret']);
+                $q = Helper::bin2BigInt(
+                    "\x40" . $privateKey->getEncodedCoordinates()
+                );
+            }
+            else {
+                $d = $key['dA'];
+                $q = Helper::bin2BigInt($privateKey->getEncodedCoordinates());
+            }
+            return new ECDSASecretParameters(
+                $d,
+                new ECDSAPublicParameters(
+                    ASN1::encodeOID($curveOid->value),
+                    $q,
+                    $privateKey->getPublicKey()
+                ),
+                $privateKey,
+            );
+        }
+        else {
+            throw new \InvalidArgumentException(
+                'Curve25519 is not supported for ECDSA key generation'
+            );
+        }
     }
 }

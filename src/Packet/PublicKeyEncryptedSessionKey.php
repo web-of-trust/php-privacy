@@ -47,10 +47,10 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
      * @return self
      */
     public function __construct(
-        private string $publicKeyID,
-        private KeyAlgorithm $publicKeyAlgorithm,
-        private SessionKeyParametersInterface $sessionKeyParameters,
-        private ?SessionKey $sessionKey = null
+        private readonly string $publicKeyID,
+        private readonly KeyAlgorithm $publicKeyAlgorithm,
+        private readonly SessionKeyParametersInterface $sessionKeyParameters,
+        private readonly ?SessionKey $sessionKey = null
     )
     {
         parent::__construct(PacketTag::PublicKeyEncryptedSessionKey);

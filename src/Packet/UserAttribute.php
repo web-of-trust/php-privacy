@@ -29,13 +29,15 @@ use OpenPGP\Enum\PacketTag;
  */
 class UserAttribute extends AbstractPacket implements ForSigningInterface
 {
+    private readonly array $attributes;
+
     /**
      * Constructor
      *
      * @param array $attributes
      * @return self
      */
-    public function __construct(private array $attributes)
+    public function __construct(array $attributes)
     {
         parent::__construct(PacketTag::UserAttribute);
         $this->attributes = array_filter(

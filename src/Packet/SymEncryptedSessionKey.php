@@ -48,10 +48,10 @@ class SymEncryptedSessionKey extends AbstractPacket
      * @return self
      */
     public function __construct(
-        private S2K $s2k,
-        private SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        private string $encrypted = '',
-        private ?SessionKey $sessionKey = null
+        private readonly S2K $s2k,
+        private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        private readonly string $encrypted = '',
+        private readonly ?SessionKey $sessionKey = null
     )
     {
         parent::__construct(PacketTag::SymEncryptedSessionKey);

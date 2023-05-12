@@ -30,10 +30,10 @@ class SignatureSubpacket implements SubpacketInterface
      * @return self
      */
     public function __construct(
-        private int $type,
-        private string $data,
-        private bool $critical = false,
-        private bool $isLong = false
+        private readonly int $type,
+        private readonly string $data,
+        private readonly bool $critical = false,
+        private readonly bool $isLong = false
     )
     {
     }

@@ -30,10 +30,10 @@ class SubpacketReader
      * @return self
      */
     public function __construct(
-        private int $type = 0,
-        private string $data = '',
-        private int $offset = 0,
-        private bool $isLong = false
+        private readonly int $type = 0,
+        private readonly string $data = '',
+        private readonly int $offset = 0,
+        private readonly bool $isLong = false
     )
     {
     }

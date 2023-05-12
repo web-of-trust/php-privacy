@@ -41,9 +41,9 @@ class CompressedData extends AbstractPacket
      * @return self
      */
     public function __construct(
-        private string $compressed,
-        private PacketList $packets,
-        private CompressionAlgorithm $algorithm = CompressionAlgorithm::Uncompressed
+        private readonly string $compressed,
+        private readonly PacketList $packets,
+        private readonly CompressionAlgorithm $algorithm = CompressionAlgorithm::Uncompressed
     )
     {
         parent::__construct(PacketTag::CompressedData);

@@ -28,7 +28,7 @@ class ElGamalPublicParameters implements KeyParametersInterface
     /**
      * ElGamal public key
      */
-    private ElGamalPublicKey $publicKey;
+    private readonly ElGamalPublicKey $publicKey;
 
     /**
      * Constructor
@@ -39,12 +39,13 @@ class ElGamalPublicParameters implements KeyParametersInterface
      * @return self
      */
     public function __construct(
-        private BigInteger $prime,
-        private BigInteger $generator,
-        private BigInteger $exponent
+        private readonly BigInteger $prime,
+        private readonly BigInteger $generator,
+        private readonly BigInteger $exponent,
+        ?ElGamalPublicKey $publicKey = null
     )
     {
-        $this->publicKey = new ElGamalPublicKey(
+        $this->publicKey = $publicKey ?? new ElGamalPublicKey(
             $exponent, $prime, $generator
         );
     }
@@ -106,6 +107,14 @@ class ElGamalPublicParameters implements KeyParametersInterface
     public function getExponent(): BigInteger
     {
         return $this->exponent;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPublicParams(): KeyParametersInterface
+    {
+        return $this;
     }
 
     /**

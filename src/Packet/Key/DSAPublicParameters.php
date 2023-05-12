@@ -31,7 +31,7 @@ class DSAPublicParameters implements VerifiableParametersInterface
     /**
      * phpseclib3 DSA public key
      */
-    private PublicKey $publicKey;
+    private readonly PublicKey $publicKey;
 
     /**
      * Constructor
@@ -40,16 +40,18 @@ class DSAPublicParameters implements VerifiableParametersInterface
      * @param BigInteger $order
      * @param BigInteger $generator
      * @param BigInteger $exponent
+     * @param PublicKey $publicKey
      * @return self
      */
     public function __construct(
-        private BigInteger $prime,
-        private BigInteger $order,
-        private BigInteger $generator,
-        private BigInteger $exponent
+        private readonly BigInteger $prime,
+        private readonly BigInteger $order,
+        private readonly BigInteger $generator,
+        private readonly BigInteger $exponent,
+        ?PublicKey $publicKey = null
     )
     {
-        $this->publicKey = PublicKeyLoader::loadPublicKey([
+        $this->publicKey = $publicKey ?? PublicKeyLoader::loadPublicKey([
             'p' => $prime,
             'q' => $order,
             'g' => $generator,
@@ -127,6 +129,14 @@ class DSAPublicParameters implements VerifiableParametersInterface
     public function getPublicKey(): PublicKey
     {
         return $this->publicKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPublicParams(): KeyParametersInterface
+    {
+        return $this;
     }
 
     /**

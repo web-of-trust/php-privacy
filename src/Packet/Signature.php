@@ -39,14 +39,14 @@ class Signature extends AbstractPacket
      * @return self
      */
     public function __construct(
-    	private int $version,
-    	private SignatureType $signatureType,
-    	private KeyAlgorithm $keyAlgorithm,
-    	private HashAlgorithm $hashAlgorithm,
-    	private string $signedHashValue,
-    	private string $signature,
-    	private array $hashedSubpackets = [],
-    	private array $unhashedSubpackets = []
+    	private readonly int $version,
+    	private readonly SignatureType $signatureType,
+    	private readonly KeyAlgorithm $keyAlgorithm,
+    	private readonly HashAlgorithm $hashAlgorithm,
+    	private readonly string $signedHashValue,
+    	private readonly string $signature,
+    	private readonly array $hashedSubpackets = [],
+    	private readonly array $unhashedSubpackets = []
     )
     {
         parent::__construct(PacketTag::Signature);

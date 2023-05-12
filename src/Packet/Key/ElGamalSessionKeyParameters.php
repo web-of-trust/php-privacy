@@ -33,8 +33,8 @@ class ElGamalSessionKeyParameters implements SessionKeyParametersInterface
      * @return self
      */
     public function __construct(
-        private BigInteger $gamma,
-        private BigInteger $phi
+        private readonly BigInteger $gamma,
+        private readonly BigInteger $phi
     )
     {
     }

@@ -29,11 +29,11 @@ use OpenPGP\Enum\PacketTag;
  */
 class UserID extends AbstractPacket implements \Stringable, ForSigningInterface
 {
-    private string $name = '';
+    private readonly string $name;
 
-    private string $email = '';
+    private readonly string $email;
 
-    private string $comment = '';
+    private readonly string $comment;
 
     /**
      * Constructor
@@ -41,7 +41,7 @@ class UserID extends AbstractPacket implements \Stringable, ForSigningInterface
      * @param string $userID
      * @return self
      */
-    public function __construct(private string $userID)
+    public function __construct(private readonly string $userID)
     {
         parent::__construct(PacketTag::UserID);
 
@@ -55,14 +55,24 @@ class UserID extends AbstractPacket implements \Stringable, ForSigningInterface
         elseif (preg_match('/^([^<]+)\s+<([^>]+)>$/', $this->data, $matches)) {
             $this->name  = trim($matches[1]);
             $this->email = trim($matches[2]);
+            $this->comment = '';
         }
         // User IDs of the form: "name"
         elseif (preg_match('/^([^<]+)$/', $this->data, $matches)) {
             $this->name = trim($matches[1]);
+            $this->email = '';
+            $this->comment = '';
         }
         // User IDs of the form: "<email>"
         elseif (preg_match('/^<([^>]+)>$/', $this->data, $matches)) {
+            $this->name = '';
             $this->email = trim($matches[2]);
+            $this->comment = '';
+        }
+        else {
+            $this->name = '';
+            $this->email = '';
+            $this->comment = '';
         }
     }
 

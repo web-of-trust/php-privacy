@@ -22,7 +22,7 @@ use OpenPGP\Enum\PacketTag;
  */
 class PacketList implements \IteratorAggregate, \Countable
 {
-    private \ArrayIterator $packets;
+    private readonly \ArrayIterator $packets;
 
     /**
      * Constructor

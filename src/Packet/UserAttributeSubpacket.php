@@ -29,9 +29,9 @@ class UserAttributeSubpacket implements SubpacketInterface
      * @return self
      */
     public function __construct(
-        private int $type = 0,
-        private string $data = '',
-        private bool $isLong = false
+        private readonly int $type = 0,
+        private readonly string $data = '',
+        private readonly bool $isLong = false
     )
     {
     }

@@ -10,9 +10,9 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
-use phpseclib3\Crypt\EC\PublicKey;
 use phpseclib3\Crypt\EC;
+use phpseclib3\Crypt\EC\PublicKey;
+use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
 use phpseclib3\File\ASN1;
 use phpseclib3\Math\BigInteger;
 
@@ -28,43 +28,50 @@ use OpenPGP\Enum\CurveOid;
  */
 abstract class ECPublicParameters implements KeyParametersInterface
 {
-    private CurveOid $curveOid;
+    private readonly CurveOid $curveOid;
 
     /**
      * phpseclib3 EC public key
      */
-    private PublicKey $publicKey;
+    private readonly PublicKey $publicKey;
 
     /**
      * Constructor
      *
      * @param string $oid
      * @param BigInteger $q
+     * @param PublicKey $publicKey
      * @return self
      */
     public function __construct(
-        private string $oid,
-        private BigInteger $q
+        private readonly string $oid,
+        private readonly BigInteger $q,
+        ?PublicKey $publicKey = null
     )
     {
-        $format = 'PKCS8';
         $this->curveOid = CurveOid::from(ASN1::decodeOID($oid));
-        $curve = $this->curveOid->getCurve();
-        if ($this->curveOid === CurveOid::Ed25519) {
-            $key = PKCS8::savePublicKey(
-                $curve, PKCS8::extractPoint(substr($q->toBytes(), 1), $curve)
-            );
-        }
-        elseif ($this->curveOid === CurveOid::Curve25519) {
-            $key = substr($q->toBytes(), 1);
-            $format = 'MontgomeryPublic';
+        if ($publicKey instanceof PublicKey) {
+            $this->publicKey = $publicKey;
         }
         else {
-            $key = PKCS8::savePublicKey(
-                $curve, PKCS8::extractPoint("\0" . $q->toBytes(), $curve)
-            );
+            $format = 'PKCS8';
+            $curve = $this->curveOid->getCurve();
+            if ($this->curveOid === CurveOid::Ed25519) {
+                $key = PKCS8::savePublicKey(
+                    $curve, PKCS8::extractPoint(substr($q->toBytes(), 1), $curve)
+                );
+            }
+            elseif ($this->curveOid === CurveOid::Curve25519) {
+                $key = substr($q->toBytes(), 1);
+                $format = 'MontgomeryPublic';
+            }
+            else {
+                $key = PKCS8::savePublicKey(
+                    $curve, PKCS8::extractPoint("\0" . $q->toBytes(), $curve)
+                );
+            }
+            $this->publicKey = EC::loadFormat($format, $key);
         }
-        $this->publicKey = EC::loadFormat($format, $key);
     }
 
     /**
@@ -95,6 +102,14 @@ abstract class ECPublicParameters implements KeyParametersInterface
     public function getPublicKey(): PublicKey
     {
         return $this->publicKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPublicParams(): KeyParametersInterface
+    {
+        return $this;
     }
 
     /**

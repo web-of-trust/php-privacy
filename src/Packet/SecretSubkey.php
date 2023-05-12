@@ -29,26 +29,26 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
      * Constructor
      *
      * @param PublicSubkey $publicKey
+     * @param string $keyData
+     * @param KeyParametersInterface $keyParameters
      * @param S2kUsage $s2kUsage
      * @param SymmetricAlgorithm $symmetric
      * @param S2K $s2k
      * @param string $iv
-     * @param string $keyData
-     * @param KeyParametersInterface $keyParameters
      * @return self
      */
     public function __construct(
         PublicSubkey $publicKey,
+        string $keyData = '',
+        ?KeyParametersInterface $keyParameters = null,
         S2kUsage $s2kUsage = S2kUsage::Sha1,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         ?S2K $s2k = null,
         string $iv = '',
-        string $keyData = '',
-        ?KeyParametersInterface $keyParameters = null
     )
     {
         parent::__construct(
-        	$publicKey, $s2kUsage, $symmetric, $s2k, $iv, $keyData, $keyParameters
+        	$publicKey, $keyData, $keyParameters, $s2kUsage, $symmetric, $s2k, $iv
         );
         $this->setTag(PacketTag::SecretSubkey);
     }
@@ -108,12 +108,12 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
                 $publicKey->getKeyParameters(),
                 $publicKey->getKeyAlgorithm(),
             ),
+            $secretKey->getKeyData(),
+            $secretKey->getKeyParameters(),
             $secretKey->getS2kUsage(),
             $secretKey->getSymmetric(),
             $secretKey->getS2K(),
             $secretKey->getIV(),
-            $secretKey->getKeyData(),
-            $secretKey->getKeyParameters()
         );
     }
 }

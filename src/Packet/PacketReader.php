@@ -31,9 +31,9 @@ class PacketReader
      * @return self
      */
     public function __construct(
-        private PacketTag $packetTag,
-        private string $data = '',
-        private int $offset = 0
+        private readonly PacketTag $packetTag,
+        private readonly string $data = '',
+        private readonly int $offset = 0
     )
     {
     }

@@ -12,7 +12,14 @@ namespace OpenPGP\Packet;
 
 use phpseclib3\Crypt\Random;
 use OpenPGP\Enum\{
-    HashAlgorithm, KeyAlgorithm, PacketTag, S2kType, S2kUsage, SymmetricAlgorithm
+    DHKeySize,
+    HashAlgorithm,
+    KeyAlgorithm,
+    PacketTag,
+    RSAKeySize,
+    S2kType,
+    S2kUsage,
+    SymmetricAlgorithm,
 };
 use OpenPGP\Packet\Key\{
     KeyParametersInterface,
@@ -42,28 +49,28 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
      *
      * @param PublicKey $publicKey
      * @param S2kUsage $s2kUsage
+     * @param string $keyData
+     * @param KeyParametersInterface $keyParameters
      * @param SymmetricAlgorithm $symmetric
      * @param S2K $s2k
      * @param string $iv
-     * @param string $keyData
-     * @param KeyParametersInterface $keyParameters
      * @return self
      */
     public function __construct(
         private PublicKey $publicKey,
+        private string $keyData = '',
+        private ?KeyParametersInterface $keyParameters = null,
         private S2kUsage $s2kUsage = S2kUsage::Sha1,
         private SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         private ?S2K $s2k = null,
         private string $iv = '',
-        private string $keyData = '',
-        private ?KeyParametersInterface $keyParameters = null
     )
     {
         parent::__construct(PacketTag::SecretKey);
     }
 
     /**
-     * Read secret key packets from byte string
+     * Read secret key packet from byte string
      *
      * @param string $bytes
      * @return SecretKeyPacketInterface
@@ -102,20 +109,51 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
 
         return new SecretKey(
             $publicKey,
+            $keyData,
+            $keyParameters,
             $s2kUsage,
             $symmetric,
             $s2k,
             $iv,
-            $keyData,
-            $keyParameters
         );
     }
 
+    /**
+     * Generate secret key packet
+     *
+     * @param KeyAlgorithm $algorithm
+     * @return SecretKeyPacketInterface
+     */
     public static function generate(
-        KeyAlgorithm $algorithm
+        KeyAlgorithm $keyAlgorithm,
+        RSAKeySize $rsaKeySize = RSAKeySize::S2048,
+        DHKeySize $dhKeySize = DHKeySize::L2048N224,
+        CurveOid $curveOid = CurveOid::Secp521r1,
+        int $time = 0
     ): SecretKeyPacketInterface
     {
-
+        $keyParameters = match($keyAlgorithm) {
+            KeyAlgorithm::RsaEncryptSign => RSASecretParameters::generate($rsaKeySize),
+            KeyAlgorithm::RsaEncrypt => RSASecretParameters::generate($rsaKeySize),
+            KeyAlgorithm::RsaSign => RSASecretParameters::generate($rsaKeySize),
+            KeyAlgorithm::ElGamal => ElGamalSecretParameters::generate($dhKeySize),
+            KeyAlgorithm::Dsa => DSASecretParameters::generate($dhKeySize),
+            KeyAlgorithm::Ecdh => ECDHSecretParameters::generate($curveOid),
+            KeyAlgorithm::EcDsa => ECDSASecretParameters::generate($curveOid),
+            KeyAlgorithm::EdDsa => ECDSASecretParameters::generate($curveOid),
+            default => throw new \UnexpectedValueException(
+                "Unsupported PGP public key algorithm encountered",
+            ),
+        };
+        return new SecretKey(
+            new PublicKeyPacket(
+                empty($time) ? time() : $time,
+                $keyParameters->getPublicParams(),
+                $keyAlgorithm,
+            ),
+            $keyParameters->encode(),
+            $keyParameters,
+        );
     }
 
     /**
@@ -234,12 +272,12 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
             ]));
             return new SecretKey(
                 $this->publicKey,
+                $encrypted,
+                $keyParameters,
                 $s2kUsage,
                 $symmetric,
                 $s2k,
                 $iv,
-                $encrypted,
-                $keyParameters
             );
         }
         else {
@@ -276,12 +314,12 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
 
             return new SecretKey(
                 $this->publicKey,
+                $this->keyData,
+                $keyParameters,
                 $this->s2kUsage,
                 $this->symmetric,
                 $this->s2k,
                 $this->iv,
-                $this->keyData,
-                $keyParameters
             );
         }
     }

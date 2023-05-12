@@ -41,7 +41,8 @@ class SymEncryptedData extends AbstractPacket
      * @return self
      */
     public function __construct(
-        private string $encrypted, private ?PacketList $packets = null
+        private readonly string $encrypted,
+        private readonly ?PacketList $packets = null
     )
     {
         parent::__construct(PacketTag::SymEncryptedData);

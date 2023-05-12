@@ -32,7 +32,7 @@ class RSASessionKeyParameters implements SessionKeyParametersInterface
      * @return self
      */
     public function __construct(
-        private BigInteger $encrypted
+        private readonly BigInteger $encrypted
     )
     {
     }

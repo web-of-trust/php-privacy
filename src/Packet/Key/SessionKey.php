@@ -31,8 +31,8 @@ class SessionKey
      * @return self
      */
     public function __construct(
-        private string $encryptionKey,
-        private SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        private readonly string $encryptionKey,
+        private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     )
     {
     }

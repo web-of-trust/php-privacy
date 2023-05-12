@@ -21,6 +21,13 @@ namespace OpenPGP\Packet\Key;
 interface KeyParametersInterface
 {
     /**
+     * Returns public key parameters
+     * 
+     * @return KeyParametersInterface
+     */
+    function getPublicParams(): KeyParametersInterface;
+
+    /**
      * Returns key parameters is valid
      * 
      * @return bool

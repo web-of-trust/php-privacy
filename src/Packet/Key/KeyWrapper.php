@@ -34,8 +34,8 @@ abstract class KeyWrapper
      * @return self
      */
     public function __construct(
-        private BlockCipher $cipher,
-        private KekSize $kekSize
+        private readonly BlockCipher $cipher,
+        private readonly KekSize $kekSize
     )
     {
         $this->cipher->disablePadding();

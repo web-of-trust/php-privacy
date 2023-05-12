@@ -35,9 +35,9 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
 {
 	const KEY_VERSION = 4;
 
-    private string $fingerprint;
+    private readonly string $fingerprint;
 
-    private string $keyID;
+    private readonly string $keyID;
 
     /**
      * Constructor
@@ -48,9 +48,9 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
      * @return self
      */
     public function __construct(
-        private int $creationTime,
-        private KeyParametersInterface $keyParameters,
-        private KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign
+        private readonly int $creationTime,
+        private readonly KeyParametersInterface $keyParameters,
+        private readonly KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign
     )
     {
         parent::__construct(PacketTag::PublicKey);

@@ -44,7 +44,7 @@ class S2K
      */
     const DEFAULT_IT_COUNT = 224;
 
-    private int $count;
+    private readonly int $count;
 
     /**
      * Constructor
@@ -52,10 +52,10 @@ class S2K
      * @return self
      */
     public function __construct(
-        private string $salt,
-        private S2kType $type = S2kType::Iterated,
-        private HashAlgorithm $hash = HashAlgorithm::Sha1,
-        private int $itCount = self::DEFAULT_IT_COUNT
+        private readonly string $salt,
+        private readonly S2kType $type = S2kType::Iterated,
+        private readonly HashAlgorithm $hash = HashAlgorithm::Sha1,
+        private readonly int $itCount = self::DEFAULT_IT_COUNT
     )
     {
         $this->count = (16 + ($itCount & 15)) << (($itCount >> 4) + self::EXPBIAS);

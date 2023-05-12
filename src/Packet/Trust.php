@@ -35,7 +35,7 @@ class Trust extends AbstractPacket
      * @param string $levelAndTrustAmount
      * @return self
      */
-    public function __construct(private string $levelAndTrustAmount)
+    public function __construct(private readonly string $levelAndTrustAmount)
     {
         parent::__construct(PacketTag::Trust);
     }

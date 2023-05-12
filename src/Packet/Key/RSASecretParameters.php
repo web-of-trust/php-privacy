@@ -31,7 +31,7 @@ class RSASecretParameters implements SignableParametersInterface
     /**
      * phpseclib3 RSA private key
      */
-    private PrivateKey $privateKey;
+    private readonly PrivateKey $privateKey;
 
     /**
      * Constructor
@@ -41,17 +41,19 @@ class RSASecretParameters implements SignableParametersInterface
      * @param BigInteger $primeQ
      * @param BigInteger $coefficients
      * @param RSAPublicParameters $publicParams
+     * @param PrivateKey $privateKey
      * @return self
      */
     public function __construct(
-        private BigInteger $exponent,
-        private BigInteger $primeP,
-        private BigInteger $primeQ,
-        private BigInteger $coefficients,
-        private RSAPublicParameters $publicParams
+        private readonly BigInteger $exponent,
+        private readonly BigInteger $primeP,
+        private readonly BigInteger $primeQ,
+        private readonly BigInteger $coefficients,
+        private readonly RSAPublicParameters $publicParams,
+        ?PrivateKey $privateKey = null
     )
     {
-        $this->privateKey = PublicKeyLoader::loadPrivateKey([
+        $this->privateKey = $privateKey ?? PublicKeyLoader::loadPrivateKey([
             'e' => $publicParams->getExponent(),
             'n' => $publicParams->getModulus(),
             'd' => $exponent,
@@ -93,15 +95,21 @@ class RSASecretParameters implements SignableParametersInterface
      * @param RSAKeySize $keySize
      * @return RSASecretParameters
      */
-    public static function generate(RSAKeySize $keySize)
+    public static function generate(RSAKeySize $keySize): RSASecretParameters
     {
+        $privateKey = RSA::createKey($keySize->value);
         $rawKey = RSA::createKey($keySize->value)->toString('Raw');
         return new RSASecretParameters(
             $rawKey['d'],
             $rawKey['primes'][1],
             $rawKey['primes'][2],
             $rawKey['coefficients'],
-            new RSAPublicParameters($rawKey['n'], $rawKey['e'])
+            new RSAPublicParameters(
+                $rawKey['n'],
+                $rawKey['e'],
+                $privateKey->getPublicKey()
+            ),
+            $privateKey
         );
     }
 
@@ -153,6 +161,14 @@ class RSASecretParameters implements SignableParametersInterface
     public function getCoefficients(): BigInteger
     {
         return $this->coefficients;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPublicParams(): KeyParametersInterface
+    {
+        return $this->publicParams;
     }
 
     /**

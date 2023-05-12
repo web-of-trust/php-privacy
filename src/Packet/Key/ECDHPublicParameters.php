@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Packet\Key;
 
+use phpseclib3\Crypt\EC\PublicKey;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{HashAlgorithm, SymmetricAlgorithm};
@@ -24,6 +25,8 @@ use OpenPGP\Enum\{HashAlgorithm, SymmetricAlgorithm};
  */
 class ECDHPublicParameters extends ECPublicParameters
 {
+    const DEFAULT_RESERVED = 0;
+
     /**
      * Constructor
      *
@@ -31,17 +34,20 @@ class ECDHPublicParameters extends ECPublicParameters
      * @param BigInteger $q
      * @param HashAlgorithm $kdfHash
      * @param SymmetricAlgorithm $kdfSymmetric
+     * @param int $reserved
+     * @param PublicKey $publicKey
      * @return self
      */
     public function __construct(
         string $oid,
         BigInteger $q,
-        private HashAlgorithm $kdfHash,
-        private SymmetricAlgorithm $kdfSymmetric,
-        private int $reserved = 0
+        private readonly HashAlgorithm $kdfHash,
+        private readonly SymmetricAlgorithm $kdfSymmetric,
+        private readonly int $reserved = self::DEFAULT_RESERVED,
+        ?PublicKey $publicKey = null
     )
     {
-        parent::__construct($oid, $q);
+        parent::__construct($oid, $q, $publicKey);
     }
 
     /**

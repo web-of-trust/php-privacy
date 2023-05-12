@@ -37,8 +37,8 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
      * @return self
      */
     public function __construct(
-        private BigInteger $ephemeralKey,
-        private string $wrappedKey
+        private readonly BigInteger $ephemeralKey,
+        private readonly string $wrappedKey
     )
     {
     }

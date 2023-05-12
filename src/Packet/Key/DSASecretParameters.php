@@ -33,7 +33,7 @@ class DSASecretParameters implements SignableParametersInterface
     /**
      * phpseclib3 DSA private key
      */
-    private PrivateKey $privateKey;
+    private readonly PrivateKey $privateKey;
 
     /**
      * Constructor
@@ -43,37 +43,18 @@ class DSASecretParameters implements SignableParametersInterface
      * @return self
      */
     public function __construct(
-        private BigInteger $exponent,
-        private DSAPublicParameters $publicParams
+        private readonly BigInteger $exponent,
+        private readonly DSAPublicParameters $publicParams,
+        ?PrivateKey $privateKey = null
     )
     {
-        $this->privateKey = PublicKeyLoader::loadPrivateKey([
+        $this->privateKey = $privateKey ?? PublicKeyLoader::loadPrivateKey([
             'p' => $publicParams->getPrime(),
             'q' => $publicParams->getOrder(),
             'g' => $publicParams->getGenerator(),
             'y' => $publicParams->getExponent(),
             'x' => $exponent,
         ]);
-    }
-
-    /**
-     * Generates parameters by using RSA create key
-     *
-     * @param DHKeySize $keySize
-     * @return RSASecretParameters
-     */
-    public static function generate(DHKeySize $keySize)
-    {
-        $rawKey = DSA::createKey($keySize->lSize(), $keySize->nSize())->toString('Raw');
-        return new DSASecretParameters(
-            $rawKey['x'],
-            new DSAPublicParameters(
-                $rawKey['p'],
-                $rawKey['q'],
-                $rawKey['g'],
-                $rawKey['y']
-            )
-        );
     }
 
     /**
@@ -88,6 +69,29 @@ class DSASecretParameters implements SignableParametersInterface
     ): DSASecretParameters
     {
         return new DSASecretParameters(Helper::readMPI($bytes), $publicParams);
+    }
+
+    /**
+     * Generates parameters by using DSA create key
+     *
+     * @param DHKeySize $keySize
+     * @return DSASecretParameters
+     */
+    public static function generate(DHKeySize $keySize): DSASecretParameters
+    {
+        $privateKey = DSA::createKey($keySize->lSize(), $keySize->nSize());
+        $rawKey = $privateKey->toString('Raw');
+        return new DSASecretParameters(
+            $rawKey['x'],
+            new DSAPublicParameters(
+                $rawKey['p'],
+                $rawKey['q'],
+                $rawKey['g'],
+                $rawKey['y'],
+                $privateKey->getPublicKey(),
+            ),
+            $privateKey
+        );
     }
 
     /**
@@ -108,6 +112,14 @@ class DSASecretParameters implements SignableParametersInterface
     public function getPrivateKey(): PrivateKey
     {
         return $this->privateKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPublicParams(): KeyParametersInterface
+    {
+        return $this->publicParams;
     }
 
     /**

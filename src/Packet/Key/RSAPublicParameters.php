@@ -30,7 +30,7 @@ class RSAPublicParameters implements VerifiableParametersInterface
     /**
      * phpseclib3 RSA public key
      */
-    private PublicKey $publicKey;
+    private readonly PublicKey $publicKey;
 
     /**
      * Constructor
@@ -40,11 +40,12 @@ class RSAPublicParameters implements VerifiableParametersInterface
      * @return self
      */
     public function __construct(
-        private BigInteger $modulus,
-        private BigInteger $exponent
+        private readonly BigInteger $modulus,
+        private readonly BigInteger $exponent,
+        ?PublicKey $publicKey = null
     )
     {
-        $this->publicKey = PublicKeyLoader::loadPublicKey([
+        $this->publicKey = $publicKey ?? PublicKeyLoader::loadPublicKey([
             'e' => $exponent,
             'n' => $modulus,
         ]);
@@ -91,6 +92,14 @@ class RSAPublicParameters implements VerifiableParametersInterface
     public function getExponent(): BigInteger
     {
         return $this->exponent;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPublicParams(): KeyParametersInterface
+    {
+        return $this;
     }
 
     /**

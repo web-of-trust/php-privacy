@@ -42,11 +42,11 @@ class OnePassSignature extends AbstractPacket
      * @return self
      */
     public function __construct(
-        private SignatureType $signatureType,
-        private HashAlgorithm $hashAlgorithm,
-        private KeyAlgorithm $keyAlgorithm,
-        private string $issuerKeyID,
-        private int $nested
+        private readonly SignatureType $signatureType,
+        private readonly HashAlgorithm $hashAlgorithm,
+        private readonly KeyAlgorithm $keyAlgorithm,
+        private readonly string $issuerKeyID,
+        private readonly int $nested
     )
     {
         parent::__construct(PacketTag::OnePassSignature);
