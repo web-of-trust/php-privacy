@@ -211,7 +211,10 @@ EOT;
 
         $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
         $this->assertSame($secretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
-        // $this->assertEquals($secretKey->getKeyParameters(), $decryptedSecretKey->getKeyParameters());
+        $this->assertEquals(
+            $secretKey->getKeyParameters()->getPrivateKey()->toString('Raw'),
+            $decryptedSecretKey->getKeyParameters()->getPrivateKey()->toString('Raw')
+        );
     }
 
     public function testGenerateDSASecretKey()
@@ -225,6 +228,10 @@ EOT;
 
         $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
         $this->assertSame($secretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        $this->assertEquals(
+            $secretKey->getKeyParameters()->getPrivateKey()->toString('Raw'),
+            $decryptedSecretKey->getKeyParameters()->getPrivateKey()->toString('Raw')
+        );
     }
 
     public function testGenerateElGamalSecretKey()
@@ -238,6 +245,10 @@ EOT;
 
         $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
         $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        $this->assertEquals(
+            $secretKey->getKeyParameters(),
+            $decryptedSecretKey->getKeyParameters()
+        );
     }
 
     public function testGenerateEcDsaSecretKeySecp521r1()
@@ -254,6 +265,10 @@ EOT;
 
         $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
         $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        $this->assertSame(
+            $secretKey->getKeyParameters()->getPrivateKey()->toString('PKCS8'),
+            $decryptedSecretKey->getKeyParameters()->getPrivateKey()->toString('PKCS8')
+        );
     }
 
     public function testGenerateEcDsaSecretKeyBrainpoolP512r1()
@@ -270,6 +285,10 @@ EOT;
 
         $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
         $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        $this->assertSame(
+            $secretKey->getKeyParameters()->getPrivateKey()->toString('PKCS8'),
+            $decryptedSecretKey->getKeyParameters()->getPrivateKey()->toString('PKCS8')
+        );
     }
 
     public function testGenerateEdDsaSecretKeyEd25519()
@@ -286,6 +305,10 @@ EOT;
 
         $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
         $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        $this->assertSame(
+            $secretKey->getKeyParameters()->getPrivateKey()->toString('PKCS8'),
+            $decryptedSecretKey->getKeyParameters()->getPrivateKey()->toString('PKCS8')
+        );
     }
 
     public function testGenerateEcdhSecretKeySecp521r1()
@@ -302,6 +325,10 @@ EOT;
 
         $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
         $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        $this->assertSame(
+            $secretKey->getKeyParameters()->getPrivateKey()->toString('PKCS8'),
+            $decryptedSecretKey->getKeyParameters()->getPrivateKey()->toString('PKCS8')
+        );
     }
 
     public function testGenerateEcdhSecretKeyBrainpoolP512r1()
@@ -318,6 +345,10 @@ EOT;
 
         $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
         $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        $this->assertSame(
+            $secretKey->getKeyParameters()->getPrivateKey()->toString('PKCS8'),
+            $decryptedSecretKey->getKeyParameters()->getPrivateKey()->toString('PKCS8')
+        );
     }
 
     public function testGenerateEcdhSecretKeyCurve25519()
@@ -334,6 +365,10 @@ EOT;
 
         $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
         $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        $this->assertSame(
+            $secretKey->getKeyParameters()->getPrivateKey()->toString('MontgomeryPrivate'),
+            $decryptedSecretKey->getKeyParameters()->getPrivateKey()->toString('MontgomeryPrivate')
+        );
     }
 
     public function testGenerateEcDsaSecretKeyException()

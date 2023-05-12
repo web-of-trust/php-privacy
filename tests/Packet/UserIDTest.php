@@ -37,12 +37,8 @@ class UserIDTest extends OpenPGPTestCase
 
     public function testUserAttribute()
     {
-        $imageData = Random::string(100);
-        $subpacketData = Random::string(100);
-        $subpacketType = $this->faker->randomDigit();
-
-        $imageAttr = ImageUserAttribute::fromImageData($imageData);
-        $userAttr = new UserAttributeSubpacket($subpacketType, $subpacketData);
+        $imageAttr = ImageUserAttribute::fromImageData(Random::string(10));
+        $userAttr = new UserAttributeSubpacket($this->faker->numberBetween(2, 10), Random::string(10));
 
         $packet = new UserAttribute([$imageAttr, $userAttr]);
         $this->assertSame($imageAttr, $packet->getAttributes()[0]);
