@@ -81,7 +81,7 @@ abstract class ElGamal extends AsymmetricKey
 
         $x = BigInteger::randomRange(self::$one, $q->subtract(self::$one));
         $y = $g->powMod($x, $p);
-        return ElGamalPrivateKey($x, $y, $p, $g);
+        return new ElGamalPrivateKey($x, $y, $p, $g);
     }
 
     /**
@@ -91,7 +91,7 @@ abstract class ElGamal extends AsymmetricKey
      */
     public function getY(): BigInteger
     {
-        return $this->Y;
+        return $this->y;
     }
 
     /**

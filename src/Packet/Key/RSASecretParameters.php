@@ -39,7 +39,7 @@ class RSASecretParameters implements SignableParametersInterface
      * @param BigInteger $exponent
      * @param BigInteger $primeP
      * @param BigInteger $primeQ
-     * @param BigInteger $coefficients
+     * @param BigInteger $coefficient
      * @param RSAPublicParameters $publicParams
      * @param PrivateKey $privateKey
      * @return self
@@ -48,7 +48,7 @@ class RSASecretParameters implements SignableParametersInterface
         private readonly BigInteger $exponent,
         private readonly BigInteger $primeP,
         private readonly BigInteger $primeQ,
-        private readonly BigInteger $coefficients,
+        private readonly BigInteger $coefficient,
         private readonly RSAPublicParameters $publicParams,
         ?PrivateKey $privateKey = null
     )
@@ -82,10 +82,10 @@ class RSASecretParameters implements SignableParametersInterface
         $primeQ = Helper::readMPI(substr($bytes, $offset));
 
         $offset += $primeQ->getLengthInBytes() + 2;
-        $coefficients = Helper::readMPI(substr($bytes, $offset));
+        $coefficient = Helper::readMPI(substr($bytes, $offset));
 
         return new RSASecretParameters(
-            $exponent, $primeP, $primeQ, $coefficients, $publicParams
+            $exponent, $primeP, $primeQ, $coefficient, $publicParams
         );
     }
 
@@ -99,11 +99,13 @@ class RSASecretParameters implements SignableParametersInterface
     {
         $privateKey = RSA::createKey($keySize->value);
         $rawKey = RSA::createKey($keySize->value)->toString('Raw');
+        $primeP = $rawKey['primes'][1];
+        $primeQ = $rawKey['primes'][2];
         return new RSASecretParameters(
             $rawKey['d'],
-            $rawKey['primes'][1],
-            $rawKey['primes'][2],
-            $rawKey['coefficients'],
+            $primeP,
+            $primeQ,
+            $primeP->modInverse($primeQ),
             new RSAPublicParameters(
                 $rawKey['n'],
                 $rawKey['e'],
@@ -154,13 +156,13 @@ class RSASecretParameters implements SignableParametersInterface
     }
 
     /**
-     * Gets coefficients
+     * Gets multiplicative inverse of p, mod q
      *
      * @return BigInteger
      */
-    public function getCoefficients(): BigInteger
+    public function getCoefficient(): BigInteger
     {
-        return $this->coefficients;
+        return $this->coefficient;
     }
 
     /**
@@ -185,7 +187,7 @@ class RSASecretParameters implements SignableParametersInterface
         }
 
         // expect p*u = 1 mod q
-        list(, $c) = $this->primeP->multiply($this->coefficients)->divide($this->primeQ);
+        list(, $c) = $this->primeP->multiply($this->coefficient)->divide($this->primeQ);
         if (!$c->equals($one)) {
             return false;
         }
@@ -211,8 +213,8 @@ class RSASecretParameters implements SignableParametersInterface
             $this->primeP->toBytes(),
             pack('n', $this->primeQ->getLength()),
             $this->primeQ->toBytes(),
-            pack('n', $this->coefficients->getLength()),
-            $this->coefficients->toBytes(),
+            pack('n', $this->coefficient->getLength()),
+            $this->coefficient->toBytes(),
         ]);
     }
 

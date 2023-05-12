@@ -11,7 +11,15 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\{
-    HashAlgorithm, PacketTag, S2kType, S2kUsage, SymmetricAlgorithm
+    CurveOid,
+    DHKeySize,
+    HashAlgorithm,
+    KeyAlgorithm,
+    PacketTag,
+    RSAKeySize,
+    S2kType,
+    S2kUsage,
+    SymmetricAlgorithm,
 };
 use OpenPGP\Packet\Key\{KeyParametersInterface, S2K};
 
@@ -62,6 +70,29 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
     public static function fromBytes(string $bytes): SecretKeyPacketInterface
     {
         return self::fromSecretKey(SecretKey::fromBytes($bytes));
+    }
+
+    /**
+     * Generate secret subkey packet
+     *
+     * @param KeyAlgorithm $algorithm
+     * @param RSAKeySize $rsaKeySize
+     * @param DHKeySize $dhKeySize
+     * @param CurveOid $curveOid
+     * @param int $time
+     * @return SecretKeyPacketInterface
+     */
+    public static function generate(
+        KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
+        RSAKeySize $rsaKeySize = RSAKeySize::S2048,
+        DHKeySize $dhKeySize = DHKeySize::L2048_N224,
+        CurveOid $curveOid = CurveOid::Secp521r1,
+        int $time = 0
+    ): SecretKeyPacketInterface
+    {
+        return self::fromSecretKey(SecretKey::generate(
+            $keyAlgorithm, $rsaKeySize, $dhKeySize, $curveOid, $time
+        ));
     }
 
     /**

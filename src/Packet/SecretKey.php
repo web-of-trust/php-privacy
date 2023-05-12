@@ -12,6 +12,7 @@ namespace OpenPGP\Packet;
 
 use phpseclib3\Crypt\Random;
 use OpenPGP\Enum\{
+    CurveOid,
     DHKeySize,
     HashAlgorithm,
     KeyAlgorithm,
@@ -122,16 +123,36 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
      * Generate secret key packet
      *
      * @param KeyAlgorithm $algorithm
+     * @param RSAKeySize $rsaKeySize
+     * @param DHKeySize $dhKeySize
+     * @param CurveOid $curveOid
+     * @param int $time
      * @return SecretKeyPacketInterface
      */
     public static function generate(
-        KeyAlgorithm $keyAlgorithm,
+        KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
         RSAKeySize $rsaKeySize = RSAKeySize::S2048,
-        DHKeySize $dhKeySize = DHKeySize::L2048N224,
+        DHKeySize $dhKeySize = DHKeySize::L2048_N224,
         CurveOid $curveOid = CurveOid::Secp521r1,
         int $time = 0
     ): SecretKeyPacketInterface
     {
+        if (($keyAlgorithm == KeyAlgorithm::EcDsa) &&
+            ($curveOid == CurveOid::Ed25519 || $curveOid == CurveOid::Curve25519)) {
+            throw new \UnexpectedValueException(
+                "EcDsa public key algorithm not supported $curveOid->name curve",
+            );
+        }
+        if (($keyAlgorithm == KeyAlgorithm::EdDsa) && ($curveOid != CurveOid::Ed25519)) {
+            throw new \UnexpectedValueException(
+                "EdDsa public key algorithm not supported $curveOid->name curve",
+            );
+        }
+        if (($keyAlgorithm == KeyAlgorithm::Ecdh) && ($curveOid == CurveOid::Ed25519)) {
+            throw new \UnexpectedValueException(
+                "Ecdh public key algorithm not supported $curveOid->name curve",
+            );
+        }
         $keyParameters = match($keyAlgorithm) {
             KeyAlgorithm::RsaEncryptSign => RSASecretParameters::generate($rsaKeySize),
             KeyAlgorithm::RsaEncrypt => RSASecretParameters::generate($rsaKeySize),
@@ -146,7 +167,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
             ),
         };
         return new SecretKey(
-            new PublicKeyPacket(
+            new PublicKey(
                 empty($time) ? time() : $time,
                 $keyParameters->getPublicParams(),
                 $keyAlgorithm,
@@ -247,6 +268,14 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
     /**
      * {@inheritdoc}
      */
+    public function isEncrypted(): bool
+    {
+        return ($this->s2k instanceof S2K) && ($this->s2kUsage !== S2kUsage::None);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function encrypt(
         string $passphrase,
         S2kUsage $s2kUsage = S2kUsage::Sha1,
@@ -265,7 +294,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
                 $symmetric->keySizeInByte()
             ));
 
-            $clearText = $this->keyParameters->toBytes();
+            $clearText = $this->keyParameters->encode();
             $encrypted = $cipher->encrypt(implode([
                 $clearText,
                 sha1($clearText, true),
@@ -273,7 +302,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
             return new SecretKey(
                 $this->publicKey,
                 $encrypted,
-                $keyParameters,
+                $this->keyParameters,
                 $s2kUsage,
                 $symmetric,
                 $s2k,

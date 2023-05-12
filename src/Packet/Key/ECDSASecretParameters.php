@@ -16,6 +16,7 @@ use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
 use phpseclib3\File\ASN1;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
+use OpenPGP\Enum\CurveOid;
 
 /**
  * ECDSA secret parameters class

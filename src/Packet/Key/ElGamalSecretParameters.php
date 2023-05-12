@@ -12,8 +12,9 @@ namespace OpenPGP\Packet\Key;
 
 use phpseclib3\Math\BigInteger;
 
-use OpenPGP\Cryptor\Asymmetric\ElGamalPrivateKey;
 use OpenPGP\Common\Helper;
+use OpenPGP\Cryptor\Asymmetric\{ElGamal, ElGamalPrivateKey};
+use OpenPGP\Enum\DHKeySize;
 
 /**
  * ElGamal secret parameters class
@@ -76,7 +77,7 @@ class ElGamalSecretParameters implements KeyParametersInterface
         $privateKey = ElGamal::createKey($keySize->lSize(), $keySize->nSize());
         return new ElGamalSecretParameters(
             $privateKey->getX(),
-            new DSAPublicParameters(
+            new ElGamalPublicParameters(
                 $privateKey->getPrime(),
                 $privateKey->getGenerator(),
                 $privateKey->getY(),

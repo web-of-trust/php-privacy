@@ -56,7 +56,9 @@ class ElGamalPrivateKey extends ElGamal
      */
     public function getPublicKey()
     {
-        return new ElGamalPublicKey($this->y, $this->prime, $this->generator);
+        return new ElGamalPublicKey(
+            $this->getY(), $this->getPrime(), $this->getGenerator()
+        );
     }
 
     /**

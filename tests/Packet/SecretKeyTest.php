@@ -2,6 +2,12 @@
 
 namespace OpenPGP\Tests\Packet;
 
+use OpenPGP\Enum\{
+    CurveOid,
+    KeyAlgorithm,
+    DHKeySize,
+    RSAKeySize,
+};
 use OpenPGP\Packet\SecretKey;
 use OpenPGP\Packet\SecretSubkey;
 use OpenPGP\Tests\OpenPGPTestCase;
@@ -192,5 +198,168 @@ EOT;
         $this->assertSame('8efa53a375fc569aa9ca564a044eac93f0b69ea0', bin2hex($secretSubkey->getFingerprint()));
         $this->assertSame('044eac93f0b69ea0', bin2hex($secretSubkey->getKeyID()));
         $this->assertTrue($secretSubkey->getKeyParameters()->isValid());
+    }
+
+    public function testGenerateRSASecretKey()
+    {
+        $secretKey = SecretKey::generate(KeyAlgorithm::RsaEncryptSign);
+        $this->assertFalse($secretKey->isEncrypted());
+        $this->assertTrue($secretKey->getKeyParameters()->isValid());
+
+        $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
+        $this->assertTrue($encryptedSecretKey->isEncrypted());
+
+        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
+        $this->assertSame($secretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        // $this->assertEquals($secretKey->getKeyParameters(), $decryptedSecretKey->getKeyParameters());
+    }
+
+    public function testGenerateDSASecretKey()
+    {
+        $secretKey = SecretKey::generate(KeyAlgorithm::Dsa);
+        $this->assertFalse($secretKey->isEncrypted());
+        $this->assertTrue($secretKey->getKeyParameters()->isValid());
+
+        $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
+        $this->assertTrue($encryptedSecretKey->isEncrypted());
+
+        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
+        $this->assertSame($secretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+    }
+
+    public function testGenerateElGamalSecretKey()
+    {
+        $secretKey = SecretKey::generate(KeyAlgorithm::ElGamal);
+        $this->assertFalse($secretKey->isEncrypted());
+        $this->assertTrue($secretKey->getKeyParameters()->isValid());
+
+        $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
+        $this->assertTrue($encryptedSecretKey->isEncrypted());
+
+        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
+        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+    }
+
+    public function testGenerateEcDsaSecretKeySecp521r1()
+    {
+        $secretKey = SecretKey::generate(
+            KeyAlgorithm::EcDsa,
+            curveOid: CurveOid::Secp521r1
+        );
+        $this->assertFalse($secretKey->isEncrypted());
+        $this->assertTrue($secretKey->getKeyParameters()->isValid());
+
+        $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
+        $this->assertTrue($encryptedSecretKey->isEncrypted());
+
+        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
+        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+    }
+
+    public function testGenerateEcDsaSecretKeyBrainpoolP512r1()
+    {
+        $secretKey = SecretKey::generate(
+            KeyAlgorithm::EcDsa,
+            curveOid: CurveOid::BrainpoolP512r1
+        );
+        $this->assertFalse($secretKey->isEncrypted());
+        $this->assertTrue($secretKey->getKeyParameters()->isValid());
+
+        $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
+        $this->assertTrue($encryptedSecretKey->isEncrypted());
+
+        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
+        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+    }
+
+    public function testGenerateEdDsaSecretKeyEd25519()
+    {
+        $secretKey = SecretKey::generate(
+            KeyAlgorithm::EdDsa,
+            curveOid: CurveOid::Ed25519
+        );
+        $this->assertFalse($secretKey->isEncrypted());
+        $this->assertTrue($secretKey->getKeyParameters()->isValid());
+
+        $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
+        $this->assertTrue($encryptedSecretKey->isEncrypted());
+
+        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
+        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+    }
+
+    public function testGenerateEcdhSecretKeySecp521r1()
+    {
+        $secretKey = SecretKey::generate(
+            KeyAlgorithm::Ecdh,
+            curveOid: CurveOid::Secp521r1
+        );
+        $this->assertFalse($secretKey->isEncrypted());
+        $this->assertTrue($secretKey->getKeyParameters()->isValid());
+
+        $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
+        $this->assertTrue($encryptedSecretKey->isEncrypted());
+
+        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
+        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+    }
+
+    public function testGenerateEcdhSecretKeyBrainpoolP512r1()
+    {
+        $secretKey = SecretKey::generate(
+            KeyAlgorithm::Ecdh,
+            curveOid: CurveOid::BrainpoolP512r1
+        );
+        $this->assertFalse($secretKey->isEncrypted());
+        $this->assertTrue($secretKey->getKeyParameters()->isValid());
+
+        $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
+        $this->assertTrue($encryptedSecretKey->isEncrypted());
+
+        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
+        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+    }
+
+    public function testGenerateEcdhSecretKeyCurve25519()
+    {
+        $secretKey = SecretKey::generate(
+            KeyAlgorithm::Ecdh,
+            curveOid: CurveOid::Curve25519
+        );
+        $this->assertFalse($secretKey->isEncrypted());
+        $this->assertTrue($secretKey->getKeyParameters()->isValid());
+
+        $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
+        $this->assertTrue($encryptedSecretKey->isEncrypted());
+
+        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
+        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+    }
+
+    public function testGenerateEcDsaSecretKeyException()
+    {
+        $this->expectException(\UnexpectedValueException::class);
+        SecretKey::generate(
+            KeyAlgorithm::EcDsa,
+            curveOid: CurveOid::Ed25519
+        );
+    }
+
+    public function testGenerateEdDsaSecretKeyException()
+    {
+        $this->expectException(\UnexpectedValueException::class);
+        SecretKey::generate(
+            KeyAlgorithm::EdDsa,
+            curveOid: CurveOid::Curve25519
+        );
+    }
+
+    public function testGenerateEcdhSecretKeyException()
+    {
+        $this->expectException(\UnexpectedValueException::class);
+        SecretKey::generate(
+            KeyAlgorithm::Ecdh,
+            curveOid: CurveOid::Ed25519
+        );
     }
 }

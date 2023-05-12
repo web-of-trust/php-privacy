@@ -31,6 +31,13 @@ interface SecretKeyPacketInterface extends KeyPacketInterface
     function getPublicKey(): KeyPacketInterface;
 
     /**
+     * Return secret key packed is encrypted
+     *
+     * @return bool
+     */
+    function isEncrypted(): bool;
+
+    /**
      * Encrypts secret key with passphrase
      *
      * @param string $passphrase

@@ -60,7 +60,7 @@ enum CurveOid: string
             self::Secp521r1 => new secp521r1(),
             self::BrainpoolP256r1 => new brainpoolP256r1(),
             self::BrainpoolP384r1 => new brainpoolP384r1(),
-            self::BrainpoolP512r1 => brainpoolP512r1(),
+            self::BrainpoolP512r1 => new brainpoolP512r1(),
             self::Ed25519 => new Ed25519(),
             self::Curve25519 => new Curve25519(),
         };
@@ -84,15 +84,15 @@ enum CurveOid: string
     public function hashAlgorithm(): HashAlgorithm
     {
         return match($this) {
-            self::Prime256v1 => HashAlgorithm::SHA256,
-            self::Secp256k1 => HashAlgorithm::SHA256,
-            self::Secp384r1 => HashAlgorithm::SHA384,
-            self::Secp521r1 => HashAlgorithm::SHA512,
-            self::BrainpoolP256r1 => HashAlgorithm::SHA256,
-            self::BrainpoolP384r1 => HashAlgorithm::SHA384,
-            self::BrainpoolP512r1 => HashAlgorithm::SHA512,
-            self::Ed25519 => HashAlgorithm::SHA256,
-            self::Curve25519 => HashAlgorithm::SHA256,
+            self::Prime256v1 => HashAlgorithm::Sha256,
+            self::Secp256k1 => HashAlgorithm::Sha256,
+            self::Secp384r1 => HashAlgorithm::Sha384,
+            self::Secp521r1 => HashAlgorithm::Sha512,
+            self::BrainpoolP256r1 => HashAlgorithm::Sha256,
+            self::BrainpoolP384r1 => HashAlgorithm::Sha384,
+            self::BrainpoolP512r1 => HashAlgorithm::Sha512,
+            self::Ed25519 => HashAlgorithm::Sha256,
+            self::Curve25519 => HashAlgorithm::Sha256,
         };
     }
 
