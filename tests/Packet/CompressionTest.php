@@ -54,4 +54,68 @@ class CompressionTest extends OpenPGPTestCase
         $this->assertSame(CompressionAlgorithm::BZip2, $decompressed->getAlgorithm());
         $this->assertEquals($packets, $decompressed->getPackets());
     }
+
+    public function testZipDecompress()
+    {
+        $data = <<<EOT
+jA0ECQMCRq12Ney7cav/0kIBVtvCp7e/6bftnl80wIN/ocPyTIoNgZUzAucL8Yxa
+bZ7L0eBy4u8hgAVtrJCtETOLYeFMS51S/7ErdqyksWx9osw=
+EOT;
+
+        $packets = PacketList::decode(base64_decode($data));
+        $skesk = $packets->getIterator()[0]->decrypt('password');
+        $sessionKey = $skesk->getSessionKey();
+        $seip = $packets->getIterator()[1]->decrypt(
+            $sessionKey->getEncryptionKey(),
+            $sessionKey->getSymmetric(),
+        );
+
+        $compressed = $seip->getPackets()->getIterator()[0];
+        $this->assertSame(CompressionAlgorithm::Zip, $compressed->getAlgorithm());
+        $literalData = $compressed->getPackets()->getIterator()[0];
+        $this->assertSame('Hello PHP PG', trim($literalData->getData()));
+    }
+
+    public function testZlibDecompress()
+    {
+        $data = <<<EOT
+jA0ECQMCLRbDkykeeZn/0kgBj3MScClX8/qZbP/HHT1XMXe8oc0FRSN8u6p+JbeC
+cBZXWFgKE6GfHoK+8dlqnQYyPb9Xgh4MtFkw3OSFG9oO10Ggjuupq5Q=
+EOT;
+
+        $packets = PacketList::decode(base64_decode($data));
+        $skesk = $packets->getIterator()[0]->decrypt('password');
+        $sessionKey = $skesk->getSessionKey();
+        $seip = $packets->getIterator()[1]->decrypt(
+            $sessionKey->getEncryptionKey(),
+            $sessionKey->getSymmetric(),
+        );
+
+        $compressed = $seip->getPackets()->getIterator()[0];
+        $this->assertSame(CompressionAlgorithm::Zlib, $compressed->getAlgorithm());
+        $literalData = $compressed->getPackets()->getIterator()[0];
+        $this->assertSame('Hello PHP PG', trim($literalData->getData()));
+    }
+
+    public function testBZip2Decompress()
+    {
+        $data = <<<EOT
+jA0ECQMCrf1YgAm7Evr/0m8BFPj2+nB5ipmTP0eWAAFxZCh4b7lTkE32a+nEABkg
+kgYAl1ez6sJjNmyUYMzAWbfIEC0hoXioZKY6W/9KR7Ln0aK46/ZUGW3QKau7BwlY
+64cgB5gvL4qH3TMmIaWMrJ+rr+zFD2RI+oakU2zAheg=
+EOT;
+
+        $packets = PacketList::decode(base64_decode($data));
+        $skesk = $packets->getIterator()[0]->decrypt('password');
+        $sessionKey = $skesk->getSessionKey();
+        $seip = $packets->getIterator()[1]->decrypt(
+            $sessionKey->getEncryptionKey(),
+            $sessionKey->getSymmetric(),
+        );
+
+        $compressed = $seip->getPackets()->getIterator()[0];
+        $this->assertSame(CompressionAlgorithm::BZip2, $compressed->getAlgorithm());
+        $literalData = $compressed->getPackets()->getIterator()[0];
+        $this->assertSame('Hello PHP PG', trim($literalData->getData()));
+    }
 }

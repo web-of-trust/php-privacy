@@ -170,7 +170,7 @@ class SymEncryptedSessionKey extends AbstractPacket
      */
     public function decrypt(string $password): SymEncryptedSessionKey
     {
-        if (null != $this->sessionKey) {
+        if ($this->sessionKey instanceof SessionKey) {
             return $this;
         } else {
             $key = $this->s2k->produceKey(

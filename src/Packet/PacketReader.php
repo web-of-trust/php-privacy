@@ -88,7 +88,7 @@ class PacketReader
         $tagByte = $oldFormat ? ($headerByte & 0x3f) >> 2 : $headerByte & 0x3f;
         $tag = PacketTag::from($tagByte);
 
-        $packetLength = strlen($bytes) - $offset - 1;
+        $packetLength = strlen($bytes) - $offset;
         if ($oldFormat) {
             $lengthType = $headerByte & 0x03;
             switch ($lengthType) {
@@ -102,9 +102,6 @@ class PacketReader
                     $unpacked = unpack('N', substr($bytes, $offset++, 4));
                     $packetLength = reset($unpacked);
                     $offset += 4;
-                    break;
-                default:
-                    $packetLength = strlen($bytes) - $offset;
                     break;
             }
         }

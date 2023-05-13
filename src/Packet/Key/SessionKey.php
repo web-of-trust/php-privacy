@@ -116,7 +116,7 @@ class SessionKey
     public function computeChecksum(): string
     {
         $sum = 0;
-        $keyLen = strlen($this->encryptionKey)
+        $keyLen = strlen($this->encryptionKey);
         for ($i = 0; $i < $keyLen; $i++) {
           $sum = ($sum + ord($this->encryptionKey[$i])) & 0xffff;
         }
