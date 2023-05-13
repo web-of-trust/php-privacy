@@ -43,7 +43,7 @@ class SKESKTest extends OpenPGPTestCase
         $sessionKey = SessionKey::produceKey();
         $skesk = SymEncryptedSessionKey::encryptSessionKey(self::PASSPHRASE, $sessionKey);
         $seip = SymEncryptedIntegrityProtectedData::encryptPacketsWithSessionKey(
-            $sessionKey,
+            $skesk->getSessionKey(),
             new PacketList([LiteralData::fromText(self::LITERAL_TEXT)])
         );
 
