@@ -12,6 +12,7 @@ namespace OpenPGP\Packet;
 
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{HashAlgorithm, PacketTag, SymmetricAlgorithm};
+use OpenPGP\Packet\Key\SessionKey;
 
 /**
  * Implementation of the Sym. Encrypted Integrity Protected Data Packet (Tag 18)
@@ -97,11 +98,39 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
     }
 
     /**
+     * Encrypts packet list with session key
+     *
+     * @param SessionKey $sessionKey
+     * @param PacketList $packets
+     * @return SymEncryptedIntegrityProtectedData
+     */
+    public static function encryptPacketsWithSessionKey(
+        SessionKey $sessionKey, PacketList $packets
+    ): SymEncryptedIntegrityProtectedData
+    {
+        return self::encryptPackets(
+            $sessionKey->getEncryptionKey(),
+            $packets,
+            $sessionKey->getSymmetric()
+        );
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function toBytes(): string
     {
         return chr(self::VERSION) . $this->encrypted;
+    }
+
+    /**
+     * Gets encrypted data
+     *
+     * @return string
+     */
+    public function getEncrypted(): string
+    {
+        return $this->encrypted;
     }
 
     /**
@@ -130,6 +159,22 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
             return self::encryptPackets($key, $this->packets, $symmetric);
         }
         return $this;
+    }
+
+    /**
+     * Encrypts the payload in the packet with session key.
+     *
+     * @param SessionKey $sessionKey
+     * @return SymEncryptedIntegrityProtectedData
+     */
+    public function encryptWithSessionKey(
+        SessionKey $sessionKey
+    ): SymEncryptedIntegrityProtectedData
+    {
+        return $this->encrypt(
+            $sessionKey->getEncryptionKey(),
+            $sessionKey->getSymmetric()
+        );
     }
 
     /**
@@ -162,6 +207,22 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
             PacketList::decode(
                 substr($toHash, $blockSize + 2, strlen($toHash) - $blockSize - 2)
             )
+        );
+    }
+
+    /**
+     * Decrypts the encrypted data contained in the packet with session key.
+     *
+     * @param SessionKey $sessionKey
+     * @return SymEncryptedIntegrityProtectedData
+     */
+    public function decryptWithSessionKey(
+        SessionKey $sessionKey
+    ): SymEncryptedIntegrityProtectedData
+    {
+        return $this->decrypt(
+            $sessionKey->getEncryptionKey(),
+            $sessionKey->getSymmetric()
         );
     }
 }

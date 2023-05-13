@@ -14,6 +14,7 @@ use OpenPGP\Tests\OpenPGPTestCase;
 class CompressionTest extends OpenPGPTestCase
 {
     const PASSPHRASE = 'password';
+    const LITERAL_TEXT = 'Hello PHP PG';
 
     public function testZip()
     {
