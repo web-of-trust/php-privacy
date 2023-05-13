@@ -57,8 +57,7 @@ class ElGamalTest extends OpenPGPTestCase
         $plainText = Random::string($prime->getLengthInBytes() - 1);
         $publicKey = $privateKey->getPublicKey();
         $encrypted = $publicKey->encrypt($plainText);
-        $decrypted = $privateKey->decrypt($encrypted);
-        $this->assertSame(bin2hex($plainText), bin2hex($decrypted));
+        $this->assertSame($plainText, $privateKey->decrypt($encrypted));
     }
 
     public function testEncryption()
@@ -79,7 +78,6 @@ class ElGamalTest extends OpenPGPTestCase
 
         $plainText = Random::string($prime->getLengthInBytes() - 1);
         $encrypted = $publicKey->encrypt($plainText);
-        $decrypted = $privateKey->decrypt($encrypted);
-        $this->assertSame(bin2hex($plainText), bin2hex($decrypted));
+        $this->assertSame($plainText, $privateKey->decrypt($encrypted));
     }
 }
