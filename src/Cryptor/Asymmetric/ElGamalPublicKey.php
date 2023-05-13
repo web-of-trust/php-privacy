@@ -38,7 +38,6 @@ class ElGamalPublicKey extends ElGamal
             throw new \InvalidArgumentException('input too large for ' . self::ALGORITHM . ' cipher.');
         }
 
-        $one = new BigInteger(1);
         $prime = $this->getPrime();
         $input = Helper::bin2BigInt($plainText);
         if ($input->compare($prime) > 0) {
@@ -47,7 +46,7 @@ class ElGamalPublicKey extends ElGamal
 
         $byteLength = (int) ($outputSize / 2);
         do {
-            $k = BigInteger::randomRange($one, $prime->subtract($one));
+            $k = BigInteger::randomRange(self::$one, $prime->subtract(self::$one));
             $gamma = $this->getGenerator()->modPow($k, $prime);
             list(, $phi) = $input->multiply($this->getY()->modPow($k, $prime))->divide($prime);
         } while ($gamma->getLengthInBytes() < $byteLength || $phi->getLengthInBytes() < $byteLength);

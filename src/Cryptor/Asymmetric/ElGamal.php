@@ -45,6 +45,10 @@ abstract class ElGamal extends AsymmetricKey
     )
     {
         $this->bitSize = $prime->getLength();
+        if (!isset(self::$zero)) {
+            self::$zero = new BigInteger(0);
+            self::$one = new BigInteger(1);
+        }
     }
 
     /**
@@ -58,29 +62,32 @@ abstract class ElGamal extends AsymmetricKey
      */
     public static function createKey(int $lSize = 2048, int $nSize = 224): ElGamalPrivateKey
     {
-        $one = new BigInteger(1);
+        if (!isset(self::$zero)) {
+            self::$zero = new BigInteger(0);
+            self::$one = new BigInteger(1);
+        }
         $two = new BigInteger(2);
         $q = BigInteger::randomPrime($nSize);
         $divisor = $q->multiply($two);
         do {
             $x = BigInteger::random($lSize);
             list(, $c) = $x->divide($divisor);
-            $p = $x->subtract($c->subtract($one));
+            $p = $x->subtract($c->subtract(self::$one));
         } while ($p->getLength() != $lSize || !$p->isPrime());
 
-        $p_1 = $p->subtract($one);
+        $p_1 = $p->subtract(self::$one);
         list($e) = $p_1->divide($q);
 
         $h = clone $two;
         while (true) {
             $g = $h->powMod($e, $p);
-            if (!$g->equals($one)) {
+            if (!$g->equals(self::$one)) {
                 break;
             }
-            $h = $h->add($one);
+            $h = $h->add(self::$one);
         }
 
-        $x = BigInteger::randomRange($one, $q->subtract($one));
+        $x = BigInteger::randomRange(self::$one, $q->subtract(self::$one));
         $y = $g->powMod($x, $p);
         return new ElGamalPrivateKey($x, $y, $p, $g);
     }
