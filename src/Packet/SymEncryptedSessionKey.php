@@ -100,7 +100,7 @@ class SymEncryptedSessionKey extends AbstractPacket
      */
     public static function encryptSessionKey(
         string $password,
-        SessionKey $sessionKey,
+        ?SessionKey $sessionKey = null,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         HashAlgorithm $hash = HashAlgorithm::Sha1,
         S2kType $s2kType = S2kType::Iterated
@@ -108,16 +108,24 @@ class SymEncryptedSessionKey extends AbstractPacket
     {
         $s2k = new S2K(Random::string(S2K::SALT_LENGTH), $s2kType, $hash);
         $cipher = $symmetric->cipherEngine();
-        $cipher->setKey($s2k->produceKey(
+        $key = $s2k->produceKey(
             $password,
             $symmetric->keySizeInByte()
-        ));
-        $cipher->setIV(str_repeat("\x0", $symmetric->blockSize()));
+        );
+        if ($sessionKey instanceof SessionKey) {
+            $cipher->setKey($key);
+            $cipher->setIV(str_repeat("\x0", $symmetric->blockSize()));
+            $encrypted = $cipher->encrypt($sessionKey->encode());
+        }
+        else {
+            $encrypted = '';
+            $sessionKey = new SessionKey($key, $symmetric);
+        }
 
         return new SymEncryptedSessionKey(
             $s2k,
             $symmetric,
-            $cipher->encrypt($sessionKey->encode()),
+            $encrypted,
             $sessionKey
         );
     }

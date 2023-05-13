@@ -139,4 +139,34 @@ class PacketList implements \IteratorAggregate, \Countable
     {
         return $this->packets->count();
     }
+
+    /**
+     * Get array packets
+     * 
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return $this->packets->getArrayCopy();
+    }
+
+    /**
+     * Return current array packet
+     * 
+     * @return PacketInterface
+     */
+    public function current(): PacketInterface
+    {
+        return $this->packets->current();
+    }
+
+    /**
+     * Gets packet for an offset
+     * 
+     * @return PacketInterface
+     */
+    public function offsetGet($key): PacketInterface
+    {
+        return $this->packets->offsetGet($key);
+    }
 }
