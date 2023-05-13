@@ -11,6 +11,7 @@
 namespace OpenPGP\Cryptor\Asymmetric;
 
 use phpseclib3\Math\BigInteger;
+use OpenPGP\Common\Helper;
 
 /**
  * ElGamal private key class
@@ -77,11 +78,12 @@ class ElGamalPrivateKey extends ElGamal
             throw new \InvalidArgumentException('input too large for ' . static::ALGORITHM . ' cipher.');
         }
 
+        $one = new BigInteger(1);
         $prime = $this->getPrime();
-        $gamma = $this->bits2int(substr($cipherText, 0, (int) ($length / 2)));
-        $phi = $this->bits2int(substr($cipherText, (int) ($length / 2)));
+        $gamma = Helper::bin2BigInt(substr($cipherText, 0, (int) ($length / 2)));
+        $phi = Helper::bin2BigInt(substr($cipherText, (int) ($length / 2)));
         list(, $m) = $gamma->modPow(
-            $prime->subtract(self::$one->add($this->getX())), $prime
+            $prime->subtract($one->add($this->getX())), $prime
         )->multiply($phi)->divide($prime);
         return substr($m->toBytes(), 0, $outputSize);
     }

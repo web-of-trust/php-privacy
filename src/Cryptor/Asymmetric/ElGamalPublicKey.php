@@ -11,6 +11,7 @@
 namespace OpenPGP\Cryptor\Asymmetric;
 
 use phpseclib3\Math\BigInteger;
+use OpenPGP\Common\Helper;
 
 /**
  * ElGamal public key class
@@ -37,22 +38,23 @@ class ElGamalPublicKey extends ElGamal
             throw new \InvalidArgumentException('input too large for ' . self::ALGORITHM . ' cipher.');
         }
 
+        $one = new BigInteger(1);
         $prime = $this->getPrime();
-        $input = $this->bits2int($plainText);
+        $input = Helper::bin2BigInt($plainText);
         if ($input->compare($prime) > 0) {
             throw new \InvalidArgumentException('input too large for ' . self::ALGORITHM . ' cipher.');
         }
 
         $byteLength = (int) ($outputSize / 2);
         do {
-            $k = BigInteger::randomRange(self::$one, $prime->subtract(self::$one));
+            $k = BigInteger::randomRange($one, $prime->subtract($one));
             $gamma = $this->getGenerator()->modPow($k, $prime);
             list(, $phi) = $input->multiply($this->getY()->modPow($k, $prime))->divide($prime);
         } while ($gamma->getLengthInBytes() < $byteLength || $phi->getLengthInBytes() < $byteLength);
 
         return implode([
-            substr($gamma->toBytes(true), 0, $byteLength),
-            substr($phi->toBytes(true), 0, $byteLength),
+            substr($gamma->toBytes(), 0, $byteLength),
+            substr($phi->toBytes(), 0, $byteLength),
         ]);
     }
 
