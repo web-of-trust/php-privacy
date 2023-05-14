@@ -32,7 +32,7 @@ final class Helper
      */
     public static function readMPI(string $bytes): BigInteger
     {
-        $unpacked = unpack('n', substr($bytes,0 , 2));
+        $unpacked = unpack('n', substr($bytes, 0 , 2));
         $bitLength = reset($unpacked);
         return self::bin2BigInt(substr($bytes, 2, self::bit2ByteLength($bitLength)));
     }
