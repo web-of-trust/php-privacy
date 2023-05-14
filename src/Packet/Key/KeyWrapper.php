@@ -113,17 +113,17 @@ abstract class KeyWrapper
     {
         if (strlen($kek) != $this->kekSize->value) {
             $size = $this->kekSize->value;
-            throw new \InvalidArgumentException(
+            throw new \LengthException(
                 "Key encryption key size must be $size bytes."
             );
         }
         if (strlen($key) < 16) {
-            throw new \InvalidArgumentException(
+            throw new \LengthException(
                 'Key length must be at least 16 octets.'
             );
         }
         if (strlen($key) % 8 != 0) {
-            throw new \InvalidArgumentException(
+            throw new \LengthException(
                 'Key length must be a multiple of 64 bits.'
             );
         }

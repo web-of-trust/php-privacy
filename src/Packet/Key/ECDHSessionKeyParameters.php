@@ -95,8 +95,14 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
             $kek, self::pkcs5Encode($key)
         );
 
+        if ($keyParameters->getCurveOid() === CurveOid::Curve25519) {
+            $ephemeralKey = Helper::bin2BigInt("\x40" . $publicKey->getEncodedCoordinates());
+        }
+        else {
+            $ephemeralKey = Helper::bin2BigInt($publicKey->getEncodedCoordinates());
+        }
         return new ECDHSessionKeyParameters(
-            Helper::bin2BigInt($publicKey->getEncodedCoordinates()),
+            $ephemeralKey,
             $wrappedKey
         );
     }
@@ -236,7 +242,7 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
         $len = strlen($message);
         $n = ord($message[$len - 1]);
         if ($len < $n || $n > self::PKCS5_BLOCK_SIZE) {
-            throw new \UnexpectedValueException('Invalid padding length.');
+            throw new \LengthException('Invalid padding length.');
         }
         $ps = substr($message, -$n);
         if ($ps !== str_repeat(chr($n), $n)) {

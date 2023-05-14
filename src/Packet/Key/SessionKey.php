@@ -53,8 +53,7 @@ class SessionKey
         $checksum = substr($bytes, strlen($bytes) - 2);
         $computedChecksum = $sessionKey->computeChecksum();
         if ($computedChecksum !== $checksum) {
-            echo bin2hex($sessionKey->getEncryptionKey());
-            throw new \RuntimeException('Session key decryption error');
+            throw new \UnexpectedValueException('Session key decryption error');
         }
 
         return $sessionKey;
