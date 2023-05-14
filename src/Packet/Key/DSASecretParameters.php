@@ -68,7 +68,9 @@ class DSASecretParameters implements SignableParametersInterface
         string $bytes, DSAPublicParameters $publicParams
     ): DSASecretParameters
     {
-        return new DSASecretParameters(Helper::readMPI($bytes), $publicParams);
+        return new DSASecretParameters(
+            Helper::readMPI($bytes), $publicParams
+        );
     }
 
     /**

@@ -27,7 +27,10 @@ trait DSASigningTrait
      */
     public function sign(HashAlgorithm $hash, string $message): string
     {
-        $signature = $this->getPrivateKey()->withSignatureFormat('Raw')->withHash($hash->name)->sign($message);
+        $signature = $this->getPrivateKey()
+            ->withSignatureFormat('Raw')
+            ->withHash($hash->name)
+            ->sign($message);
         return implode([
             pack('n', $signature['r']->getLength()),
             $signature['r']->toBytes(),

@@ -34,6 +34,9 @@ trait DSAVerifyingTrait
     {
         $r = Helper::readMPI($signature);
         $s = Helper::readMPI(substr($signature, $r->getLengthInBytes() + 2));
-        return $this->getPublicKey()->withSignatureFormat('Raw')->withHash($hash->name)->verify($message, [$r, $s]);
+        return $this->getPublicKey()
+            ->withSignatureFormat('Raw')
+            ->withHash($hash->name)
+            ->verify($message, [$r, $s]);
     }
 }

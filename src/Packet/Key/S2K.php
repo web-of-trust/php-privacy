@@ -170,7 +170,9 @@ class S2K
         return match($this->type) {
             S2kType::Simple => $this->hash($passphrase, $keyLen),
             S2kType::Salted => $this->hash($this->salt . $passphrase, $keyLen),
-            S2kType::Iterated => $this->hash($this->iterate($this->salt . $passphrase), $keyLen),
+            S2kType::Iterated => $this->hash(
+                $this->iterate($this->salt . $passphrase), $keyLen
+            ),
         };
     }
 

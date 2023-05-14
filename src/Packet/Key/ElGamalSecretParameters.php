@@ -63,7 +63,9 @@ class ElGamalSecretParameters implements KeyParametersInterface
         string $bytes, ElGamalPublicParameters $publicParams
     ): ElGamalSecretParameters
     {
-        return new ElGamalSecretParameters(Helper::readMPI($bytes), $publicParams);
+        return new ElGamalSecretParameters(
+            Helper::readMPI($bytes), $publicParams
+        );
     }
 
     /**

@@ -48,7 +48,9 @@ class ElGamalSessionKeyParameters implements SessionKeyParametersInterface
     public static function fromBytes(string $bytes): ElGamalSessionKeyParameters
     {
         $gamma = Helper::readMPI($bytes);
-        $phi = Helper::readMPI(substr($bytes, $gamma->getLengthInBytes() + 2));
+        $phi = Helper::readMPI(
+            substr($bytes, $gamma->getLengthInBytes() + 2)
+        );
         return new ElGamalSessionKeyParameters($gamma, $phi);
     }
 
@@ -141,7 +143,9 @@ class ElGamalSessionKeyParameters implements SessionKeyParametersInterface
         $encoded = str_repeat("\x00", $keyLength);
         $encoded[1] = "\x02";
         $encoded = substr_replace($encoded, $ps, 2, strlen($ps));
-        $encoded = substr_replace($encoded, $message, $keyLength - $mLength, strlen($message));
+        $encoded = substr_replace(
+            $encoded, $message, $keyLength - $mLength, strlen($message)
+        );
         return $encoded;
     }
 

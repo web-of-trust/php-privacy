@@ -60,7 +60,9 @@ class RSAPublicParameters implements VerifiableParametersInterface
     public static function fromBytes(string $bytes): RSAPublicParameters
     {
         $modulus = Helper::readMPI($bytes);
-        $exponent = Helper::readMPI(substr($bytes, $modulus->getLengthInBytes() + 2));
+        $exponent = Helper::readMPI(
+            substr($bytes, $modulus->getLengthInBytes() + 2)
+        );
         return new RSAPublicParameters($modulus, $exponent);
     }
 

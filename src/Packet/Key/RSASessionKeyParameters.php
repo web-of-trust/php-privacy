@@ -43,7 +43,9 @@ class RSASessionKeyParameters implements SessionKeyParametersInterface
      * @param string $bytes
      * @return RSASessionKeyParameters
      */
-    public static function fromBytes(string $bytes): RSASessionKeyParameters
+    public static function fromBytes(
+        string $bytes
+    ): RSASessionKeyParameters
     {
         return new RSASessionKeyParameters(Helper::readMPI($bytes));
     }

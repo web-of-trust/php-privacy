@@ -55,7 +55,9 @@ class ECDHSecretParameters extends ECSecretParameters
         string $bytes, ECDHPublicParameters $publicParams
     ): ECDHSecretParameters
     {
-        return new ECDHSecretParameters(Helper::readMPI($bytes), $publicParams);
+        return new ECDHSecretParameters(
+            Helper::readMPI($bytes), $publicParams
+        );
     }
 
     /**

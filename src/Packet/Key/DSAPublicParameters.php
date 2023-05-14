@@ -78,7 +78,12 @@ class DSAPublicParameters implements VerifiableParametersInterface
         $offset += $generator->getLengthInBytes() + 2;
         $exponent = Helper::readMPI(substr($bytes, $offset));
 
-        return new DSAPublicParameters($prime, $order, $generator, $exponent);
+        return new DSAPublicParameters(
+            $prime,
+            $order,
+            $generator,
+            $exponent
+        );
     }
 
     /**

@@ -58,7 +58,9 @@ abstract class ECPublicParameters implements KeyParametersInterface
             $curve = $this->curveOid->getCurve();
             if ($this->curveOid === CurveOid::Ed25519) {
                 $key = PKCS8::savePublicKey(
-                    $curve, PKCS8::extractPoint(substr($q->toBytes(), 1), $curve)
+                    $curve, PKCS8::extractPoint(
+                        substr($q->toBytes(), 1), $curve
+                    )
                 );
             }
             elseif ($this->curveOid === CurveOid::Curve25519) {

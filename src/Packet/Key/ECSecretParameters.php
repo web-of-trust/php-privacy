@@ -54,7 +54,9 @@ abstract class ECSecretParameters implements KeyParametersInterface
             $format = 'PKCS8';
             $curveOid = $publicParams->getCurveOid();
             if ($curveOid === CurveOid::Ed25519) {
-                $params = PKCS8::load($publicParams->getPublicKey()->toString($format));
+                $params = PKCS8::load(
+                    $publicParams->getPublicKey()->toString($format)
+                );
                 $arr = $params['curve']->extractSecret($d->toBytes());
                 $key = PKCS8::savePrivateKey(
                     $arr['dA'], $params['curve'], $params['QA'], $arr['secret']
@@ -65,7 +67,9 @@ abstract class ECSecretParameters implements KeyParametersInterface
                 $format = 'MontgomeryPrivate';
             }
             else {
-                $params = PKCS8::load($publicParams->getPublicKey()->toString($format));
+                $params = PKCS8::load(
+                    $publicParams->getPublicKey()->toString($format)
+                );
                 $key = PKCS8::savePrivateKey(
                     $d, $params['curve'], $params['QA']
                 );
@@ -111,12 +115,16 @@ abstract class ECSecretParameters implements KeyParametersInterface
         switch ($curveOid) {
             case CurveOid::Ed25519:
             case CurveOid::Curve25519:
-                $dG = Helper::bin2BigInt("\x40" . $this->privateKey->getEncodedCoordinates());
+                $dG = Helper::bin2BigInt(
+                    "\x40" . $this->privateKey->getEncodedCoordinates()
+                );
                 return $this->publicParams->getQ()->equals($dG);
             default:
                 $curve = $curveOid->getCurve();
                 $QA = $curve->multiplyPoint($curve->getBasePoint(), $this->d);
-                $params = PKCS8::load($this->publicParams->getPublicKey()->toString('PKCS8'));
+                $params = PKCS8::load(
+                    $this->publicParams->getPublicKey()->toString('PKCS8')
+                );
                 return $QA[0]->toBigInteger()->equals($params['QA'][0]->toBigInteger()) &&
                        $QA[1]->toBigInteger()->equals($params['QA'][1]->toBigInteger());
         }

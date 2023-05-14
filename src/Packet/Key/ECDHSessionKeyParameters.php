@@ -70,14 +70,17 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
      * @return ECDHSessionKeyParameters
      */
     public static function produceParameters(
-        SessionKey $sessionKey, ECDHPublicParameters $keyParameters, string $fingerprint
+        SessionKey $sessionKey,
+        ECDHPublicParameters $keyParameters,
+        string $fingerprint
     ): ECDHSessionKeyParameters
     {
         $privateKey = EC::createKey(
             $keyParameters->getCurveOid()->name
         );
-        $publicKey = $privateKey->getPublicKey();
-        $sharedKey = DH::computeSecret($privateKey, $keyParameters->getPublicKey());
+        $sharedKey = DH::computeSecret(
+            $privateKey, $keyParameters->getPublicKey()
+        );
 
         $keySize = $keyParameters->getKdfSymmetric()->keySizeInByte();
         $keyWrapper = new AesKeyWrapper(KekSize::from($keySize));
@@ -87,19 +90,22 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
             self::ecdhParameter($keyParameters, $fingerprint),
             $keySize
         );
-        $key = implode([
-            $sessionKey->encode(),
-            $sessionKey->computeChecksum(),
-        ]);
         $wrappedKey = $keyWrapper->wrap(
-            $kek, self::pkcs5Encode($key)
+            $kek, self::pkcs5Encode(implode([
+                $sessionKey->encode(),
+                $sessionKey->computeChecksum(),
+            ]))
         );
 
         if ($keyParameters->getCurveOid() === CurveOid::Curve25519) {
-            $ephemeralKey = Helper::bin2BigInt("\x40" . $publicKey->getEncodedCoordinates());
+            $ephemeralKey = Helper::bin2BigInt(
+                "\x40" . $privateKey->getPublicKey()->getEncodedCoordinates()
+            );
         }
         else {
-            $ephemeralKey = Helper::bin2BigInt($publicKey->getEncodedCoordinates());
+            $ephemeralKey = Helper::bin2BigInt(
+                $privateKey->getPublicKey()->getEncodedCoordinates()
+            );
         }
         return new ECDHSessionKeyParameters(
             $ephemeralKey,
@@ -160,12 +166,16 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
             $format = 'PKCS8';
             $curve = $publicParams->getCurveOid()->getCurve();
             $key = PKCS8::savePublicKey(
-                $curve, PKCS8::extractPoint("\0" . $this->ephemeralKey->toBytes(), $curve)
+                $curve, PKCS8::extractPoint(
+                    "\0" . $this->ephemeralKey->toBytes(), $curve
+                )
             );
         }
         $publicKey = EC::loadFormat($format, $key);
+        $sharedKey = DH::computeSecret(
+            $keyParameters->getPrivateKey(), $publicKey
+        );
 
-        $sharedKey = DH::computeSecret($keyParameters->getPrivateKey(), $publicKey);
         $keySize = $publicParams->getKdfSymmetric()->keySizeInByte();
         $keyWrapper = new AesKeyWrapper(KekSize::from($keySize));
         $kek = self::ecdhKdf(

@@ -67,7 +67,9 @@ abstract class KeyWrapper
                 $a = substr($buffer, 0, 8);
                 $a[7] = chr(ord($a[7]) ^ ($n * $j + $i) & 0xff);
 
-                $r = substr_replace($r, substr($buffer, 8, 8), ($i - 1) * 8, 8);
+                $r = substr_replace(
+                    $r, substr($buffer, 8, 8), ($i - 1) * 8, 8
+                );
             }
         }
         return implode([$a, $r]);
@@ -98,7 +100,9 @@ abstract class KeyWrapper
                 $buffer = $this->cipher->decrypt($buffer);
 
                 $a = substr($buffer, 0, 8);
-                $r = substr_replace($r, substr($buffer, 8, 8), ($i - 1) * 8, 8);
+                $r = substr_replace(
+                    $r, substr($buffer, 8, 8), ($i - 1) * 8, 8
+                );
             }
         }
 
