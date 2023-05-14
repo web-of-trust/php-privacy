@@ -25,14 +25,14 @@ interface VerifiableParametersInterface extends KeyParametersInterface
     /**
      * Verifies a signature with message
      * 
-     * @param string $message
      * @param HashAlgorithm $hash
+     * @param string $message
      * @param string $signature
      * @return bool
      */
     function verify(
-        string $message,
         HashAlgorithm $hash,
+        string $message,
         string $signature
     ): bool;
 }

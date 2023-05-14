@@ -127,8 +127,8 @@ class RSAPublicParameters implements VerifiableParametersInterface
      * {@inheritdoc}
      */
     public function verify(
-        string $message,
         HashAlgorithm $hash,
+        string $message,
         string $signature
     ): bool
     {

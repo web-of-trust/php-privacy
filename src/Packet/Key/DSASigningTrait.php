@@ -25,7 +25,7 @@ trait DSASigningTrait
     /**
      * {@inheritdoc}
      */
-    public function sign(string $message, HashAlgorithm $hash): string
+    public function sign(HashAlgorithm $hash, string $message): string
     {
         $signature = $this->getPrivateKey()->withSignatureFormat('Raw')->withHash($hash->name)->sign($message);
         return implode([

@@ -25,9 +25,9 @@ interface SignableParametersInterface extends KeyParametersInterface
     /**
      * Signs a message and returns signature
      * 
-     * @param string $message
      * @param HashAlgorithm $hash
+     * @param string $message
      * @return string
      */
-    function sign(string $message, HashAlgorithm $hash): string;
+    function sign(HashAlgorithm $hash, string $message): string;
 }

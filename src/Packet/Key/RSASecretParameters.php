@@ -221,7 +221,7 @@ class RSASecretParameters implements SignableParametersInterface
     /**
      * {@inheritdoc}
      */
-    public function sign(string $message, HashAlgorithm $hash): string
+    public function sign(HashAlgorithm $hash, string $message): string
     {
         $signature = $this->privateKey->withHash($hash->name)->sign($message);
         return implode([
