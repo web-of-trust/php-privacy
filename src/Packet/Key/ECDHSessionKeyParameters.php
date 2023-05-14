@@ -28,7 +28,7 @@ use OpenPGP\Enum\{CurveOid, HashAlgorithm, KekSize, KeyAlgorithm};
 class ECDHSessionKeyParameters implements SessionKeyParametersInterface
 {
     const ANONYMOUS_SENDER = "\x41\x6e\x6f\x6e\x79\x6d\x6f\x75\x73\x20\x53\x65\x6e\x64\x65\x72\x20\x20\x20\x20";
-    const KDF_HEADER = "\x0\x0\x0\x1";
+    const KDF_HEADER = "\x00\x00\x00\x01";
     const PKCS5_BLOCK_SIZE = 8;
 
     /**
@@ -228,8 +228,9 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
     {
         $length = strlen($message);
         $n = self::PKCS5_BLOCK_SIZE - ($length % self::PKCS5_BLOCK_SIZE);
-        $padded = str_repeat(chr($n), $length + $n);
-        return substr_replace($padded, $message, 0, $length);
+        return substr_replace(
+            str_repeat(chr($n), $length + $n), $message, 0, $length
+        );
     }
 
     /**
