@@ -11,9 +11,11 @@
 namespace OpenPGP\Packet\Key;
 
 use phpseclib3\Crypt\{DH, EC};
+use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
+use phpseclib3\File\ASN1;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
-use OpenPGP\Enum\{HashAlgorithm, KeyAlgorithm};
+use OpenPGP\Enum\{CurveOid, HashAlgorithm, KekSize, KeyAlgorithm};
 
 /**
  * ECDHSessionKeyParameters class.
@@ -78,7 +80,7 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
         $sharedKey = DH::computeSecret($privateKey, $keyParameters->getPublicKey());
 
         $keySize = $keyParameters->getKdfSymmetric()->keySizeInByte();
-        $keyWrapper = new AesKeyWrapper($keySize);
+        $keyWrapper = new AesKeyWrapper(KekSize::from($keySize));
         $kek = self::ecdhKdf(
             $keyParameters->getKdfHash(),
             $sharedKey,
@@ -143,10 +145,23 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
         ECDHSecretParameters $keyParameters, string $fingerprint
     ): SessionKey
     {
-        $sharedKey = DH::computeSecret($keyParameters->getPrivateKey(), $this->ephemeralKey);
         $publicParams = $keyParameters->getPublicParams();
+        if ($publicParams->getCurveOid() === CurveOid::Curve25519) {
+            $format = 'MontgomeryPublic';
+            $key = substr($this->ephemeralKey->toBytes(), 1);
+        }
+        else {
+            $format = 'PKCS8';
+            $curve = $publicParams->getCurveOid()->getCurve();
+            $key = PKCS8::savePublicKey(
+                $curve, PKCS8::extractPoint("\0" . $this->ephemeralKey->toBytes(), $curve)
+            );
+        }
+        $publicKey = EC::loadFormat($format, $key);
+
+        $sharedKey = DH::computeSecret($keyParameters->getPrivateKey(), $publicKey);
         $keySize = $publicParams->getKdfSymmetric()->keySizeInByte();
-        $keyWrapper = new AesKeyWrapper($keySize);
+        $keyWrapper = new AesKeyWrapper(KekSize::from($keySize));
         $kek = self::ecdhKdf(
             $publicParams->getKdfHash(),
             $sharedKey,
@@ -184,11 +199,13 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
         ECDHPublicParameters $keyParameters, string $fingerprint
     ): string
     {
+        $oid = ASN1::encodeOID($keyParameters->getCurveOid()->value);
         return implode([
-            $keyParameters->getCurveOid()->value,
-            chr(KeyAlgorithm::ECDH->value),
+            chr(strlen($oid)),
+            $oid,
+            chr(KeyAlgorithm::Ecdh->value),
             "\x3",
-            chr($keyParameters->getReserved()->value),
+            chr($keyParameters->getReserved()),
             chr($keyParameters->getKdfHash()->value),
             chr($keyParameters->getKdfSymmetric()->value),
             self::ANONYMOUS_SENDER,

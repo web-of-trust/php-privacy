@@ -112,8 +112,9 @@ abstract class KeyWrapper
     private function validateKeySize(string $kek, string $key)
     {
         if (strlen($kek) != $this->kekSize->value) {
+            $size = $this->kekSize->value;
             throw new \InvalidArgumentException(
-                "Key encryption key size must be $this->kekSize->value bytes."
+                "Key encryption key size must be $size bytes."
             );
         }
         if (strlen($key) < 16) {

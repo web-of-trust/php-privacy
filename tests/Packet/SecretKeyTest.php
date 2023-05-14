@@ -120,7 +120,7 @@ EOT;
         $this->assertTrue($secretSubkey->getKeyParameters()->isValid());
     }
 
-    public function testECDSAp384SecretKey()
+    public function testEcdsaP384SecretKey()
     {
         $data = <<<EOT
 BGRYd7UTBSuBBAAiAwME3Z/lmJrDGnYHvT7xe5ei8xFfsCsrH+6AjmSftcJEYCCTy4CupXlvp5wb
@@ -134,7 +134,7 @@ EOT;
         $this->assertTrue($secretKey->getKeyParameters()->isValid());
     }
 
-    public function testECDHp384SecretSubkey()
+    public function testEcdhP384SecretSubkey()
     {
         $data = <<<EOT
 BGRYd7USBSuBBAAiAwMEEWHAaBdPHihwch9e3b4VqOB89WeHI6fGWDLpKj6bJ/ME1VbDPhf0DN0N
@@ -148,7 +148,7 @@ EOT;
         $this->assertTrue($secretSubkey->getKeyParameters()->isValid());
     }
 
-    public function testECDSAbrainpoolP256SecretKey()
+    public function testEcdsaBrainpoolP256SecretKey()
     {
         $data = <<<EOT
 BGRYXMETCSskAwMCCAEBBwIDBHKh5xdXoTfino6vulZBw4fl5lMtKgzXIeG9zhJuBInpE7gOlxes
@@ -161,7 +161,7 @@ EOT;
         $this->assertTrue($secretKey->getKeyParameters()->isValid());
     }
 
-    public function testECDHbrainpoolP256SecretSubkey()
+    public function testEcdhPrainpoolP256SecretSubkey()
     {
         $data = <<<EOT
 BGRYXMESCSskAwMCCAEBBwIDBINvienMnFyJJCblEBJ2J9sBZ/hCAHGLbgDZPCC+mTLqDJJx47Sr
@@ -174,7 +174,7 @@ EOT;
         $this->assertTrue($secretSubkey->getKeyParameters()->isValid());
     }
 
-    public function testEdDSACurve25519SecretKey()
+    public function testEddsaCurve25519SecretKey()
     {
         $data = <<<EOT
 BGRYXQUWCSsGAQQB2kcPAQEHQLvR0VoiVSt3+xzxSSQrR7/yrMzQG8OXueMhIkQb0UPM/gcDAg3L
@@ -187,7 +187,7 @@ EOT;
         $this->assertTrue($secretKey->getKeyParameters()->isValid());
     }
 
-    public function testECDHCurve25519SecretSubkey()
+    public function testEcdhCurve25519SecretSubkey()
     {
         $data = <<<EOT
 BGRYXQUSCisGAQQBl1UBBQEBB0BCbUFNqFZKpFLBB339cZrp7udovohvVMiG7qP9+ij6AQMBCAf+
