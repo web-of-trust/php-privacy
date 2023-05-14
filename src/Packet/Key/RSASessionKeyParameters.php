@@ -10,8 +10,8 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\RSA\PrivateKey;
-use phpseclib3\Crypt\RSA\PublicKey;
+use phpseclib3\Crypt\RSA;
+use phpseclib3\Crypt\RSA\{PrivateKey, PublicKey};
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 
@@ -59,7 +59,7 @@ class RSASessionKeyParameters implements SessionKeyParametersInterface
         SessionKey $sessionKey, PublicKey $publicKey
     ): RSASessionKeyParameters
     {
-        $publicKey->withPadding(RSA::ENCRYPTION_PKCS1);
+        $publicKey = $publicKey->withPadding(RSA::ENCRYPTION_PKCS1);
         return new RSASessionKeyParameters(
             Helper::bin2BigInt($publicKey->encrypt(implode([
                 $sessionKey->encode(),
@@ -97,7 +97,7 @@ class RSASessionKeyParameters implements SessionKeyParametersInterface
      */
     public function decrypt(PrivateKey $privateKey): SessionKey
     {
-        $privateKey->withPadding(RSA::ENCRYPTION_PKCS1);
+        $privateKey = $privateKey->withPadding(RSA::ENCRYPTION_PKCS1);
         return SessionKey::fromBytes($privateKey->decrypt(
             $this->encrypted->toBytes()
         ));

@@ -12,7 +12,6 @@ namespace OpenPGP\Packet;
 
 use phpseclib3\Crypt\Random;
 use OpenPGP\Enum\{HashAlgorithm, PacketTag, S2kType, SymmetricAlgorithm};
-use OpenPGP\Packet\Key\{S2K, SessionKey};
 
 /**
  * SymEncryptedSessionKey packet class
@@ -41,17 +40,17 @@ class SymEncryptedSessionKey extends AbstractPacket
     /**
      * Constructor
      *
-     * @param S2K $s2k
+     * @param Key\S2K $s2k
      * @param SymmetricAlgorithm $symmetric
      * @param string $encrypted
-     * @param SessionKey $sessionKey
+     * @param Key\SessionKey $sessionKey
      * @return self
      */
     public function __construct(
-        private readonly S2K $s2k,
+        private readonly Key\S2K $s2k,
         private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         private readonly string $encrypted = '',
-        private readonly ?SessionKey $sessionKey = null
+        private readonly ?Key\SessionKey $sessionKey = null
     )
     {
         parent::__construct(PacketTag::SymEncryptedSessionKey);
@@ -79,7 +78,7 @@ class SymEncryptedSessionKey extends AbstractPacket
         $symmetric = SymmetricAlgorithm::from(ord($bytes[$offset++]));
 
         // A string-to-key (S2K) specifier, length as defined above.
-        $s2k = S2K::fromBytes(substr($bytes, $offset));
+        $s2k = Key\S2K::fromBytes(substr($bytes, $offset));
 
         return new SymEncryptedSessionKey(
             $s2k,
@@ -92,7 +91,7 @@ class SymEncryptedSessionKey extends AbstractPacket
      * Encrypt session key
      *
      * @param string $password
-     * @param SessionKey $sessionKey
+     * @param Key\SessionKey $sessionKey
      * @param SymmetricAlgorithm $symmetric
      * @param HashAlgorithm $hash
      * @param S2kType $s2kType
@@ -100,7 +99,7 @@ class SymEncryptedSessionKey extends AbstractPacket
      */
     public static function encryptSessionKey(
         string $password,
-        ?SessionKey $sessionKey = null,
+        ?Key\SessionKey $sessionKey = null,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         HashAlgorithm $hash = HashAlgorithm::Sha1,
         S2kType $s2kType = S2kType::Iterated
@@ -112,14 +111,14 @@ class SymEncryptedSessionKey extends AbstractPacket
             $password,
             $symmetric->keySizeInByte()
         );
-        if ($sessionKey instanceof SessionKey) {
+        if ($sessionKey instanceof Key\SessionKey) {
             $cipher->setKey($key);
             $cipher->setIV(str_repeat("\x0", $symmetric->blockSize()));
             $encrypted = $cipher->encrypt($sessionKey->encode());
         }
         else {
             $encrypted = '';
-            $sessionKey = new SessionKey($key, $symmetric);
+            $sessionKey = new Key\SessionKey($key, $symmetric);
         }
 
         return new SymEncryptedSessionKey(
@@ -131,11 +130,11 @@ class SymEncryptedSessionKey extends AbstractPacket
     }
 
     /**
-     * Gets S2K
+     * Gets string 2 key
      *
-     * @return S2K
+     * @return Key\S2K
      */
-    public function getS2K(): S2K
+    public function getS2K(): Key\S2K
     {
         return $this->s2k;
     }
@@ -163,9 +162,9 @@ class SymEncryptedSessionKey extends AbstractPacket
     /**
      * Gets session key
      *
-     * @return SessionKey
+     * @return Key\SessionKey
      */
-    public function getSessionKey(): ?SessionKey
+    public function getSessionKey(): ?Key\SessionKey
     {
         return $this->sessionKey;
     }
@@ -178,7 +177,7 @@ class SymEncryptedSessionKey extends AbstractPacket
      */
     public function decrypt(string $password): SymEncryptedSessionKey
     {
-        if ($this->sessionKey instanceof SessionKey) {
+        if ($this->sessionKey instanceof Key\SessionKey) {
             return $this;
         } else {
             $key = $this->s2k->produceKey(
@@ -186,7 +185,7 @@ class SymEncryptedSessionKey extends AbstractPacket
                 $this->symmetric->keySizeInByte()
             );
             if (empty($this->encrypted)) {
-                $sessionKey = new SessionKey($key, $this->symmetric);
+                $sessionKey = new Key\SessionKey($key, $this->symmetric);
             }
             else {
                 $cipher = $this->symmetric->cipherEngine();
@@ -194,7 +193,7 @@ class SymEncryptedSessionKey extends AbstractPacket
                 $cipher->setIV(str_repeat("\x0", $this->symmetric->blockSize()));
                 $decrypted = $cipher->decrypt($this->encrypted);
                 $sessionKeySymmetric = SymmetricAlgorithm::from(ord($decrypted[0]));
-                $sessionKey = new SessionKey(substr($decrypted, 1), $sessionKeySymmetric);
+                $sessionKey = new Key\SessionKey(substr($decrypted, 1), $sessionKeySymmetric);
             }
             return new SymEncryptedSessionKey(
                 $this->s2k,

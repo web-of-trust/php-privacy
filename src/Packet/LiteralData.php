@@ -10,8 +10,7 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Enum\LiteralFormat;
-use OpenPGP\Enum\PacketTag;
+use OpenPGP\Enum\{LiteralFormat, PacketTag};
 
 /**
  * Implementation of the Literal Data Packet (Tag 11)

@@ -10,7 +10,6 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Enum\LiteralFormat;
 use OpenPGP\Enum\PacketTag;
 
 /**

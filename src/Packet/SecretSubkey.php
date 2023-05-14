@@ -21,7 +21,6 @@ use OpenPGP\Enum\{
     S2kUsage,
     SymmetricAlgorithm,
 };
-use OpenPGP\Packet\Key\{KeyParametersInterface, S2K};
 
 /**
  * Secret sub key packet class
@@ -38,20 +37,20 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
      *
      * @param PublicSubkey $publicKey
      * @param string $keyData
-     * @param KeyParametersInterface $keyParameters
+     * @param Key\KeyParametersInterface $keyParameters
      * @param S2kUsage $s2kUsage
      * @param SymmetricAlgorithm $symmetric
-     * @param S2K $s2k
+     * @param Key\S2K $s2k
      * @param string $iv
      * @return self
      */
     public function __construct(
         PublicSubkey $publicKey,
         string $keyData = '',
-        ?KeyParametersInterface $keyParameters = null,
+        ?Key\KeyParametersInterface $keyParameters = null,
         S2kUsage $s2kUsage = S2kUsage::Sha1,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        ?S2K $s2k = null,
+        ?Key\S2K $s2k = null,
         string $iv = '',
     )
     {
@@ -106,7 +105,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         S2kType $s2kType = S2kType::Iterated
     ): SecretKeyPacketInterface
     {
-        if ($this->getKeyParameters() instanceof KeyParametersInterface ) {
+        if ($this->getKeyParameters() instanceof Key\KeyParametersInterface) {
             $secretKey = parent::encrypt(
                 $passphrase, $s2kUsage, $symmetric, $hash, $s2kType
             );
@@ -122,7 +121,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
      */
     public function decrypt(string $passphrase): SecretKeyPacketInterface
     {
-        if ($this->getKeyParameters() instanceof KeyParametersInterface ) {
+        if ($this->getKeyParameters() instanceof Key\KeyParametersInterface) {
             return $this;
         }
         else {

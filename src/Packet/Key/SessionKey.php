@@ -46,13 +46,14 @@ class SessionKey
     public static function fromBytes(string $bytes): SessionKey
     {
         $sessionKey = new SessionKey(
-            substr($bytes, 1, strlen($bytes) - 2),
+            substr($bytes, 1, strlen($bytes) - 3),
             SymmetricAlgorithm::from(ord($bytes[0]))
         );
 
         $checksum = substr($bytes, strlen($bytes) - 2);
         $computedChecksum = $sessionKey->computeChecksum();
         if ($computedChecksum !== $checksum) {
+            echo bin2hex($sessionKey->getEncryptionKey());
             throw new \RuntimeException('Session key decryption error');
         }
 

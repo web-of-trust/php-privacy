@@ -11,7 +11,6 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\KeyAlgorithm;
-use OpenPGP\Packet\Key\KeyParametersInterface;
 
 /**
  * Key packet interface
@@ -47,9 +46,9 @@ interface KeyPacketInterface
     /**
      * Gets key parameters
      * 
-     * @return KeyParametersInterface
+     * @return Key\KeyParametersInterface
      */
-    function getKeyParameters(): ?KeyParametersInterface;
+    function getKeyParameters(): ?Key\KeyParametersInterface;
 
     /**
      * Gets fingerprint

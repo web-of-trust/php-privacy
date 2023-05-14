@@ -12,7 +12,6 @@ namespace OpenPGP\Packet;
 
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{HashAlgorithm, PacketTag, SymmetricAlgorithm};
-use OpenPGP\Packet\Key\SessionKey;
 
 /**
  * Implementation of the Sym. Encrypted Integrity Protected Data Packet (Tag 18)
@@ -100,12 +99,12 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
     /**
      * Encrypts packet list with session key
      *
-     * @param SessionKey $sessionKey
+     * @param Key\SessionKey $sessionKey
      * @param PacketList $packets
      * @return SymEncryptedIntegrityProtectedData
      */
     public static function encryptPacketsWithSessionKey(
-        SessionKey $sessionKey, PacketList $packets
+        Key\SessionKey $sessionKey, PacketList $packets
     ): SymEncryptedIntegrityProtectedData
     {
         return self::encryptPackets(
@@ -164,11 +163,11 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
     /**
      * Encrypts the payload in the packet with session key.
      *
-     * @param SessionKey $sessionKey
+     * @param Key\SessionKey $sessionKey
      * @return SymEncryptedIntegrityProtectedData
      */
     public function encryptWithSessionKey(
-        SessionKey $sessionKey
+        Key\SessionKey $sessionKey
     ): SymEncryptedIntegrityProtectedData
     {
         return $this->encrypt(
@@ -213,11 +212,11 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
     /**
      * Decrypts the encrypted data contained in the packet with session key.
      *
-     * @param SessionKey $sessionKey
+     * @param Key\SessionKey $sessionKey
      * @return SymEncryptedIntegrityProtectedData
      */
     public function decryptWithSessionKey(
-        SessionKey $sessionKey
+        Key\SessionKey $sessionKey
     ): SymEncryptedIntegrityProtectedData
     {
         return $this->decrypt(

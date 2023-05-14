@@ -10,8 +10,7 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Enum\LiteralFormat;
-use OpenPGP\Enum\PacketTag;
+use OpenPGP\Enum\{LiteralFormat, PacketTag};
 
 /**
  * OnePassSignature represents a One-Pass Signature packet.

@@ -11,14 +11,6 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\{KeyAlgorithm, PacketTag};
-use OpenPGP\Packet\Key\{
-    KeyParametersInterface,
-    RSAPublicParameters,
-    DSAPublicParameters,
-    ElGamalPublicParameters,
-    ECDHPublicParameters,
-    ECDSAPublicParameters,
-};
 
 /**
  * Public key packet class
@@ -43,13 +35,13 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
      * Constructor
      *
      * @param int $creationTime
-     * @param KeyParametersInterface $keyParameters
+     * @param Key\KeyParametersInterface $keyParameters
      * @param KeyAlgorithm $keyAlgorithm
      * @return self
      */
     public function __construct(
         private readonly int $creationTime,
-        private readonly KeyParametersInterface $keyParameters,
+        private readonly Key\KeyParametersInterface $keyParameters,
         private readonly KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign
     )
     {
@@ -133,7 +125,7 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
     /**
      * {@inheritdoc}
      */
-    public function getKeyParameters(): ?KeyParametersInterface
+    public function getKeyParameters(): ?Key\KeyParametersInterface
     {
         return $this->keyParameters;
     }
@@ -169,17 +161,17 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
 
     private static function readKeyParameters(
         string $bytes, KeyAlgorithm $keyAlgorithm
-    ): KeyParametersInterface
+    ): Key\KeyParametersInterface
     {
         return match($keyAlgorithm) {
-            KeyAlgorithm::RsaEncryptSign => RSAPublicParameters::fromBytes($bytes),
-            KeyAlgorithm::RsaEncrypt => RSAPublicParameters::fromBytes($bytes),
-            KeyAlgorithm::RsaSign => RSAPublicParameters::fromBytes($bytes),
-            KeyAlgorithm::ElGamal => ElGamalPublicParameters::fromBytes($bytes),
-            KeyAlgorithm::Dsa => DSAPublicParameters::fromBytes($bytes),
-            KeyAlgorithm::Ecdh => ECDHPublicParameters::fromBytes($bytes),
-            KeyAlgorithm::EcDsa => ECDSAPublicParameters::fromBytes($bytes),
-            KeyAlgorithm::EdDsa => ECDSAPublicParameters::fromBytes($bytes),
+            KeyAlgorithm::RsaEncryptSign => Key\RSAPublicParameters::fromBytes($bytes),
+            KeyAlgorithm::RsaEncrypt => Key\RSAPublicParameters::fromBytes($bytes),
+            KeyAlgorithm::RsaSign => Key\RSAPublicParameters::fromBytes($bytes),
+            KeyAlgorithm::ElGamal => Key\ElGamalPublicParameters::fromBytes($bytes),
+            KeyAlgorithm::Dsa => Key\DSAPublicParameters::fromBytes($bytes),
+            KeyAlgorithm::Ecdh => Key\ECDHPublicParameters::fromBytes($bytes),
+            KeyAlgorithm::EcDsa => Key\ECDSAPublicParameters::fromBytes($bytes),
+            KeyAlgorithm::EdDsa => Key\ECDSAPublicParameters::fromBytes($bytes),
             default => throw new \UnexpectedValueException(
                 "Unsupported PGP public key algorithm encountered",
             ),

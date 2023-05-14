@@ -12,7 +12,6 @@ namespace OpenPGP\Packet;
 
 use phpseclib3\Crypt\Random;
 use OpenPGP\Enum\{KeyAlgorithm, PacketTag, SymmetricAlgorithm};
-use OpenPGP\Packet\Key\{SessionKey, SessionKeyParametersInterface};
 
 /**
  * PublicKeyEncryptedSessionKey represents a Public-Key Encrypted Session Key packet.
@@ -49,8 +48,8 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     public function __construct(
         private readonly string $publicKeyID,
         private readonly KeyAlgorithm $publicKeyAlgorithm,
-        private readonly SessionKeyParametersInterface $sessionKeyParameters,
-        private readonly ?SessionKey $sessionKey = null
+        private readonly Key\SessionKeyParametersInterface $sessionKeyParameters,
+        private readonly ?Key\SessionKey $sessionKey = null
     )
     {
         parent::__construct(PacketTag::PublicKeyEncryptedSessionKey);
@@ -94,7 +93,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
      */
     public static function encryptSessionKey(
         PublicKey $publicKey,
-        SessionKey $sessionKey
+        Key\SessionKey $sessionKey
     ): PublicKeyEncryptedSessionKey
     {
         return new PublicKeyEncryptedSessionKey(
@@ -141,9 +140,9 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     /**
      * Gets session key parameters
      *
-     * @return SessionKeyParametersInterface
+     * @return Key\SessionKeyParametersInterface
      */
-    public function getSessionKeyParameters(): SessionKeyParametersInterface
+    public function getSessionKeyParameters(): Key\SessionKeyParametersInterface
     {
         return $this->sessionKeyParameters;
     }
@@ -151,9 +150,9 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     /**
      * Gets session key
      *
-     * @return SessionKey
+     * @return Key\SessionKey
      */
-    public function getSessionKey(): ?SessionKey
+    public function getSessionKey(): ?Key\SessionKey
     {
         return $this->sessionKey;
     }
@@ -166,7 +165,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
      */
     public function decrypt(SecretKey $secretKey): PublicKeyEncryptedSessionKey
     {
-        if ($this->sessionKey instanceof SessionKey) {
+        if ($this->sessionKey instanceof Key\SessionKey) {
             return $this;
         }
         else {
@@ -179,7 +178,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
         }
     }
 
-    private function decryptSessionKey(SecretKey $secretKey): SessionKey
+    private function decryptSessionKey(SecretKey $secretKey): Key\SessionKey
     {
         return match($this->publicKeyAlgorithm) {
             KeyAlgorithm::RsaEncryptSign => $this->sessionKeyParameters->decrypt(
@@ -201,20 +200,20 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     }
 
     private static function produceParameters(
-        SessionKey $sessionKey, PublicKey $publicKey
-    ): SessionKeyParametersInterface
+        Key\SessionKey $sessionKey, PublicKey $publicKey
+    ): Key\SessionKeyParametersInterface
     {
         return match($publicKey->getKeyAlgorithm()) {
-            KeyAlgorithm::RsaEncryptSign => RSASessionKeyParameters::produceParameters(
+            KeyAlgorithm::RsaEncryptSign => Key\RSASessionKeyParameters::produceParameters(
                 $sessionKey, $publicKey->getKeyParameters()->getPublicKey()
             ),
-            KeyAlgorithm::RsaEncrypt => RSASessionKeyParameters::produceParameters(
+            KeyAlgorithm::RsaEncrypt => Key\RSASessionKeyParameters::produceParameters(
                 $sessionKey, $publicKey->getKeyParameters()->getPublicKey()
             ),
-            KeyAlgorithm::ElGamal => ElGamalSessionKeyParameters::produceParameters(
+            KeyAlgorithm::ElGamal => Key\ElGamalSessionKeyParameters::produceParameters(
                 $sessionKey, $publicKey->getKeyParameters()->getPublicKey()
             ),
-            KeyAlgorithm::Ecdh => ECDHSessionKeyParameters::produceParameters(
+            KeyAlgorithm::Ecdh => Key\ECDHSessionKeyParameters::produceParameters(
                 $sessionKey, $publicKey->getKeyParameters(), $publicKey->getFingerprint()
             ),
             default => throw new \UnexpectedValueException(
@@ -225,13 +224,13 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
 
     private static function readParameters(
         string $bytes, KeyAlgorithm $keyAlgorithm
-    ): SessionKeyParametersInterface
+    ): Key\SessionKeyParametersInterface
     {
         return match($keyAlgorithm) {
-            KeyAlgorithm::RsaEncryptSign => RSASessionKeyParameters::fromBytes($bytes),
-            KeyAlgorithm::RsaEncrypt => RSASessionKeyParameters::fromBytes($bytes),
-            KeyAlgorithm::ElGamal => ElGamalSessionKeyParameters::fromBytes($bytes),
-            KeyAlgorithm::Ecdh => ECDHSessionKeyParameters::fromBytes($bytes),
+            KeyAlgorithm::RsaEncryptSign => Key\RSASessionKeyParameters::fromBytes($bytes),
+            KeyAlgorithm::RsaEncrypt => Key\RSASessionKeyParameters::fromBytes($bytes),
+            KeyAlgorithm::ElGamal => Key\ElGamalSessionKeyParameters::fromBytes($bytes),
+            KeyAlgorithm::Ecdh => Key\ECDHSessionKeyParameters::fromBytes($bytes),
             default => throw new \UnexpectedValueException(
                 "Public key algorithm $keyAlgorithm->name of the PKESK packet is unsupported."
             ),

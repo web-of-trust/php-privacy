@@ -10,8 +10,7 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Enum\CompressionAlgorithm;
-use OpenPGP\Enum\PacketTag;
+use OpenPGP\Enum\{CompressionAlgorithm, PacketTag};
 
 /**
  * Implementation of the Compressed Data Packet (Tag 8)
