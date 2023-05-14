@@ -108,8 +108,8 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
     {
         return implode([
             pack('n', $this->ephemeralKey->getLength()),
-            $this->ephemeralKey->toBytes(true),
-            strlen($this->wrappedKey),
+            $this->ephemeralKey->toBytes(),
+            chr(strlen($this->wrappedKey)),
             $this->wrappedKey,
         ]);
     }
@@ -220,8 +220,10 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
      */
     private static function pkcs5Encode(string $message)
     {
-        $n = self::PKCS5_BLOCK_SIZE - strlen($message) % self::PKCS5_BLOCK_SIZE;
-        return $message . str_repeat(chr($n), $n);;
+        $length = strlen($message);
+        $n = self::PKCS5_BLOCK_SIZE - ($length % self::PKCS5_BLOCK_SIZE);
+        $padded = str_repeat(chr($n), $length + $n);
+        return substr_replace($padded, $message, 0, $length);
     }
 
     /**
