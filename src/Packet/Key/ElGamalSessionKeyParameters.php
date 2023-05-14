@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Packet\Key;
 
+use phpseclib3\Crypt\Random;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Cryptor\Asymmetric\{ElGamalPrivateKey, ElGamalPublicKey};
@@ -62,11 +63,12 @@ class ElGamalSessionKeyParameters implements SessionKeyParametersInterface
         SessionKey $sessionKey, ElGamalPublicKey $publicKey
     ): ElGamalSessionKeyParameters
     {
-        $encrypted = $publicKey->encrypt(implode([
+        $size = ($publicKey->getBitSize() + 7) >> 3;
+        $padded = self::pkcs1Encode(implode([
             $sessionKey->encode(),
             $sessionKey->computeChecksum(),
-        ]));
-        $size = ($publicKey->getBitSize() + 7) >> 3;
+        ]), $size);
+        $encrypted = $publicKey->encrypt($padded);
         return new ElGamalSessionKeyParameters(
             Helper::bin2BigInt(substr($encrypted, 0, $size)),
             Helper::bin2BigInt(substr($encrypted, $size, $size))
@@ -123,11 +125,32 @@ class ElGamalSessionKeyParameters implements SessionKeyParametersInterface
     }
 
     /**
-     * Remove pkcs1 padding from a message
+     * Create a EME-PKCS1-v1_5 padded message
      * 
      * @return string
      */
-    private static function pkcs1Decode(string $message)
+    private static function pkcs1Encode(string $message, int $keyLength): string
+    {
+        $mLength = strlen($message);
+
+        // length checking
+        if ($mLength > $keyLength - 11) {
+            throw new \UnexpectedValueException('Message too long');
+        }
+        $ps = self::pkcs1Padding($keyLength - $mLength - 3);
+        $encoded = str_repeat("\x00", $keyLength);
+        $encoded[1] = "\x02";
+        $encoded = substr_replace($encoded, $ps, 2, strlen($ps));
+        $encoded = substr_replace($encoded, $message, $keyLength - $mLength, strlen($message));
+        return $encoded;
+    }
+
+    /**
+     * Decode a EME-PKCS1-v1_5 padded message
+     * 
+     * @return string
+     */
+    private static function pkcs1Decode(string $message): string
     {
         $offset = 2;
         $separatorNotFound = 1;
@@ -136,5 +159,21 @@ class ElGamalSessionKeyParameters implements SessionKeyParametersInterface
             $offset += $separatorNotFound;
         }
         return substr($message, $offset + 1);
+    }
+
+    private static function pkcs1Padding(int $length): string
+    {
+        $result = str_repeat("\x00", $length);
+        $count = 0;
+        while ($count < $length) {
+            $bytes = Random::string($length - $count);
+            $strlen = strlen($bytes);
+            for ($i = 0; $i < $strlen; $i++) {
+                if (ord($bytes[$i]) != 0) {
+                    $result[$count++] = $bytes[$i];
+                }
+            }
+        };
+        return $result;
     }
 }

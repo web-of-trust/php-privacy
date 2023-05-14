@@ -135,20 +135,20 @@ EOT;
         $this->assertNotNull($pkesk->getSessionKey());
     }
 
-    // public function testEncryptElGamalSessionKey()
-    // {
-    //     $sessionKey = SessionKey::produceKey();
-    //     $secretSubkey = SecretSubkey::fromBytes(
-    //         base64_decode(self::$elGamalSecretSubkey)
-    //     )->decrypt(self::PASSPHRASE);
-    //     $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey($secretSubkey->getPublicKey(), $sessionKey);
-    //     $this->assertSame($secretSubkey->getKeyID(), $pkesk->getPublicKeyID());
+    public function testEncryptElGamalSessionKey()
+    {
+        $sessionKey = SessionKey::produceKey();
+        $secretSubkey = SecretSubkey::fromBytes(
+            base64_decode(self::$elGamalSecretSubkey)
+        )->decrypt(self::PASSPHRASE);
+        $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey($secretSubkey->getPublicKey(), $sessionKey);
+        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getPublicKeyID());
 
-    //     $packets = PacketList::decode($pkesk->encode());
-    //     $pkesk = $packets->offsetGet(0)->decrypt($secretSubkey);
-    //     $this->assertSame($secretSubkey->getKeyID(), $pkesk->getPublicKeyID());
-    //     $this->assertEquals($sessionKey, $pkesk->getSessionKey());
-    // }
+        $packets = PacketList::decode($pkesk->encode());
+        $pkesk = $packets->offsetGet(0)->decrypt($secretSubkey);
+        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getPublicKeyID());
+        $this->assertEquals($sessionKey, $pkesk->getSessionKey());
+    }
 
     public function testDecryptEcdhP384SessionKey()
     {
