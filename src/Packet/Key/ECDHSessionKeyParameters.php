@@ -95,7 +95,7 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
             $kek, self::pkcs5Encode($key)
         );
 
-        return ECDHSessionKeyParameters(
+        return new ECDHSessionKeyParameters(
             Helper::bin2BigInt($publicKey->getEncodedCoordinates()),
             $wrappedKey
         );

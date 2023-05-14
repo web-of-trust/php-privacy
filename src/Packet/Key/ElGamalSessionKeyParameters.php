@@ -68,8 +68,8 @@ class ElGamalSessionKeyParameters implements SessionKeyParametersInterface
         ]));
         $size = ($publicKey->getBitSize() + 7) >> 3;
         return new ElGamalSessionKeyParameters(
-            Helper::bin2BigInt(strlen($encrypted, 0, $size)),
-            Helper::bin2BigInt(strlen($encrypted, $size, $size))
+            Helper::bin2BigInt(substr($encrypted, 0, $size)),
+            Helper::bin2BigInt(substr($encrypted, $size, $size))
         );
     }
 
