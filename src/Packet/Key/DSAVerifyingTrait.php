@@ -37,6 +37,6 @@ trait DSAVerifyingTrait
         return $this->getPublicKey()
             ->withSignatureFormat('Raw')
             ->withHash($hash->name)
-            ->verify($message, [$r, $s]);
+            ->verify($message, ['r' => $r, 's' => $s]);
     }
 }

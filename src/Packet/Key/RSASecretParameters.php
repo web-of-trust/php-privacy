@@ -223,10 +223,15 @@ class RSASecretParameters implements SignableParametersInterface
      */
     public function sign(HashAlgorithm $hash, string $message): string
     {
-        $signature = $this->privateKey->withHash($hash->name)->sign($message);
+        $privateKey = $this->privateKey
+            ->withHash($hash->name)
+            ->withPadding(RSA::SIGNATURE_PKCS1);
+        $signature = Helper::bin2BigInt(
+            $privateKey->sign($message)
+        );
         return implode([
-            pack('n', strlen($signature) * 8),
-            $signature,
+            pack('n', $signature->getLength()),
+            $signature->toBytes(),
         ]);
     }
 }

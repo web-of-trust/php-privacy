@@ -120,8 +120,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 
         // Two-octet field holding left 16 bits of signed hash value.
         $signedHashValue = substr($bytes, $offset, 2);
-        $offset += 2;
-        $signature = substr($bytes, $offset);
+        $signature = substr($bytes, $offset + 2);
 
         return new Signature(
             $version,
@@ -210,11 +209,11 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         int $time = 0
     ): bool
     {
-        if ($this->getIssuerKeyID()->getKeyID() != $verifyKey->getKeyID()) {
+        if ($this->getIssuerKeyID()->getKeyID() !== $verifyKey->getKeyID()) {
             // Signature was not issued by the given public key.
             return false;
         }
-        if ($this->keyAlgorithm != $verifyKey->getKeyAlgorithm()) {
+        if ($this->keyAlgorithm !== $verifyKey->getKeyAlgorithm()) {
             // Public key algorithm used to sign signature does not match issuer key algorithm.
             return false;
         }

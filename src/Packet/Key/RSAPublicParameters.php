@@ -11,6 +11,7 @@
 namespace OpenPGP\Packet\Key;
 
 use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib3\Crypt\RSA;
 use phpseclib3\Crypt\RSA\PublicKey;
 use phpseclib3\Math\BigInteger;
 
@@ -134,7 +135,10 @@ class RSAPublicParameters implements VerifiableParametersInterface
         string $signature
     ): bool
     {
-        return $this->publicKey->withHash($hash->name)->verify(
+        $publicKey = $this->publicKey
+            ->withHash($hash->name)
+            ->withPadding(RSA::SIGNATURE_PKCS1);
+        return $publicKey->verify(
             $message, Helper::readMPI($signature)->toBytes()
         );
     }
