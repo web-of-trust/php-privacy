@@ -31,7 +31,11 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 {
     const VERSION = 4;
 
-	private string $signatureData;
+    private string $signatureData;
+
+    private readonly array $hashedSubpackets;
+
+    private readonly array $unhashedSubpackets;
 
     /**
      * Constructor
@@ -47,14 +51,14 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @return self
      */
     public function __construct(
-    	private readonly int $version,
-    	private readonly SignatureType $signatureType,
-    	private readonly KeyAlgorithm $keyAlgorithm,
-    	private readonly HashAlgorithm $hashAlgorithm,
-    	private readonly string $signedHashValue,
-    	private readonly string $signature,
-    	private readonly array $hashedSubpackets = [],
-    	private readonly array $unhashedSubpackets = []
+        private readonly int $version,
+        private readonly SignatureType $signatureType,
+        private readonly KeyAlgorithm $keyAlgorithm,
+        private readonly HashAlgorithm $hashAlgorithm,
+        private readonly string $signedHashValue,
+        private readonly string $signature,
+        array $hashedSubpackets = [],
+        array $unhashedSubpackets = []
     )
     {
         parent::__construct(PacketTag::Signature);
@@ -119,7 +123,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         $offset += 2;
         $signature = substr($bytes, $offset);
 
-        return Signature(
+        return new Signature(
             $version,
             $signatureType,
             $keyAlgorithm,
@@ -153,7 +157,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         ];
 
         if ($keyExpirationTime > 0) {
-            $hashedSubpackets[] = Signature\KeyExpirationTime::fromTime($keyExpirationTime)
+            $hashedSubpackets[] = Signature\KeyExpirationTime::fromTime($keyExpirationTime);
         }
 
         $signatureData = implode([
@@ -190,10 +194,10 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function toBytes(): string
     {
         return implode([
-        	$this->signatureData,
-        	self::encodeSubpackets($this->unhashedSubpackets),
-        	$this->signedHashValue,
-        	$this->signature,
+            $this->signatureData,
+            self::encodeSubpackets($this->unhashedSubpackets),
+            $this->signedHashValue,
+            $this->signature,
         ]);
     }
 
@@ -616,9 +620,10 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 
     private static function readSubpackets(string $bytes): array
     {
+        $offset = 0;
+        $length = strlen($bytes);
         $subpackets = [];
-        $len = strlen($bytes);
-        while ($offset < $len) {
+        while ($offset < $length) {
             $reader = SubpacketReader::read($bytes, $offset);
             $offset = $reader->getOffset();
             $data = $reader->getData();
@@ -802,7 +807,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     {
         $subpackets = array_filter(
             $subpackets,
-            static fn ($subpacket) => ($subpacket instanceof SignatureSubpacket) && ($subpacket->getType() === $type)
+            static fn ($subpacket) => $subpacket->getType() === $type
         );
         $subpacket = reset($subpackets);
         return $subpacket ? $subpacket : null;

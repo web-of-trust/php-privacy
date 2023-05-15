@@ -52,6 +52,6 @@ class RegularExpression extends SignatureSubpacket
      */
     public function getExpression(): string
     {
-        return $this->data;
+        return $this->getData();
     }
 }

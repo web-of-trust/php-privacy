@@ -52,6 +52,6 @@ class SignerUserID extends SignatureSubpacket
      */
     public function getUserID(): string
     {
-        return $this->data;
+        return $this->getData();
     }
 }

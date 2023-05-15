@@ -52,6 +52,6 @@ class PreferredKeyServer extends SignatureSubpacket
      */
     public function getKeyServer(): string
     {
-        return $this->data;
+        return $this->getData();
     }
 }

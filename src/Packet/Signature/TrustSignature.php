@@ -52,7 +52,7 @@ class TrustSignature extends SignatureSubpacket
      */
     public function getTrustLevel(): int
     {
-        return ord($this->data[0]);
+        return ord($this->getData()[0]);
     }
 
     /**
@@ -62,6 +62,6 @@ class TrustSignature extends SignatureSubpacket
      */
     public function getTrustAmount(): int
     {
-        return ord($this->data[1]);
+        return ord($this->getData()[1]);
     }
 }

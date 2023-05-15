@@ -63,11 +63,4 @@ interface KeyPacketInterface
      * @return string
      */
     function getKeyID(): string;
-
-    /**
-     * Gets bytes for sign
-     *
-     * @return string
-     */
-    function getSignBytes(): string;
 }

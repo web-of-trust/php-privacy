@@ -78,7 +78,7 @@ class NotationData extends SignatureSubpacket
      */
     public function isHumanReadable(): bool
     {
-        return ord($this->data[0]) == 0x80;
+        return ord($this->getData()[0]) == 0x80;
     }
 
     /**
@@ -88,10 +88,11 @@ class NotationData extends SignatureSubpacket
      */
     public function getNotationName(): string
     {
-        $nameLength = (((ord($this->data[self::FLAG_LENGTH]) & 0xff) << 8) +
-            (ord($this->data[self::FLAG_LENGTH + 1]) & 0xff));
+        $data = $this->getData();
+        $nameLength = (((ord($data[self::FLAG_LENGTH]) & 0xff) << 8) +
+            (ord($data[self::FLAG_LENGTH + 1]) & 0xff));
         $nameOffset = self::FLAG_LENGTH + self::NAME_LENGTH + self::VALUE_LENGTH;
-        return substr($this->data, $nameOffset, $nameLength);
+        return substr($data, $nameOffset, $nameLength);
     }
 
     /**
@@ -101,15 +102,16 @@ class NotationData extends SignatureSubpacket
      */
     public function getNotationValue(): string
     {
-        $nameLength = (((ord($this->data[self::FLAG_LENGTH]) & 0xff) << 8) +
-            (ord($this->data[self::FLAG_LENGTH + 1]) & 0xff));
-        $valueLength = (((ord($this->data[self::FLAG_LENGTH + self::NAME_LENGTH]) & 0xff) << 8) +
-            (ord($this->data[self::FLAG_LENGTH + self::NAME_LENGTH + 1]) & 0xff));
+        $data = $this->getData();
+        $nameLength = (((ord($data[self::FLAG_LENGTH]) & 0xff) << 8) +
+            (ord($this->getData()[self::FLAG_LENGTH + 1]) & 0xff));
+        $valueLength = (((ord($data[self::FLAG_LENGTH + self::NAME_LENGTH]) & 0xff) << 8) +
+            (ord($data[self::FLAG_LENGTH + self::NAME_LENGTH + 1]) & 0xff));
         $valueOffset =  self::FLAG_LENGTH +
             self::NAME_LENGTH +
             self::VALUE_LENGTH +
             $nameLength;
-        return substr($this->data, $valueOffset, $valueLength);
+        return substr($data, $valueOffset, $valueLength);
     }
 
     private function notationToBytes(

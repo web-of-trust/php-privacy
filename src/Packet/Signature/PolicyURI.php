@@ -52,6 +52,6 @@ class PolicyURI extends SignatureSubpacket
      */
     public function getUri(): string
     {
-        return $this->data;
+        return $this->getData();
     }
 }

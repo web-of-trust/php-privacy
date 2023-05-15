@@ -80,6 +80,6 @@ class IssuerKeyID extends SignatureSubpacket
      */
     public function getKeyID(): string
     {
-        return $this->data;
+        return $this->getData();
     }
 }

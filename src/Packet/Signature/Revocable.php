@@ -52,6 +52,6 @@ class Revocable extends SignatureSubpacket
      */
     public function isRevocable(): string
     {
-        return ord($this->data) != 0;
+        return ord($this->getData()) != 0;
     }
 }

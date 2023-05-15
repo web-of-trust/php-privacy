@@ -40,7 +40,7 @@ enum SignatureSubpacketType: int
 
     case RevocationKey = 12;
 
-    case IssuerKeyID = 13;
+    case IssuerKeyID = 16;
 
     case NotationData = 20;
 

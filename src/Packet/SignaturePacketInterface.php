@@ -48,7 +48,7 @@ interface SignaturePacketInterface
      * 
      * @return HashAlgorithm
      */
-    function getHashAlgorithm(): HashAlgorithm
+    function getHashAlgorithm(): HashAlgorithm;
 
     /**
      * Gets hashed subpackets

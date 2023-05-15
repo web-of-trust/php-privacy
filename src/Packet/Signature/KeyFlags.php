@@ -70,8 +70,9 @@ class KeyFlags extends SignatureSubpacket
         static $flags = null;
         if (null == $flags) {
             $flags = 0;
-            for ($i = 0; $i != strlen($this->data); $i++) {
-              $flags |= ord($this->data[$i]) << ($i * 8);
+            $data = $this->getData();
+            for ($i = 0; $i != strlen($data); $i++) {
+              $flags |= ord($data[$i]) << ($i * 8);
             }
         }
         return $flags;

@@ -67,7 +67,7 @@ class IssuerFingerprint extends SignatureSubpacket
      */
     public function getKeyVersion(): int
     {
-        return ord($this->data[0]);
+        return ord($this->getData()[0]);
     }
 
     /**
@@ -77,6 +77,6 @@ class IssuerFingerprint extends SignatureSubpacket
      */
     public function getKeyFingerprint(): string
     {
-        return substr($this->data, 1);
+        return substr($this->getData(), 1);
     }
 }

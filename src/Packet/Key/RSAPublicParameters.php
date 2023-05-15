@@ -135,7 +135,7 @@ class RSAPublicParameters implements VerifiableParametersInterface
     ): bool
     {
         return $this->publicKey->withHash($hash->name)->verify(
-            $message, Helper::readMPI($signature).toBytes()
+            $message, Helper::readMPI($signature)->toBytes()
         );
     }
 }

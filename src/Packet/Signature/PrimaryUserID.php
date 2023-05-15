@@ -52,6 +52,6 @@ class PrimaryUserID extends SignatureSubpacket
      */
     public function isPrimary(): string
     {
-        return ord($this->data) != 0;
+        return ord($this->getData()) != 0;
     }
 }
