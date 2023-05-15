@@ -49,9 +49,8 @@ class EdDSAPublicParameters extends ECPublicParameters implements VerifiablePara
     {
         $r = Helper::readMPI($signature);
         $s = Helper::readMPI(substr($signature, $r->getLengthInBytes() + 2));
-        return $this->getPublicKey()
-            ->withSignatureFormat('Raw')
-            ->withHash(strtolower($hash->name))
-            ->verify($message, implode([$r->toBytes(), $s->toBytes()]));
+        return $this->getPublicKey()->verify(
+            $message, implode([$r->toBytes(), $s->toBytes()])
+        );
     }
 }

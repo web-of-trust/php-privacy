@@ -53,26 +53,28 @@ abstract class ECSecretParameters implements KeyParametersInterface
         else {
             $format = 'PKCS8';
             $curveOid = $publicParams->getCurveOid();
-            if ($curveOid === CurveOid::Ed25519) {
-                $params = PKCS8::load(
-                    $publicParams->getPublicKey()->toString($format)
-                );
-                $arr = $params['curve']->extractSecret($d->toBytes());
-                $key = PKCS8::savePrivateKey(
-                    $arr['dA'], $params['curve'], $params['QA'], $arr['secret']
-                );
-            }
-            elseif ($curveOid === CurveOid::Curve25519) {
-                $key = strrev($d->toBytes());
-                $format = 'MontgomeryPrivate';
-            }
-            else {
-                $params = PKCS8::load(
-                    $publicParams->getPublicKey()->toString($format)
-                );
-                $key = PKCS8::savePrivateKey(
-                    $d, $params['curve'], $params['QA']
-                );
+            switch ($curveOid) {
+                case CurveOid::Ed25519:
+                    $params = PKCS8::load(
+                        $publicParams->getPublicKey()->toString($format)
+                    );
+                    $arr = $params['curve']->extractSecret($d->toBytes());
+                    $key = PKCS8::savePrivateKey(
+                        $arr['dA'], $params['curve'], $params['QA'], $arr['secret']
+                    );
+                    break;
+                case CurveOid::Curve25519:
+                    $key = strrev($d->toBytes());
+                    $format = 'MontgomeryPrivate';
+                    break;
+                default:
+                    $params = PKCS8::load(
+                        $publicParams->getPublicKey()->toString($format)
+                    );
+                    $key = PKCS8::savePrivateKey(
+                        $d, $params['curve'], $params['QA']
+                    );
+                    break;
             }
             $this->privateKey = EC::loadFormat($format, $key);
         }
@@ -120,11 +122,11 @@ abstract class ECSecretParameters implements KeyParametersInterface
                 );
                 return $this->publicParams->getQ()->equals($dG);
             default:
-                $curve = $curveOid->getCurve();
-                $QA = $curve->multiplyPoint($curve->getBasePoint(), $this->d);
                 $params = PKCS8::load(
                     $this->publicParams->getPublicKey()->toString('PKCS8')
                 );
+                $curve = $params['curve'];
+                $QA = $curve->multiplyPoint($curve->getBasePoint(), $this->d);
                 return $QA[0]->toBigInteger()->equals($params['QA'][0]->toBigInteger()) &&
                        $QA[1]->toBigInteger()->equals($params['QA'][1]->toBigInteger());
         }

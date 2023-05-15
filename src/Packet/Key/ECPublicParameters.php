@@ -56,21 +56,23 @@ abstract class ECPublicParameters implements KeyParametersInterface
         else {
             $format = 'PKCS8';
             $curve = $this->curveOid->getCurve();
-            if ($this->curveOid === CurveOid::Ed25519) {
-                $key = PKCS8::savePublicKey(
-                    $curve, PKCS8::extractPoint(
-                        substr($q->toBytes(), 1), $curve
-                    )
-                );
-            }
-            elseif ($this->curveOid === CurveOid::Curve25519) {
-                $key = substr($q->toBytes(), 1);
-                $format = 'MontgomeryPublic';
-            }
-            else {
-                $key = PKCS8::savePublicKey(
-                    $curve, PKCS8::extractPoint("\0" . $q->toBytes(), $curve)
-                );
+            switch ($this->curveOid) {
+                case CurveOid::Ed25519:
+                    $key = PKCS8::savePublicKey(
+                        $curve, PKCS8::extractPoint(
+                            substr($q->toBytes(), 1), $curve
+                        )
+                    );
+                    break;
+                case CurveOid::Curve25519:
+                    $key = substr($q->toBytes(), 1);
+                    $format = 'MontgomeryPublic';
+                    break;
+                default:
+                    $key = PKCS8::savePublicKey(
+                        $curve, PKCS8::extractPoint("\x0" . $q->toBytes(), $curve)
+                    );
+                    break;
             }
             $this->publicKey = EC::loadFormat($format, $key);
         }

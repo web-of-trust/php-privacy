@@ -98,10 +98,7 @@ class EdDSASecretParameters extends ECSecretParameters implements SignableParame
      */
     public function sign(HashAlgorithm $hash, string $message): string
     {
-        $signature = $this->getPrivateKey()
-            ->withSignatureFormat('Raw')
-            ->withHash(strtolower($hash->name))
-            ->sign($message);
+        $signature = $this->getPrivateKey()->sign($message);
         return implode([
             pack('n', $signature['r']->getLength()),
             $signature['r']->toBytes(),
