@@ -27,7 +27,7 @@ use OpenPGP\Enum\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class Signature extends AbstractPacket
+class Signature extends AbstractPacket implements SignaturePacketInterface
 {
     const VERSION = 4;
 
@@ -168,9 +168,8 @@ class Signature extends AbstractPacket
             $dataToSign,
             $signatureData,
             self::calculateTrailer(
-                $signatureType,
+                $version,
                 strlen($signatureData),
-                $version
             ),
         ]);
 
@@ -196,6 +195,423 @@ class Signature extends AbstractPacket
         	$this->signedHashValue,
         	$this->signature,
         ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function verify(
+        KeyPacketInterface $verifyKey,
+        string $dataToVerify,
+        int $time = 0
+    ): bool
+    {
+        if ($this->getIssuerKeyID()->getKeyID() != $verifyKey->getKeyID()) {
+            // Signature was not issued by the given public key.
+            return false;
+        }
+        if ($this->keyAlgorithm != $verifyKey->getKeyAlgorithm()) {
+            // Public key algorithm used to sign signature does not match issuer key algorithm.
+            return false;
+        }
+
+        $signatureExpirationTime = $this->getSignatureExpirationTime();
+        if ($signatureExpirationTime instanceof Signature\SignatureExpirationTime) {
+            $time = empty($time) ? time() : $time;
+            if ($signatureExpirationTime->getExpirationTime() < $time) {
+                // Signature is expired
+                return false;
+            }
+        }
+
+        $message = implode([
+            $dataToVerify,
+            $this->signatureData,
+            self::calculateTrailer(
+                $this->version,
+                strlen($this->signatureData)
+            ),
+        ]);
+        $hash = hash(strtolower($this->hashAlgorithm->name), $message, true);
+        if ($this->signedHashValue !== substr($hash, 0, 2)) {
+            // Signed digest did not match
+            return false;
+        }
+
+        $keyParams = $verifyKey->getKeyParameters();
+        if ($keyParams instanceof Key\VerifiableParametersInterface) {
+            return $keyParams->verify(
+                $this->hashAlgorithm, $message, $this->signature
+            );
+        }
+
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVersion(): int
+    {
+        return $this->version;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSignatureType(): SignatureType
+    {
+        return $this->signatureType;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getKeyAlgorithm(): KeyAlgorithm
+    {
+        return $this->keyAlgorithm;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getHashAlgorithm(): HashAlgorithm
+    {
+        return $this->hashAlgorithm;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getHashedSubpackets(): array
+    {
+        return $this->hashedSubpackets;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getUnhashedSubpackets(): array
+    {
+        return $this->unhashedSubpackets;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSignedHashValue(): string
+    {
+        return $this->signedHashValue;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSignature(): string
+    {
+        return $this->signature;
+    }
+
+    /**
+     * Gets signature creation time sub packet
+     *
+     * @return Signature\SignatureCreationTime
+     */
+    public function getSignatureCreationTime(): Signature\SignatureCreationTime
+    {
+        $type = SignatureSubpacketType::IssuerFingerprint->value;
+        return self::getSubpacket($this->hashedSubpackets, $type) ??
+               Signature\SignatureCreationTime::fromTime(time());
+    }
+
+    /**
+     * Gets signature expiration time sub packet
+     *
+     * @return Signature\SignatureExpirationTime
+     */
+    public function getSignatureExpirationTime(): ?Signature\SignatureExpirationTime
+    {
+        return self::getSubpacket(
+            $this->hashedSubpackets, SignatureSubpacketType::SignatureExpirationTime->value
+        );
+    }
+
+    /**
+     * Gets exportable certification sub packet
+     *
+     * @return Signature\ExportableCertification
+     */
+    public function getExportableCertification(): ?Signature\ExportableCertification
+    {
+        return self::getSubpacket(
+            $this->hashedSubpackets, SignatureSubpacketType::ExportableCertification->value
+        );
+    }
+
+    /**
+     * Gets trust signature sub packet
+     *
+     * @return Signature\TrustSignature
+     */
+    public function getTrustSignature(): ?Signature\TrustSignature
+    {
+        return self::getSubpacket(
+            $this->hashedSubpackets, SignatureSubpacketType::TrustSignature->value
+        );
+    }
+
+    /**
+     * Gets regular expression sub packet
+     *
+     * @return Signature\RegularExpression
+     */
+    public function getRegularExpression(): ?Signature\RegularExpression
+    {
+        return self::getSubpacket(
+            $this->hashedSubpackets, SignatureSubpacketType::RegularExpression->value
+        );
+    }
+
+    /**
+     * Gets revocable sub packet
+     *
+     * @return Signature\Revocable
+     */
+    public function getRevocable(): ?Signature\Revocable
+    {
+        return self::getSubpacket(
+            $this->hashedSubpackets, SignatureSubpacketType::Revocable->value
+        );
+    }
+
+    /**
+     * Gets key expiration time sub packet
+     *
+     * @return Signature\KeyExpirationTime
+     */
+    public function getKeyExpirationTime(): ?Signature\KeyExpirationTime
+    {
+        return self::getSubpacket(
+            $this->hashedSubpackets, SignatureSubpacketType::KeyExpirationTime->value
+        );
+    }
+
+    /**
+     * Gets preferred symmetric algorithms sub packet
+     *
+     * @return Signature\PreferredSymmetricAlgorithms
+     */
+    public function getPreferredSymmetricAlgorithms(): ?Signature\PreferredSymmetricAlgorithms
+    {
+        return self::getSubpacket(
+            $this->hashedSubpackets, SignatureSubpacketType::PreferredSymmetricAlgorithms->value
+        );
+    }
+
+    /**
+     * Gets revocation key sub packet
+     *
+     * @return Signature\RevocationKey
+     */
+    public function getRevocationKey(): ?Signature\RevocationKey
+    {
+        return self::getSubpacket(
+            $this->hashedSubpackets, SignatureSubpacketType::RevocationKey->value
+        );
+    }
+
+    /**
+     * Gets issuer key ID sub packet
+     *
+     * @return Signature\IssuerFingerprint
+     */
+    public function getIssuerKeyID(): Signature\IssuerKeyID
+    {
+        $type = SignatureSubpacketType::IssuerKeyID->value;
+        $issuerKeyID = self::getSubpacket($this->hashedSubpackets, $type) ??
+                       self::getSubpacket($this->unhashedSubpackets, $type);
+        if ($issuerKeyID instanceof Signature\IssuerKeyID) {
+            return $issuerKeyID;
+        }
+        else {
+            $issuerFingerprint = $this->getIssuerFingerprint();
+            if ($issuerFingerprint instanceof Signature\IssuerFingerprint) {
+                return Signature\IssuerKeyID(
+                    substr($issuerFingerprint->getKeyFingerprint(), 12, 20)
+                );
+            }
+            else {
+                return Signature\IssuerKeyID::wildcard();
+            }
+        }
+    }
+
+    /**
+     * Gets notation data sub packet
+     *
+     * @return Signature\NotationData
+     */
+    public function getNotationData(): ?Signature\NotationData
+    {
+        return self::getSubpacket(
+            $this->hashedSubpackets, SignatureSubpacketType::NotationData->value
+        );
+    }
+
+    /**
+     * Gets preferred hash algorithms sub packet
+     *
+     * @return Signature\PreferredHashAlgorithms
+     */
+    public function getPreferredHashAlgorithms(): ?Signature\PreferredHashAlgorithms
+    {
+        return self::getSubpacket(
+            $this->hashedSubpackets, SignatureSubpacketType::PreferredHashAlgorithms->value
+        );
+    }
+
+    /**
+     * Gets preferred compression algorithms sub packet
+     *
+     * @return Signature\PreferredHashAlgorithms
+     */
+    public function getPreferredCompressionAlgorithms(): ?Signature\PreferredCompressionAlgorithms
+    {
+        return self::getSubpacket(
+            $this->hashedSubpackets, SignatureSubpacketType::PreferredCompressionAlgorithms->value
+        );
+    }
+
+    /**
+     * Gets key server preferences sub packet
+     *
+     * @return Signature\KeyServerPreferences
+     */
+    public function getKeyServerPreferences(): ?Signature\KeyServerPreferences
+    {
+        return self::getSubpacket(
+            $this->hashedSubpackets, SignatureSubpacketType::KeyServerPreferences->value
+        );
+    }
+
+    /**
+     * Gets preferred key server sub packet
+     *
+     * @return Signature\PreferredKeyServer
+     */
+    public function getPreferredKeyServer(): ?Signature\PreferredKeyServer
+    {
+        return self::getSubpacket(
+            $this->hashedSubpackets, SignatureSubpacketType::PreferredKeyServer->value
+        );
+    }
+
+    /**
+     * Gets primary user ID sub packet
+     *
+     * @return Signature\PrimaryUserID
+     */
+    public function getPrimaryUserID(): ?Signature\PrimaryUserID
+    {
+        return self::getSubpacket(
+            $this->hashedSubpackets, SignatureSubpacketType::PrimaryUserID->value
+        );
+    }
+
+    /**
+     * Gets policy URI sub packet
+     *
+     * @return Signature\PolicyURI
+     */
+    public function getPolicyURI(): ?Signature\PolicyURI
+    {
+        return self::getSubpacket(
+            $this->hashedSubpackets, SignatureSubpacketType::PolicyURI->value
+        );
+    }
+
+    /**
+     * Gets key flags sub packet
+     *
+     * @return Signature\KeyFlags
+     */
+    public function getKeyFlags(): ?Signature\KeyFlags
+    {
+        return self::getSubpacket(
+            $this->hashedSubpackets, SignatureSubpacketType::KeyFlags->value
+        );
+    }
+
+    /**
+     * Gets signer user ID sub packet
+     *
+     * @return Signature\SignerUserID
+     */
+    public function getSignerUserID(): ?Signature\SignerUserID
+    {
+        return self::getSubpacket(
+            $this->hashedSubpackets, SignatureSubpacketType::SignerUserID->value
+        );
+    }
+
+    /**
+     * Gets revocation reason sub packet
+     *
+     * @return Signature\RevocationReason
+     */
+    public function getRevocationReason(): ?Signature\RevocationReason
+    {
+        return self::getSubpacket(
+            $this->hashedSubpackets, SignatureSubpacketType::RevocationReason->value
+        );
+    }
+
+    /**
+     * Gets features sub packet
+     *
+     * @return Signature\Features
+     */
+    public function getFeatures(): ?Signature\Features
+    {
+        return self::getSubpacket(
+            $this->hashedSubpackets, SignatureSubpacketType::Features->value
+        );
+    }
+
+    /**
+     * Gets signature target packet
+     *
+     * @return Signature\SignatureTarget
+     */
+    public function getSignatureTarget(): ?Signature\SignatureTarget
+    {
+        return self::getSubpacket(
+            $this->hashedSubpackets, SignatureSubpacketType::SignatureTarget->value
+        );
+    }
+
+    /**
+     * Gets embedded signature packet
+     *
+     * @return Signature\EmbeddedSignature
+     */
+    public function getEmbeddedSignature(): ?Signature\EmbeddedSignature
+    {
+        return self::getSubpacket(
+            $this->hashedSubpackets, SignatureSubpacketType::EmbeddedSignature->value
+        );
+    }
+
+    /**
+     * Gets issuer fingerprint sub packet
+     *
+     * @return Signature\IssuerFingerprint
+     */
+    public function getIssuerFingerprint(): ?Signature\IssuerFingerprint
+    {
+        $type = SignatureSubpacketType::IssuerFingerprint->value;
+        return self::getSubpacket($this->hashedSubpackets, $type) ??
+               self::getSubpacket($this->unhashedSubpackets, $type);
     }
 
     private static function readSubpackets(string $bytes): array
@@ -380,5 +796,15 @@ class Signature extends AbstractPacket
             array_map(static fn ($subpacket) => $subpacket->encode(), $subpackets)
         );
         return pack('n', strlen($bytes)) . $bytes;
+    }
+
+    private static function getSubpacket(array $subpackets, int $type): ?SignatureSubpacket
+    {
+        $subpackets = array_filter(
+            $subpackets,
+            static fn ($subpacket) => ($subpacket instanceof SignatureSubpacket) && ($subpacket->getType() === $type)
+        );
+        $subpacket = reset($subpackets);
+        return $subpacket ? $subpacket : null;
     }
 }
