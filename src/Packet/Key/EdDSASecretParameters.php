@@ -19,14 +19,14 @@ use OpenPGP\Common\Helper;
 use OpenPGP\Enum\CurveOid;
 
 /**
- * ECDSA secret parameters class
+ * EdDSA secret parameters class
  * 
  * @package   OpenPGP
  * @category  Packet
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class ECDSASecretParameters extends ECSecretParameters implements SignableParametersInterface
+class EdDSASecretParameters extends ECSecretParameters implements SignableParametersInterface
 {
     use DSASigningTrait;
 
@@ -34,13 +34,13 @@ class ECDSASecretParameters extends ECSecretParameters implements SignableParame
      * Constructor
      *
      * @param BigInteger $d
-     * @param ECDSAPublicParameters $publicParams
+     * @param EdDSAPublicParameters $publicParams
      * @param PrivateKey $privateKey
      * @return self
      */
     public function __construct(
         BigInteger $d,
-        ECDSAPublicParameters $publicParams,
+        EdDSAPublicParameters $publicParams,
         ?PrivateKey $privateKey = null
     )
     {
@@ -51,14 +51,14 @@ class ECDSASecretParameters extends ECSecretParameters implements SignableParame
      * Reads parameters from bytes
      *
      * @param string $bytes
-     * @param ECDSAPublicParameters $publicParams
-     * @return ECDSASecretParameters
+     * @param EdDSAPublicParameters $publicParams
+     * @return EdDSASecretParameters
      */
     public static function fromBytes(
-        string $bytes, ECDSAPublicParameters $publicParams
-    ): ECDSASecretParameters
+        string $bytes, EdDSAPublicParameters $publicParams
+    ): EdDSASecretParameters
     {
-        return new ECDSASecretParameters(
+        return new EdDSASecretParameters(
             Helper::readMPI($bytes),
             $publicParams
         );
@@ -68,28 +68,29 @@ class ECDSASecretParameters extends ECSecretParameters implements SignableParame
      * Generates parameters by using EC create key
      *
      * @param CurveOid $curve
-     * @return ECDSASecretParameters
+     * @return EdDSASecretParameters
      */
-    public static function generate(CurveOid $curveOid): ECDSASecretParameters
+    public static function generate(CurveOid $curveOid): EdDSASecretParameters
     {
-        switch ($curveOid) {
-            case CurveOid::Ed25519:
-            case CurveOid::Curve25519:
-                throw new \InvalidArgumentException(
-                    "{$curveOid->name} is not supported for ECDSA key generation"
-                );
-            default:
-                $privateKey = EC::createKey($curveOid->name);
-                $key = PKCS8::load($privateKey->toString('PKCS8'));
-                return new ECDSASecretParameters(
-                    $key['dA'],
-                    new ECDSAPublicParameters(
-                        ASN1::encodeOID($curveOid->value),
-                        Helper::bin2BigInt($privateKey->getEncodedCoordinates()),
-                        $privateKey->getPublicKey()
+        if ($curveOid === CurveOid::Ed25519) {
+            $privateKey = EC::createKey($curveOid->name);
+            $key = PKCS8::load($privateKey->toString('PKCS8'));
+            return new EdDSASecretParameters(
+                Helper::bin2BigInt($key['secret']),
+                new EdDSAPublicParameters(
+                    ASN1::encodeOID($curveOid->value),
+                    Helper::bin2BigInt(
+                        "\x40" . $privateKey->getEncodedCoordinates()
                     ),
-                    $privateKey,
-                );
+                    $privateKey->getPublicKey()
+                ),
+                $privateKey,
+            );
+        }
+        else {
+            throw new \InvalidArgumentException(
+                "{$curveOid->name} is not supported for EdDSA key generation"
+            );
         }
     }
 }

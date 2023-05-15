@@ -14,15 +14,30 @@ use OpenPGP\Common\Helper;
 use OpenPGP\Enum\HashAlgorithm;
 
 /**
- * DSA verifying trait
+ * EdDSA public parameters class
  * 
  * @package   OpenPGP
  * @category  Packet
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-trait DSAVerifyingTrait
+class EdDSAPublicParameters extends ECPublicParameters implements VerifiableParametersInterface
 {
+    /**
+     * Reads parameters from bytes
+     *
+     * @param string $bytes
+     * @return EdDSAPublicParameters
+     */
+    public static function fromBytes(string $bytes): EdDSAPublicParameters
+    {
+        $length = ord($bytes[0]);
+        return new EdDSAPublicParameters(
+            substr($bytes, 1, $length),
+            Helper::readMPI(substr($bytes, $length + 1))
+        );
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -37,6 +52,6 @@ trait DSAVerifyingTrait
         return $this->getPublicKey()
             ->withSignatureFormat('Raw')
             ->withHash(strtolower($hash->name))
-            ->verify($message, ['r' => $r, 's' => $s]);
+            ->verify($message, implode([$r->toBytes(), $s->toBytes()]));
     }
 }

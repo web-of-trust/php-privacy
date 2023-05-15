@@ -152,7 +152,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
             KeyAlgorithm::Dsa => Key\DSASecretParameters::generate($dhKeySize),
             KeyAlgorithm::Ecdh => Key\ECDHSecretParameters::generate($curveOid),
             KeyAlgorithm::EcDsa => Key\ECDSASecretParameters::generate($curveOid),
-            KeyAlgorithm::EdDsa => Key\ECDSASecretParameters::generate($curveOid),
+            KeyAlgorithm::EdDsa => Key\EdDSASecretParameters::generate($curveOid),
             default => throw new \UnexpectedValueException(
                 "Unsupported PGP public key algorithm encountered",
             ),
@@ -421,7 +421,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
             KeyAlgorithm::EcDsa => Key\ECDSASecretParameters::fromBytes(
                 $bytes, $publicKey->getKeyParameters()
             ),
-            KeyAlgorithm::EdDsa => Key\ECDSASecretParameters::fromBytes(
+            KeyAlgorithm::EdDsa => Key\EdDSASecretParameters::fromBytes(
                 $bytes, $publicKey->getKeyParameters()
             ),
             default => throw new \UnexpectedValueException(

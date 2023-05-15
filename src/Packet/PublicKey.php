@@ -171,7 +171,7 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
             KeyAlgorithm::Dsa => Key\DSAPublicParameters::fromBytes($bytes),
             KeyAlgorithm::Ecdh => Key\ECDHPublicParameters::fromBytes($bytes),
             KeyAlgorithm::EcDsa => Key\ECDSAPublicParameters::fromBytes($bytes),
-            KeyAlgorithm::EdDsa => Key\ECDSAPublicParameters::fromBytes($bytes),
+            KeyAlgorithm::EdDsa => Key\EdDSAPublicParameters::fromBytes($bytes),
             default => throw new \UnexpectedValueException(
                 "Unsupported PGP public key algorithm encountered",
             ),

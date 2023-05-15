@@ -224,7 +224,7 @@ class RSASecretParameters implements SignableParametersInterface
     public function sign(HashAlgorithm $hash, string $message): string
     {
         $privateKey = $this->privateKey
-            ->withHash($hash->name)
+            ->withHash(strtolower($hash->name))
             ->withPadding(RSA::SIGNATURE_PKCS1);
         $signature = Helper::bin2BigInt(
             $privateKey->sign($message)

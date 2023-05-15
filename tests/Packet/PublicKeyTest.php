@@ -11,7 +11,7 @@ use OpenPGP\Tests\OpenPGPTestCase;
  */
 class PublicKeyTest extends OpenPGPTestCase
 {
-    public function testRSAPublicKey()
+    public function testRsaPublicKey()
     {
         $data = <<<EOT
 BGRUrD4BCACe8iv48dGvqnbOuPv1DnnrasH/NZ5bbpGHW0gSOXb4p2d7VcfA6hfoyq1yEuZ2VDzJ
@@ -25,7 +25,7 @@ EOT;
         $this->assertSame('184d0dc4f5c532b2', bin2hex($publicKey->getKeyID()));
     }
 
-    public function testRSAPublicSubkey()
+    public function testRsaPublicSubkey()
     {
         $data = <<<EOT
 BGRUrD4BCACyRTYWSBsXFtxLOmSp3RvaW13GRh8HJ4p7adVqJpDBsvo8iInDgBt542/aoWDGIESA
@@ -39,7 +39,7 @@ EOT;
         $this->assertSame('4be1b3a621ef906f', bin2hex($publicSubkey->getKeyID()));
     }
 
-    public function testDSAPublicKey()
+    public function testDsaPublicKey()
     {
         $data = <<<EOT
 BGRUrHERCAC/HCRsyTviyCVlaBWmhJoSZtmR0SzXjgyd6jbNeQLN4o58oCdUXN1o4aUG3dFmx6ed
@@ -82,7 +82,7 @@ EOT;
         $this->assertSame('c0453c8aabe775db', bin2hex($publicSubkey->getKeyID()));
     }
 
-    public function testECDSAp384PublicKey()
+    public function testEcdsaP384PublicKey()
     {
         $data = <<<EOT
 BGRYd7UTBSuBBAAiAwME3Z/lmJrDGnYHvT7xe5ei8xFfsCsrH+6AjmSftcJEYCCTy4CupXlvp5wb
@@ -93,7 +93,7 @@ EOT;
         $this->assertSame('b202d9e2eada440c', bin2hex($publicKey->getKeyID()));
     }
 
-    public function testECDHp384PublicSubkey()
+    public function testEcdhP384PublicSubkey()
     {
         $data = <<<EOT
 BGRYd7USBSuBBAAiAwMEEWHAaBdPHihwch9e3b4VqOB89WeHI6fGWDLpKj6bJ/ME1VbDPhf0DN0N
@@ -105,7 +105,7 @@ EOT;
         $this->assertSame('c0b7b9c6bf5824b6', bin2hex($publicSubkey->getKeyID()));
     }
 
-    public function testECDSAbrainpoolP256PublicKey()
+    public function testEcdsaBrainpoolP256PublicKey()
     {
         $data = <<<EOT
 BGRYXMETCSskAwMCCAEBBwIDBHKh5xdXoTfino6vulZBw4fl5lMtKgzXIeG9zhJuBInpE7gOlxes
@@ -116,7 +116,7 @@ EOT;
         $this->assertSame('1cbcd043db44c5d6', bin2hex($publicKey->getKeyID()));
     }
 
-    public function testECDHbrainpoolP256PublicSubkey()
+    public function testEcdhBrainpoolP256PublicSubkey()
     {
         $data = <<<EOT
 BGRYXMESCSskAwMCCAEBBwIDBINvienMnFyJJCblEBJ2J9sBZ/hCAHGLbgDZPCC+mTLqDJJx47Sr
@@ -127,8 +127,7 @@ EOT;
         $this->assertSame('08a55bdb1d673d5d', bin2hex($publicSubkey->getKeyID()));
     }
 
-
-    public function testEdDSACurve25519PublicKey()
+    public function testEddsaCurve25519PublicKey()
     {
         $data = <<<EOT
 BGRYXQUWCSsGAQQB2kcPAQEHQLvR0VoiVSt3+xzxSSQrR7/yrMzQG8OXueMhIkQb0UPM
@@ -138,7 +137,7 @@ EOT;
         $this->assertSame('bdff135160c56a0b', bin2hex($publicKey->getKeyID()));
     }
 
-    public function testECDHCurve25519PublicSubkey()
+    public function testEcdhCurve25519PublicSubkey()
     {
         $data = <<<EOT
 BGRYXQUSCisGAQQBl1UBBQEBB0BCbUFNqFZKpFLBB339cZrp7udovohvVMiG7qP9+ij6AQMBCAc=

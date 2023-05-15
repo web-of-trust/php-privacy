@@ -29,7 +29,7 @@ trait DSASigningTrait
     {
         $signature = $this->getPrivateKey()
             ->withSignatureFormat('Raw')
-            ->withHash($hash->name)
+            ->withHash(strtolower($hash->name))
             ->sign($message);
         return implode([
             pack('n', $signature['r']->getLength()),
