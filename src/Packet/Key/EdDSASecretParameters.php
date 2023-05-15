@@ -15,8 +15,9 @@ use phpseclib3\Crypt\EC\PrivateKey;
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
 use phpseclib3\File\ASN1;
 use phpseclib3\Math\BigInteger;
+
 use OpenPGP\Common\Helper;
-use OpenPGP\Enum\CurveOid;
+use OpenPGP\Enum\{CurveOid, HashAlgorithm};
 
 /**
  * EdDSA secret parameters class
@@ -28,8 +29,6 @@ use OpenPGP\Enum\CurveOid;
  */
 class EdDSASecretParameters extends ECSecretParameters implements SignableParametersInterface
 {
-    use DSASigningTrait;
-
     /**
      * Constructor
      *
@@ -88,9 +87,26 @@ class EdDSASecretParameters extends ECSecretParameters implements SignableParame
             );
         }
         else {
-            throw new \InvalidArgumentException(
+            throw new \UnexpectedValueException(
                 "{$curveOid->name} is not supported for EdDSA key generation"
             );
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function sign(HashAlgorithm $hash, string $message): string
+    {
+        $signature = $this->getPrivateKey()
+            ->withSignatureFormat('Raw')
+            ->withHash(strtolower($hash->name))
+            ->sign($message);
+        return implode([
+            pack('n', $signature['r']->getLength()),
+            $signature['r']->toBytes(),
+            pack('n', $signature['s']->getLength()),
+            $signature['s']->toBytes(),
+        ]);
     }
 }

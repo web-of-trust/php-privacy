@@ -97,8 +97,8 @@ class ECDHSecretParameters extends ECSecretParameters
             );
         }
         else {
-            throw new \InvalidArgumentException(
-                'Ed25519 is not supported for ECDH key generation'
+            throw new \UnexpectedValueException(
+                "{$curveOid->name} is not supported for ECDH key generation"
             );
         }
     }

@@ -75,7 +75,7 @@ class ECDSASecretParameters extends ECSecretParameters implements SignableParame
         switch ($curveOid) {
             case CurveOid::Ed25519:
             case CurveOid::Curve25519:
-                throw new \InvalidArgumentException(
+                throw new \UnexpectedValueException(
                     "{$curveOid->name} is not supported for ECDSA key generation"
                 );
             default:

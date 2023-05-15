@@ -128,22 +128,6 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
         int $time = 0
     ): SecretKeyPacketInterface
     {
-        if (($keyAlgorithm == KeyAlgorithm::EcDsa) &&
-            ($curveOid == CurveOid::Ed25519 || $curveOid == CurveOid::Curve25519)) {
-            throw new \UnexpectedValueException(
-                "EcDsa public key algorithm not supported $curveOid->name curve",
-            );
-        }
-        if (($keyAlgorithm == KeyAlgorithm::EdDsa) && ($curveOid != CurveOid::Ed25519)) {
-            throw new \UnexpectedValueException(
-                "EdDsa public key algorithm not supported $curveOid->name curve",
-            );
-        }
-        if (($keyAlgorithm == KeyAlgorithm::Ecdh) && ($curveOid == CurveOid::Ed25519)) {
-            throw new \UnexpectedValueException(
-                "Ecdh public key algorithm not supported $curveOid->name curve",
-            );
-        }
         $keyParameters = match($keyAlgorithm) {
             KeyAlgorithm::RsaEncryptSign => Key\RSASecretParameters::generate($rsaKeySize),
             KeyAlgorithm::RsaEncrypt => Key\RSASecretParameters::generate($rsaKeySize),
