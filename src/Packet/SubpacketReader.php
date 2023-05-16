@@ -270,15 +270,15 @@ class SubpacketReader
      *
      * @param string $bytes
      * @param int $offset
-     * @return SubpacketReader
+     * @return self
      */
-    public static function read(
+    private static function read(
         string $bytes, int $offset = 0
-    ): SubpacketReader
+    ): self
     {
         $header = ord($bytes[$offset++]);
         if ($header < 192) {
-            return new SubpacketReader(
+            return new self(
                 ord($bytes[$offset]),
                 substr($bytes, $offset + 1, $header - 1),
                 $offset + $header
@@ -286,7 +286,7 @@ class SubpacketReader
         }
         elseif ($header < 255) {
             $length = (($header - 192) << 8) + (ord($bytes[$offset++])) + 192;
-            return new SubpacketReader(
+            return new self(
                 ord($bytes[$offset]),
                 substr($bytes, $offset + 1, $length - 1),
                 $offset + $length,
@@ -296,13 +296,13 @@ class SubpacketReader
             $unpacked = unpack('N', substr($bytes, $offset, 4));
             $length = reset($unpacked);
             $offset += 4;
-            return new SubpacketReader(
+            return new self(
                 $bytes[$offset],
                 substr($bytes, $offset + 1, $length - 1),
                 $offset + $length,
                 true,
             );
         }
-        return new SubpacketReader();
+        return new self();
     }
 }
