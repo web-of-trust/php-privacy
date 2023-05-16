@@ -188,7 +188,7 @@ class S2K
         $alg = strtolower($this->hash->name);
         $hash = hash($alg, $data, true);
         while(strlen($hash) < $size) {
-            $data = "\0" . $data;
+            $data = "\x0" . $data;
             $hash .= hash($alg, $data, true);
         }
         return substr($hash, 0, $size);

@@ -85,11 +85,11 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
             $packets->encode(),
             "\xd3\x14",
         ]);
-        $plainText = $toHash . sha1($toHash, true);
+        $plainText = $toHash . hash('sha1', $toHash, true);
 
         $cipher = $symmetric->cipherEngine();
         $cipher->setKey($key);
-        $cipher->setIV(str_repeat("\0", $symmetric->blockSize()));
+        $cipher->setIV(str_repeat("\x0", $symmetric->blockSize()));
 
         return new SymEncryptedIntegrityProtectedData(
             $cipher->encrypt($plainText), $packets
@@ -197,7 +197,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
         $digestSize = strlen($decrypted) - HashAlgorithm::Sha1->digestSize();
         $realHash = substr($decrypted, $digestSize);
         $toHash = substr($decrypted, 0, $digestSize);
-        if ($realHash !== sha1($toHash, true)) {
+        if ($realHash !== hash('sha1', $toHash, true)) {
             throw new \UnexpectedValueException('Modification detected.');
         }
 

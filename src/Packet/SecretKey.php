@@ -290,7 +290,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
             $clearText = $this->keyParameters->toBytes();
             $encrypted = $cipher->encrypt(implode([
                 $clearText,
-                sha1($clearText, true),
+                hash('sha1', $clearText, true),
             ]));
             return new SecretKey(
                 $this->publicKey,
@@ -327,7 +327,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
             $length = strlen($decrypted) - HashAlgorithm::Sha1->digestSize();
             $clearText = substr($decrypted, 0, $length);
             $hashText = substr($decrypted, $length);
-            $hashed = sha1($clearText, true);
+            $hashed = hash('sha1', $clearText, true);
             if ($hashed !== $hashText) {
                 throw new \UnexpectedValueException('Incorrect key passphrase');
             }

@@ -48,7 +48,7 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
     )
     {
         parent::__construct($isSubkey ? PacketTag::PublicSubkey : PacketTag::PublicKey);
-        $this->fingerprint = sha1($this->getSignBytes(), true);
+        $this->fingerprint = hash('sha1', $this->getSignBytes(), true);
         $this->keyID = substr($this->fingerprint, 12, 8);
     }
 
