@@ -11,7 +11,12 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\PacketTag;
-use Psr\Log\{LoggerAwareInterface, LoggerAwareTrait, LoggerInterface, NullLogger};
+use Psr\Log\{
+    LoggerAwareInterface,
+    LoggerAwareTrait,
+    LoggerInterface,
+    NullLogger
+};
 
 /**
  * Abstract packet class

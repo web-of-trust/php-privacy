@@ -190,10 +190,16 @@ class SymEncryptedSessionKey extends AbstractPacket
             else {
                 $cipher = $this->symmetric->cipherEngine();
                 $cipher->setKey($key);
-                $cipher->setIV(str_repeat("\x0", $this->symmetric->blockSize()));
+                $cipher->setIV(
+                    str_repeat("\x0", $this->symmetric->blockSize())
+                );
                 $decrypted = $cipher->decrypt($this->encrypted);
-                $sessionKeySymmetric = SymmetricAlgorithm::from(ord($decrypted[0]));
-                $sessionKey = new Key\SessionKey(substr($decrypted, 1), $sessionKeySymmetric);
+                $sessionKeySymmetric = SymmetricAlgorithm::from(
+                    ord($decrypted[0])
+                );
+                $sessionKey = new Key\SessionKey(
+                    substr($decrypted, 1), $sessionKeySymmetric
+                );
             }
             return new SymEncryptedSessionKey(
                 $this->s2k,

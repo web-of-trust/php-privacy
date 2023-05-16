@@ -33,7 +33,8 @@ class PacketList implements \IteratorAggregate, \Countable
     public function __construct(array $packets = [])
     {
         $this->packets = new \ArrayIterator(array_filter(
-            $packets, static fn ($packet) => $packet instanceof PacketInterface
+            $packets,
+            static fn ($packet) => $packet instanceof PacketInterface
         ));
     }
 
@@ -53,55 +54,87 @@ class PacketList implements \IteratorAggregate, \Countable
 
             switch ($reader->getPacketTag()) {
                 case PacketTag::PublicKeyEncryptedSessionKey:
-                    $packets[] = PublicKeyEncryptedSessionKey::fromBytes($reader->getData());
+                    $packets[] = PublicKeyEncryptedSessionKey::fromBytes(
+                        $reader->getData()
+                    );
                     break;
                 case PacketTag::Signature:
-                    $packets[] = Signature::fromBytes($reader->getData());
+                    $packets[] = Signature::fromBytes(
+                        $reader->getData()
+                    );
                     break;
                 case PacketTag::SymEncryptedSessionKey:
-                    $packets[] = SymEncryptedSessionKey::fromBytes($reader->getData());
+                    $packets[] = SymEncryptedSessionKey::fromBytes(
+                        $reader->getData()
+                    );
                     break;
                 case PacketTag::OnePassSignature:
-                    $packets[] = OnePassSignature::fromBytes($reader->getData());
+                    $packets[] = OnePassSignature::fromBytes(
+                        $reader->getData()
+                    );
                     break;
                 case PacketTag::SecretKey:
-                    $packets[] = SecretKey::fromBytes($reader->getData());
+                    $packets[] = SecretKey::fromBytes(
+                        $reader->getData()
+                    );
                     break;
                 case PacketTag::PublicKey:
-                    $packets[] = PublicKey::fromBytes($reader->getData());
+                    $packets[] = PublicKey::fromBytes(
+                        $reader->getData()
+                    );
                     break;
                 case PacketTag::SecretSubkey:
-                    $packets[] = SecretSubkey::fromBytes($reader->getData());
+                    $packets[] = SecretSubkey::fromBytes(
+                        $reader->getData()
+                    );
                     break;
                 case PacketTag::CompressedData:
-                    $packets[] = CompressedData::fromBytes($reader->getData());
+                    $packets[] = CompressedData::fromBytes(
+                        $reader->getData()
+                    );
                     break;
                 case PacketTag::SymEncryptedData:
-                    $packets[] = SymEncryptedData::fromBytes($reader->getData());
+                    $packets[] = SymEncryptedData::fromBytes(
+                        $reader->getData()
+                    );
                     break;
                 case PacketTag::Marker:
                     $packets[] = new Marker();
                     break;
                 case PacketTag::LiteralData:
-                    $packets[] = LiteralData::fromBytes($reader->getData());
+                    $packets[] = LiteralData::fromBytes(
+                        $reader->getData()
+                    );
                     break;
                 case PacketTag::Trust:
-                    $packets[] = Trust::fromBytes($reader->getData());
+                    $packets[] = Trust::fromBytes(
+                        $reader->getData()
+                    );
                     break;
                 case PacketTag::UserID:
-                    $packets[] = UserID::fromBytes($reader->getData());
+                    $packets[] = UserID::fromBytes(
+                        $reader->getData()
+                    );
                     break;
                 case PacketTag::PublicSubkey:
-                    $packets[] = PublicSubkey::fromBytes($reader->getData());
+                    $packets[] = PublicSubkey::fromBytes(
+                        $reader->getData()
+                    );
                     break;
                 case PacketTag::UserAttribute:
-                    $packets[] = UserAttribute::fromBytes($reader->getData());
+                    $packets[] = UserAttribute::fromBytes(
+                        $reader->getData()
+                    );
                     break;
                 case PacketTag::SymEncryptedIntegrityProtectedData:
-                    $packets[] = SymEncryptedIntegrityProtectedData::fromBytes($reader->getData());
+                    $packets[] = SymEncryptedIntegrityProtectedData::fromBytes(
+                        $reader->getData()
+                    );
                     break;
                 case PacketTag::ModificationDetectionCode:
-                    $packets[] = ModificationDetectionCode::fromBytes($reader->getData());
+                    $packets[] = ModificationDetectionCode::fromBytes(
+                        $reader->getData()
+                    );
                     break;
                 case PacketTag::AeadEncryptedData:
                     break;

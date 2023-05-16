@@ -77,5 +77,7 @@ interface KeyPacketInterface
      * @param HashAlgorithm $preferredHash
      * @return HashAlgorithm
      */
-    function getPreferredHash(?HashAlgorithm $preferredHash = null): HashAlgorithm;
+    function getPreferredHash(
+        ?HashAlgorithm $preferredHash = null
+    ): HashAlgorithm;
 }

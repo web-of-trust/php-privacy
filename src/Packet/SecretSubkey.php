@@ -55,7 +55,14 @@ class SecretSubkey extends SecretKey
     )
     {
         parent::__construct(
-        	$publicKey, $keyData, $keyParameters, $s2kUsage, $symmetric, $s2k, $iv, true
+        	$publicKey,
+            $keyData,
+            $keyParameters,
+            $s2kUsage,
+            $symmetric,
+            $s2k,
+            $iv,
+            true
         );
     }
 
@@ -89,7 +96,11 @@ class SecretSubkey extends SecretKey
     ): SecretKeyPacketInterface
     {
         return self::fromSecretKey(SecretKey::generate(
-            $keyAlgorithm, $rsaKeySize, $dhKeySize, $curveOid, $time
+            $keyAlgorithm,
+            $rsaKeySize,
+            $dhKeySize,
+            $curveOid,
+            $time
         ));
     }
 
@@ -106,7 +117,11 @@ class SecretSubkey extends SecretKey
     {
         if ($this->getKeyParameters() instanceof Key\KeyParametersInterface) {
             $secretKey = parent::encrypt(
-                $passphrase, $s2kUsage, $symmetric, $hash, $s2kType
+                $passphrase,
+                $s2kUsage,
+                $symmetric,
+                $hash,
+                $s2kType
             );
             return self::fromSecretKey($secretKey);
         }

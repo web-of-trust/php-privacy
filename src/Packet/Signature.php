@@ -63,10 +63,12 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     {
         parent::__construct(PacketTag::Signature);
         $this->hashedSubpackets = array_filter(
-            $hashedSubpackets, static fn ($subpacket) => $subpacket instanceof SignatureSubpacket
+            $hashedSubpackets,
+            static fn ($subpacket) => $subpacket instanceof SignatureSubpacket
         );
         $this->unhashedSubpackets = array_filter(
-            $unhashedSubpackets, static fn ($subpacket) => $subpacket instanceof SignatureSubpacket
+            $unhashedSubpackets,
+            static fn ($subpacket) => $subpacket instanceof SignatureSubpacket
         );
         $this->signatureData = implode([
             chr($this->version),
@@ -108,14 +110,18 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         $unpacked = unpack('n', substr($bytes, $offset, 2));
         $hashedLength = reset($unpacked);
         $offset += 2;
-        $hashedSubpackets = self::readSubpackets(substr($bytes, $offset, $hashedLength));
+        $hashedSubpackets = self::readSubpackets(
+            substr($bytes, $offset, $hashedLength)
+        );
         $offset += $hashedLength;
 
         // read unhashed subpackets
         $unpacked = unpack('n', substr($bytes, $offset, 2));
         $unhashedLength = reset($unpacked);
         $offset += 2;
-        $unhashedSubpackets = self::readSubpackets(substr($bytes, $offset, $unhashedLength));
+        $unhashedSubpackets = self::readSubpackets(
+            substr($bytes, $offset, $unhashedLength)
+        );
         $offset += $unhashedLength;
 
         // Two-octet field holding left 16 bits of signed hash value.
@@ -137,6 +143,13 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * Creates signature
      *
+     * @param SecretKey $signKey
+     * @param SignatureType $signatureType
+     * @param string $dataToSign
+     * @param HashAlgorithm $hashAlgorithm
+     * @param array $subpackets
+     * @param int $keyExpirationTime
+     * @param int $creationTime
      * @return Signature
      */
     public static function createSignature(
@@ -146,7 +159,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         HashAlgorithm $hashAlgorithm = HashAlgorithm::Sha256,
         array $subpackets = [],
         int $keyExpirationTime = 0,
-        int $time = 0
+        int $creationTime = 0
     ): Signature
     {
         $version = $signKey->getVersion();
@@ -154,14 +167,18 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         $hashAlgorithm = $signKey->getPreferredHash($hashAlgorithm);
 
         $hashedSubpackets = [
-            Signature\SignatureCreationTime::fromTime(empty($time) ? time() : $time),
+            Signature\SignatureCreationTime::fromTime(
+                empty($creationTime) ? time() : $creationTime
+            ),
             Signature\IssuerFingerprint::fromKeyPacket($signKey),
             Signature\IssuerKeyID::fromKeyID($signKey->getKeyID()),
             ...$subpackets,
         ];
 
         if ($keyExpirationTime > 0) {
-            $hashedSubpackets[] = Signature\KeyExpirationTime::fromTime($keyExpirationTime);
+            $hashedSubpackets[] = Signature\KeyExpirationTime::fromTime(
+                $keyExpirationTime
+            );
         }
 
         $signatureData = implode([
@@ -186,7 +203,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             $signatureType,
             $keyAlgorithm,
             $hashAlgorithm,
-            substr(hash(strtolower($hashAlgorithm->name), $message, true), 0, 2),
+            substr(hash(
+                strtolower($hashAlgorithm->name), $message, true
+            ), 0, 2),
             self::signMessage($signKey, $hashAlgorithm, $message),
             $hashedSubpackets,
         );
@@ -246,7 +265,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
                 strlen($this->signatureData)
             ),
         ]);
-        $hash = hash(strtolower($this->hashAlgorithm->name), $message, true);
+        $hash = hash(
+            strtolower($this->hashAlgorithm->name), $message, true
+        );
         if ($this->signedHashValue !== substr($hash, 0, 2)) {
             $this->getLogger()->debug(
                 'Signed digest did not match.'
@@ -348,7 +369,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getSignatureExpirationTime(): ?Signature\SignatureExpirationTime
     {
         return self::getSubpacket(
-            $this->hashedSubpackets, SignatureSubpacketType::SignatureExpirationTime->value
+            $this->hashedSubpackets,
+            SignatureSubpacketType::SignatureExpirationTime->value
         );
     }
 
@@ -360,7 +382,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getExportableCertification(): ?Signature\ExportableCertification
     {
         return self::getSubpacket(
-            $this->hashedSubpackets, SignatureSubpacketType::ExportableCertification->value
+            $this->hashedSubpackets,
+            SignatureSubpacketType::ExportableCertification->value
         );
     }
 
@@ -372,7 +395,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getTrustSignature(): ?Signature\TrustSignature
     {
         return self::getSubpacket(
-            $this->hashedSubpackets, SignatureSubpacketType::TrustSignature->value
+            $this->hashedSubpackets,
+            SignatureSubpacketType::TrustSignature->value
         );
     }
 
@@ -384,7 +408,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getRegularExpression(): ?Signature\RegularExpression
     {
         return self::getSubpacket(
-            $this->hashedSubpackets, SignatureSubpacketType::RegularExpression->value
+            $this->hashedSubpackets,
+            SignatureSubpacketType::RegularExpression->value
         );
     }
 
@@ -396,7 +421,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getRevocable(): ?Signature\Revocable
     {
         return self::getSubpacket(
-            $this->hashedSubpackets, SignatureSubpacketType::Revocable->value
+            $this->hashedSubpackets,
+            SignatureSubpacketType::Revocable->value
         );
     }
 
@@ -408,7 +434,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getKeyExpirationTime(): ?Signature\KeyExpirationTime
     {
         return self::getSubpacket(
-            $this->hashedSubpackets, SignatureSubpacketType::KeyExpirationTime->value
+            $this->hashedSubpackets,
+            SignatureSubpacketType::KeyExpirationTime->value
         );
     }
 
@@ -420,7 +447,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getPreferredSymmetricAlgorithms(): ?Signature\PreferredSymmetricAlgorithms
     {
         return self::getSubpacket(
-            $this->hashedSubpackets, SignatureSubpacketType::PreferredSymmetricAlgorithms->value
+            $this->hashedSubpackets,
+            SignatureSubpacketType::PreferredSymmetricAlgorithms->value
         );
     }
 
@@ -432,7 +460,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getRevocationKey(): ?Signature\RevocationKey
     {
         return self::getSubpacket(
-            $this->hashedSubpackets, SignatureSubpacketType::RevocationKey->value
+            $this->hashedSubpackets,
+            SignatureSubpacketType::RevocationKey->value
         );
     }
 
@@ -470,7 +499,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getNotationData(): ?Signature\NotationData
     {
         return self::getSubpacket(
-            $this->hashedSubpackets, SignatureSubpacketType::NotationData->value
+            $this->hashedSubpackets,
+            SignatureSubpacketType::NotationData->value
         );
     }
 
@@ -482,7 +512,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getPreferredHashAlgorithms(): ?Signature\PreferredHashAlgorithms
     {
         return self::getSubpacket(
-            $this->hashedSubpackets, SignatureSubpacketType::PreferredHashAlgorithms->value
+            $this->hashedSubpackets,
+            SignatureSubpacketType::PreferredHashAlgorithms->value
         );
     }
 
@@ -494,7 +525,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getPreferredCompressionAlgorithms(): ?Signature\PreferredCompressionAlgorithms
     {
         return self::getSubpacket(
-            $this->hashedSubpackets, SignatureSubpacketType::PreferredCompressionAlgorithms->value
+            $this->hashedSubpackets,
+            SignatureSubpacketType::PreferredCompressionAlgorithms->value
         );
     }
 
@@ -506,7 +538,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getKeyServerPreferences(): ?Signature\KeyServerPreferences
     {
         return self::getSubpacket(
-            $this->hashedSubpackets, SignatureSubpacketType::KeyServerPreferences->value
+            $this->hashedSubpackets,
+            SignatureSubpacketType::KeyServerPreferences->value
         );
     }
 
@@ -518,7 +551,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getPreferredKeyServer(): ?Signature\PreferredKeyServer
     {
         return self::getSubpacket(
-            $this->hashedSubpackets, SignatureSubpacketType::PreferredKeyServer->value
+            $this->hashedSubpackets,
+            SignatureSubpacketType::PreferredKeyServer->value
         );
     }
 
@@ -530,7 +564,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getPrimaryUserID(): ?Signature\PrimaryUserID
     {
         return self::getSubpacket(
-            $this->hashedSubpackets, SignatureSubpacketType::PrimaryUserID->value
+            $this->hashedSubpackets,
+            SignatureSubpacketType::PrimaryUserID->value
         );
     }
 
@@ -542,7 +577,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getPolicyURI(): ?Signature\PolicyURI
     {
         return self::getSubpacket(
-            $this->hashedSubpackets, SignatureSubpacketType::PolicyURI->value
+            $this->hashedSubpackets,
+            SignatureSubpacketType::PolicyURI->value
         );
     }
 
@@ -554,7 +590,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getKeyFlags(): ?Signature\KeyFlags
     {
         return self::getSubpacket(
-            $this->hashedSubpackets, SignatureSubpacketType::KeyFlags->value
+            $this->hashedSubpackets,
+            SignatureSubpacketType::KeyFlags->value
         );
     }
 
@@ -566,7 +603,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getSignerUserID(): ?Signature\SignerUserID
     {
         return self::getSubpacket(
-            $this->hashedSubpackets, SignatureSubpacketType::SignerUserID->value
+            $this->hashedSubpackets,
+            SignatureSubpacketType::SignerUserID->value
         );
     }
 
@@ -578,7 +616,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getRevocationReason(): ?Signature\RevocationReason
     {
         return self::getSubpacket(
-            $this->hashedSubpackets, SignatureSubpacketType::RevocationReason->value
+            $this->hashedSubpackets,
+            SignatureSubpacketType::RevocationReason->value
         );
     }
 
@@ -590,7 +629,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getFeatures(): ?Signature\Features
     {
         return self::getSubpacket(
-            $this->hashedSubpackets, SignatureSubpacketType::Features->value
+            $this->hashedSubpackets,
+            SignatureSubpacketType::Features->value
         );
     }
 
@@ -602,7 +642,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getSignatureTarget(): ?Signature\SignatureTarget
     {
         return self::getSubpacket(
-            $this->hashedSubpackets, SignatureSubpacketType::SignatureTarget->value
+            $this->hashedSubpackets,
+            SignatureSubpacketType::SignatureTarget->value
         );
     }
 
@@ -614,7 +655,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getEmbeddedSignature(): ?Signature\EmbeddedSignature
     {
         return self::getSubpacket(
-            $this->hashedSubpackets, SignatureSubpacketType::EmbeddedSignature->value
+            $this->hashedSubpackets,
+            SignatureSubpacketType::EmbeddedSignature->value
         );
     }
 
@@ -775,7 +817,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     private static function signMessage(
-        KeyPacketInterface $signKey, HashAlgorithm $hash, string $message
+        KeyPacketInterface $signKey,
+        HashAlgorithm $hash,
+        string $message
     ): string
     {
         switch ($signKey->getKeyAlgorithm()) {
@@ -815,7 +859,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         return pack('n', strlen($bytes)) . $bytes;
     }
 
-    private static function getSubpacket(array $subpackets, int $type): ?SignatureSubpacket
+    private static function getSubpacket(
+        array $subpackets, int $type
+    ): ?SignatureSubpacket
     {
         $subpackets = array_filter(
             $subpackets,

@@ -40,7 +40,9 @@ class ImageUserAttribute extends UserAttributeSubpacket
      * @param string $imageData
      * @return ImageUserAttribute
      */
-    public static function fromImageData(string $imageData): ImageUserAttribute
+    public static function fromImageData(
+        string $imageData
+    ): ImageUserAttribute
     {
         return new ImageUserAttribute(implode([
             "\x10\x00\x01",

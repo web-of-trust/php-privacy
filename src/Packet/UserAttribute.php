@@ -41,7 +41,8 @@ class UserAttribute extends AbstractPacket implements ForSigningInterface
     {
         parent::__construct(PacketTag::UserAttribute);
         $this->attributes = array_filter(
-            $attributes, static fn ($attr) => $attr instanceof UserAttributeSubpacket
+            $attributes,
+            static fn ($attr) => $attr instanceof UserAttributeSubpacket
         );
     }
 
@@ -63,12 +64,15 @@ class UserAttribute extends AbstractPacket implements ForSigningInterface
                 switch ($reader->getType()) {
                     case ImageUserAttribute::JPEG:
                         $attributes[] = new ImageUserAttribute(
-                            $reader->getData(), $reader->isLong()
+                            $reader->getData(),
+                            $reader->isLong()
                         );
                         break;
                     default:
                         $attributes[] = new UserAttributeSubpacket(
-                            $reader->getType(), $reader->getData(), $reader->isLong()
+                            $reader->getType(),
+                            $reader->getData(),
+                            $reader->isLong()
                         );
                         break;
                 }

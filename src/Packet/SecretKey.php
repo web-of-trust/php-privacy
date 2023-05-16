@@ -60,7 +60,9 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
         private readonly bool $isSubkey = false
     )
     {
-        parent::__construct($isSubkey ? PacketTag::SecretSubkey : PacketTag::SecretKey);
+        parent::__construct(
+            $isSubkey ? PacketTag::SecretSubkey : PacketTag::SecretKey
+        );
     }
 
     /**
@@ -329,7 +331,9 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
             $hashText = substr($decrypted, $length);
             $hashed = hash('sha1', $clearText, true);
             if ($hashed !== $hashText) {
-                throw new \UnexpectedValueException('Incorrect key passphrase');
+                throw new \UnexpectedValueException(
+                    'Incorrect key passphrase.'
+                );
             }
 
             $keyParameters = self::readKeyParameters($clearText, $this->publicKey);

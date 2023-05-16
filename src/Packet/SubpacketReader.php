@@ -85,7 +85,9 @@ class SubpacketReader
      * @param int $offset
      * @return SubpacketReader
      */
-    public static function read(string $bytes, int $offset = 0): SubpacketReader
+    public static function read(
+        string $bytes, int $offset = 0
+    ): SubpacketReader
     {
         $header = ord($bytes[$offset++]);
         if ($header < 192) {

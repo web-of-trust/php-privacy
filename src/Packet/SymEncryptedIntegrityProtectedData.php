@@ -55,7 +55,8 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
      */
     public static function fromBytes(string $bytes): SymEncryptedIntegrityProtectedData
     {
-        // A one-octet version number. The only currently defined version is 1.
+        // A one-octet version number.
+        // The only currently defined version is 1.
         $version = ord($bytes[0]);
         if ($version !== self::VERSION) {
             throw new \UnexpectedValueException(
@@ -188,10 +189,10 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): SymEncryptedIntegrityProtectedData
     {
-        $blockSize = $symmetric->blockSize();
+        $size = $symmetric->blockSize();
         $cipher = $symmetric->cipherEngine();
         $cipher->setKey($key);
-        $cipher->setIV(str_repeat("\x0", $blockSize));
+        $cipher->setIV(str_repeat("\x0", $size));
 
         $decrypted = $cipher->decrypt($this->encrypted);
         $digestSize = strlen($decrypted) - HashAlgorithm::Sha1->digestSize();
@@ -204,7 +205,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
         return new SymEncryptedIntegrityProtectedData(
             $this->encrypted,
             PacketList::decode(
-                substr($toHash, $blockSize + 2, strlen($toHash) - $blockSize - 2)
+                substr($toHash, $size + 2, strlen($toHash) - $size - 2)
             )
         );
     }

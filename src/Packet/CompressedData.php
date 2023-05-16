@@ -10,7 +10,8 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Enum\{CompressionAlgorithm, PacketTag};
+use OpenPGP\Enum\CompressionAlgorithm as Algorithm;
+use OpenPGP\Enum\PacketTag;
 
 /**
  * Implementation of the Compressed Data Packet (Tag 8)
@@ -36,13 +37,13 @@ class CompressedData extends AbstractPacket
      *
      * @param string $compressed
      * @param PacketList $packets
-     * @param CompressionAlgorithm $algorithm
+     * @param Algorithm $algorithm
      * @return self
      */
     public function __construct(
         private readonly string $compressed,
         private readonly PacketList $packets,
-        private readonly CompressionAlgorithm $algorithm = CompressionAlgorithm::Uncompressed
+        private readonly Algorithm $algorithm = Algorithm::Uncompressed
     )
     {
         parent::__construct(PacketTag::CompressedData);
@@ -56,10 +57,12 @@ class CompressedData extends AbstractPacket
      */
     public static function fromBytes(string $bytes): CompressedData
     {
-        $algorithm = CompressionAlgorithm::from(ord($bytes[0]));
+        $algorithm = Algorithm::from(ord($bytes[0]));
         $compressed = substr($bytes, 1);
         return new CompressedData(
-            $compressed, self::decompress($compressed, $algorithm), $algorithm
+            $compressed,
+            self::decompress($compressed, $algorithm),
+            $algorithm
         );
     }
 
@@ -67,12 +70,12 @@ class CompressedData extends AbstractPacket
      * Build compressed data packet from packet list
      *
      * @param PacketList $function
-     * @param CompressionAlgorithm $algorithm
+     * @param Algorithm $algorithm
      * @return CompressedData
      */
     public static function fromPacketList(
         PacketList $packets,
-        CompressionAlgorithm $algorithm = CompressionAlgorithm::Uncompressed
+        Algorithm $algorithm = Algorithm::Uncompressed
     ): CompressedData
     {
         return new CompressedData(
@@ -105,9 +108,9 @@ class CompressedData extends AbstractPacket
     /**
      * Gets compression algorithm
      *
-     * @return CompressionAlgorithm
+     * @return Algorithm
      */
-    public function getAlgorithm(): CompressionAlgorithm
+    public function getAlgorithm(): Algorithm
     {
         return $this->algorithm;
     }
@@ -124,26 +127,26 @@ class CompressedData extends AbstractPacket
     }
 
     private static function compress(
-        PacketList $packets, CompressionAlgorithm $algorithm
+        PacketList $packets, Algorithm $algorithm
     ): string
     {
         return match($algorithm) {
-            CompressionAlgorithm::Uncompressed => $packets->encode(),
-            CompressionAlgorithm::Zip => \gzdeflate($packets->encode(), self::DEFLATE_LEVEL),
-            CompressionAlgorithm::Zlib => \gzcompress($packets->encode(), self::DEFLATE_LEVEL),
-            CompressionAlgorithm::BZip2 => \bzcompress($packets->encode()),
+            Algorithm::Uncompressed => $packets->encode(),
+            Algorithm::Zip => \gzdeflate($packets->encode(), self::DEFLATE_LEVEL),
+            Algorithm::Zlib => \gzcompress($packets->encode(), self::DEFLATE_LEVEL),
+            Algorithm::BZip2 => \bzcompress($packets->encode()),
         };
     }
 
     private static function decompress(
-        string $compressed, CompressionAlgorithm $algorithm
+        string $compressed, Algorithm $algorithm
     ): PacketList
     {
         return match($algorithm) {
-            CompressionAlgorithm::Uncompressed => PacketList::decode($compressed),
-            CompressionAlgorithm::Zip => PacketList::decode(\gzinflate($compressed)),
-            CompressionAlgorithm::Zlib => PacketList::decode(\gzuncompress($compressed)),
-            CompressionAlgorithm::BZip2 => PacketList::decode(\bzdecompress($compressed)),
+            Algorithm::Uncompressed => PacketList::decode($compressed),
+            Algorithm::Zip => PacketList::decode(\gzinflate($compressed)),
+            Algorithm::Zlib => PacketList::decode(\gzuncompress($compressed)),
+            Algorithm::BZip2 => PacketList::decode(\bzdecompress($compressed)),
         };
     }
 }

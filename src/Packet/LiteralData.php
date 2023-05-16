@@ -10,7 +10,8 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Enum\{LiteralFormat, PacketTag};
+use OpenPGP\Enum\LiteralFormat as Format;
+use OpenPGP\Enum\PacketTag;
 
 /**
  * Implementation of the Literal Data Packet (Tag 11)
@@ -31,14 +32,14 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
      * Constructor
      *
      * @param string $data
-     * @param LiteralFormat $format
+     * @param Format $format
      * @param string $filename
      * @param int $time
      * @return self
      */
     public function __construct(
         private readonly string $data,
-        private readonly LiteralFormat $format = LiteralFormat::Utf8,
+        private readonly Format $format = Format::Utf8,
         private readonly string $filename = '',
         int $time = 0
     )
@@ -56,7 +57,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
     public static function fromBytes(string $bytes): LiteralData
     {
         $offset = 0;
-        $format = LiteralFormat::from(ord($bytes[$offset++]));
+        $format = Format::from(ord($bytes[$offset++]));
         $length = ord($bytes[$offset++]);
         $filename = substr($bytes, $offset, $length);
 
@@ -89,9 +90,9 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
     /**
      * Gets literal format
      *
-     * @return LiteralFormat
+     * @return Format
      */
-    public function getFormat(): LiteralFormat
+    public function getFormat(): Format
     {
         return $this->format;
     }
@@ -145,7 +146,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
      */
     public function getSignBytes(): string
     {
-        if ($this->format == LiteralFormat::Text || $this->format == LiteralFormat::Utf8) {
+        if ($this->format == Format::Text || $this->format == Format::Utf8) {
             return preg_replace('/\r?\n/', "\r\n", $this->data);
         }
         else {

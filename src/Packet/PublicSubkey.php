@@ -36,7 +36,12 @@ class PublicSubkey extends PublicKey
         KeyAlgorithm $algorithm = KeyAlgorithm::RsaEncryptSign
     )
     {
-        parent::__construct($creationTime, $keyParameters, $algorithm, true);
+        parent::__construct(
+            $creationTime,
+            $keyParameters,
+            $algorithm,
+            true
+        );
     }
 
     /**
