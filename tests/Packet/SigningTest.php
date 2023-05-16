@@ -5,13 +5,16 @@ namespace OpenPGP\Tests\Packet;
 use phpseclib3\Crypt\Random;
 use OpenPGP\Enum\KeyFlag;
 use OpenPGP\Enum\SignatureType;
+use OpenPGP\Enum\SignatureSubpacketType;
 use OpenPGP\Enum\SupportFeature;
 use OpenPGP\Packet\PacketList;
 use OpenPGP\Packet\PublicKey;
 use OpenPGP\Packet\SecretKey;
 use OpenPGP\Packet\Signature;
+use OpenPGP\Packet\SignatureSubpacket;
 use OpenPGP\Packet\Signature\Features;
 use OpenPGP\Packet\Signature\KeyFlags;
+use OpenPGP\Packet\SubpacketReader;
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
@@ -295,5 +298,22 @@ EOT;
         $this->assertTrue($keyFlags->isSignData());
         $this->assertTrue($keyFlags->isEncryptCommunication());
         $this->assertTrue($keyFlags->isEncryptStorage());
+    }
+
+    public function testSignatureSubpackets()
+    {
+        $initSubpackets = array_map(
+            static fn ($type) => new SignatureSubpacket($type->value, Random::string(100)),
+            SignatureSubpacketType::cases()
+        );
+        $subpackets = SubpacketReader::readSignatureSubpackets(implode(
+            array_map(static fn ($subpacket) => $subpacket->toBytes(), $initSubpackets)
+        ));
+        $this->assertSame(count($initSubpackets), count($subpackets));
+        foreach ($subpackets as $key => $subpacket) {
+            $initSubpacket = $initSubpackets[$key];
+            $this->assertSame($initSubpacket->getType(), $subpacket->getType());
+            $this->assertSame($initSubpacket->getData(), $subpacket->getData());
+        }
     }
 }

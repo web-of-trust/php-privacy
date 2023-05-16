@@ -54,31 +54,9 @@ class UserAttribute extends AbstractPacket implements ForSigningInterface
      */
     public static function fromBytes(string $bytes): UserAttribute
     {
-        $attributes = [];
-        $offset = 0;
-        $len = strlen($bytes);
-        while ($offset < $len) {
-            $reader = SubpacketReader::read($bytes, $offset);
-            $offset = $reader->getOffset();
-            if (!empty($reader->getData())) {
-                switch ($reader->getType()) {
-                    case ImageUserAttribute::JPEG:
-                        $attributes[] = new ImageUserAttribute(
-                            $reader->getData(),
-                            $reader->isLong()
-                        );
-                        break;
-                    default:
-                        $attributes[] = new UserAttributeSubpacket(
-                            $reader->getType(),
-                            $reader->getData(),
-                            $reader->isLong()
-                        );
-                        break;
-                }
-            }
-        }
-        return new UserAttribute($attributes);
+        return new UserAttribute(
+            SubpacketReader::readUserAttributes($bytes)
+        );
     }
 
     /**
