@@ -37,15 +37,17 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
      * @param int $creationTime
      * @param Key\KeyParametersInterface $keyParameters
      * @param KeyAlgorithm $keyAlgorithm
+     * @param bool $isSubkey
      * @return self
      */
     public function __construct(
         private readonly int $creationTime,
         private readonly Key\KeyParametersInterface $keyParameters,
-        private readonly KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign
+        private readonly KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
+        private readonly bool $isSubkey = false
     )
     {
-        parent::__construct(PacketTag::PublicKey);
+        parent::__construct($isSubkey ? PacketTag::PublicSubkey : PacketTag::PublicKey);
         $this->fingerprint = sha1($this->getSignBytes(), true);
         $this->keyID = substr($this->fingerprint, 12, 8);
     }
@@ -144,6 +146,14 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
     public function getKeyID(): string
     {
         return $this->keyID;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isSubkey(): bool
+    {
+        return $this->isSubkey;
     }
 
     /**

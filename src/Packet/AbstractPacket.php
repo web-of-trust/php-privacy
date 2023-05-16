@@ -21,7 +21,7 @@ use Psr\Log\{LoggerAwareInterface, LoggerAwareTrait, LoggerInterface, NullLogger
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-abstract class AbstractPacket implements PacketInterface, LoggerAwareInterface
+abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, \Stringable
 {
     use LoggerAwareTrait;
 
@@ -30,7 +30,7 @@ abstract class AbstractPacket implements PacketInterface, LoggerAwareInterface
      *
      * @return self
      */
-    public function __construct(private PacketTag $tag)
+    public function __construct(private readonly PacketTag $tag)
     {
     }
 
@@ -40,18 +40,6 @@ abstract class AbstractPacket implements PacketInterface, LoggerAwareInterface
     public function getTag(): PacketTag
     {
         return $this->tag;
-    }
-
-    /**
-     * Sets packet tag
-     * 
-     * @param PacketTag $tag
-     * @return self
-     */
-    protected function setTag(PacketTag $tag): self
-    {
-        $this->tag = $tag;
-        return $this;
     }
 
     /**
@@ -91,6 +79,14 @@ abstract class AbstractPacket implements PacketInterface, LoggerAwareInterface
             $this->logger = new NullLogger();
         }
         return $this->logger;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __toString(): string
+    {
+        return $this->encode();
     }
 
     /**

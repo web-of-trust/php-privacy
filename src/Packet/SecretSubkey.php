@@ -30,7 +30,7 @@ use OpenPGP\Enum\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class SecretSubkey extends SecretKey implements SubkeyPacketInterface
+class SecretSubkey extends SecretKey
 {
     /**
      * Constructor
@@ -55,9 +55,8 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
     )
     {
         parent::__construct(
-        	$publicKey, $keyData, $keyParameters, $s2kUsage, $symmetric, $s2k, $iv
+        	$publicKey, $keyData, $keyParameters, $s2kUsage, $symmetric, $s2k, $iv, true
         );
-        $this->setTag(PacketTag::SecretSubkey);
     }
 
     /**

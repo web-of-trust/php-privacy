@@ -20,7 +20,7 @@ use OpenPGP\Enum\{KeyAlgorithm, PacketTag};
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class PublicSubkey extends PublicKey implements SubkeyPacketInterface
+class PublicSubkey extends PublicKey
 {
     /**
      * Constructor
@@ -36,17 +36,16 @@ class PublicSubkey extends PublicKey implements SubkeyPacketInterface
         KeyAlgorithm $algorithm = KeyAlgorithm::RsaEncryptSign
     )
     {
-        parent::__construct($creationTime, $keyParameters, $algorithm);
-        $this->setTag(PacketTag::PublicSubkey);
+        parent::__construct($creationTime, $keyParameters, $algorithm, true);
     }
 
     /**
      * Read public subkey packets from byte string
      *
      * @param string $bytes
-     * @return SubkeyPacketInterface
+     * @return KeyPacketInterface
      */
-    public static function fromBytes(string $bytes): SubkeyPacketInterface
+    public static function fromBytes(string $bytes): KeyPacketInterface
     {
         $publicKey = PublicKey::fromBytes($bytes);
         return new PublicSubkey(

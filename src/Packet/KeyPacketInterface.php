@@ -65,6 +65,13 @@ interface KeyPacketInterface
     function getKeyID(): string;
 
     /**
+     * Return key packete is subkey
+     * 
+     * @return string
+     */
+    function isSubkey(): bool;
+
+    /**
      * Gets preferred hash algorithm
      * 
      * @param HashAlgorithm $preferredHash

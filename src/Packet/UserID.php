@@ -27,7 +27,7 @@ use OpenPGP\Enum\PacketTag;
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class UserID extends AbstractPacket implements \Stringable, ForSigningInterface
+class UserID extends AbstractPacket implements ForSigningInterface
 {
     private readonly string $name;
 
@@ -105,16 +105,6 @@ class UserID extends AbstractPacket implements \Stringable, ForSigningInterface
             pack('N', strlen($this->userID)),
             $this->userID,
         ]);
-    }
-
-    /**
-     * Gets a string representation of the user ID
-     *
-     * @return string
-     */
-    public function __toString(): string
-    {
-        return $this->userID;
     }
 
     /**

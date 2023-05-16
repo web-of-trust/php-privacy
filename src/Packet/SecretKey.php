@@ -46,19 +46,21 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
      * @param SymmetricAlgorithm $symmetric
      * @param Key\S2K $s2k
      * @param string $iv
+     * @param bool $isSubkey
      * @return self
      */
     public function __construct(
-        private PublicKey $publicKey,
-        private string $keyData = '',
-        private ?Key\KeyParametersInterface $keyParameters = null,
-        private S2kUsage $s2kUsage = S2kUsage::Sha1,
-        private SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        private ?Key\S2K $s2k = null,
-        private string $iv = '',
+        private readonly PublicKey $publicKey,
+        private readonly string $keyData = '',
+        private readonly ?Key\KeyParametersInterface $keyParameters = null,
+        private readonly S2kUsage $s2kUsage = S2kUsage::Sha1,
+        private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        private readonly ?Key\S2K $s2k = null,
+        private readonly string $iv = '',
+        private readonly bool $isSubkey = false
     )
     {
-        parent::__construct(PacketTag::SecretKey);
+        parent::__construct($isSubkey ? PacketTag::SecretSubkey : PacketTag::SecretKey);
     }
 
     /**
@@ -222,6 +224,14 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
     public function getKeyID(): string
     {
         return $this->publicKey->getKeyID();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isSubkey(): bool
+    {
+        return $this->isSubkey;
     }
 
     /**
