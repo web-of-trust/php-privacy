@@ -108,6 +108,6 @@ class SignatureTarget extends SignatureSubpacket
             chr($keyAlgorithm->value),
             chr($hashAlgorithm->value),
             $hashData,
-        ])
+        ]);
     }
 }

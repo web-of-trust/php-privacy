@@ -109,6 +109,6 @@ class RevocationKey extends SignatureSubpacket
             chr($signatureClass->value),
             chr($keyAlgorithm->value),
             $fingerprint,
-        ])
+        ]);
     }
 }

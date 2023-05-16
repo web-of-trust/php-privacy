@@ -93,6 +93,6 @@ class RevocationReason extends SignatureSubpacket
         return implode([
             chr($reason->value),
             $description,
-        ])
+        ]);
     }
 }
