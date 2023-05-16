@@ -215,11 +215,15 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     ): bool
     {
         if ($this->getIssuerKeyID()->getKeyID() !== $verifyKey->getKeyID()) {
-            // Signature was not issued by the given public key.
+            $this->getLogger()->debug(
+                'Signature was not issued by the given public key.'
+            );
             return false;
         }
         if ($this->keyAlgorithm !== $verifyKey->getKeyAlgorithm()) {
-            // Public key algorithm used to sign signature does not match issuer key algorithm.
+            $this->getLogger()->debug(
+                'Public key algorithm used to sign signature does not match issuer key algorithm.'
+            );
             return false;
         }
 
@@ -227,7 +231,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         if ($signatureExpirationTime instanceof Signature\SignatureExpirationTime) {
             $time = empty($time) ? time() : $time;
             if ($signatureExpirationTime->getExpirationTime() < $time) {
-                // Signature is expired
+                $this->getLogger()->debug(
+                    'Signature is expired.'
+                );
                 return false;
             }
         }
@@ -242,7 +248,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         ]);
         $hash = hash(strtolower($this->hashAlgorithm->name), $message, true);
         if ($this->signedHashValue !== substr($hash, 0, 2)) {
-            // Signed digest did not match
+            $this->getLogger()->debug(
+                'Signed digest did not match.'
+            );
             return false;
         }
 

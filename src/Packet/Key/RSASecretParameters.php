@@ -226,12 +226,10 @@ class RSASecretParameters implements SignableParametersInterface
         $privateKey = $this->privateKey
             ->withHash(strtolower($hash->name))
             ->withPadding(RSA::SIGNATURE_PKCS1);
-        $signature = Helper::bin2BigInt(
-            $privateKey->sign($message)
-        );
+        $signature = $privateKey->sign($message);
         return implode([
-            pack('n', $signature->getLength()),
-            $signature->toBytes(),
+            pack('n', strlen($signature) * 8),
+            $signature,
         ]);
     }
 }

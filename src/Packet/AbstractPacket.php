@@ -11,6 +11,7 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\PacketTag;
+use Psr\Log\{LoggerAwareInterface, LoggerAwareTrait, LoggerInterface, NullLogger};
 
 /**
  * Abstract packet class
@@ -20,8 +21,10 @@ use OpenPGP\Enum\PacketTag;
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-abstract class AbstractPacket implements PacketInterface
+abstract class AbstractPacket implements PacketInterface, LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * Constructor
      *
@@ -77,6 +80,17 @@ abstract class AbstractPacket implements PacketInterface
         $data[] = $bodyBytes;
 
         return implode($data);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLogger(): LoggerInterface
+    {
+        if (!($this->logger instanceof LoggerInterface)) {
+            $this->logger = new NullLogger();
+        }
+        return $this->logger;
     }
 
     /**

@@ -88,7 +88,7 @@ BGRYd7UTBSuBBAAiAwME3Z/lmJrDGnYHvT7xe5ei8xFfsCsrH+6AjmSftcJEYCCTy4CupXlvp5wb
 FLQ2klduC2c09LzjULVFn4uQKdMacYb7X0UjI2q6MLGP1fpmg7mq4F8myVJx6lkvpHK44xDh
 EOT;
 
-    private static $ecdsaP384SecretKeyKeyData = <<<EOT
+    private static $ecdsaP384SecretKeyData = <<<EOT
 BGRYd7UTBSuBBAAiAwME3Z/lmJrDGnYHvT7xe5ei8xFfsCsrH+6AjmSftcJEYCCTy4CupXlvp5wb
 FLQ2klduC2c09LzjULVFn4uQKdMacYb7X0UjI2q6MLGP1fpmg7mq4F8myVJx6lkvpHK44xDh/gcD
 AjbYiI4QU+mo/woxqTXpIZE1wzaaNJ5+iRA7vvc6rdJZSjQUkXTJ3/zOyI4970a4UDTJ948+jiUt
@@ -145,9 +145,8 @@ EOT;
             SignatureType::Standalone,
             $message
         );
-        $this->assertTrue($signature->verify($publicKey, self::LITERAL_TEXT));
+        $this->assertTrue($signature->verify($publicKey, $message));
     }
-
 
     public function testVerifyDsaSignature()
     {
@@ -161,6 +160,20 @@ EOT;
         $packets = PacketList::decode(base64_decode($signatureData));
         $signature = $packets->offsetGet(0);
         $this->assertTrue($signature->verify($publicKey, self::LITERAL_TEXT));
+    }
+
+    public function testDsaSigning()
+    {
+        $message = Random::string(100);
+        $secretKey = SecretKey::fromBytes(base64_decode(self::$dsaSecretKeyData))->decrypt(self::PASSPHRASE);
+        $publicKey = PublicKey::fromBytes(base64_decode(self::$dsaPublicKeyData));
+
+        $signature = Signature::createSignature(
+            $secretKey,
+            SignatureType::Standalone,
+            $message
+        );
+        $this->assertTrue($signature->verify($publicKey, $message));
     }
 
     public function testVerifyEcdsaP384Signature()
@@ -178,6 +191,20 @@ EOT;
         $this->assertTrue($signature->verify($publicKey, self::LITERAL_TEXT));
     }
 
+    public function testEcdsaP384Signing()
+    {
+        $message = Random::string(100);
+        $secretKey = SecretKey::fromBytes(base64_decode(self::$ecdsaP384SecretKeyData))->decrypt(self::PASSPHRASE);
+        $publicKey = PublicKey::fromBytes(base64_decode(self::$ecdsaP384PublicKeyData));
+
+        $signature = Signature::createSignature(
+            $secretKey,
+            SignatureType::Standalone,
+            $message
+        );
+        $this->assertTrue($signature->verify($publicKey, $message));
+    }
+
     public function testVerifyEcdsaBrainpoolSignature()
     {
         $signatureData = <<<EOT
@@ -192,6 +219,20 @@ EOT;
         $this->assertTrue($signature->verify($publicKey, self::LITERAL_TEXT));
     }
 
+    public function testEcdsaBrainpoolSigning()
+    {
+        $message = Random::string(100);
+        $secretKey = SecretKey::fromBytes(base64_decode(self::$ecdsaBrainpoolSecretKeyData))->decrypt(self::PASSPHRASE);
+        $publicKey = PublicKey::fromBytes(base64_decode(self::$ecdsaBrainpoolPublicKeyData));
+
+        $signature = Signature::createSignature(
+            $secretKey,
+            SignatureType::Standalone,
+            $message
+        );
+        $this->assertTrue($signature->verify($publicKey, $message));
+    }
+
     public function testVerifyEddsaCurve25519Signature()
     {
         $signatureData = <<<EOT
@@ -204,5 +245,19 @@ EOT;
         $packets = PacketList::decode(base64_decode($signatureData));
         $signature = $packets->offsetGet(0);
         $this->assertTrue($signature->verify($publicKey, self::LITERAL_TEXT));
+    }
+
+    public function testEddsaCurve25519Signing()
+    {
+        $message = Random::string(100);
+        $secretKey = SecretKey::fromBytes(base64_decode(self::$eddsaCurve25519SecretKeyData))->decrypt(self::PASSPHRASE);
+        $publicKey = PublicKey::fromBytes(base64_decode(self::$eddsaCurve25519PublicKeyData));
+
+        $signature = Signature::createSignature(
+            $secretKey,
+            SignatureType::Standalone,
+            $message
+        );
+        $this->assertTrue($signature->verify($publicKey, $message));
     }
 }
