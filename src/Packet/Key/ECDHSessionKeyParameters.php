@@ -168,7 +168,7 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
             $curve = $publicParams->getCurveOid()->getCurve();
             $key = PKCS8::savePublicKey(
                 $curve, PKCS8::extractPoint(
-                    "\x0" . $this->ephemeralKey->toBytes(), $curve
+                    "\x00" . $this->ephemeralKey->toBytes(), $curve
                 )
             );
         }
@@ -221,7 +221,7 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
             chr(strlen($oid)),
             $oid,
             chr(KeyAlgorithm::Ecdh->value),
-            "\x3",
+            "\x03",
             chr($keyParameters->getReserved()),
             chr($keyParameters->getKdfHash()->value),
             chr($keyParameters->getKdfSymmetric()->value),
