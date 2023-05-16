@@ -148,7 +148,6 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @param string $dataToSign
      * @param HashAlgorithm $hashAlgorithm
      * @param array $subpackets
-     * @param int $keyExpirationTime
      * @param int $creationTime
      * @return Signature
      */
@@ -158,7 +157,6 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         string $dataToSign,
         HashAlgorithm $hashAlgorithm = HashAlgorithm::Sha256,
         array $subpackets = [],
-        int $keyExpirationTime = 0,
         int $creationTime = 0
     ): Signature
     {
@@ -168,18 +166,12 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 
         $hashedSubpackets = [
             Signature\SignatureCreationTime::fromTime(
-                empty($creationTime) ? time() : $creationTime
+                $creationTime > 0 ? $creationTime : time()
             ),
             Signature\IssuerFingerprint::fromKeyPacket($signKey),
             Signature\IssuerKeyID::fromKeyID($signKey->getKeyID()),
             ...$subpackets,
         ];
-
-        if ($keyExpirationTime > 0) {
-            $hashedSubpackets[] = Signature\KeyExpirationTime::fromTime(
-                $keyExpirationTime
-            );
-        }
 
         $signatureData = implode([
             chr($version),
