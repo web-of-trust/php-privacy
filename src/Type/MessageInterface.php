@@ -10,8 +10,6 @@
 
 namespace OpenPGP\Type;
 
-use DateTime;
-
 /**
  * Message interface
  * 
@@ -20,23 +18,23 @@ use DateTime;
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface MessageInterface extends ArmorableInterface
+interface MessageInterface
 {
     /**
      * Sign the message
      *
      * @param array $signingKeys
-     * @param DateTime $date
+     * @param int $time
      * @return MessageInterface
      */
-	function sign(array $signingKeys, ?DateTime $date = NULL): MessageInterface;
+	function sign(array $signingKeys, int $time = 0): MessageInterface;
 
     /**
      * Verify signatures of signed message
      *
      * @param array $verificationKeys
-     * @param DateTime $date
+     * @param int $time
      * @return MessageInterface
      */
-	function verify(array $verificationKeys, ?DateTime $date = NULL): MessageInterface;
+	function verify(array $verificationKeys, int $time = 0): MessageInterface;
 }

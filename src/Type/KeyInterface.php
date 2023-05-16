@@ -20,7 +20,7 @@ use OpenPGP\Packet\KeyPacketInterface;
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface KeyInterface extends ArmorableInterface
+interface KeyInterface
 {
     /**
      * Returns key packet
