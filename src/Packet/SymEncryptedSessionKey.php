@@ -180,6 +180,9 @@ class SymEncryptedSessionKey extends AbstractPacket
         if ($this->sessionKey instanceof Key\SessionKey) {
             return $this;
         } else {
+            $this->getLogger()->debug(
+                'Decrypt symmetric key encrypted session key.'
+            );
             $key = $this->s2k->produceKey(
                 $password,
                 $this->symmetric->keySizeInByte()

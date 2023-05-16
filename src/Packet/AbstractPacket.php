@@ -11,11 +11,11 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\PacketTag;
+use OpenPGP\Common\Helper;
 use Psr\Log\{
     LoggerAwareInterface,
     LoggerAwareTrait,
     LoggerInterface,
-    NullLogger
 };
 
 /**
@@ -80,10 +80,7 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, 
      */
     public function getLogger(): LoggerInterface
     {
-        if (!($this->logger instanceof LoggerInterface)) {
-            $this->logger = new NullLogger();
-        }
-        return $this->logger;
+        return $this->logger ?? Helper::getLogger();
     }
 
     /**

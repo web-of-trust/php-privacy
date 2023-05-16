@@ -13,6 +13,7 @@ namespace OpenPGP\Common;
 use phpseclib3\Crypt\Random;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Enum\SymmetricAlgorithm;
+use Psr\Log\{LoggerInterface, NullLogger};
 
 /**
  * Helper class
@@ -24,6 +25,31 @@ use OpenPGP\Enum\SymmetricAlgorithm;
  */
 final class Helper
 {
+    private static ?LoggerInterface $logger = null;
+
+    /**
+     * Gets a logger.
+     *
+     * @return LoggerInterface $logger
+     */
+    public static function getLogger(): LoggerInterface
+    {
+        if (!(self::$logger instanceof LoggerInterface)) {
+            self::$logger = new NullLogger();
+        }
+        return self::$logger;
+    }
+
+    /**
+     * Sets a logger.
+     *
+     * @param LoggerInterface $logger
+     */
+    public static function setLogger(LoggerInterface $logger): void
+    {
+        self::$logger = $logger;
+    }
+
     /**
      * Reads multiprecision integer (MPI) from binary data
      *

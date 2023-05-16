@@ -189,6 +189,9 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): SymEncryptedIntegrityProtectedData
     {
+        $this->getLogger()->debug(
+            'Decrypt the encrypted data contained in the packet.'
+        );
         $size = $symmetric->blockSize();
         $cipher = $symmetric->cipherEngine();
         $cipher->setKey($key);

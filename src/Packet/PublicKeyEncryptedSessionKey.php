@@ -180,6 +180,9 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
 
     private function decryptSessionKey(SecretKey $secretKey): Key\SessionKey
     {
+        $this->getLogger()->debug(
+            'Decrypt public key encrypted session key.'
+        );
         return match($this->publicKeyAlgorithm) {
             KeyAlgorithm::RsaEncryptSign => $this->sessionKeyParameters->decrypt(
                 $secretKey->getKeyParameters()->getPrivateKey()
