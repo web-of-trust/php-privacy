@@ -132,7 +132,7 @@ class ElGamalPublicParameters implements KeyParametersInterface
     /**
      * {@inheritdoc}
      */
-    public function encode(): string
+    public function toBytes(): string
     {
         return implode([
             pack('n', $this->prime->getLength()),

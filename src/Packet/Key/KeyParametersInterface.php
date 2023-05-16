@@ -39,5 +39,5 @@ interface KeyParametersInterface
      * 
      * @return string
      */
-    function encode(): string;
+    function toBytes(): string;
 }

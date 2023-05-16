@@ -67,7 +67,7 @@ class ElGamalSessionKeyParameters implements SessionKeyParametersInterface
     {
         $size = ($publicKey->getBitSize() + 7) >> 3;
         $padded = self::pkcs1Encode(implode([
-            $sessionKey->encode(),
+            $sessionKey->toBytes(),
             $sessionKey->computeChecksum(),
         ]), $size);
         $encrypted = $publicKey->encrypt($padded);
@@ -80,7 +80,7 @@ class ElGamalSessionKeyParameters implements SessionKeyParametersInterface
     /**
      * {@inheritdoc}
      */
-    public function encode(): string
+    public function toBytes(): string
     {
         return implode([
             pack('n', $this->gamma->getLength()),

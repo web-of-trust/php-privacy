@@ -113,7 +113,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
             chr(self::VERSION),
             $this->publicKeyID,
             chr($this->publicKeyAlgorithm->value),
-            $this->sessionKeyParameters->encode(),
+            $this->sessionKeyParameters->toBytes(),
         ]);
     }
 

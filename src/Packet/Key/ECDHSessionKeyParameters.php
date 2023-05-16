@@ -93,7 +93,7 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
         );
         $wrappedKey = $keyWrapper->wrap(
             $kek, self::pkcs5Encode(implode([
-                $sessionKey->encode(),
+                $sessionKey->toBytes(),
                 $sessionKey->computeChecksum(),
             ]))
         );
@@ -117,7 +117,7 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
     /**
      * {@inheritdoc}
      */
-    public function encode(): string
+    public function toBytes(): string
     {
         return implode([
             pack('n', $this->ephemeralKey->getLength()),

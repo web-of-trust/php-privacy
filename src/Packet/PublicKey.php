@@ -94,7 +94,7 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
             chr(self::KEY_VERSION),
             pack('N', $this->creationTime),
             chr($this->keyAlgorithm->value),
-            $this->keyParameters->encode(),
+            $this->keyParameters->toBytes(),
         ]);
     }
 

@@ -114,7 +114,7 @@ class SymEncryptedSessionKey extends AbstractPacket
         if ($sessionKey instanceof Key\SessionKey) {
             $cipher->setKey($key);
             $cipher->setIV(str_repeat("\x0", $symmetric->blockSize()));
-            $encrypted = $cipher->encrypt($sessionKey->encode());
+            $encrypted = $cipher->encrypt($sessionKey->toBytes());
         }
         else {
             $encrypted = '';

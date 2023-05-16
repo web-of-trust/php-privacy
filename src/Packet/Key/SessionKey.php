@@ -100,7 +100,7 @@ class SessionKey
      * 
      * @return string
      */
-    public function encode(): string
+    public function toBytes(): string
     {
         return implode([
             chr($this->symmetric->value),

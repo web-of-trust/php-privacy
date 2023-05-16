@@ -175,7 +175,7 @@ class DSASecretParameters implements SignableParametersInterface
     /**
      * {@inheritdoc}
      */
-    public function encode(): string
+    public function toBytes(): string
     {
         return implode([
             pack('n', $this->exponent->getLength()),

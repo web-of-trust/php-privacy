@@ -64,7 +64,7 @@ class RSASessionKeyParameters implements SessionKeyParametersInterface
         $publicKey = $publicKey->withPadding(RSA::ENCRYPTION_PKCS1);
         return new RSASessionKeyParameters(
             Helper::bin2BigInt($publicKey->encrypt(implode([
-                $sessionKey->encode(),
+                $sessionKey->toBytes(),
                 $sessionKey->computeChecksum(),
             ])))
         );
@@ -73,7 +73,7 @@ class RSASessionKeyParameters implements SessionKeyParametersInterface
     /**
      * {@inheritdoc}
      */
-    public function encode(): string
+    public function toBytes(): string
     {
         return implode([
             pack('n', $this->encrypted->getLength()),

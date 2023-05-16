@@ -147,7 +147,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
                 $keyParameters->getPublicParams(),
                 $keyAlgorithm,
             ),
-            $keyParameters->encode(),
+            $keyParameters->toBytes(),
             $keyParameters,
         );
     }
@@ -269,7 +269,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
                 $symmetric->keySizeInByte()
             ));
 
-            $clearText = $this->keyParameters->encode();
+            $clearText = $this->keyParameters->toBytes();
             $encrypted = $cipher->encrypt(implode([
                 $clearText,
                 sha1($clearText, true),

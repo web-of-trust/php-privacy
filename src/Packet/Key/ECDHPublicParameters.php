@@ -110,10 +110,10 @@ class ECDHPublicParameters extends ECPublicParameters
     /**
      * {@inheritdoc}
      */
-    public function encode(): string
+    public function toBytes(): string
     {
         return implode([
-            parent::encode(),
+            parent::toBytes(),
             "\x3",
             chr($this->reserved),
             chr($this->kdfHash->value),

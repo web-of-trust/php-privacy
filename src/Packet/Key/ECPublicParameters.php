@@ -127,7 +127,7 @@ abstract class ECPublicParameters implements KeyParametersInterface
     /**
      * {@inheritdoc}
      */
-    public function encode(): string
+    public function toBytes(): string
     {
         return implode([
             chr(strlen($this->oid)),
