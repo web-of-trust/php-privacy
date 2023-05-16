@@ -83,7 +83,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
     public static function fromText(string $text, int $time = 0): LiteralData
     {
         return new LiteralData(
-            $text, LiteralFormat::Utf8, '', empty($time) ? time() : $time
+            $text, Format::Utf8, '', empty($time) ? time() : $time
         );
     }
 
