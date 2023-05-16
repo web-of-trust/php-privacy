@@ -29,6 +29,8 @@ use OpenPGP\Enum\{CurveOid, HashAlgorithm};
  */
 class EdDSASecretParameters extends ECSecretParameters implements SignableParametersInterface
 {
+    const SIGNATURE_LENGTH = 64;
+
     /**
      * Constructor
      *
@@ -98,12 +100,15 @@ class EdDSASecretParameters extends ECSecretParameters implements SignableParame
      */
     public function sign(HashAlgorithm $hash, string $message): string
     {
-        $signature = $this->getPrivateKey()->sign($message);
+        $signature = $this->getPrivateKey()->sign(
+            hash(strtolower($hash->name), $message, true)
+        );
+        $lenth = intval(self::SIGNATURE_LENGTH / 2);
         return implode([
-            pack('n', $signature['r']->getLength()),
-            $signature['r']->toBytes(),
-            pack('n', $signature['s']->getLength()),
-            $signature['s']->toBytes(),
+            pack('n', $lenth * 8), // r bit length
+            substr($signature, 0, $lenth), // r
+            pack('n', $lenth * 8), // s bit length
+            substr($signature, $lenth, $lenth), // s
         ]);
     }
 }
