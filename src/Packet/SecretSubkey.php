@@ -150,14 +150,14 @@ class SecretSubkey extends SecretKey
             new PublicSubkey(
                 $publicKey->getCreationTime(),
                 $publicKey->getKeyParameters(),
-                $publicKey->getKeyAlgorithm(),
+                $publicKey->getKeyAlgorithm()
             ),
             $secretKey->getKeyData(),
             $secretKey->getKeyParameters(),
             $secretKey->getS2kUsage(),
             $secretKey->getSymmetric(),
             $secretKey->getS2K(),
-            $secretKey->getIV(),
+            $secretKey->getIV()
         );
     }
 }

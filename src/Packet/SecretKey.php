@@ -110,7 +110,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
             $s2kUsage,
             $symmetric,
             $s2k,
-            $iv,
+            $iv
         );
     }
 
@@ -149,10 +149,10 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
             new PublicKey(
                 empty($time) ? time() : $time,
                 $keyParameters->getPublicParams(),
-                $keyAlgorithm,
+                $keyAlgorithm
             ),
             $keyParameters->toBytes(),
-            $keyParameters,
+            $keyParameters
         );
     }
 
@@ -239,7 +239,9 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
     /**
      * {@inheritdoc}
      */
-    public function getPreferredHash(?HashAlgorithm $preferredHash = null): HashAlgorithm
+    public function getPreferredHash(
+        ?HashAlgorithm $preferredHash = null
+    ): HashAlgorithm
     {
         return $this->publicKey->getPreferredHash($preferredHash);
     }
@@ -280,6 +282,9 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
     ): SecretKeyPacketInterface
     {
         if ($this->keyParameters instanceof Key\KeyParametersInterface) {
+            $this->getLogger()->debug(
+                'Encrypt secret key with passphrase.'
+            );
             $s2k = new Key\S2K(Random::string(Key\S2K::SALT_LENGTH), $s2kType, $hash);
             $iv = Random::string($symmetric->blockSize());
             $cipher = $symmetric->cipherEngine();
@@ -301,7 +306,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
                 $s2kUsage,
                 $symmetric,
                 $s2k,
-                $iv,
+                $iv
             );
         }
         else {
@@ -318,6 +323,9 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
             return $this;
         }
         else {
+            $this->getLogger()->debug(
+                'Decrypt secret key with passphrase.'
+            );
             $cipher = $this->symmetric->cipherEngine();
             $cipher->setIV($this->iv);
             $cipher->setKey($this->s2k->produceKey(
@@ -345,7 +353,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
                 $this->s2kUsage,
                 $this->symmetric,
                 $this->s2k,
-                $this->iv,
+                $this->iv
             );
         }
     }

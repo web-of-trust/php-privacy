@@ -56,7 +56,7 @@ class PublicSubkey extends PublicKey
         return new PublicSubkey(
             $publicKey->getCreationTime(),
             $publicKey->getKeyParameters(),
-            $publicKey->getKeyAlgorithm(),
+            $publicKey->getKeyAlgorithm()
         );
     }
 }
