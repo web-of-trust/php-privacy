@@ -113,7 +113,7 @@ class SymEncryptedSessionKey extends AbstractPacket
         );
         if ($sessionKey instanceof Key\SessionKey) {
             $cipher->setKey($key);
-            $cipher->setIV(str_repeat("\x0", $symmetric->blockSize()));
+            $cipher->setIV(str_repeat("\x00", $symmetric->blockSize()));
             $encrypted = $cipher->encrypt($sessionKey->toBytes());
         }
         else {
@@ -194,7 +194,7 @@ class SymEncryptedSessionKey extends AbstractPacket
                 $cipher = $this->symmetric->cipherEngine();
                 $cipher->setKey($key);
                 $cipher->setIV(
-                    str_repeat("\x0", $this->symmetric->blockSize())
+                    str_repeat("\x00", $this->symmetric->blockSize())
                 );
                 $decrypted = $cipher->decrypt($this->encrypted);
                 $sessionKeySymmetric = SymmetricAlgorithm::from(

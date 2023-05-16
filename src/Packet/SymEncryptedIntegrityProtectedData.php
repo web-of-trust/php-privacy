@@ -90,7 +90,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
 
         $cipher = $symmetric->cipherEngine();
         $cipher->setKey($key);
-        $cipher->setIV(str_repeat("\x0", $symmetric->blockSize()));
+        $cipher->setIV(str_repeat("\x00", $symmetric->blockSize()));
 
         return new self(
             $cipher->encrypt($plainText), $packets

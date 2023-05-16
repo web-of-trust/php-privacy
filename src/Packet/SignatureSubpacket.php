@@ -80,7 +80,7 @@ class SignatureSubpacket implements SubpacketInterface
         $header = '';
         $bodyLen = strlen($this->data) + 1;
         if ($this->isLong) {
-            $header = implode([chr(0xff), pack('N', $bodyLen)]);
+            $header = "\xff" . pack('N', $bodyLen);
         }
         else {
             if ($bodyLen < 192) {
@@ -91,7 +91,7 @@ class SignatureSubpacket implements SubpacketInterface
                     chr($bodyLen - 192),
                 ]);
             } else {
-                $header = implode([chr(0xff), pack('N', $bodyLen)]);
+                $header = "\xff" . pack('N', $bodyLen);
           }
         }
         
