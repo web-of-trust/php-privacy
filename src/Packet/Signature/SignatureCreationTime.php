@@ -56,7 +56,7 @@ class SignatureCreationTime extends SignatureSubpacket
         int $seconds, bool $critical = false
     ): SignatureCreationTime
     {
-        return SignatureCreationTime(pack('N', $seconds), $critical);
+        return new SignatureCreationTime(pack('N', $seconds), $critical);
     }
 
     /**

@@ -63,4 +63,12 @@ interface KeyPacketInterface
      * @return string
      */
     function getKeyID(): string;
+
+    /**
+     * Gets preferred hash algorithm
+     * 
+     * @param HashAlgorithm $preferredHash
+     * @return HashAlgorithm
+     */
+    function getPreferredHash(?HashAlgorithm $preferredHash = null): HashAlgorithm;
 }

@@ -227,6 +227,14 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
     /**
      * {@inheritdoc}
      */
+    public function getPreferredHash(?HashAlgorithm $preferredHash = null): HashAlgorithm
+    {
+        return $this->publicKey->getPreferredHash($preferredHash);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getSignBytes(): string
     {
         return $this->publicKey->getSignBytes();

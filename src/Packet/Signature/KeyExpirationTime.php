@@ -57,7 +57,7 @@ class KeyExpirationTime extends SignatureSubpacket
         int $seconds, bool $critical = false
     ): KeyExpirationTime
     {
-        return KeyExpirationTime(pack('N', $seconds), $critical);
+        return new KeyExpirationTime(pack('N', $seconds), $critical);
     }
 
     /**

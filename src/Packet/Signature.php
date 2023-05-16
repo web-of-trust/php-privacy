@@ -73,12 +73,12 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             chr($this->signatureType->value),
             chr($this->keyAlgorithm->value),
             chr($this->hashAlgorithm->value),
-            self::encodeSubpackets($this->hashedSubpackets),
+            self::subpacketsToBytes($this->hashedSubpackets),
         ]);
     }
 
     /**
-     * Read signature packet from byte string
+     * Reads signature packet from byte string
      *
      * @param string $bytes
      * @return Signature
@@ -134,11 +134,16 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         );
     }
 
+    /**
+     * Creates signature
+     *
+     * @return Signature
+     */
     public static function createSignature(
         SecretKey $signKey,
         SignatureType $signatureType,
         string $dataToSign,
-        ?HashAlgorithm $preferredHash = null,
+        HashAlgorithm $hashAlgorithm = HashAlgorithm::Sha256,
         array $subpackets = [],
         int $keyExpirationTime = 0,
         int $time = 0
@@ -146,12 +151,12 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     {
         $version = $signKey->getVersion();
         $keyAlgorithm = $signKey->getKeyAlgorithm();
-        $hashAlgorithm = $preferredHash ?? $signKey->getPreferredHash();
+        $hashAlgorithm = $signKey->getPreferredHash($hashAlgorithm);
 
         $hashedSubpackets = [
             Signature\SignatureCreationTime::fromTime(empty($time) ? time() : $time),
             Signature\IssuerFingerprint::fromKeyPacket($signKey),
-            new Signature\IssuerKeyID($signKey->getKeyID()),
+            Signature\IssuerKeyID::fromKeyID($signKey->getKeyID()),
             ...$subpackets,
         ];
 
@@ -164,7 +169,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             chr($signatureType->value),
             chr($keyAlgorithm->value),
             chr($hashAlgorithm->value),
-            self::encodeSubpackets($hashedSubpackets),
+            self::subpacketsToBytes($hashedSubpackets),
         ]);
 
         $message = implode([
@@ -176,12 +181,12 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             ),
         ]);
 
-        return Signature(
+        return new Signature(
             $version,
             $signatureType,
             $keyAlgorithm,
             $hashAlgorithm,
-            substr(hash($hashAlgorithm->name, $message, true), 0, 2),
+            substr(hash(strtolower($hashAlgorithm->name), $message, true), 0, 2),
             self::signMessage($signKey, $hashAlgorithm, $message),
             $hashedSubpackets,
         );
@@ -194,7 +199,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     {
         return implode([
             $this->signatureData,
-            self::encodeSubpackets($this->unhashedSubpackets),
+            self::subpacketsToBytes($this->unhashedSubpackets),
             $this->signedHashValue,
             $this->signature,
         ]);
@@ -762,7 +767,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     private static function signMessage(
-        SecretKey $signKey, HashAlgorithm $hash, string $message
+        KeyPacketInterface $signKey, HashAlgorithm $hash, string $message
     ): string
     {
         switch ($signKey->getKeyAlgorithm()) {
@@ -773,7 +778,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             case KeyAlgorithm::EdDsa:
                 $keyParams = $signKey->getKeyParameters();
                 if ($keyParams instanceof Key\SignableParametersInterface) {
-                    return $signKey->getKeyParameters()->sign($hash, $message);
+                    return $keyParams->sign($hash, $message);
                 }
                 else {
                     throw \UnexpectedValueException(
@@ -794,7 +799,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         return chr($version) . "\xff" . pack('N', $dataLength);
     }
 
-    private static function encodeSubpackets(array $subpackets): string
+    private static function subpacketsToBytes(array $subpackets): string
     {
         $bytes = implode(
             array_map(static fn ($subpacket) => $subpacket->toBytes(), $subpackets)

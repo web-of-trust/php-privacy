@@ -56,7 +56,7 @@ class Features extends SignatureSubpacket
         int $features = 0, bool $critical = false
     ): Features
     {
-        return Features(chr($features), $critical);
+        return new Features(chr($features), $critical);
     }
 
     /**

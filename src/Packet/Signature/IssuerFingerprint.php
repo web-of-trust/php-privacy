@@ -57,7 +57,9 @@ class IssuerFingerprint extends SignatureSubpacket
         KeyPacketInterface $key, bool $critical = false
     ): IssuerFingerprint
     {
-        return IssuerFingerprint($key->getVersion(), $key->getFingerprint(), $critical);
+        return new IssuerFingerprint(
+            chr($key->getVersion()) . $key->getFingerprint(), $critical
+        );
     }
 
     /**

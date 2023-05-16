@@ -57,7 +57,7 @@ class KeyFlags extends SignatureSubpacket
         int $flags, bool $critical = false
     ): KeyFlags
     {
-        return KeyFlags($this->flagsToBytes($flags), $critical);
+        return new KeyFlags($this->flagsToBytes($flags), $critical);
     }
 
     /**

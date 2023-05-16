@@ -61,7 +61,7 @@ class RevocationKey extends SignatureSubpacket
         bool $critical = false
     ): RevocationKey
     {
-        return RevocationKey(
+        return new RevocationKey(
             $this->revocationToBytes($signatureClass, $keyAlgorithm, $fingerprint), $critical
         );
     }

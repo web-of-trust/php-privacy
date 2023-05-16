@@ -57,7 +57,7 @@ class IssuerKeyID extends SignatureSubpacket
         string $keyID, bool $critical = false
     ): IssuerKeyID
     {
-        return IssuerKeyID($keyID, $critical);
+        return new IssuerKeyID($keyID, $critical);
     }
 
     /**
@@ -70,7 +70,7 @@ class IssuerKeyID extends SignatureSubpacket
         bool $critical = false
     ): IssuerKeyID
     {
-        return IssuerKeyID(str_repeat("\x00", 8), $critical);
+        return new IssuerKeyID(str_repeat("\x00", 8), $critical);
     }
 
     /**

@@ -62,7 +62,7 @@ class SignatureTarget extends SignatureSubpacket
         bool $critical = false
     ): SignatureTarget
     {
-        return SignatureTarget(
+        return new SignatureTarget(
             $this->hashDataToBytes($keyAlgorithm, $hashAlgorithm, $hashData), $critical
         );
     }

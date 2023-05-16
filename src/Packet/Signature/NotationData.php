@@ -66,7 +66,7 @@ class NotationData extends SignatureSubpacket
         bool $critical = false
     ): NotationData
     {
-        return NotationData(
+        return new NotationData(
             $this->notationToBytes($humanReadable, $notationName, $notationValue), $critical
         );
     }

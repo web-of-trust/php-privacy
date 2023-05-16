@@ -57,7 +57,7 @@ class SignatureExpirationTime extends SignatureSubpacket
         int $seconds, bool $critical = false
     ): SignatureExpirationTime
     {
-        return SignatureExpirationTime(pack('N', $seconds), $critical);
+        return new SignatureExpirationTime(pack('N', $seconds), $critical);
     }
 
     /**

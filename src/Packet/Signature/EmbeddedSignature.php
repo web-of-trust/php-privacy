@@ -53,6 +53,6 @@ class EmbeddedSignature extends SignatureSubpacket
      */
     public static function fromSignature(Signature $signature): EmbeddedSignature
     {
-        return EmbeddedSignature($signature->toBytes());
+        return new EmbeddedSignature($signature->toBytes());
     }
 }

@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Enum\{KeyAlgorithm, PacketTag};
+use OpenPGP\Enum\{CurveOid, HashAlgorithm, KeyAlgorithm, PacketTag};
 
 /**
  * Public key packet class
@@ -144,6 +144,19 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
     public function getKeyID(): string
     {
         return $this->keyID;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPreferredHash(?HashAlgorithm $preferredHash = null): HashAlgorithm
+    {
+        if ($this->keyParameters instanceof Key\ECPublicParameters) {
+            return $this->keyParameters->getCurveOid()->hashAlgorithm();
+        }
+        else {
+            return $preferredHash ?? HashAlgorithm::Sha256;
+        }
     }
 
     /**

@@ -91,7 +91,7 @@ enum CurveOid: string
             self::BrainpoolP256r1 => HashAlgorithm::Sha256,
             self::BrainpoolP384r1 => HashAlgorithm::Sha384,
             self::BrainpoolP512r1 => HashAlgorithm::Sha512,
-            self::Ed25519 => HashAlgorithm::Sha256,
+            self::Ed25519 => HashAlgorithm::Sha512,
             self::Curve25519 => HashAlgorithm::Sha256,
         };
     }

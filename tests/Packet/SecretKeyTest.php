@@ -19,7 +19,7 @@ class SecretKeyTest extends OpenPGPTestCase
 {
     const PASSPHRASE = 'password'; 
 
-    public function testRSASecretKey()
+    public function testRsaSecretKey()
     {
         $data = <<<EOT
 BGRUrD4BCACe8iv48dGvqnbOuPv1DnnrasH/NZ5bbpGHW0gSOXb4p2d7VcfA6hfoyq1yEuZ2VDzJ
@@ -46,7 +46,7 @@ EOT;
         $this->assertTrue($secretKey->getKeyParameters()->isValid());
     }
 
-    public function testRSASecretSubkey()
+    public function testRsaSecretSubkey()
     {
         $data = <<<EOT
 BGRUrD4BCACyRTYWSBsXFtxLOmSp3RvaW13GRh8HJ4p7adVqJpDBsvo8iInDgBt542/aoWDGIESA
@@ -73,7 +73,7 @@ EOT;
         $this->assertTrue($secretSubkey->getKeyParameters()->isValid());
     }
 
-    public function testDSASecretKey()
+    public function testDsaSecretKey()
     {
         $data = <<<EOT
 BGRUrHERCAC/HCRsyTviyCVlaBWmhJoSZtmR0SzXjgyd6jbNeQLN4o58oCdUXN1o4aUG3dFmx6ed
