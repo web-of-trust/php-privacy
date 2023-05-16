@@ -84,7 +84,7 @@ interface SignaturePacketInterface
      * @param KeyPacketInterface $verifyKey
      * @param string $dataToVerify
      * @param int $time
-     * @return Signature
+     * @return bool
      */
     function verify(
         KeyPacketInterface $verifyKey,

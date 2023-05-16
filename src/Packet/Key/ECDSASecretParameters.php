@@ -53,13 +53,13 @@ class ECDSASecretParameters extends ECSecretParameters implements SignableParame
      *
      * @param string $bytes
      * @param ECDSAPublicParameters $publicParams
-     * @return ECDSASecretParameters
+     * @return self
      */
     public static function fromBytes(
         string $bytes, ECDSAPublicParameters $publicParams
-    ): ECDSASecretParameters
+    ): self
     {
-        return new ECDSASecretParameters(
+        return new self(
             Helper::readMPI($bytes),
             $publicParams
         );
@@ -69,9 +69,9 @@ class ECDSASecretParameters extends ECSecretParameters implements SignableParame
      * Generates parameters by using EC create key
      *
      * @param CurveOid $curve
-     * @return ECDSASecretParameters
+     * @return self
      */
-    public static function generate(CurveOid $curveOid): ECDSASecretParameters
+    public static function generate(CurveOid $curveOid): self
     {
         switch ($curveOid) {
             case CurveOid::Ed25519:
@@ -82,7 +82,7 @@ class ECDSASecretParameters extends ECSecretParameters implements SignableParame
             default:
                 $privateKey = EC::createKey($curveOid->name);
                 $key = PKCS8::load($privateKey->toString('PKCS8'));
-                return new ECDSASecretParameters(
+                return new self(
                     $key['dA'],
                     new ECDSAPublicParameters(
                         ASN1::encodeOID($curveOid->value),

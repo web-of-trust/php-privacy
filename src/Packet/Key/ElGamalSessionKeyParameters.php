@@ -43,15 +43,15 @@ class ElGamalSessionKeyParameters implements SessionKeyParametersInterface
      * Reads encrypted session key parameters from bytes
      *
      * @param string $bytes
-     * @return ElGamalSessionKeyParameters
+     * @return self
      */
-    public static function fromBytes(string $bytes): ElGamalSessionKeyParameters
+    public static function fromBytes(string $bytes): self
     {
         $gamma = Helper::readMPI($bytes);
         $phi = Helper::readMPI(
             substr($bytes, $gamma->getLengthInBytes() + 2)
         );
-        return new ElGamalSessionKeyParameters($gamma, $phi);
+        return new self($gamma, $phi);
     }
 
     /**
@@ -59,11 +59,11 @@ class ElGamalSessionKeyParameters implements SessionKeyParametersInterface
      *
      * @param SessionKey $sessionKey
      * @param ElGamalPublicKey $publicKey
-     * @return ElGamalSessionKeyParameters
+     * @return self
      */
     public static function produceParameters(
         SessionKey $sessionKey, ElGamalPublicKey $publicKey
-    ): ElGamalSessionKeyParameters
+    ): self
     {
         $size = ($publicKey->getBitSize() + 7) >> 3;
         $padded = self::pkcs1Encode(implode([
@@ -71,7 +71,7 @@ class ElGamalSessionKeyParameters implements SessionKeyParametersInterface
             $sessionKey->computeChecksum(),
         ]), $size);
         $encrypted = $publicKey->encrypt($padded);
-        return new ElGamalSessionKeyParameters(
+        return new self(
             Helper::bin2BigInt(substr($encrypted, 0, $size)),
             Helper::bin2BigInt(substr($encrypted, $size, $size))
         );

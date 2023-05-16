@@ -41,11 +41,11 @@ class SessionKey
      * Reads session key from binary string
      *
      * @param string $bytes
-     * @return SessionKey
+     * @return self
      */
-    public static function fromBytes(string $bytes): SessionKey
+    public static function fromBytes(string $bytes): self
     {
-        $sessionKey = new SessionKey(
+        $sessionKey = new self(
             substr($bytes, 1, strlen($bytes) - 3),
             SymmetricAlgorithm::from(ord($bytes[0]))
         );
@@ -63,13 +63,13 @@ class SessionKey
      * Produces session key specify by symmetric algorithm
      *
      * @param SymmetricAlgorithm $symmetric
-     * @return SessionKey
+     * @return self
      */
     public static function produceKey(
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
-    ): SessionKey
+    ): self
     {
-        return new SessionKey(
+        return new self(
             Random::string($symmetric->keySizeInByte()),
             $symmetric
         );

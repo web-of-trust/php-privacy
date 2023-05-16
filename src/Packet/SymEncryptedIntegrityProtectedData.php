@@ -51,9 +51,9 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
      * Read SEIP packet from byte string
      *
      * @param string $bytes
-     * @return SymEncryptedIntegrityProtectedData
+     * @return self
      */
-    public static function fromBytes(string $bytes): SymEncryptedIntegrityProtectedData
+    public static function fromBytes(string $bytes): self
     {
         // A one-octet version number.
         // The only currently defined version is 1.
@@ -64,7 +64,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
           );
         }
 
-        return new SymEncryptedIntegrityProtectedData(substr($bytes, 1));
+        return new self(substr($bytes, 1));
     }
 
     /**
@@ -73,13 +73,13 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
      * @param string $key
      * @param PacketList $packets
      * @param SymmetricAlgorithm $symmetric
-     * @return SymEncryptedIntegrityProtectedData
+     * @return self
      */
     public static function encryptPackets(
         string $key,
         PacketList $packets,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
-    ): SymEncryptedIntegrityProtectedData
+    ): self
     {
         $toHash = implode([
             Helper::generatePrefix($symmetric),
@@ -92,7 +92,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
         $cipher->setKey($key);
         $cipher->setIV(str_repeat("\x0", $symmetric->blockSize()));
 
-        return new SymEncryptedIntegrityProtectedData(
+        return new self(
             $cipher->encrypt($plainText), $packets
         );
     }
@@ -102,11 +102,11 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
      *
      * @param Key\SessionKey $sessionKey
      * @param PacketList $packets
-     * @return SymEncryptedIntegrityProtectedData
+     * @return self
      */
     public static function encryptPacketsWithSessionKey(
         Key\SessionKey $sessionKey, PacketList $packets
-    ): SymEncryptedIntegrityProtectedData
+    ): self
     {
         return self::encryptPackets(
             $sessionKey->getEncryptionKey(),
@@ -148,12 +148,12 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
      *
      * @param string $key
      * @param SymmetricAlgorithm $symmetric
-     * @return SymEncryptedIntegrityProtectedData
+     * @return self
      */
     public function encrypt(
         string $key,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
-    ): SymEncryptedIntegrityProtectedData
+    ): self
     {
         if ($this->packets instanceof PacketList) {
             return self::encryptPackets($key, $this->packets, $symmetric);
@@ -165,11 +165,11 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
      * Encrypts the payload in the packet with session key.
      *
      * @param Key\SessionKey $sessionKey
-     * @return SymEncryptedIntegrityProtectedData
+     * @return self
      */
     public function encryptWithSessionKey(
         Key\SessionKey $sessionKey
-    ): SymEncryptedIntegrityProtectedData
+    ): self
     {
         return $this->encrypt(
             $sessionKey->getEncryptionKey(),
@@ -182,12 +182,12 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
      *
      * @param string $key
      * @param SymmetricAlgorithm $symmetric
-     * @return SymEncryptedIntegrityProtectedData
+     * @return self
      */
     public function decrypt(
         string $key,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
-    ): SymEncryptedIntegrityProtectedData
+    ): self
     {
         $this->getLogger()->debug(
             'Decrypt the encrypted data contained in the packet.'
@@ -205,7 +205,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
             throw new \UnexpectedValueException('Modification detected.');
         }
 
-        return new SymEncryptedIntegrityProtectedData(
+        return new self(
             $this->encrypted,
             PacketList::decode(
                 substr($toHash, $size + 2, strlen($toHash) - $size - 2)
@@ -217,11 +217,11 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
      * Decrypts the encrypted data contained in the packet with session key.
      *
      * @param Key\SessionKey $sessionKey
-     * @return SymEncryptedIntegrityProtectedData
+     * @return self
      */
     public function decryptWithSessionKey(
         Key\SessionKey $sessionKey
-    ): SymEncryptedIntegrityProtectedData
+    ): self
     {
         return $this->decrypt(
             $sessionKey->getEncryptionKey(),

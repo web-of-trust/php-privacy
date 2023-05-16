@@ -59,9 +59,9 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
      * Read PKESK packet from byte string
      *
      * @param string $bytes
-     * @return PublicKeyEncryptedSessionKey
+     * @return self
      */
-    public static function fromBytes(string $bytes): PublicKeyEncryptedSessionKey
+    public static function fromBytes(string $bytes): self
     {
         $offset = 0;
         $version = ord($bytes[$offset++]);
@@ -75,7 +75,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
         $offset += 8;
         $keyAlgorithm = KeyAlgorithm::from(ord($bytes[$offset++]));
 
-        return new PublicKeyEncryptedSessionKey(
+        return new self(
             $keyID,
             $keyAlgorithm,
             self::readParameters(
@@ -89,14 +89,14 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
      *
      * @param PublicKey $publicKey
      * @param SessionKey $sessionKey
-     * @return PublicKeyEncryptedSessionKey
+     * @return self
      */
     public static function encryptSessionKey(
         PublicKey $publicKey,
         Key\SessionKey $sessionKey
-    ): PublicKeyEncryptedSessionKey
+    ): self
     {
-        return new PublicKeyEncryptedSessionKey(
+        return new self(
             $publicKey->getKeyID(),
             $publicKey->getKeyAlgorithm(),
             self::produceParameters($sessionKey, $publicKey),
@@ -161,15 +161,15 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
      * Decrypts session key
      *
      * @param SecretKey $secretKey
-     * @return PublicKeyEncryptedSessionKey
+     * @return self
      */
-    public function decrypt(SecretKey $secretKey): PublicKeyEncryptedSessionKey
+    public function decrypt(SecretKey $secretKey): self
     {
         if ($this->sessionKey instanceof Key\SessionKey) {
             return $this;
         }
         else {
-            return new PublicKeyEncryptedSessionKey(
+            return new self(
                 $secretKey->getKeyID(),
                 $secretKey->getKeyAlgorithm(),
                 $this->sessionKeyParameters,

@@ -54,9 +54,9 @@ class ElGamalPublicParameters implements KeyParametersInterface
      * Reads parameters from bytes
      *
      * @param string $bytes
-     * @return ElGamalPublicParameters
+     * @return self
      */
-    public static function fromBytes(string $bytes): ElGamalPublicParameters
+    public static function fromBytes(string $bytes): self
     {
         $prime = Helper::readMPI($bytes);
 
@@ -66,7 +66,7 @@ class ElGamalPublicParameters implements KeyParametersInterface
         $offset += $generator->getLengthInBytes() + 2;
         $exponent = Helper::readMPI(substr($bytes, $offset));
 
-        return new ElGamalPublicParameters(
+        return new self(
             $prime,
             $generator,
             $exponent

@@ -51,13 +51,13 @@ class KeyExpirationTime extends SignatureSubpacket
      *
      * @param int $seconds
      * @param bool $critical
-     * @return KeyExpirationTime
+     * @return self
      */
     public static function fromTime(
         int $seconds, bool $critical = false
-    ): KeyExpirationTime
+    ): self
     {
-        return new KeyExpirationTime(pack('N', $seconds), $critical);
+        return new self(pack('N', $seconds), $critical);
     }
 
     /**

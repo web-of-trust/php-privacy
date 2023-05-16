@@ -70,9 +70,9 @@ class SecretSubkey extends SecretKey
      * Read secret subkey packets from byte string
      *
      * @param string $bytes
-     * @return SecretKeyPacketInterface
+     * @return self
      */
-    public static function fromBytes(string $bytes): SecretKeyPacketInterface
+    public static function fromBytes(string $bytes): self
     {
         return self::fromSecretKey(SecretKey::fromBytes($bytes));
     }
@@ -85,7 +85,7 @@ class SecretSubkey extends SecretKey
      * @param DHKeySize $dhKeySize
      * @param CurveOid $curveOid
      * @param int $time
-     * @return SecretKeyPacketInterface
+     * @return self
      */
     public static function generate(
         KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
@@ -93,7 +93,7 @@ class SecretSubkey extends SecretKey
         DHKeySize $dhKeySize = DHKeySize::L2048_N224,
         CurveOid $curveOid = CurveOid::Secp521r1,
         int $time = 0
-    ): SecretKeyPacketInterface
+    ): self
     {
         return self::fromSecretKey(SecretKey::generate(
             $keyAlgorithm,
@@ -113,7 +113,7 @@ class SecretSubkey extends SecretKey
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         HashAlgorithm $hash = HashAlgorithm::Sha1,
         S2kType $s2kType = S2kType::Iterated
-    ): SecretKeyPacketInterface
+    ): self
     {
         if ($this->getKeyParameters() instanceof Key\KeyParametersInterface) {
             $secretKey = parent::encrypt(
@@ -133,7 +133,7 @@ class SecretSubkey extends SecretKey
     /**
      * {@inheritdoc}
      */
-    public function decrypt(string $passphrase): SecretKeyPacketInterface
+    public function decrypt(string $passphrase): self
     {
         if ($this->getKeyParameters() instanceof Key\KeyParametersInterface) {
             return $this;
@@ -143,10 +143,10 @@ class SecretSubkey extends SecretKey
         }
     }
 
-    private static function fromSecretKey(SecretKey $secretKey): SecretKeyPacketInterface
+    private static function fromSecretKey(SecretKey $secretKey): self
     {
         $publicKey = $secretKey->getPublicKey();
-        return new SecretSubkey(
+        return new self(
             new PublicSubkey(
                 $publicKey->getCreationTime(),
                 $publicKey->getKeyParameters(),

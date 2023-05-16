@@ -83,9 +83,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * Reads signature packet from byte string
      *
      * @param string $bytes
-     * @return Signature
+     * @return self
      */
-    public static function fromBytes(string $bytes): Signature
+    public static function fromBytes(string $bytes): self
     {
         $offset = 0;
 
@@ -128,7 +128,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         $signedHashValue = substr($bytes, $offset, 2);
         $signature = substr($bytes, $offset + 2);
 
-        return new Signature(
+        return new self(
             $version,
             $signatureType,
             $keyAlgorithm,
@@ -149,7 +149,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @param HashAlgorithm $hashAlgorithm
      * @param array $subpackets
      * @param int $creationTime
-     * @return Signature
+     * @return self
      */
     public static function createSignature(
         SecretKey $signKey,
@@ -158,7 +158,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         HashAlgorithm $hashAlgorithm = HashAlgorithm::Sha256,
         array $subpackets = [],
         int $creationTime = 0
-    ): Signature
+    ): self
     {
         $version = $signKey->getVersion();
         $keyAlgorithm = $signKey->getKeyAlgorithm();
@@ -190,7 +190,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             ),
         ]);
 
-        return new Signature(
+        return new self(
             $version,
             $signatureType,
             $keyAlgorithm,

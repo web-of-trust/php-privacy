@@ -115,9 +115,9 @@ class S2K
      * Parsing function for a string-to-key specifier
      * 
      * @param string $bytes - Payload of string-to-key specifier
-     * @return S2K
+     * @return self
      */
-    public static function fromBytes(string $bytes): S2K
+    public static function fromBytes(string $bytes): self
     {
         $salt = '';
         $itCount = self::DEFAULT_IT_COUNT;
@@ -133,7 +133,7 @@ class S2K
                 $itCount = ord($bytes[10]);
                 break;
         }
-        return new S2K($salt, $type, $hash, $itCount);
+        return new self($salt, $type, $hash, $itCount);
     }
 
     /**

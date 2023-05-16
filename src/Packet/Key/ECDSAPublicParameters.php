@@ -28,12 +28,12 @@ class ECDSAPublicParameters extends ECPublicParameters implements VerifiablePara
      * Reads parameters from bytes
      *
      * @param string $bytes
-     * @return ECDSAPublicParameters
+     * @return self
      */
-    public static function fromBytes(string $bytes): ECDSAPublicParameters
+    public static function fromBytes(string $bytes): self
     {
         $length = ord($bytes[0]);
-        return new ECDSAPublicParameters(
+        return new self(
             substr($bytes, 1, $length),
             Helper::readMPI(substr($bytes, $length + 1))
         );

@@ -41,11 +41,11 @@ class RSASessionKeyParameters implements SessionKeyParametersInterface
      * Reads encrypted session key from byte string
      *
      * @param string $bytes
-     * @return RSASessionKeyParameters
+     * @return self
      */
     public static function fromBytes(
         string $bytes
-    ): RSASessionKeyParameters
+    ): self
     {
         return new RSASessionKeyParameters(Helper::readMPI($bytes));
     }
@@ -55,14 +55,14 @@ class RSASessionKeyParameters implements SessionKeyParametersInterface
      *
      * @param SessionKey $sessionKey
      * @param PublicKey $publicKey
-     * @return RSASessionKeyParameters
+     * @return self
      */
     public static function produceParameters(
         SessionKey $sessionKey, PublicKey $publicKey
-    ): RSASessionKeyParameters
+    ): self
     {
         $publicKey = $publicKey->withPadding(RSA::ENCRYPTION_PKCS1);
-        return new RSASessionKeyParameters(
+        return new self(
             Helper::bin2BigInt($publicKey->encrypt(implode([
                 $sessionKey->toBytes(),
                 $sessionKey->computeChecksum(),

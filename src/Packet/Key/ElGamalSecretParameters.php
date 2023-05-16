@@ -57,13 +57,13 @@ class ElGamalSecretParameters implements KeyParametersInterface
      *
      * @param string $bytes
      * @param ElGamalPublicParameters $publicParams
-     * @return ElGamalSecretParameters
+     * @return self
      */
     public static function fromBytes(
         string $bytes, ElGamalPublicParameters $publicParams
-    ): ElGamalSecretParameters
+    ): self
     {
-        return new ElGamalSecretParameters(
+        return new self(
             Helper::readMPI($bytes), $publicParams
         );
     }
@@ -72,12 +72,12 @@ class ElGamalSecretParameters implements KeyParametersInterface
      * Generates parameters by using ElGamal create key
      *
      * @param DHKeySize $keySize
-     * @return ElGamalSecretParameters
+     * @return self
      */
-    public static function generate(DHKeySize $keySize): ElGamalSecretParameters
+    public static function generate(DHKeySize $keySize): self
     {
         $privateKey = ElGamal::createKey($keySize->lSize(), $keySize->nSize());
-        return new ElGamalSecretParameters(
+        return new self(
             $privateKey->getX(),
             new ElGamalPublicParameters(
                 $privateKey->getPrime(),

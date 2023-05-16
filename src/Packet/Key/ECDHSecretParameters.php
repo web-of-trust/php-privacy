@@ -50,13 +50,13 @@ class ECDHSecretParameters extends ECSecretParameters
      *
      * @param string $bytes
      * @param ECDHPublicParameters $publicParams
-     * @return ECDHSecretParameters
+     * @return self
      */
     public static function fromBytes(
         string $bytes, ECDHPublicParameters $publicParams
-    ): ECDHSecretParameters
+    ): self
     {
-        return new ECDHSecretParameters(
+        return new self(
             Helper::readMPI($bytes), $publicParams
         );
     }
@@ -65,9 +65,9 @@ class ECDHSecretParameters extends ECSecretParameters
      * Generates parameters by using EC create key
      *
      * @param CurveOid $curveOid
-     * @return ECDHSecretParameters
+     * @return self
      */
-    public static function generate(CurveOid $curveOid): ECDHSecretParameters
+    public static function generate(CurveOid $curveOid): self
     {
         if ($curveOid !== CurveOid::Ed25519) {
             $privateKey = EC::createKey($curveOid->name);
@@ -84,7 +84,7 @@ class ECDHSecretParameters extends ECSecretParameters
                 $d = $key['dA'];
                 $q = Helper::bin2BigInt($privateKey->getEncodedCoordinates());
             }
-            return new ECDHSecretParameters(
+            return new self(
                 $d,
                 new ECDHPublicParameters(
                     ASN1::encodeOID($curveOid->value),

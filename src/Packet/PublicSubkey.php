@@ -48,12 +48,12 @@ class PublicSubkey extends PublicKey
      * Read public subkey packets from byte string
      *
      * @param string $bytes
-     * @return KeyPacketInterface
+     * @return self
      */
-    public static function fromBytes(string $bytes): KeyPacketInterface
+    public static function fromBytes(string $bytes): self
     {
         $publicKey = PublicKey::fromBytes($bytes);
-        return new PublicSubkey(
+        return new self(
             $publicKey->getCreationTime(),
             $publicKey->getKeyParameters(),
             $publicKey->getKeyAlgorithm()

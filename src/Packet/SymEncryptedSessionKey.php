@@ -60,9 +60,9 @@ class SymEncryptedSessionKey extends AbstractPacket
      * Reads SKESK packet from byte string
      *
      * @param string $bytes
-     * @return SymEncryptedSessionKey
+     * @return self
      */
-    public static function fromBytes(string $bytes): SymEncryptedSessionKey
+    public static function fromBytes(string $bytes): self
     {
         $offset = 0;
 
@@ -80,7 +80,7 @@ class SymEncryptedSessionKey extends AbstractPacket
         // A string-to-key (S2K) specifier, length as defined above.
         $s2k = Key\S2K::fromBytes(substr($bytes, $offset));
 
-        return new SymEncryptedSessionKey(
+        return new self(
             $s2k,
             $symmetric,
             substr($bytes, $offset + $s2k->getLength())
@@ -95,7 +95,7 @@ class SymEncryptedSessionKey extends AbstractPacket
      * @param SymmetricAlgorithm $symmetric
      * @param HashAlgorithm $hash
      * @param S2kType $s2kType
-     * @return SymEncryptedSessionKey
+     * @return self
      */
     public static function encryptSessionKey(
         string $password,
@@ -103,7 +103,7 @@ class SymEncryptedSessionKey extends AbstractPacket
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         HashAlgorithm $hash = HashAlgorithm::Sha1,
         S2kType $s2kType = S2kType::Iterated
-    ): SymEncryptedSessionKey
+    ): self
     {
         $s2k = new S2K(Random::string(S2K::SALT_LENGTH), $s2kType, $hash);
         $cipher = $symmetric->cipherEngine();
@@ -121,7 +121,7 @@ class SymEncryptedSessionKey extends AbstractPacket
             $sessionKey = new Key\SessionKey($key, $symmetric);
         }
 
-        return new SymEncryptedSessionKey(
+        return new self(
             $s2k,
             $symmetric,
             $encrypted,
@@ -173,9 +173,9 @@ class SymEncryptedSessionKey extends AbstractPacket
      * Decrypts session key
      *
      * @param string $password
-     * @return SymEncryptedSessionKey
+     * @return self
      */
-    public function decrypt(string $password): SymEncryptedSessionKey
+    public function decrypt(string $password): self
     {
         if ($this->sessionKey instanceof Key\SessionKey) {
             return $this;
@@ -204,7 +204,7 @@ class SymEncryptedSessionKey extends AbstractPacket
                     substr($decrypted, 1), $sessionKeySymmetric
                 );
             }
-            return new SymEncryptedSessionKey(
+            return new self(
                 $this->s2k,
                 $this->symmetric,
                 $this->encrypted,

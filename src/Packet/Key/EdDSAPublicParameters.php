@@ -27,12 +27,12 @@ class EdDSAPublicParameters extends ECPublicParameters implements VerifiablePara
      * Reads parameters from bytes
      *
      * @param string $bytes
-     * @return EdDSAPublicParameters
+     * @return self
      */
-    public static function fromBytes(string $bytes): EdDSAPublicParameters
+    public static function fromBytes(string $bytes): self
     {
         $length = ord($bytes[0]);
-        return new EdDSAPublicParameters(
+        return new self(
             substr($bytes, 1, $length),
             Helper::readMPI(substr($bytes, $length + 1))
         );

@@ -52,11 +52,11 @@ class SymEncryptedData extends AbstractPacket
      * Read encrypted data packet from byte string
      *
      * @param string $bytes
-     * @return SymEncryptedData
+     * @return self
      */
-    public static function fromBytes(string $bytes): SymEncryptedData
+    public static function fromBytes(string $bytes): self
     {
-        return new SymEncryptedData($bytes);
+        return new self($bytes);
     }
 
     /**
@@ -65,13 +65,13 @@ class SymEncryptedData extends AbstractPacket
      * @param string $key
      * @param PacketList $packets
      * @param SymmetricAlgorithm $symmetric
-     * @return SymEncryptedData
+     * @return self
      */
     public static function encryptPackets(
         string $key,
         PacketList $packets,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
-    ): SymEncryptedData
+    ): self
     {
         $cipher = $symmetric->cipherEngine();
         $cipher->setKey($key);
@@ -79,7 +79,7 @@ class SymEncryptedData extends AbstractPacket
         $prefix = $cipher->encrypt(Helper::generatePrefix($symmetric));
         $cipher->setIV(substr($prefix, 2));
 
-        return new SymEncryptedData(
+        return new self(
             $prefix . $cipher->encrypt($packets->encode()), $packets
         );
     }
@@ -107,12 +107,12 @@ class SymEncryptedData extends AbstractPacket
      *
      * @param string $key
      * @param SymmetricAlgorithm $symmetric
-     * @return SymEncryptedData
+     * @return self
      */
     public function encrypt(
         string $key,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
-    ): SymEncryptedData
+    ): self
     {
         if ($this->packets instanceof PacketList) {
             return self::encryptPackets($key, $this->packets, $symmetric);
@@ -126,13 +126,13 @@ class SymEncryptedData extends AbstractPacket
      * @param string $key
      * @param SymmetricAlgorithm $symmetric
      * @param bool $allowUnauthenticated
-     * @return SymEncryptedData
+     * @return self
      */
     public function decrypt(
         string $key,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         bool $allowUnauthenticated = false
-    ): SymEncryptedData
+    ): self
     {
         if (!$allowUnauthenticated) {
           throw new \UnexpectedValueException(
@@ -144,7 +144,7 @@ class SymEncryptedData extends AbstractPacket
         $cipher->setKey($key);
         $cipher->setIV(substr($this->encrypted, 2, $blockSize));
 
-        return new SymEncryptedData(
+        return new self(
             $this->encrypted,
             PacketList::decode(
                 $cipher->decrypt(substr($this->encrypted, $blockSize + 2))

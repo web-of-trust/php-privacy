@@ -33,6 +33,7 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, 
     /**
      * Constructor
      *
+     * @param PacketTag $tag
      * @return self
      */
     public function __construct(private readonly PacketTag $tag)

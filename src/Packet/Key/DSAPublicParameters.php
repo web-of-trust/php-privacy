@@ -63,9 +63,9 @@ class DSAPublicParameters implements VerifiableParametersInterface
      * Reads parameters from bytes
      *
      * @param string $bytes
-     * @return DSAPublicParameters
+     * @return self
      */
-    public static function fromBytes(string $bytes): DSAPublicParameters
+    public static function fromBytes(string $bytes): self
     {
         $prime = Helper::readMPI($bytes);
 
@@ -78,7 +78,7 @@ class DSAPublicParameters implements VerifiableParametersInterface
         $offset += $generator->getLengthInBytes() + 2;
         $exponent = Helper::readMPI(substr($bytes, $offset));
 
-        return new DSAPublicParameters(
+        return new self(
             $prime,
             $order,
             $generator,

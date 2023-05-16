@@ -51,13 +51,13 @@ class KeyFlags extends SignatureSubpacket
      *
      * @param int $flags
      * @param bool $critical
-     * @return KeyFlags
+     * @return self
      */
     public static function fromFlags(
         int $flags, bool $critical = false
-    ): KeyFlags
+    ): self
     {
-        return new KeyFlags(self::flagsToBytes($flags), $critical);
+        return new self(self::flagsToBytes($flags), $critical);
     }
 
     /**

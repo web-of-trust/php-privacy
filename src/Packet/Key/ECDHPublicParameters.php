@@ -55,9 +55,9 @@ class ECDHPublicParameters extends ECPublicParameters
      * Reads parameters from bytes
      *
      * @param string $bytes
-     * @return ECDHPublicParameters
+     * @return self
      */
-    public static function fromBytes(string $bytes): ECDHPublicParameters
+    public static function fromBytes(string $bytes): self
     {
         $offset = 0;
         $length = ord($bytes[$offset++]);
@@ -68,7 +68,7 @@ class ECDHPublicParameters extends ECPublicParameters
 
         $offset += $q->getLengthInBytes() + 2;
         $kdfBytes = substr($bytes, $offset);
-        return new ECDHPublicParameters(
+        return new self(
             $oid,
             $q,
             HashAlgorithm::from(ord($kdfBytes[2])),

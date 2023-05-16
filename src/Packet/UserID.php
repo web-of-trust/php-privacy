@@ -80,11 +80,11 @@ class UserID extends AbstractPacket implements ForSigningInterface
      * Reads user ID from byte string
      *
      * @param string $bytes
-     * @return UserID
+     * @return self
      */
-    public static function fromBytes(string $bytes): UserID
+    public static function fromBytes(string $bytes): self
     {
-        return new UserID($bytes);
+        return new self($bytes);
     }
 
     /**

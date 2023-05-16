@@ -69,9 +69,9 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
      * Read secret key packet from byte string
      *
      * @param string $bytes
-     * @return SecretKeyPacketInterface
+     * @return self
      */
-    public static function fromBytes(string $bytes): SecretKeyPacketInterface
+    public static function fromBytes(string $bytes): self
     {
         $publicKey = PublicKey::fromBytes($bytes);
         $offset = strlen($publicKey->toBytes());
@@ -103,7 +103,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
             $keyParameters = self::readKeyParameters($keyData, $publicKey);
         }
 
-        return new SecretKey(
+        return new self(
             $publicKey,
             $keyData,
             $keyParameters,
@@ -122,7 +122,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
      * @param DHKeySize $dhKeySize
      * @param CurveOid $curveOid
      * @param int $time
-     * @return SecretKeyPacketInterface
+     * @return self
      */
     public static function generate(
         KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
@@ -130,7 +130,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
         DHKeySize $dhKeySize = DHKeySize::L2048_N224,
         CurveOid $curveOid = CurveOid::Secp521r1,
         int $time = 0
-    ): SecretKeyPacketInterface
+    ): self
     {
         $keyParameters = match($keyAlgorithm) {
             KeyAlgorithm::RsaEncryptSign => Key\RSASecretParameters::generate($rsaKeySize),
@@ -145,7 +145,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
                 "Unsupported PGP public key algorithm encountered",
             ),
         };
-        return new SecretKey(
+        return new self(
             new PublicKey(
                 empty($time) ? time() : $time,
                 $keyParameters->getPublicParams(),
@@ -279,7 +279,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         HashAlgorithm $hash = HashAlgorithm::Sha1,
         S2kType $s2kType = S2kType::Iterated
-    ): SecretKeyPacketInterface
+    ): self
     {
         if ($this->keyParameters instanceof Key\KeyParametersInterface) {
             $this->getLogger()->debug(
@@ -299,7 +299,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
                 $clearText,
                 hash('sha1', $clearText, true),
             ]));
-            return new SecretKey(
+            return new self(
                 $this->publicKey,
                 $encrypted,
                 $this->keyParameters,
@@ -317,7 +317,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
     /**
      * {@inheritdoc}
      */
-    public function decrypt(string $passphrase): SecretKeyPacketInterface
+    public function decrypt(string $passphrase): self
     {
         if ($this->keyParameters instanceof Key\KeyParametersInterface) {
             return $this;
@@ -346,7 +346,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
 
             $keyParameters = self::readKeyParameters($clearText, $this->publicKey);
 
-            return new SecretKey(
+            return new self(
                 $this->publicKey,
                 $this->keyData,
                 $keyParameters,

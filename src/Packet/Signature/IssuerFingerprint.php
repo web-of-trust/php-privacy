@@ -51,13 +51,13 @@ class IssuerFingerprint extends SignatureSubpacket
      *
      * @param KeyPacketInterface $key
      * @param bool $critical
-     * @return IssuerFingerprint
+     * @return self
      */
     public static function fromKeyPacket(
         KeyPacketInterface $key, bool $critical = false
-    ): IssuerFingerprint
+    ): self
     {
-        return new IssuerFingerprint(
+        return new self(
             chr($key->getVersion()) . $key->getFingerprint(), $critical
         );
     }

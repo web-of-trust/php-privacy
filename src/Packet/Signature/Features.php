@@ -50,13 +50,13 @@ class Features extends SignatureSubpacket
      *
      * @param int $features
      * @param bool $critical
-     * @return Features
+     * @return self
      */
     public static function fromFeatures(
         int $features = 0, bool $critical = false
-    ): Features
+    ): self
     {
-        return new Features(chr($features), $critical);
+        return new self(chr($features), $critical);
     }
 
     /**

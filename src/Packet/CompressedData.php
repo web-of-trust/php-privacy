@@ -53,13 +53,13 @@ class CompressedData extends AbstractPacket
      * Reads compressed data packet from byte string
      *
      * @param string $bytes
-     * @return CompressedData
+     * @return self
      */
-    public static function fromBytes(string $bytes): CompressedData
+    public static function fromBytes(string $bytes): self
     {
         $algorithm = Algorithm::from(ord($bytes[0]));
         $compressed = substr($bytes, 1);
-        return new CompressedData(
+        return new self(
             $compressed,
             self::decompress($compressed, $algorithm),
             $algorithm
@@ -71,14 +71,14 @@ class CompressedData extends AbstractPacket
      *
      * @param PacketList $function
      * @param Algorithm $algorithm
-     * @return CompressedData
+     * @return self
      */
     public static function fromPacketList(
         PacketList $packets,
         Algorithm $algorithm = Algorithm::Uncompressed
-    ): CompressedData
+    ): self
     {
-        return new CompressedData(
+        return new self(
             self::compress($packets, $algorithm),
             $packets,
             $algorithm

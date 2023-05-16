@@ -52,9 +52,9 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
      * Reads literal data packet from byte string
      *
      * @param string $bytes
-     * @return LiteralData
+     * @return self
      */
-    public static function fromBytes(string $bytes): LiteralData
+    public static function fromBytes(string $bytes): self
     {
         $offset = 0;
         $format = Format::from(ord($bytes[$offset++]));
@@ -68,7 +68,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
         $offset += 4;
         $data = substr($bytes, $offset);
 
-        return new LiteralData(
+        return new self(
             $data, $format, $filename, $time
         );
     }
@@ -78,11 +78,11 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
      *
      * @param string $text
      * @param int $time
-     * @return LiteralData
+     * @return self
      */
-    public static function fromText(string $text, int $time = 0): LiteralData
+    public static function fromText(string $text, int $time = 0): self
     {
-        return new LiteralData(
+        return new self(
             $text, Format::Utf8, '', empty($time) ? time() : $time
         );
     }

@@ -50,14 +50,14 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
      * Read encrypted session key from byte string
      *
      * @param string $bytes
-     * @return ECDHSessionKeyParameters
+     * @return self
      */
-    public static function fromBytes(string $bytes): ECDHSessionKeyParameters
+    public static function fromBytes(string $bytes): self
     {
         $ephemeralKey = Helper::readMPI($bytes);
         $offset = $ephemeralKey->getLengthInBytes() + 2;
         $length = ord($bytes[$offset++]);
-        return new ECDHSessionKeyParameters(
+        return new self(
             $ephemeralKey, substr($bytes, $offset, $length)
         );
     }
@@ -68,13 +68,13 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
      * @param SessionKey $sessionKey
      * @param ECDHPublicParameters $keyParameters
      * @param string $fingerprint
-     * @return ECDHSessionKeyParameters
+     * @return self
      */
     public static function produceParameters(
         SessionKey $sessionKey,
         ECDHPublicParameters $keyParameters,
         string $fingerprint
-    ): ECDHSessionKeyParameters
+    ): self
     {
         $privateKey = EC::createKey(
             $keyParameters->getCurveOid()->name
@@ -108,7 +108,7 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
                 $privateKey->getPublicKey()->getEncodedCoordinates()
             );
         }
-        return new ECDHSessionKeyParameters(
+        return new self(
             $ephemeralKey,
             $wrappedKey
         );

@@ -73,9 +73,9 @@ class PacketReader
      *
      * @param string $bytes
      * @param int $offset
-     * @return PacketReader
+     * @return self
      */
-    public static function read(string $bytes, int $offset = 0): PacketReader
+    public static function read(string $bytes, int $offset = 0): self
     {
         if (strlen($bytes) <= $offset
             || strlen(substr($bytes, $offset)) < 2
@@ -147,7 +147,7 @@ class PacketReader
             }
         }
 
-        return new PacketReader(
+        return new self(
             $tag,
             substr($bytes, $offset, $packetLength),
             $offset + $packetLength

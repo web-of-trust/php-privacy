@@ -51,26 +51,26 @@ class IssuerKeyID extends SignatureSubpacket
      *
      * @param string $keyID
      * @param bool $critical
-     * @return IssuerKeyID
+     * @return self
      */
     public static function fromKeyID(
         string $keyID, bool $critical = false
-    ): IssuerKeyID
+    ): self
     {
-        return new IssuerKeyID($keyID, $critical);
+        return new self($keyID, $critical);
     }
 
     /**
      * From wildcard
      *
      * @param bool $critical
-     * @return IssuerKeyID
+     * @return self
      */
     public static function wildcard(
         bool $critical = false
-    ): IssuerKeyID
+    ): self
     {
-        return new IssuerKeyID(str_repeat("\x00", 8), $critical);
+        return new self(str_repeat("\x00", 8), $critical);
     }
 
     /**

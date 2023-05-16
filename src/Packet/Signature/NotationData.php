@@ -57,16 +57,16 @@ class NotationData extends SignatureSubpacket
      * @param string $notationName
      * @param string $notationValue
      * @param bool $critical
-     * @return NotationData
+     * @return self
      */
     public static function fromNotation(
         bool $humanReadable,
         string $notationName,
         string $notationValue,
         bool $critical = false
-    ): NotationData
+    ): self
     {
-        return new NotationData(
+        return new self(
             $this->notationToBytes(
                 $humanReadable, $notationName, $notationValue
             ),

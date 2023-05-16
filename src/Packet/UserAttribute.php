@@ -50,11 +50,11 @@ class UserAttribute extends AbstractPacket implements ForSigningInterface
      * Read user attributes from byte string
      *
      * @param string $bytes
-     * @return UserAttribute
+     * @return self
      */
-    public static function fromBytes(string $bytes): UserAttribute
+    public static function fromBytes(string $bytes): self
     {
-        return new UserAttribute(
+        return new self(
             SubpacketReader::readUserAttributes($bytes)
         );
     }

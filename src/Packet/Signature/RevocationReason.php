@@ -52,15 +52,15 @@ class RevocationReason extends SignatureSubpacket
      * @param RevocationReasonTag $reason
      * @param string $description
      * @param bool $critical
-     * @return RevocationReason
+     * @return self
      */
     public static function fromRevocation(
         RevocationReasonTag $reason,
         string $description,
         bool $critical = false
-    ): RevocationReason
+    ): self
     {
-        return new RevocationReason(
+        return new self(
             $this->revocationToBytes($reason, $description), $critical
         );
     }

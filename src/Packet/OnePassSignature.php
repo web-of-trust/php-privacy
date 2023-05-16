@@ -55,9 +55,9 @@ class OnePassSignature extends AbstractPacket
      * Reads one pass signature packet from byte string
      *
      * @param string $bytes
-     * @return OnePassSignature
+     * @return self
      */
-    public static function fromBytes(string $bytes): OnePassSignature
+    public static function fromBytes(string $bytes): self
     {
         $offset = 0;
         $version = ord($bytes[$offset++]);
@@ -71,7 +71,7 @@ class OnePassSignature extends AbstractPacket
         $hashAlgorithm = HashAlgorithm::from(ord($bytes[$offset++]));
         $keyAlgorithm = KeyAlgorithm::from(ord($bytes[$offset++]));
         $issuerKeyID = substr($bytes, $offset, 8);
-        return OnePassSignaturePacket(
+        return self(
             $signatureType,
             $hashAlgorithm,
             $keyAlgorithm,

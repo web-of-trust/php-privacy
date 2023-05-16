@@ -50,13 +50,13 @@ class ExportableCertification extends SignatureSubpacket
      *
      * @param bool $exportable
      * @param bool $critical
-     * @return ExportableCertification
+     * @return self
      */
     public static function fromExportable(
         bool $exportable = true, bool $critical = false
-    ): ExportableCertification
+    ): self
     {
-        return new ExportableCertification(
+        return new self(
             $exportable ? chr(1) : chr(0), $critical
         );
     }

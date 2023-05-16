@@ -53,16 +53,16 @@ class SignatureTarget extends SignatureSubpacket
      * @param HashAlgorithm $hashAlgorithm
      * @param string $hashData
      * @param bool $critical
-     * @return SignatureTarget
+     * @return self
      */
     public static function fromRevocation(
         KeyAlgorithm $keyAlgorithm,
         HashAlgorithm $hashAlgorithm,
         string $hashData,
         bool $critical = false
-    ): SignatureTarget
+    ): self
     {
-        return new SignatureTarget(
+        return new self(
             $this->hashDataToBytes($keyAlgorithm, $hashAlgorithm, $hashData),
             $critical
         );

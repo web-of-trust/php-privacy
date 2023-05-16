@@ -62,13 +62,13 @@ class DSASecretParameters implements SignableParametersInterface
      *
      * @param string $bytes
      * @param DSAPublicParameters $publicParams
-     * @return DSASecretParameters
+     * @return self
      */
     public static function fromBytes(
         string $bytes, DSAPublicParameters $publicParams
-    ): DSASecretParameters
+    ): self
     {
-        return new DSASecretParameters(
+        return new self(
             Helper::readMPI($bytes), $publicParams
         );
     }
@@ -77,13 +77,13 @@ class DSASecretParameters implements SignableParametersInterface
      * Generates parameters by using DSA create key
      *
      * @param DHKeySize $keySize
-     * @return DSASecretParameters
+     * @return self
      */
-    public static function generate(DHKeySize $keySize): DSASecretParameters
+    public static function generate(DHKeySize $keySize): self
     {
         $privateKey = DSA::createKey($keySize->lSize(), $keySize->nSize());
         $rawKey = $privateKey->toString('Raw');
-        return new DSASecretParameters(
+        return new self(
             $rawKey['x'],
             new DSAPublicParameters(
                 $rawKey['p'],

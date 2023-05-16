@@ -52,16 +52,16 @@ class RevocationKey extends SignatureSubpacket
      * @param KeyAlgorithm $keyAlgorithm
      * @param string $fingerprint
      * @param bool $critical
-     * @return RevocationKey
+     * @return self
      */
     public static function fromRevocation(
         RevocationKeyTag $signatureClass,
         KeyAlgorithm $keyAlgorithm,
         string $fingerprint,
         bool $critical = false
-    ): RevocationKey
+    ): self
     {
-        return new RevocationKey(
+        return new self(
             $this->revocationToBytes(
                 $signatureClass, $keyAlgorithm, $fingerprint
             ),

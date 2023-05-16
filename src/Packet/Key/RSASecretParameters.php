@@ -67,11 +67,11 @@ class RSASecretParameters implements SignableParametersInterface
      *
      * @param string $bytes
      * @param RSAPublicParameters $publicParams
-     * @return RSASecretParameters
+     * @return self
      */
     public static function fromBytes(
         string $bytes, RSAPublicParameters $publicParams
-    ): RSASecretParameters
+    ): self
     {
         $exponent = Helper::readMPI($bytes);
 
@@ -84,7 +84,7 @@ class RSASecretParameters implements SignableParametersInterface
         $offset += $primeQ->getLengthInBytes() + 2;
         $coefficient = Helper::readMPI(substr($bytes, $offset));
 
-        return new RSASecretParameters(
+        return new self(
             $exponent, $primeP, $primeQ, $coefficient, $publicParams
         );
     }
@@ -93,15 +93,15 @@ class RSASecretParameters implements SignableParametersInterface
      * Generates parameters by using RSA create key
      *
      * @param RSAKeySize $keySize
-     * @return RSASecretParameters
+     * @return self
      */
-    public static function generate(RSAKeySize $keySize): RSASecretParameters
+    public static function generate(RSAKeySize $keySize): self
     {
         $privateKey = RSA::createKey($keySize->value);
         $rawKey = RSA::createKey($keySize->value)->toString('Raw');
         $primeP = $rawKey['primes'][1];
         $primeQ = $rawKey['primes'][2];
-        return new RSASecretParameters(
+        return new self(
             $rawKey['d'],
             $primeP,
             $primeQ,

@@ -44,11 +44,11 @@ class Trust extends AbstractPacket
      * Read trust packet from byte string
      *
      * @param string $bytes
-     * @return Trust
+     * @return self
      */
-    public static function fromBytes(string $bytes): Trust
+    public static function fromBytes(string $bytes): self
     {
-        return new Trust($bytes);
+        return new self($bytes);
     }
 
     /**

@@ -49,10 +49,10 @@ class EmbeddedSignature extends SignatureSubpacket
      * Embed signature package
      *
      * @param Signature $signature
-     * @return EmbeddedSignature
+     * @return self
      */
-    public static function fromSignature(Signature $signature): EmbeddedSignature
+    public static function fromSignature(Signature $signature): self
     {
-        return new EmbeddedSignature($signature->toBytes());
+        return new self($signature->toBytes());
     }
 }

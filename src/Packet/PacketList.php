@@ -41,9 +41,10 @@ class PacketList implements \IteratorAggregate, \Countable
     /**
      * Decode packets from bytes
      * 
-     * @return string
+     * @param string $bytes
+     * @return self
      */
-    public static function decode(string $bytes): PacketList
+    public static function decode(string $bytes): self
     {
         $packets = [];
         $offset = 0;
