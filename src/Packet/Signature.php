@@ -797,7 +797,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     private static function encodeSubpackets(array $subpackets): string
     {
         $bytes = implode(
-            array_map(static fn ($subpacket) => $subpacket->encode(), $subpackets)
+            array_map(static fn ($subpacket) => $subpacket->toBytes(), $subpackets)
         );
         return pack('n', strlen($bytes)) . $bytes;
     }

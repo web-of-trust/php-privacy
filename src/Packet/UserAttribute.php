@@ -83,7 +83,7 @@ class UserAttribute extends AbstractPacket implements ForSigningInterface
     public function toBytes(): string
     {
         return implode(
-            array_map(static fn ($attr) => $attr->encode(), $this->attributes)
+            array_map(static fn ($attr) => $attr->toBytes(), $this->attributes)
         );
     }
 

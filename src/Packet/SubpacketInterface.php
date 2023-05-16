@@ -46,5 +46,5 @@ interface SubpacketInterface
      * 
      * @return string
      */
-    function encode(): string;
+    function toBytes(): string;
 }

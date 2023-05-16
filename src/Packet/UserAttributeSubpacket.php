@@ -63,7 +63,7 @@ class UserAttributeSubpacket implements SubpacketInterface
     /**
      * {@inheritdoc}
      */
-    public function encode(): string
+    public function toBytes(): string
     {
         $data = [];
         $bodyLen = strlen($this->data) + 1;

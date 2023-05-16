@@ -75,7 +75,7 @@ class SignatureSubpacket implements SubpacketInterface
     /**
      * {@inheritdoc}
      */
-    public function encode(): string
+    public function toBytes(): string
     {
         $header = '';
         $bodyLen = strlen($this->data) + 1;
