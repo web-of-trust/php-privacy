@@ -3,11 +3,15 @@
 namespace OpenPGP\Tests\Packet;
 
 use phpseclib3\Crypt\Random;
+use OpenPGP\Enum\KeyFlag;
 use OpenPGP\Enum\SignatureType;
+use OpenPGP\Enum\SupportFeature;
 use OpenPGP\Packet\PacketList;
 use OpenPGP\Packet\PublicKey;
 use OpenPGP\Packet\SecretKey;
 use OpenPGP\Packet\Signature;
+use OpenPGP\Packet\Signature\Features;
+use OpenPGP\Packet\Signature\KeyFlags;
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
@@ -259,5 +263,37 @@ EOT;
             $message
         );
         $this->assertTrue($signature->verify($publicKey, $message));
+    }
+
+    public function testFeatures()
+    {
+        $features = Features::fromFeatures(
+            SupportFeature::ModificationDetection->value |
+            SupportFeature::AeadEncryptedData->value |
+            SupportFeature::Version5PublicKey->value
+        );
+        $this->assertTrue($features->supprtModificationDetection());
+        $this->assertTrue($features->supportAeadEncryptedData());
+        $this->assertTrue($features->supportVersion5PublicKey());
+    }
+
+    public function testKeyFlag()
+    {
+        $keyFlags = KeyFlags::fromFlags(
+            KeyFlag::CertifyKeys->value |
+            KeyFlag::SignData->value |
+            KeyFlag::EncryptCommunication->value |
+            KeyFlag::EncryptStorage->value |
+            KeyFlag::SplitPrivateKey->value |
+            KeyFlag::Authentication->value |
+            KeyFlag::SharedPrivateKey->value
+        );
+        foreach (KeyFlag::cases() as $flag) {
+            $this->assertSame($keyFlags->getFlags() & $flag->value, $flag->value);
+        }
+        $this->assertTrue($keyFlags->isCertifyKeys());
+        $this->assertTrue($keyFlags->isSignData());
+        $this->assertTrue($keyFlags->isEncryptCommunication());
+        $this->assertTrue($keyFlags->isEncryptStorage());
     }
 }

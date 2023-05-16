@@ -60,7 +60,9 @@ class RevocationReason extends SignatureSubpacket
         bool $critical = false
     ): RevocationReason
     {
-        return new RevocationReason($this->revocationToBytes($reason, $description), $critical);
+        return new RevocationReason(
+            $this->revocationToBytes($reason, $description), $critical
+        );
     }
 
     /**

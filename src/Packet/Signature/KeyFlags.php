@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Packet\Signature;
 
-use OpenPGP\Enum\SignatureSubpacketType;
+use OpenPGP\Enum\{KeyFlag, SignatureSubpacketType};
 use OpenPGP\Packet\SignatureSubpacket;
 
 /**
@@ -57,7 +57,7 @@ class KeyFlags extends SignatureSubpacket
         int $flags, bool $critical = false
     ): KeyFlags
     {
-        return new KeyFlags($this->flagsToBytes($flags), $critical);
+        return new KeyFlags(self::flagsToBytes($flags), $critical);
     }
 
     /**
@@ -85,8 +85,8 @@ class KeyFlags extends SignatureSubpacket
      */
     public function isCertifyKeys(): bool
     {
-        return $this->getFlags() & KeyFlag::certifyKeys->value
-            == KeyFlag::certifyKeys->value;
+        return ($this->getFlags() & KeyFlag::CertifyKeys->value)
+            == KeyFlag::CertifyKeys->value;
     }
 
     /**
@@ -96,8 +96,8 @@ class KeyFlags extends SignatureSubpacket
      */
     public function isSignData(): bool
     {
-        return $this->getFlags() & KeyFlag::signData->value
-            == KeyFlag::signData->value;
+        return ($this->getFlags() & KeyFlag::SignData->value)
+            == KeyFlag::SignData->value;
     }
 
     /**
@@ -107,8 +107,8 @@ class KeyFlags extends SignatureSubpacket
      */
     public function isEncryptCommunication(): bool
     {
-        return $this->getFlags() & KeyFlag::encryptCommunication->value
-            == KeyFlag::encryptCommunication->value;
+        return ($this->getFlags() & KeyFlag::EncryptCommunication->value)
+            == KeyFlag::EncryptCommunication->value;
     }
 
     /**
@@ -118,11 +118,11 @@ class KeyFlags extends SignatureSubpacket
      */
     public function isEncryptStorage(): bool
     {
-        return $this->getFlags() & KeyFlag::encryptStorage->value
-            == KeyFlag::encryptStorage->value;
+        return ($this->getFlags() & KeyFlag::EncryptStorage->value)
+            == KeyFlag::EncryptStorage->value;
     }
 
-    private function flagsToBytes(int $flags): string
+    private static function flagsToBytes(int $flags): string
     {
         $bytes = [];
         for ($i = 0; $i != 4; $i++) {

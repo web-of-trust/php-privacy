@@ -62,7 +62,10 @@ class RevocationKey extends SignatureSubpacket
     ): RevocationKey
     {
         return new RevocationKey(
-            $this->revocationToBytes($signatureClass, $keyAlgorithm, $fingerprint), $critical
+            $this->revocationToBytes(
+                $signatureClass, $keyAlgorithm, $fingerprint
+            ),
+            $critical
         );
     }
 

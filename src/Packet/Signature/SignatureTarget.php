@@ -63,7 +63,8 @@ class SignatureTarget extends SignatureSubpacket
     ): SignatureTarget
     {
         return new SignatureTarget(
-            $this->hashDataToBytes($keyAlgorithm, $hashAlgorithm, $hashData), $critical
+            $this->hashDataToBytes($keyAlgorithm, $hashAlgorithm, $hashData),
+            $critical
         );
     }
 

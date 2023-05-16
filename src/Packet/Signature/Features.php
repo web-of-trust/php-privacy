@@ -64,9 +64,9 @@ class Features extends SignatureSubpacket
      *
      * @return bool
      */
-    public bool supprtModificationDetection()
+    public function supprtModificationDetection(): bool
     {
-        return ord($this->getData()[0]) & SupportFeature::ModificationDetection->value
+        return (ord($this->getData()[0]) & SupportFeature::ModificationDetection->value)
             == SupportFeature::ModificationDetection->value;
     }
 
@@ -75,9 +75,9 @@ class Features extends SignatureSubpacket
      *
      * @return bool
      */
-    public bool supportAeadEncryptedData()
+    public function supportAeadEncryptedData(): bool
     {
-        return ord($this->getData()[0]) & SupportFeature::AeadEncryptedData->value
+        return (ord($this->getData()[0]) & SupportFeature::AeadEncryptedData->value)
             == SupportFeature::AeadEncryptedData->value;
     }
 
@@ -86,9 +86,9 @@ class Features extends SignatureSubpacket
      *
      * @return bool
      */
-    public bool supportVersion5PublicKey()
+    public function supportVersion5PublicKey(): bool
     {
-        return ord($this->getData()[0]) & SupportFeature::Version5PublicKey->value
+        return (ord($this->getData()[0]) & SupportFeature::Version5PublicKey->value)
             == SupportFeature::Version5PublicKey->value;
     }
 }

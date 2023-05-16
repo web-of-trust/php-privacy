@@ -56,6 +56,8 @@ class ExportableCertification extends SignatureSubpacket
         bool $exportable = true, bool $critical = false
     ): ExportableCertification
     {
-        return new ExportableCertification($exportable ? chr(1) : chr(0), $critical);
+        return new ExportableCertification(
+            $exportable ? chr(1) : chr(0), $critical
+        );
     }
 }

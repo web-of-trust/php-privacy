@@ -67,7 +67,10 @@ class NotationData extends SignatureSubpacket
     ): NotationData
     {
         return new NotationData(
-            $this->notationToBytes($humanReadable, $notationName, $notationValue), $critical
+            $this->notationToBytes(
+                $humanReadable, $notationName, $notationValue
+            ),
+            $critical
         );
     }
 
@@ -122,12 +125,16 @@ class NotationData extends SignatureSubpacket
     {
         $nameLength = min(strlen($notationName), 0xffff);
         if ($nameLength != strlen($notationName)) {
-            throw new \InvalidArgumentException('notationName exceeds maximum length.');
+            throw new \InvalidArgumentException(
+                'Notation name exceeds maximum length.'
+            );
         }
 
         $valueLength = min(strlen($notationValue), 0xffff);
         if ($valueLength != strlen($notationValue)) {
-            throw new \InvalidArgumentException('notationValue exceeds maximum length.');
+            throw new \InvalidArgumentException(
+                'Notation value exceeds maximum length.'
+            );
         }
 
         return implode([
