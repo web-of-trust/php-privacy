@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Enum\KeyAlgorithm;
+use OpenPGP\Enum\{HashAlgorithm, KeyAlgorithm};
 
 /**
  * Key packet interface
