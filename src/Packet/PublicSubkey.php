@@ -20,7 +20,7 @@ use OpenPGP\Enum\{KeyAlgorithm, PacketTag};
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class PublicSubkey extends PublicKey
+class PublicSubkey extends PublicKey implements SubkeyPacketInterface
 {
     /**
      * Constructor
@@ -39,8 +39,7 @@ class PublicSubkey extends PublicKey
         parent::__construct(
             $creationTime,
             $keyParameters,
-            $algorithm,
-            true
+            $algorithm
         );
     }
 

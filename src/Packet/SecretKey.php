@@ -56,12 +56,11 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
         private readonly S2kUsage $s2kUsage = S2kUsage::Sha1,
         private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         private readonly ?Key\S2K $s2k = null,
-        private readonly string $iv = '',
-        private readonly bool $isSubkey = false
+        private readonly string $iv = ''
     )
     {
         parent::__construct(
-            $isSubkey ? PacketTag::SecretSubkey : PacketTag::SecretKey
+            $this instanceof SubkeyPacketInterface ? PacketTag::SecretSubkey : PacketTag::SecretKey
         );
     }
 
@@ -233,7 +232,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
      */
     public function isSubkey(): bool
     {
-        return $this->isSubkey;
+        return $this instanceof SubkeyPacketInterface;
     }
 
     /**
