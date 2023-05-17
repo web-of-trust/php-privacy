@@ -115,7 +115,7 @@ class AeadEncryptedData extends AbstractPacket
      *
      * @return AeadAlgorithm
      */
-    public function getSymmetricAlgorithm(): AeadAlgorithm
+    public function getAeadAlgorithm(): AeadAlgorithm
     {
         return $this->aeadAlgorithm;
     }
@@ -125,7 +125,7 @@ class AeadEncryptedData extends AbstractPacket
      *
      * @return int
      */
-    public function getSymmetricAlgorithm(): int
+    public function getChunkSizeByte(): int
     {
         return $this->chunkSizeByte;
     }
