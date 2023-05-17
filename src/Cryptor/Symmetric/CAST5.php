@@ -324,6 +324,7 @@ class CAST5 extends BlockCipher
      */
     private string $masking;
 
+    private bool $forEncryption = true;
     private int $rounds = self::MAX_ROUNDS;
 
     /**
@@ -334,6 +335,12 @@ class CAST5 extends BlockCipher
     public function __construct()
     {
         $this->rotating = $this->masking = str_repeat("\x00", 17);
+    }
+
+    public function Init(bool $forEncryption, string $workingKey): self
+    {
+        $this->forEncryption = $forEncryption;
+        return $this->setKey($workingKey);
     }
 
     /**
