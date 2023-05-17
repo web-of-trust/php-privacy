@@ -138,6 +138,9 @@ class PacketList implements \IteratorAggregate, \Countable
                     );
                     break;
                 case PacketTag::AeadEncryptedData:
+                    $packets[] = AeadEncryptedData::fromBytes(
+                        $reader->getData()
+                    );
                     break;
                 default:
                     break;
