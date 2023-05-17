@@ -114,13 +114,9 @@ enum SymmetricAlgorithm: int
             self::Plaintext => throw new \RuntimeException(
                 'Symmetric algorithm "Plaintext" is unsupported.'
             ),
-            self::Idea => throw new \RuntimeException(
-                'Symmetric algorithm "Idea" is unsupported'
-            ),
+            self::Idea => new \OpenPGP\Cryptor\Symmetric\IDEA('cfb'),
             self::TripleDes => new \phpseclib3\Crypt\TripleDES('cfb'),
-            self::Cast5 => throw new \RuntimeException(
-                'Symmetric algorithm "Cast5" is unsupported'
-            ),
+            self::Cast5 => new \OpenPGP\Cryptor\Symmetric\CAST5('cfb'),
             self::Blowfish => new \phpseclib3\Crypt\Blowfish('cfb'),
             self::Aes128 => new \phpseclib3\Crypt\AES('cfb'),
             self::Aes192 => new \phpseclib3\Crypt\AES('cfb'),

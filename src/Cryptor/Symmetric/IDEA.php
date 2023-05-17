@@ -82,14 +82,14 @@ class IDEA extends BlockCipher
 
     private static function bytesToWord(string $bytes, int $offset = 0): int
     {
-        return ((ord($bytes[$offset]) << 8) & 0xff00) + (ord($bytes[$offset + 1]) & 0xff);
+        $unpacked = unpack('n', substr($bytes, $offset, 2));
+        return reset($unpacked);
     }
 
     private static function wordToBytes(int $word, string $bytes, int $offset = 0): string
     {
-        $bytes[$offset] = chr(($word >> 8) & 0xff);
-        $bytes[$offset + 1] = chr($word & 0xff);
-        return $bytes;
+        $replace = pack('n', $word);
+        return substr_replace($bytes, $replace, $offset, strlen($replace));
     }
 
     private static function mul(int $x, int $y)
