@@ -30,6 +30,9 @@ use phpseclib3\Exception\BadModeException;
  */
 class CAST5 extends BlockCipher
 {
+    const MASK_8BITS  = 0xff;
+    const MASK_32BITS = 0xffffffff;
+
     const MAX_ROUNDS = 16;
     const RED_ROUNDS = 12;
 
@@ -67,7 +70,7 @@ class CAST5 extends BlockCipher
         0xaf1fbda7, 0xd4234870, 0xa7870bf3, 0x2d3b4d79, 0x42e04198, 0x0cd0ede7, 0x26470db8, 0xf881814c,
         0x474d6ad7, 0x7c0c5e5c, 0xd1231959, 0x381b7298, 0xf5d2f4db, 0xab838653, 0x6e2f1e23, 0x83719c9e,
         0xbd91e046, 0x9a56456e, 0xdc39200c, 0x20c8c571, 0x962bda1c, 0xe1e696ff, 0xb141ab08, 0x7cca89b9,
-        0x1a69e783, 0x02cc4843, 0xa2f7c579, 0x429ef47d, 0x427b169c, 0x5ac9f049, 0xdd8f0f00, 0x5c8165bf
+        0x1a69e783, 0x02cc4843, 0xa2f7c579, 0x429ef47d, 0x427b169c, 0x5ac9f049, 0xdd8f0f00, 0x5c8165bf,
     ];
 
     private static $sBox2 = [
@@ -102,7 +105,7 @@ class CAST5 extends BlockCipher
         0x5483697b, 0x2667a8cc, 0x85196048, 0x8c4bacea, 0x833860d4, 0x0d23e0f9, 0x6c387e8a, 0x0ae6d249,
         0xb284600c, 0xd835731d, 0xdcb1c647, 0xac4c56ea, 0x3ebd81b3, 0x230eabb0, 0x6438bc87, 0xf0b5b1fa,
         0x8f5ea2b3, 0xfc184642, 0x0a036b7a, 0x4fb089bd, 0x649da589, 0xa345415e, 0x5c038323, 0x3e5d3bb9,
-        0x43d79572, 0x7e6dd07c, 0x06dfdf1e, 0x6c6cc4ef, 0x7160a539, 0x73bfbe70, 0x83877605, 0x4523ecf1
+        0x43d79572, 0x7e6dd07c, 0x06dfdf1e, 0x6c6cc4ef, 0x7160a539, 0x73bfbe70, 0x83877605, 0x4523ecf1,
     ];
 
     private static $sBox3 = [
@@ -137,7 +140,7 @@ class CAST5 extends BlockCipher
         0x67214cb8, 0xb1e583d1, 0xb7dc3e62, 0x7f10bdce, 0xf90a5c38, 0x0ff0443d, 0x606e6dc6, 0x60543a49,
         0x5727c148, 0x2be98a1d, 0x8ab41738, 0x20e1be24, 0xaf96da0f, 0x68458425, 0x99833be5, 0x600d457d,
         0x282f9350, 0x8334b362, 0xd91d1120, 0x2b6d8da0, 0x642b1e31, 0x9c305a00, 0x52bce688, 0x1b03588a,
-        0xf7baefd5, 0x4142ed9c, 0xa4315c11, 0x83323ec5, 0xdfef4636, 0xa133c501, 0xe9d3531c, 0xee353783
+        0xf7baefd5, 0x4142ed9c, 0xa4315c11, 0x83323ec5, 0xdfef4636, 0xa133c501, 0xe9d3531c, 0xee353783,
     ];
 
     private static $sBox4 = [
@@ -172,7 +175,7 @@ class CAST5 extends BlockCipher
         0x39e4460c, 0x1fda8538, 0x1987832f, 0xca007367, 0xa99144f8, 0x296b299e, 0x492fc295, 0x9266beab,
         0xb5676e69, 0x9bd3ddda, 0xdf7e052f, 0xdb25701c, 0x1b5e51ee, 0xf65324e6, 0x6afce36c, 0x0316cc04,
         0x8644213e, 0xb7dc59d0, 0x7965291f, 0xccd6fd43, 0x41823979, 0x932bcdf6, 0xb657c34d, 0x4edfd282,
-        0x7ae5290c, 0x3cb9536b, 0x851e20fe, 0x9833557e, 0x13ecf0b0, 0xd3ffb372, 0x3f85c5c1, 0x0aef7ed2
+        0x7ae5290c, 0x3cb9536b, 0x851e20fe, 0x9833557e, 0x13ecf0b0, 0xd3ffb372, 0x3f85c5c1, 0x0aef7ed2,
     ];
 
     private static $sBox5 = [
@@ -207,7 +210,7 @@ class CAST5 extends BlockCipher
         0x6cf6e479, 0x20758184, 0xd0cefa65, 0x88f7be58, 0x4a046826, 0x0ff6f8f3, 0xa09c7f70, 0x5346aba0,
         0x5ce96c28, 0xe176eda3, 0x6bac307f, 0x376829d2, 0x85360fa9, 0x17e3fe2a, 0x24b79767, 0xf5a96b20,
         0xd6cd2595, 0x68ff1ebf, 0x7555442c, 0xf19f06be, 0xf9e0659a, 0xeeb9491d, 0x34010718, 0xbb30cab8,
-        0xe822fe15, 0x88570983, 0x750e6249, 0xda627e55, 0x5e76ffa8, 0xb1534546, 0x6d47de08, 0xefe9e7d4
+        0xe822fe15, 0x88570983, 0x750e6249, 0xda627e55, 0x5e76ffa8, 0xb1534546, 0x6d47de08, 0xefe9e7d4,
     ];
 
     private static $sBox6 = [
@@ -242,7 +245,7 @@ class CAST5 extends BlockCipher
         0x653d7e6a, 0x54268d49, 0x51a477ea, 0x5017d55b, 0xd7d25d88, 0x44136c76, 0x0404a8c8, 0xb8e5a121,
         0xb81a928a, 0x60ed5869, 0x97c55b96, 0xeaec991b, 0x29935913, 0x01fdb7f1, 0x088e8dfa, 0x9ab6f6f5,
         0x3b4cbf9f, 0x4a5de3ab, 0xe6051d35, 0xa0e1d855, 0xd36b4cf1, 0xf544edeb, 0xb0e93524, 0xbebb8fbd,
-        0xa2d762cf, 0x49c92f54, 0x38b5f331, 0x7128a454, 0x48392905, 0xa65b1db8, 0x851c97bd, 0xd675cf2f
+        0xa2d762cf, 0x49c92f54, 0x38b5f331, 0x7128a454, 0x48392905, 0xa65b1db8, 0x851c97bd, 0xd675cf2f,
     ];
 
     private static $sBox7 = [
@@ -277,7 +280,7 @@ class CAST5 extends BlockCipher
         0x1814386b, 0x30bcc33d, 0x38a0c07d, 0xfd1606f2, 0xc363519b, 0x589dd390, 0x5479f8e6, 0x1cb8d647,
         0x97fd61a9, 0xea7759f4, 0x2d57539d, 0x569a58cf, 0xe84e63ad, 0x462e1b78, 0x6580f87e, 0xf3817914,
         0x91da55f4, 0x40a230f3, 0xd1988f35, 0xb6e318d2, 0x3ffa50bc, 0x3d40f021, 0xc3c0bdae, 0x4958c24c,
-        0x518f36b2, 0x84b1d370, 0x0fedce83, 0x878ddada, 0xf2a279c7, 0x94e01be8, 0x90716f4b, 0x954b8aa3
+        0x518f36b2, 0x84b1d370, 0x0fedce83, 0x878ddada, 0xf2a279c7, 0x94e01be8, 0x90716f4b, 0x954b8aa3,
     ];
 
     private static $sBox8 = [
@@ -312,7 +315,7 @@ class CAST5 extends BlockCipher
         0xaa12e4f2, 0x87451c0f, 0xe0f6a27a, 0x3ada4819, 0x4cf1764f, 0x0d771c2b, 0x67cdb156, 0x350d8384,
         0x5938fa0f, 0x42399ef3, 0x36997b07, 0x0e84093d, 0x4aa93e61, 0x8360d87b, 0x1fa98b0c, 0x1149382c,
         0xe97625a5, 0x0614d1b7, 0x0e25244b, 0x0c768347, 0x589e8d82, 0x0d2059d1, 0xa466bb1e, 0xf8da0a82,
-        0x04f19130, 0xba6e4ec0, 0x99265164, 0x1ee7230d, 0x50b2ad80, 0xeaee6801, 0x8db2a283, 0xea8bf59e
+        0x04f19130, 0xba6e4ec0, 0x99265164, 0x1ee7230d, 0x50b2ad80, 0xeaee6801, 0x8db2a283, 0xea8bf59e,
     ];
 
     /**
@@ -336,11 +339,11 @@ class CAST5 extends BlockCipher
     public function __construct(string $mode)
     {
         parent::__construct($mode);
-        $this->block_size = self::BLOCK_SIZE;
-        $this->rotating = $this->masking = array_fill(0, 17, 0);
         if ($this->mode == self::MODE_STREAM) {
             throw new BadModeException('Block ciphers cannot be ran in stream mode');
         }
+        $this->block_size = self::BLOCK_SIZE;
+        $this->rotating = $this->masking = array_fill(0, 17, 0);
     }
 
     /**
@@ -393,7 +396,7 @@ class CAST5 extends BlockCipher
         $z = $x = array_fill(0, 16, 0);
         /* copy the key into x */
         for ($i = 0; $i < $keyLength; $i++) {
-            $x[$i] = ord($this->key[$i]) & 0xff;
+            $x[$i] = ord($this->key[$i]) & self::MASK_8BITS;
         }
 
         /**
@@ -548,9 +551,9 @@ class CAST5 extends BlockCipher
      */
     private static function f1(int $d, int $kmi, int $kri): int
     {
-        $i = ($kmi + $d) & 0xffffffff;
+        $i = ($kmi + $d) & self::MASK_32BITS;
         $i = ($i << $kri) | ($i >> (32 - $kri));
-        return ((self::$sBox1[($i >> 24) & 0xff] ^ self::$sBox2[($i >> 16) & 0xff]) - self::$sBox3[($i >> 8) & 0xff]) + self::$sBox4[$i & 0xff];
+        return ((self::$sBox1[($i >> 24) & self::MASK_8BITS] ^ self::$sBox2[($i >> 16) & self::MASK_8BITS]) - self::$sBox3[($i >> 8) & self::MASK_8BITS]) + self::$sBox4[$i & self::MASK_8BITS];
     }
 
     /**
@@ -563,9 +566,9 @@ class CAST5 extends BlockCipher
      */
     private static function f2(int $d, int $kmi, int $kri): int
     {
-        $i = ($kmi ^ $d) & 0xffffffff;
+        $i = ($kmi ^ $d) & self::MASK_32BITS;
         $i = $i << $kri | ($i >> (32 - $kri));
-        return ((self::$sBox1[($i >> 24) & 0xff] - self::$sBox2[($i >> 16) & 0xff]) + self::$sBox3[($i >> 8) & 0xff]) ^ self::$sBox4[$i & 0xff];
+        return ((self::$sBox1[($i >> 24) & self::MASK_8BITS] - self::$sBox2[($i >> 16) & self::MASK_8BITS]) + self::$sBox3[($i >> 8) & self::MASK_8BITS]) ^ self::$sBox4[$i & self::MASK_8BITS];
     }
 
     /**
@@ -578,9 +581,9 @@ class CAST5 extends BlockCipher
      */
     private static function f3(int $d, int $kmi, int $kri): int
     {
-        $i = ($kmi - $d) & 0xffffffff;
+        $i = ($kmi - $d) & self::MASK_32BITS;
         $i = $i << $kri | ($i >> (32 - $kri));
-        return ((self::$sBox1[($i >> 24) & 0xff] + self::$sBox2[($i >> 16) & 0xff]) ^ self::$sBox3[($i >> 8) & 0xff]) - self::$sBox4[$i & 0xff];
+        return ((self::$sBox1[($i >> 24) & self::MASK_8BITS] + self::$sBox2[($i >> 16) & self::MASK_8BITS]) ^ self::$sBox3[($i >> 8) & self::MASK_8BITS]) - self::$sBox4[$i & self::MASK_8BITS];
     }
 
     /**
@@ -606,6 +609,7 @@ class CAST5 extends BlockCipher
             $rp = $ri;
 
             $li = $rp;
+
             switch ($i) {
                 case  1:
                 case  4:
@@ -682,18 +686,18 @@ class CAST5 extends BlockCipher
 
     private static function bits32ToInts(int $input, array $bytes, int $offset): array
     {
-        $bytes[$offset + 3] = $input & 0xff;
-        $bytes[$offset + 2] = ($input >> 8) & 0xff;
-        $bytes[$offset + 1] = ($input >> 16) & 0xff;
-        $bytes[$offset]     = ($input >> 24) & 0xff;
+        $bytes[$offset + 3] = $input         & self::MASK_8BITS;
+        $bytes[$offset + 2] = ($input >> 8)  & self::MASK_8BITS;
+        $bytes[$offset + 1] = ($input >> 16) & self::MASK_8BITS;
+        $bytes[$offset]     = ($input >> 24) & self::MASK_8BITS;
         return $bytes;
     }
 
     private static function intsTo32bits(array $bytes, int $offset): int
     {
-        return ((($bytes[$offset] & 0xff) << 24) |
-            (($bytes[$offset + 1] & 0xff) << 16) |
-            (($bytes[$offset + 2] & 0xff) << 8) |
-            (($bytes[$offset + 3] & 0xff)));
+        return ((($bytes[$offset] & self::MASK_8BITS) << 24) |
+            (($bytes[$offset + 1] & self::MASK_8BITS) << 16) |
+            (($bytes[$offset + 2] & self::MASK_8BITS) << 8)  |
+            (($bytes[$offset + 3] & self::MASK_8BITS)));
     }
 }
