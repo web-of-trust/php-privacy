@@ -25,6 +25,9 @@ use Psr\Log\{LoggerInterface, NullLogger};
  */
 final class Helper
 {
+    const MASK_8BITS  = 0xff;
+    const MASK_32BITS = 0xffffffff;
+
     private static ?LoggerInterface $logger = null;
 
     /**
@@ -99,5 +102,26 @@ final class Helper
         $prefix = Random::string($size);
         $repeat = $prefix[$size - 2] . $prefix[$size - 1];
         return $prefix . $repeat;
+    }
+
+
+    public static function rightRotate32(int $x, int $s): int
+    {
+        return self::rightRotate($x & self::MASK_32BITS, $s);
+    }
+
+    public static function leftRotate32(int $x, int $s): int
+    {
+        return self::leftRotate($x & self::MASK_32BITS, $s);
+    }
+
+    public static function rightRotate(int $x, int $s): int
+    {
+        return ($x >> $s) | ($x << (32 - $s));
+    }
+
+    public static function leftRotate(int $x, int $s): int
+    {
+        return ($x << $s) | ($x >> (32 - $s));
     }
 }
