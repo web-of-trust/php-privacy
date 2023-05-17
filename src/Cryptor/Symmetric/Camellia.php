@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace OpenPGP\Cryptor\Asymmetric;
+namespace OpenPGP\Cryptor\Symmetric;
 
 use phpseclib3\Crypt\Common\BlockCipher;
 
@@ -22,4 +22,41 @@ use phpseclib3\Crypt\Common\BlockCipher;
  */
 class Camellia extends BlockCipher
 {
+    const BLOCK_SIZE = 16;
+
+    /**
+     * Constructor
+     *
+     * @param string $mode
+     * @return self
+     */
+    public function __construct(string $mode)
+    {
+        parent::__construct($mode);
+        $this->block_size = self::BLOCK_SIZE;
+        if ($this->mode == self::MODE_STREAM) {
+            throw new BadModeException('Block ciphers cannot be ran in stream mode');
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function encryptBlock($input)
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function decryptBlock($input)
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setupKey()
+    {
+    }
 }

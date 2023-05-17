@@ -8,9 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace OpenPGP\Cryptor\Asymmetric;
+namespace OpenPGP\Cryptor\Symmetric;
 
 use phpseclib3\Crypt\Common\BlockCipher;
+use phpseclib3\Exception\BadModeException;
 
 /**
  * CAST5 class
@@ -324,32 +325,28 @@ class CAST5 extends BlockCipher
      */
     private string $masking;
 
-    private bool $forEncryption = true;
     private int $rounds = self::MAX_ROUNDS;
 
     /**
      * Constructor
      *
+     * @param string $mode
      * @return self
      */
-    public function __construct()
+    public function __construct(string $mode)
     {
+        parent::__construct($mode);
+        $this->block_size = self::BLOCK_SIZE;
         $this->rotating = $this->masking = str_repeat("\x00", 17);
-    }
-
-    public function Init(bool $forEncryption, string $workingKey): self
-    {
-        $this->forEncryption = $forEncryption;
-        return $this->setKey($workingKey);
+        if ($this->mode == self::MODE_STREAM) {
+            throw new BadModeException('Block ciphers cannot be ran in stream mode');
+        }
     }
 
     /**
-     * Creates the subkeys using the same nomenclature as described in RFC2144.
-     *
-     * @param string $key
-     * @return self
+     * {@inheritdoc}
      */
-    public function setKey(string $key): self
+    protected function setupKey()
     {
         /**
          * Determine the key size here, if required
@@ -360,7 +357,7 @@ class CAST5 extends BlockCipher
          * Typical key sizes => 40, 64, 80, 128
          */
 
-        $keyLength = strlen($key);
+        $keyLength = strlen($this->key);
         if ($keyLength < 11) {
             $this->rounds = self::RED_ROUNDS;
         }
@@ -368,7 +365,7 @@ class CAST5 extends BlockCipher
         $z = $x = str_repeat("\x00", 16);
         /* copy the key into x */
         for ($i = 0; $i < $keyLength; $i++) {
-            $x[$i] = chr(ord($key[$i]) & 0xff);
+            $x[$i] = chr(ord($this->key[$i]) & 0xff);
         }
 
         /**
@@ -511,30 +508,17 @@ class CAST5 extends BlockCipher
         $this->rotating[14] = (self::$sBox5[$x[0xa]] ^ self::$sBox6[$x[0xb]] ^ self::$sBox7[$x[0x5]] ^ self::$sBox8[$x[0x4]] ^ self::$sBox6[$x[0x7]]) & 0x1f;
         $this->rotating[15] = (self::$sBox5[$x[0xc]] ^ self::$sBox6[$x[0xd]] ^ self::$sBox7[$x[0x3]] ^ self::$sBox8[$x[0x2]] ^ self::$sBox7[$x[0x8]]) & 0x1f;
         $this->rotating[16] = (self::$sBox5[$x[0xe]] ^ self::$sBox6[$x[0xf]] ^ self::$sBox7[$x[0x1]] ^ self::$sBox8[$x[0x0]] ^ self::$sBox8[$x[0xd]]) & 0x1f;
-
-        return $this;
     }
 
     /**
-     * Encrypt the given input starting at the given offset and place
-     * the result in the provided buffer starting at the given offset.
-     *
-     * @param string $src   The plaintext buffer
-     * @param int $srcIndex An offset into src
-     * @return string
+     * {@inheritdoc}
      */
-    private function encryptBlock(string $src, int $srcIndex): string
+    protected function encryptBlock($input)
     {
-        /**
-         * process the input block
-         * batch the units up into a 32 bit chunk and go for it
-         * the array is in bytes, the increment is 8x8 bits = 64
-         */
-
-        $unpacked = unpack('N', substr($src, $srcIndex, 4));
+        $unpacked = unpack('N', substr($input, 0, 4));
         $l0 = reset($unpacked);
 
-        $unpacked = unpack('N', substr($src, $srcIndex + 4, 4));
+        $unpacked = unpack('N', substr($input, 4, 4));
         $r0 = reset($unpacked);
 
         $result = $this->encipher($l0, $r0);
@@ -542,25 +526,14 @@ class CAST5 extends BlockCipher
     }
 
     /**
-     * Decrypt the given input starting at the given offset and place
-     * the result in the provided buffer starting at the given offset.
-     *
-     * @param string $src   The plaintext buffer
-     * @param int $srcIndex An offset into src
-     * @return string
+     * {@inheritdoc}
      */
-    private function decryptBlock(string $src, int $srcIndex): string
+    protected function decryptBlock($input)
     {
-        /**
-         * process the input block
-         * batch the units up into a 32 bit chunk and go for it
-         * the array is in bytes, the increment is 8x8 bits = 64
-         */
-
-        $unpacked = unpack('N', substr($src, $srcIndex, 4));
+        $unpacked = unpack('N', substr($src, 0, 4));
         $l16 = reset($unpacked);
 
-        $unpacked = unpack('N', substr($src, $srcIndex + 4, 4));
+        $unpacked = unpack('N', substr($src, 4, 4));
         $r16 = reset($unpacked);
 
         $result = $this->decipher($l16, $r16);
@@ -608,8 +581,8 @@ class CAST5 extends BlockCipher
      */
     private function encipher(int $l0, int $r0): string
     {
-        $lp = $l0;        // the previous value, equiv to L[i-1]
-        $rp = $r0;        // equivalent to R[i-1]
+        $lp = $l0; // the previous value, equiv to L[i-1]
+        $rp = $r0; // equivalent to R[i-1]
 
         /**
          * numbering consistent with paper to make
