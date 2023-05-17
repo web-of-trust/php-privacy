@@ -14,6 +14,13 @@ use phpseclib3\Crypt\Common\BlockCipher;
 
 /**
  * CAST5 class
+ * 
+ * A class that provides CAST key encryption operations,
+ * such as encoding data and generating keys.
+ * 
+ * All the algorithms herein are from the Internet RFC's
+ * RFC2144 - Cast5 (64bit block, 40-128bit key)
+ * and implement a simplified cryptography interface.
  *
  * @package    OpenPGP
  * @category   Cryptor
