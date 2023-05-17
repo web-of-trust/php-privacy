@@ -95,7 +95,7 @@ class AeadEncryptedData extends AbstractPacket
             chr($this->symmetricAlgorithm->value),
             chr($this->aeadAlgorithm->value),
             chr($this->chunkSizeByte),
-            $this->iv
+            $this->iv,
             $this->encrypted
         ]);
     }
