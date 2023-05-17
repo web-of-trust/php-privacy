@@ -189,28 +189,33 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self
     {
-        $this->getLogger()->debug(
-            'Decrypt the encrypted data contained in the packet.'
-        );
-        $size = $symmetric->blockSize();
-        $cipher = $symmetric->cipherEngine();
-        $cipher->setKey($key);
-        $cipher->setIV(str_repeat("\x0", $size));
-
-        $decrypted = $cipher->decrypt($this->encrypted);
-        $digestSize = strlen($decrypted) - HashAlgorithm::Sha1->digestSize();
-        $realHash = substr($decrypted, $digestSize);
-        $toHash = substr($decrypted, 0, $digestSize);
-        if ($realHash !== hash('sha1', $toHash, true)) {
-            throw new \UnexpectedValueException('Modification detected.');
+        if ($this->packets instanceof PacketList) {
+            return $this;
         }
+        else {
+            $this->getLogger()->debug(
+                'Decrypt the encrypted data contained in the packet.'
+            );
+            $size = $symmetric->blockSize();
+            $cipher = $symmetric->cipherEngine();
+            $cipher->setKey($key);
+            $cipher->setIV(str_repeat("\x0", $size));
 
-        return new self(
-            $this->encrypted,
-            PacketList::decode(
-                substr($toHash, $size + 2, strlen($toHash) - $size - 2)
-            )
-        );
+            $decrypted = $cipher->decrypt($this->encrypted);
+            $digestSize = strlen($decrypted) - HashAlgorithm::Sha1->digestSize();
+            $realHash = substr($decrypted, $digestSize);
+            $toHash = substr($decrypted, 0, $digestSize);
+            if ($realHash !== hash('sha1', $toHash, true)) {
+                throw new \UnexpectedValueException('Modification detected.');
+            }
+
+            return new self(
+                $this->encrypted,
+                PacketList::decode(
+                    substr($toHash, $size + 2, strlen($toHash) - $size - 2)
+                )
+            );
+        }
     }
 
     /**

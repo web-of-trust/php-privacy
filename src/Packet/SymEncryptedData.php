@@ -135,20 +135,25 @@ class SymEncryptedData extends AbstractPacket
     ): self
     {
         if (!$allowUnauthenticated) {
-          throw new \UnexpectedValueException(
-            'Message is not authenticated.'
-        );
+            throw new \UnexpectedValueException(
+                'Message is not authenticated.'
+            );
         }
-        $blockSize = $symmetric->blockSize();
-        $cipher = $symmetric->cipherEngine();
-        $cipher->setKey($key);
-        $cipher->setIV(substr($this->encrypted, 2, $blockSize));
+        if ($this->packets instanceof PacketList) {
+            return $this;
+        }
+        else {
+            $blockSize = $symmetric->blockSize();
+            $cipher = $symmetric->cipherEngine();
+            $cipher->setKey($key);
+            $cipher->setIV(substr($this->encrypted, 2, $blockSize));
 
-        return new self(
-            $this->encrypted,
-            PacketList::decode(
-                $cipher->decrypt(substr($this->encrypted, $blockSize + 2))
-            )
-        );
+            return new self(
+                $this->encrypted,
+                PacketList::decode(
+                    $cipher->decrypt(substr($this->encrypted, $blockSize + 2))
+                )
+            );
+        }
     }
 }

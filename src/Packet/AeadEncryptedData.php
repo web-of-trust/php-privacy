@@ -86,6 +86,44 @@ class AeadEncryptedData extends AbstractPacket
     }
 
     /**
+     * Encrypts packet list
+     *
+     * @param string $key
+     * @param PacketList $packets
+     * @param SymmetricAlgorithm $symmetric
+     * @param AeadAlgorithm $aeadAlgorithm
+     * @param int $chunkSizeByte
+     * @return self
+     */
+    public static function encryptPackets(
+        string $key,
+        PacketList $packets,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        AeadAlgorithm $aeadAlgorithm = AeadAlgorithm::Eax,
+        int $chunkSizeByte = 0
+    ): self
+    {
+    }
+
+    /**
+     * Encrypts packet list with session key
+     *
+     * @param Key\SessionKey $sessionKey
+     * @param PacketList $packets
+     * @return self
+     */
+    public static function encryptPacketsWithSessionKey(
+        Key\SessionKey $sessionKey, PacketList $packets
+    ): self
+    {
+        return self::encryptPackets(
+            $sessionKey->getEncryptionKey(),
+            $packets,
+            $sessionKey->getSymmetric()
+        );
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function toBytes(): string
@@ -158,5 +196,77 @@ class AeadEncryptedData extends AbstractPacket
     public function getPackets(): ?PacketList
     {
         return $this->packets;
+    }
+
+    /**
+     * Encrypts the payload in the packet.
+     *
+     * @param string $key
+     * @param SymmetricAlgorithm $symmetric
+     * @return self
+     */
+    public function encrypt(
+        string $key,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+    ): self
+    {
+        if ($this->packets instanceof PacketList) {
+            return self::encryptPackets($key, $this->packets, $symmetric);
+        }
+        return $this;
+    }
+
+    /**
+     * Encrypts the payload in the packet with session key.
+     *
+     * @param Key\SessionKey $sessionKey
+     * @return self
+     */
+    public function encryptWithSessionKey(
+        Key\SessionKey $sessionKey
+    ): self
+    {
+        return $this->encrypt(
+            $sessionKey->getEncryptionKey(),
+            $sessionKey->getSymmetric()
+        );
+    }
+
+    /**
+     * Decrypts the encrypted data contained in the packet.
+     *
+     * @param string $key
+     * @param SymmetricAlgorithm $symmetric
+     * @return self
+     */
+    public function decrypt(
+        string $key,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+    ): self
+    {
+        if ($this->packets instanceof PacketList) {
+            return $this;
+        }
+        else {
+            $this->getLogger()->debug(
+                'Decrypt the encrypted data contained in the packet.'
+            );
+        }
+    }
+
+    /**
+     * Decrypts the encrypted data contained in the packet with session key.
+     *
+     * @param Key\SessionKey $sessionKey
+     * @return self
+     */
+    public function decryptWithSessionKey(
+        Key\SessionKey $sessionKey
+    ): self
+    {
+        return $this->decrypt(
+            $sessionKey->getEncryptionKey(),
+            $sessionKey->getSymmetric()
+        );
     }
 }

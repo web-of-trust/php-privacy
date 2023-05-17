@@ -153,6 +153,7 @@ EOT;
             $message
         );
         $this->assertTrue($signature->verify($publicKey, $message));
+        $this->assertFalse($signature->verify($publicKey, self::LITERAL_TEXT));
     }
 
     public function testVerifyDsaSignature()
@@ -181,6 +182,7 @@ EOT;
             $message
         );
         $this->assertTrue($signature->verify($publicKey, $message));
+        $this->assertFalse($signature->verify($publicKey, self::LITERAL_TEXT));
     }
 
     public function testVerifyEcdsaP384Signature()
@@ -210,6 +212,7 @@ EOT;
             $message
         );
         $this->assertTrue($signature->verify($publicKey, $message));
+        $this->assertFalse($signature->verify($publicKey, self::LITERAL_TEXT));
     }
 
     public function testVerifyEcdsaBrainpoolSignature()
@@ -238,6 +241,7 @@ EOT;
             $message
         );
         $this->assertTrue($signature->verify($publicKey, $message));
+        $this->assertFalse($signature->verify($publicKey, self::LITERAL_TEXT));
     }
 
     public function testVerifyEddsaCurve25519Signature()
@@ -266,6 +270,7 @@ EOT;
             $message
         );
         $this->assertTrue($signature->verify($publicKey, $message));
+        $this->assertFalse($signature->verify($publicKey, self::LITERAL_TEXT));
     }
 
     public function testFeatures()
