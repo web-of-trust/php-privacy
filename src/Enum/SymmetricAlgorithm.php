@@ -122,15 +122,9 @@ enum SymmetricAlgorithm: int
             self::Aes192 => new \phpseclib3\Crypt\AES('cfb'),
             self::Aes256 => new \phpseclib3\Crypt\AES('cfb'),
             self::Twofish => new \phpseclib3\Crypt\Twofish('cfb'),
-            self::Camellia128 => throw new \RuntimeException(
-                'Symmetric algorithm "Camellia" is unsupported'
-            ),
-            self::Camellia192 => throw new \RuntimeException(
-                'Symmetric algorithm "Camellia" is unsupported'
-            ),
-            self::Camellia256 => throw new \RuntimeException(
-                'Symmetric algorithm "Camellia" is unsupported'
-            ),
+            self::Camellia128 => new \OpenPGP\Cryptor\Symmetric\Camellia('cfb'),
+            self::Camellia192 => new \OpenPGP\Cryptor\Symmetric\Camellia('cfb'),
+            self::Camellia256 => new \OpenPGP\Cryptor\Symmetric\Camellia('cfb'),
         };
     }
 }

@@ -318,12 +318,12 @@ class CAST5 extends BlockCipher
     /**
      * The rotating round key
      */
-    private string $rotating;
+    private array $rotating;
 
     /**
      * The masking round key
      */
-    private string $masking;
+    private array $masking;
 
     private int $rounds = self::MAX_ROUNDS;
 
@@ -337,10 +337,38 @@ class CAST5 extends BlockCipher
     {
         parent::__construct($mode);
         $this->block_size = self::BLOCK_SIZE;
-        $this->rotating = $this->masking = str_repeat("\x00", 17);
+        $this->rotating = $this->masking = array_fill(0, 17, 0);
         if ($this->mode == self::MODE_STREAM) {
             throw new BadModeException('Block ciphers cannot be ran in stream mode');
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function encryptBlock($input)
+    {
+        $unpacked = unpack('N', substr($input, 0, 4));
+        $l0 = reset($unpacked);
+        $unpacked = unpack('N', substr($input, 4, 4));
+        $r0 = reset($unpacked);
+
+        $result = $this->encipher($l0, $r0);
+        return pack('N', $result[0]) . pack('N', $result[1]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function decryptBlock($input)
+    {
+        $unpacked = unpack('N', substr($input, 0, 4));
+        $l16 = reset($unpacked);
+        $unpacked = unpack('N', substr($input, 4, 4));
+        $r16 = reset($unpacked);
+
+        $result = $this->decipher($l16, $r16);
+        return pack('N', $result[0]) . pack('N', $result[1]);
     }
 
     /**
@@ -362,10 +390,10 @@ class CAST5 extends BlockCipher
             $this->rounds = self::RED_ROUNDS;
         }
 
-        $z = $x = str_repeat("\x00", 16);
+        $z = $x = array_fill(0, 16, 0);
         /* copy the key into x */
         for ($i = 0; $i < $keyLength; $i++) {
-            $x[$i] = chr(ord($this->key[$i]) & 0xff);
+            $x[$i] = ord($this->key[$i]) & 0xff;
         }
 
         /**
@@ -511,36 +539,6 @@ class CAST5 extends BlockCipher
     }
 
     /**
-     * {@inheritdoc}
-     */
-    protected function encryptBlock($input)
-    {
-        $unpacked = unpack('N', substr($input, 0, 4));
-        $l0 = reset($unpacked);
-
-        $unpacked = unpack('N', substr($input, 4, 4));
-        $r0 = reset($unpacked);
-
-        $result = $this->encipher($l0, $r0);
-        return pack('N', ord($result[0])) . pack('N', ord($result[1]));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function decryptBlock($input)
-    {
-        $unpacked = unpack('N', substr($src, 0, 4));
-        $l16 = reset($unpacked);
-
-        $unpacked = unpack('N', substr($src, 4, 4));
-        $r16 = reset($unpacked);
-
-        $result = $this->decipher($l16, $r16);
-        return pack('N', ord($result[0])) . pack('N', ord($result[1]));
-    }
-
-    /**
      * The first of the three processing functions for the encryption and decryption.
      *
      * @param int $d   The input to be processed
@@ -550,10 +548,9 @@ class CAST5 extends BlockCipher
      */
     private static function f1(int $d, int $kmi, int $kri): int
     {
-        $i = $kmi + $d;
-        $i = $i << $kri | ($i >> (32 - $kri));
-        return ((self::$sBox1[($i >> 24) & 0xff] ^ self::$sBox2[($i >> 16) & 0xff])
-             - self::$sBox3[($i >> 8) & 0xff]) + self::$sBox4[$i & 0xff];
+        $i = ($kmi + $d) & 0xffffffff;
+        $i = ($i << $kri) | ($i >> (32 - $kri));
+        return ((self::$sBox1[($i >> 24) & 0xff] ^ self::$sBox2[($i >> 16) & 0xff]) - self::$sBox3[($i >> 8) & 0xff]) + self::$sBox4[$i & 0xff];
     }
 
     /**
@@ -566,10 +563,24 @@ class CAST5 extends BlockCipher
      */
     private static function f2(int $d, int $kmi, int $kri): int
     {
-        $i = $kmi ^ $d;
+        $i = ($kmi ^ $d) & 0xffffffff;
         $i = $i << $kri | ($i >> (32 - $kri));
-        return ((self::$sBox1[($i >> 24) & 0xff] - self::$sBox2[($i >> 16) & 0xff])
-             + self::$sBox3[($i >> 8) & 0xff]) ^ self::$sBox4[$i & 0xff];
+        return ((self::$sBox1[($i >> 24) & 0xff] - self::$sBox2[($i >> 16) & 0xff]) + self::$sBox3[($i >> 8) & 0xff]) ^ self::$sBox4[$i & 0xff];
+    }
+
+    /**
+     * The third of the three processing functions for the encryption and decryption.
+     *
+     * @param int $d   The input to be processed
+     * @param int $kmi The mask to be used from Km[n]
+     * @param int $kri The rotation value to be used
+     * @return int
+     */
+    private static function f3(int $d, int $kmi, int $kri): int
+    {
+        $i = ($kmi - $d) & 0xffffffff;
+        $i = $i << $kri | ($i >> (32 - $kri));
+        return ((self::$sBox1[($i >> 24) & 0xff] + self::$sBox2[($i >> 16) & 0xff]) ^ self::$sBox3[($i >> 8) & 0xff]) - self::$sBox4[$i & 0xff];
     }
 
     /**
@@ -577,9 +588,9 @@ class CAST5 extends BlockCipher
      *
      * @param int $l0 the LH-32bits of the plaintext block
      * @param int $r0 the RH-32bits of the plaintext block
-     * @return string
+     * @return array
      */
-    private function encipher(int $l0, int $r0): string
+    private function encipher(int $l0, int $r0): array
     {
         $lp = $l0; // the previous value, equiv to L[i-1]
         $rp = $r0; // equivalent to R[i-1]
@@ -590,7 +601,6 @@ class CAST5 extends BlockCipher
          */
         $li = $l0;
         $ri = $r0;
-
         for ($i = 1; $i <= $this->rounds ; $i++) {
             $lp = $li;
             $rp = $ri;
@@ -603,28 +613,28 @@ class CAST5 extends BlockCipher
                 case 10:
                 case 13:
                 case 16:
-                    $ri = $lp ^ self::f1($rp, ord($this->masking[$i]), $this->rotating[$i]);
+                    $ri = $lp ^ self::f1($rp, $this->masking[$i], $this->rotating[$i]);
                     break;
                 case  2:
                 case  5:
                 case  8:
                 case 11:
                 case 14:
-                    $ri = $lp ^ self::f2($rp, ord($this->masking[$i]), $this->rotating[$i]);
+                    $ri = $lp ^ self::f2($rp, $this->masking[$i], $this->rotating[$i]);
                     break;
                 case  3:
                 case  6:
                 case  9:
                 case 12:
                 case 15:
-                    $ri = $lp ^ self::f3($rp, ord($this->masking[$i]), $this->rotating[$i]);
+                    $ri = $lp ^ self::f3($rp, $this->masking[$i], $this->rotating[$i]);
                     break;
             }
-            return chr($ri) . chr($li);
         }
+        return [$ri, $li];
     }
 
-    private function decipher(int $l16, int $r16): string
+    private function decipher(int $l16, int $r16): array
     {
         $lp = $l16; // the previous value, equiv to L[i-1]
         $rp = $r16; // equivalent to R[i-1]
@@ -649,41 +659,41 @@ class CAST5 extends BlockCipher
                 case 10:
                 case 13:
                 case 16:
-                    $ri = $lp ^ self::f1($rp, ord($this->masking[$i]), ord($this->rounds[$i]));
+                    $ri = $lp ^ self::f1($rp, $this->masking[$i], $this->rotating[$i]);
                     break;
                 case  2:
                 case  5:
                 case  8:
                 case 11:
                 case 14:
-                    $ri = $lp ^ self::f2($rp, ord($this->masking[$i]), ord($this->rounds[$i]));
+                    $ri = $lp ^ self::f2($rp, $this->masking[$i], $this->rotating[$i]);
                     break;
                 case  3:
                 case  6:
                 case  9:
                 case 12:
                 case 15:
-                    $ri = $lp ^ self::f3($rp, ord($this->masking[$i]), ord($this->rounds[$i]));
+                    $ri = $lp ^ self::f3($rp, $this->masking[$i], $this->rotating[$i]);
                     break;
             }
         }
-        return chr($ri) . chr($li);
+        return [$ri, $li];
     }
 
-    private static function bits32ToInts(int $data, string $bytes, int $offset): string
+    private static function bits32ToInts(int $input, array $bytes, int $offset): array
     {
-        $bytes[$offset + 3] = chr($data & 0xff);
-        $bytes[$offset + 2] = chr(($data >> 8) & 0xff);
-        $bytes[$offset + 1] = chr(($data >> 16) & 0xff);
-        $bytes[$offset]     = chr(($data >> 24) & 0xff);
+        $bytes[$offset + 3] = $input & 0xff;
+        $bytes[$offset + 2] = ($input >> 8) & 0xff;
+        $bytes[$offset + 1] = ($input >> 16) & 0xff;
+        $bytes[$offset]     = ($input >> 24) & 0xff;
         return $bytes;
     }
 
-    private static function intsTo32bits(string $bytes, int $offset): int
+    private static function intsTo32bits(array $bytes, int $offset): int
     {
-        return (((ord($bytes[$offset]) & 0xff) << 24) |
-               ((ord($bytes[$offset + 1]) & 0xff) << 16) |
-               ((ord($bytes[$offset + 2]) & 0xff) << 8) |
-               ((ord($bytes[$offset + 3]) & 0xff)));
+        return ((($bytes[$offset] & 0xff) << 24) |
+            (($bytes[$offset + 1] & 0xff) << 16) |
+            (($bytes[$offset + 2] & 0xff) << 8) |
+            (($bytes[$offset + 3] & 0xff)));
     }
 }
