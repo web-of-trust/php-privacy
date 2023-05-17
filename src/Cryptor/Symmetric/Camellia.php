@@ -327,4 +327,116 @@ class Camellia extends BlockCipher
         }
         return $dst;
     }
+
+    private static function camelliaF2(array $s, array $skey, int $keyoff): array
+    {
+        $t1 = $s[0] ^ $skey[0 + $keyoff];
+        $u = self::$sbox4_4404[$t1 & Helper::MASK_8BITS];
+        $u ^= self::$sbox3_3033[($t1 >> 8) & Helper::MASK_8BITS];
+        $u ^= self::$sbox2_0222[($t1 >> 16) & Helper::MASK_8BITS];
+        $u ^= self::$sbox1_1110[($t1 >> 24) & Helper::MASK_8BITS];
+        $t2 = $s[1] ^ $skey[1 + $keyoff];
+        $v = self::$sbox1_1110[$t2 & Helper::MASK_8BITS];
+        $v ^= self::$sbox4_4404[($t2 >> 8) & Helper::MASK_8BITS];
+        $v ^= self::$sbox3_3033[($t2 >> 16) & Helper::MASK_8BITS];
+        $v ^= self::$sbox2_0222[($t2 >> 24) & Helper::MASK_8BITS];
+
+        $s[2] ^= $u ^ $v;
+        $s[3] ^= $u ^ $v ^ Helper::rightRotate($u, 8);
+
+        $t1 = $s[2] ^ $skey[2 + $keyoff];
+        $u = self::$sbox4_4404[$t1 & Helper::MASK_8BITS];
+        $u ^= self::$sbox3_3033[($t1 >> 8) & Helper::MASK_8BITS];
+        $u ^= self::$sbox2_0222[($t1 >> 16) & Helper::MASK_8BITS];
+        $u ^= self::$sbox1_1110[($t1 >> 24) & Helper::MASK_8BITS];
+        $t2 = $s[3] ^ $skey[3 + $keyoff];
+        $v = self::$sbox1_1110[$t2 & Helper::MASK_8BITS];
+        $v ^= self::$sbox4_4404[($t2 >> 8) & Helper::MASK_8BITS];
+        $v ^= self::$sbox3_3033[($t2 >> 16) & Helper::MASK_8BITS];
+        $v ^= self::$sbox2_0222[($t2 >> 24) & Helper::MASK_8BITS];
+
+        $s[0] ^= $u ^ $v;
+        $s[1] ^= $u ^ $v ^ Helper::rightRotate($u, 8);
+
+        return $s;
+    }
+
+    private static function camelliaFLs(array $s, array $fkey, int $keyoff): array
+    {
+        $s[1] ^= Helper::leftRotate($s[0] & $fkey[0 + $keyoff], 1);
+        $s[0] ^= $fkey[1 + $keyoff] | $s[1];
+
+        $s[2] ^= $fkey[3 + $keyoff] | $s[3];
+        $s[3] ^= Helper::leftRotate($fkey[2 + $keyoff] & $s[2], 1);
+
+        return $s;
+    }
+
+    private function processBlock128(array $in, int $inOff, array $out, int $outOff): array
+    {
+        for ($i = 0; $i < 4; $i++) {
+            $this->state[$i] = self::bytes2int($in, $inOff + ($i * 4));
+            $this->state[$i] ^= $this->kw[$i];
+        }
+
+        $this->state = self::camelliaF2($this->state, $this->subkey, 0);
+        $this->state = self::camelliaF2($this->state, $this->subkey, 4);
+        $this->state = self::camelliaF2($this->state, $this->subkey, 8);
+        $this->state = self::camelliaFLs($this->state, $this->ke, 0);
+        $this->state = self::camelliaF2($this->state, $this->subkey, 12);
+        $this->state = self::camelliaF2($this->state, $this->subkey, 16);
+        $this->state = self::camelliaF2($this->state, $this->subkey, 20);
+        $this->state = self::camelliaFLs($this->state, $this->ke, 4);
+        $this->state = self::camelliaF2($this->state, $this->subkey, 24);
+        $this->state = self::camelliaF2($this->state, $this->subkey, 28);
+        $this->state = self::camelliaF2($this->state, $this->subkey, 32);
+
+        $this->state[2] ^= $this->kw[4];
+        $this->state[3] ^= $this->kw[5];
+        $this->state[0] ^= $this->kw[6];
+        $this->state[1] ^= $this->kw[7];
+
+        $out = self::int2bytes($this->state[2], $out, $outOff);
+        $out = self::int2bytes($this->state[3], $out, $outOff + 4);
+        $out = self::int2bytes($this->state[0], $out, $outOff + 8);
+        $out = self::int2bytes($this->state[1], $out, $outOff + 12);
+
+        return $out;
+    }
+
+    private function processBlock192or256(array $in, int $inOff, array $out, int $outOff): array
+    {
+        for ($i = 0; $i < 4; $i++) {
+            $this->state[$i] = self::bytes2int($in, $inOff + ($i * 4));
+            $this->state[$i] ^= $this->kw[$i];
+        }
+
+        $this->state = self::camelliaF2($this->state, $this->subkey, 0);
+        $this->state = self::camelliaF2($this->state, $this->subkey, 4);
+        $this->state = self::camelliaF2($this->state, $this->subkey, 8);
+        $this->state = self::camelliaFLs($this->state, $this->ke, 0);
+        $this->state = self::camelliaF2($this->state, $this->subkey, 12);
+        $this->state = self::camelliaF2($this->state, $this->subkey, 16);
+        $this->state = self::camelliaF2($this->state, $this->subkey, 20);
+        $this->state = self::camelliaFLs($this->state, $this->ke, 4);
+        $this->state = self::camelliaF2($this->state, $this->subkey, 24);
+        $this->state = self::camelliaF2($this->state, $this->subkey, 28);
+        $this->state = self::camelliaF2($this->state, $this->subkey, 32);
+        $this->state = self::camelliaFLs($this->state, $this->ke, 8);
+        $this->state = self::camelliaF2($this->state, $this->subkey, 36);
+        $this->state = self::camelliaF2($this->state, $this->subkey, 40);
+        $this->state = self::camelliaF2($this->state, $this->subkey, 44);
+
+        $this->state[2] ^= $this->kw[4];
+        $this->state[3] ^= $this->kw[5];
+        $this->state[0] ^= $this->kw[6];
+        $this->state[1] ^= $this->kw[7];
+
+        $out = self::int2bytes($this->state[2], $out, $outOff);
+        $out = self::int2bytes($this->state[3], $out, $outOff + 4);
+        $out = self::int2bytes($this->state[0], $out, $outOff + 8);
+        $out = self::int2bytes($this->state[1], $out, $outOff + 12);
+
+        return $out;
+    }
 }
