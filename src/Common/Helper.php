@@ -26,6 +26,7 @@ use Psr\Log\{LoggerInterface, NullLogger};
 final class Helper
 {
     const MASK_8BITS  = 0xff;
+    const MASK_16BITS = 0xffff;
     const MASK_32BITS = 0xffffffff;
 
     private static ?LoggerInterface $logger = null;
@@ -104,6 +105,37 @@ final class Helper
         return $prefix . $repeat;
     }
 
+    /**
+     * Return unsigned long from byte string
+     *
+     * @param string $bytes
+     * @param int $offset
+     * @param bool $be
+     * @return int
+     */
+    public static function bytesToLong(
+        string $bytes, int $offset, bool $be = true
+    ): int
+    {
+        $unpacked = unpack($be ? 'N' : 'V', substr($bytes, $offset, 4));
+        return reset($unpacked);
+    }
+
+    /**
+     * Return unsigned short from byte string
+     *
+     * @param string $bytes
+     * @param int $offset
+     * @param bool $be
+     * @return int
+     */
+    public static function bytesToShort(
+        string $bytes, int $offset, bool $be = true
+    ): int
+    {
+        $unpacked = unpack($be ? 'n' : 'v', substr($bytes, $offset, 2));
+        return reset($unpacked);
+    }
 
     public static function rightRotate32(int $x, int $s): int
     {
@@ -123,5 +155,25 @@ final class Helper
     public static function leftRotate(int $x, int $s): int
     {
         return ($x << $s) | ($x >> (32 - $s));
+    }
+
+    public static function leftShift32(int $x, int $s): int
+    {
+        return self::leftShift($x & self::MASK_32BITS, $s);
+    }
+
+    public static function rightShift32(int $x, int $s): int
+    {
+        return self::rightShift($x & self::MASK_32BITS, $s);
+    }
+
+    public static function leftShift(int $x, int $s)
+    {
+        return $x << $s;
+    }
+
+    public static function rightShift(int $x, int $s)
+    {
+        return $x >> $s;
     }
 }

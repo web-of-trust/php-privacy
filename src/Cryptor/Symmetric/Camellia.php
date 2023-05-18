@@ -224,6 +224,8 @@ class Camellia extends BlockCipher
 
     private array $state;
 
+    private bool  $keyIs128 = false;
+
     /**
      * Constructor
      *
@@ -233,10 +235,11 @@ class Camellia extends BlockCipher
     public function __construct(string $mode)
     {
         parent::__construct($mode);
-        $this->block_size = self::BLOCK_SIZE;
         if ($this->mode == self::MODE_STREAM) {
             throw new BadModeException('Block ciphers cannot be ran in stream mode');
         }
+        $this->block_size = self::BLOCK_SIZE;
+        $this->reset();
     }
 
     /**
@@ -244,6 +247,75 @@ class Camellia extends BlockCipher
      */
     protected function encryptBlock($input)
     {
+        $this->reset();
+        $k = $this->computeK();
+        $ka = self::computeKA($k);
+        $t = array_fill(0, 4, 0);
+
+        /* KL dependant keys */
+        $this->kw[0] = $k[0];
+        $this->kw[1] = $k[1];
+        $this->kw[2] = $k[2];
+        $this->kw[3] = $k[3];
+
+        if ($this->keyIs128) {
+            [$k, $this->subkey] = self::roldq(15, $k, 0, $this->subkey, 4);
+            [$k, $this->subkey] = self::roldq(30, $k, 0, $this->subkey, 12);
+            [$k, $t] = self::roldq(15, $k, 0, $t, 0);
+            $this->subkey[18] = $t[2];
+            $this->subkey[19] = $t[3];
+            [$k, $this->ke] = self::roldq(17, $k, 0, $this->ke, 4);
+            [$k, $this->subkey] = self::roldq(17, $k, 0, $this->subkey, 24);
+            [$k, $this->subkey] = self::roldq(17, $k, 0, $this->subkey, 32);
+            /* KA dependant keys */
+            $this->subkey[0] = $ka[0];
+            $this->subkey[1] = $ka[1];
+            $this->subkey[2] = $ka[2];
+            $this->subkey[3] = $ka[3];
+            [$ka, $this->subkey] = self::roldq(15, $ka, 0, $this->subkey, 8);
+            [$ka, $this->ke] = self::roldq(15, $ka, 0, $this->ke, 0);
+            [$ka, $t] = self::roldq(15, $ka, 0, $t, 0);
+            $this->subkey[16] = $t[0];
+            $this->subkey[17] = $t[1];
+            [$ka, $this->subkey] = self::roldq(15, $ka, 0, $this->subkey, 20);
+            [$ka, $this->subkey] = self::roldqo32(34, $ka, 0, $this->subkey, 28);
+            [$ka, $this->kw] = self::roldq(17, $ka, 0, $this->kw, 4);
+
+            return $this->processBlock128($input);
+        }
+        else {
+            $kb = self::computeKB($k, $ka);
+
+            [$k, $this->subkey] = self::roldqo32(45, $k, 0, $this->subkey, 16);
+            [$k, $this->ke] = self::roldq(15, $k, 0, $this->ke, 4);
+            [$k, $this->subkey] = self::roldq(17, $k, 0, $this->subkey, 32);
+            [$k, $this->subkey] = self::roldqo32(34, $k, 0, $this->subkey, 44);
+            /* KR dependant keys */
+            [$k, $this->subkey] = self::roldq(15, $k, 4, $this->subkey, 4);
+            [$k, $this->ke] = self::roldq(15, $k, 4, $this->ke, 0);
+            [$k, $this->subkey] = self::roldq(30, $k, 4, $this->subkey, 24);
+            [$k, $this->subkey] = self::roldqo32(34, $k, 4, $this->subkey, 36);
+            /* KA dependant keys */
+            [$ka, $this->subkey] = self::roldq(15, $ka, 0, $this->subkey, 8);
+            [$ka, $this->subkey] = self::roldq(30, $ka, 0, $this->subkey, 20);
+            /* 32bit rotation */
+            $this->ke[8] = $ka[1];
+            $this->ke[9] = $ka[2];
+            $this->ke[10] = $ka[3];
+            $this->ke[11] = $ka[0];
+            [$ka, $this->subkey] = self::roldqo32(49, $ka, 0, $this->subkey, 40);
+
+            /* KB dependant keys */
+            $this->subkey[0] = $kb[0];
+            $this->subkey[1] = $kb[1];
+            $this->subkey[2] = $kb[2];
+            $this->subkey[3] = $kb[3];
+            [$kb, $this->subkey] = self::roldq(30, $kb, 0, $this->subkey, 12);
+            [$kb, $this->subkey] = self::roldq(30, $kb, 0, $this->subkey, 28);
+            [$kb, $this->kw] = self::roldqo32(51, $kb, 0, $this->kw, 4);
+
+            return $this->processBlock192or256($input);
+        }
     }
 
     /**
@@ -251,6 +323,75 @@ class Camellia extends BlockCipher
      */
     protected function decryptBlock($input)
     {
+        $this->reset();
+        $k = $this->computeK();
+        $ka = self::computeKA($k);
+        $t = array_fill(0, 4, 0);
+
+        /* KL dependant keys */
+        $this->kw[4] = $k[0];
+        $this->kw[5] = $k[1];
+        $this->kw[6] = $k[2];
+        $this->kw[7] = $k[3];
+
+        if ($this->keyIs128) {
+            [$k, $this->subkey] = self::decroldq(15, $k, 0, $this->subkey, 28);
+            [$k, $this->subkey] = self::decroldq(30, $k, 0, $this->subkey, 20);
+            [$k, $t] = self::decroldq(15, $k, 0, $t, 0);
+            $this->subkey[16] = $t[0];
+            $this->subkey[17] = $t[1];
+            [$k, $this->ke] = self::decroldq(17, $k, 0, $this->ke, 0);
+            [$k, $this->subkey] = self::decroldq(17, $k, 0, $this->subkey, 8);
+            [$k, $this->subkey] = self::decroldq(17, $k, 0, $this->subkey, 0);
+            /* KA dependant keys */
+            $this->subkey[34] = $ka[0];
+            $this->subkey[35] = $ka[1];
+            $this->subkey[32] = $ka[2];
+            $this->subkey[33] = $ka[3];
+            [$ka, $this->subkey] = self::decroldq(15, $ka, 0, $this->subkey, 24);
+            [$ka, $this->ke] = self::decroldq(15, $ka, 0, $this->ke, 4);
+            [$ka, $t] = self::decroldq(15, $ka, 0, $t, 0);
+            $this->subkey[18] = $t[2];
+            $this->subkey[19] = $t[3];
+            [$ka, $this->subkey] = self::decroldq(15, $ka, 0, $this->subkey, 12);
+            [$ka, $this->subkey] = self::decroldqo32(34, $ka, 0, $this->subkey, 4);
+            [$ka, $this->kw] = self::roldq(17, $ka, 0, $this->kw, 0);
+
+            return $this->processBlock128($input);
+        }
+        else {
+            $kb = self::computeKB($k, $ka);
+
+            [$k, $this->subkey] = self::decroldqo32(45, $k, 0, $this->subkey, 28);
+            [$k, $this->ke] = self::decroldq(15, $k, 0, $this->ke, 4);
+            [$k, $this->subkey] = self::decroldq(17, $k, 0, $this->subkey, 12);
+            [$k, $this->subkey] = self::decroldqo32(34, $k, 0, $this->subkey, 0);
+            /* KR dependant keys */
+            [$k, $this->subkey] = self::decroldq(15, $k, 4, $this->subkey, 40);
+            [$k, $this->ke] = self::decroldq(15, $k, 4, $this->ke, 8);
+            [$k, $this->subkey] = self::decroldq(30, $k, 4, $this->subkey, 20);
+            [$k, $this->subkey] = self::decroldqo32(34, $k, 4, $this->subkey, 8);
+            /* KA dependant keys */
+            [$ka, $this->subkey] = self::decroldq(15, $ka, 0, $this->subkey, 36);
+            [$ka, $this->subkey] = self::decroldq(30, $ka, 0, $this->subkey, 24);
+            /* 32bit rotation */
+            $this->ke[2] = $ka[1];
+            $this->ke[3] = $ka[2];
+            $this->ke[0] = $ka[3];
+            $this->ke[1] = $ka[0];
+            [$ka, $this->subkey] = self::decroldqo32(49, $ka, 0, $this->subkey, 4);
+
+            /* KB dependant keys */
+            $this->subkey[46] = $kb[0];
+            $this->subkey[47] = $kb[1];
+            $this->subkey[44] = $kb[2];
+            $this->subkey[45] = $kb[3];
+            [$kb, $this->subkey] = self::decroldq(30, $kb, 0, $this->subkey, 32);
+            [$kb, $this->subkey] = self::decroldq(30, $kb, 0, $this->subkey, 16);
+            [$kb, $this->kw] = self::roldqo32(51, $kb, 0, $this->kw, 0);
+
+            return $this->processBlock192or256($input);
+        }
     }
 
     /**
@@ -258,55 +399,152 @@ class Camellia extends BlockCipher
      */
     protected function setupKey()
     {
+        $this->reset();
+        $keyLength = strlen($this->key);
+        switch ($keyLength) {
+            case 16:
+                $this->keyIs128 = true;
+                break;
+            case 24:
+            case 32:
+                $this->keyIs128 = false;
+                break;
+            default:
+                throw new \UnexpectedValueException("Key sizes are only 16/24/32 bytes.");
+        }
     }
 
-    private static function roldq(int $rot, array $ki, int $ioff, array $ko, int $ooff)
+    private function reset()
     {
-        $ko[0 + $ooff] = ($ki[0 + $ioff] << $rot) | ($ki[1 + $ioff] >> (32 - $rot));
-        $ko[1 + $ooff] = ($ki[1 + $ioff] << $rot) | ($ki[2 + $ioff] >> (32 - $rot));
-        $ko[2 + $ooff] = ($ki[2 + $ioff] << $rot) | ($ki[3 + $ioff] >> (32 - $rot));
-        $ko[3 + $ooff] = ($ki[3 + $ioff] << $rot) | ($ki[0 + $ioff] >> (32 - $rot));
+        $this->subkey = array_fill(0, 24 * 4, 0);
+        $this->kw = array_fill(0, 4 * 2, 0);
+        $this->ke = array_fill(0, 6 * 2, 0);
+        $this->state = array_fill(0, 4, 0);
+    }
+
+    /**
+     * Compute K
+     */
+    private function computeK(): array
+    {
+        $k = array_fill(0, 8, 0);
+        switch (strlen($this->key)) {
+            case 16:
+                $k[0] = Helper::bytesToLong($this->key, 0);
+                $k[1] = Helper::bytesToLong($this->key, 4);
+                $k[2] = Helper::bytesToLong($this->key, 8);
+                $k[3] = Helper::bytesToLong($this->key, 12);
+                break;
+            case 24:
+                $k[0] = Helper::bytesToLong($this->key, 0);
+                $k[1] = Helper::bytesToLong($this->key, 4);
+                $k[2] = Helper::bytesToLong($this->key, 8);
+                $k[3] = Helper::bytesToLong($this->key, 12);
+                $k[4] = Helper::bytesToLong($this->key, 16);
+                $k[5] = Helper::bytesToLong($this->key, 20);
+                $k[6] = ~$k[4];
+                $k[7] = ~$k[5];
+                break;
+            case 32:
+                $k[0] = Helper::bytesToLong($this->key, 0);
+                $k[1] = Helper::bytesToLong($this->key, 4);
+                $k[2] = Helper::bytesToLong($this->key, 8);
+                $k[3] = Helper::bytesToLong($this->key, 12);
+                $k[4] = Helper::bytesToLong($this->key, 16);
+                $k[5] = Helper::bytesToLong($this->key, 20);
+                $k[6] = Helper::bytesToLong($this->key, 24);
+                $k[7] = Helper::bytesToLong($this->key, 28);
+                break;
+        }
+        return $k;
+    }
+
+    /**
+     * Compute KA
+     */
+    private static function computeKA(array $k): array
+    {
+        $ka = array_fill(0, 4, 0);
+        for ($i = 0; $i < 4; $i++) {
+            $ka[$i] = $k[$i] ^ $k[$i + 4];
+        }
+        $ka = self::camelliaF2($ka, self::$sigma, 0);
+        for ($i = 0; $i < 4; $i++) {
+            $ka[$i] ^= $k[$i];
+        }
+        return self::camelliaF2($ka, self::$sigma, 4);
+    }
+
+    /**
+     * Compute KB
+     */
+    private static function computeKB(array $k, array $ka): array
+    {
+        $kb = array_fill(0, 4, 0);
+        for ($i = 0; $i < 4; $i++) {
+            $kb[$i] = $ka[$i] ^ $k[$i + 4];
+        }
+        return self::camelliaF2($kb, self::$sigma, 8);
+    }
+
+    private static function roldq(
+        int $rot, array $ki, int $ioff, array $ko, int $ooff
+    ): array
+    {
+        $ko[0 + $ooff] = Helper::leftShift32($ki[0 + $ioff], $rot) | Helper::rightShift32($ki[1 + $ioff], 32 - $rot);
+        $ko[1 + $ooff] = Helper::leftShift32($ki[1 + $ioff], $rot) | Helper::rightShift32($ki[2 + $ioff], 32 - $rot);
+        $ko[2 + $ooff] = Helper::leftShift32($ki[2 + $ioff], $rot) | Helper::rightShift32($ki[3 + $ioff], 32 - $rot);
+        $ko[3 + $ooff] = Helper::leftShift32($ki[3 + $ioff], $rot) | Helper::rightShift32($ki[0 + $ioff], 32 - $rot);
         $ki[0 + $ioff] = $ko[0 + $ooff];
         $ki[1 + $ioff] = $ko[1 + $ooff];
         $ki[2 + $ioff] = $ko[2 + $ooff];
         $ki[3 + $ioff] = $ko[3 + $ooff];
+        return [$ki, $ko];
     }
 
-    private static function decroldq(int $rot, array $ki, int $ioff, array $ko, int $ooff)
+    private static function decroldq(
+        int $rot, array $ki, int $ioff, array $ko, int $ooff)
+    : array
     {
-        $ko[2 + $ooff] = ($ki[0 + $ioff] << $rot) | ($ki[1 + $ioff] >> (32 - $rot));
-        $ko[3 + $ooff] = ($ki[1 + $ioff] << $rot) | ($ki[2 + $ioff] >> (32 - $rot));
-        $ko[0 + $ooff] = ($ki[2 + $ioff] << $rot) | ($ki[3 + $ioff] >> (32 - $rot));
-        $ko[1 + $ooff] = ($ki[3 + $ioff] << $rot) | ($ki[0 + $ioff] >> (32 - $rot));
+        $ko[2 + $ooff] = Helper::leftShift32($ki[0 + $ioff], $rot) | Helper::rightShift32($ki[1 + $ioff], 32 - $rot);
+        $ko[3 + $ooff] = Helper::leftShift32($ki[1 + $ioff], $rot) | Helper::rightShift32($ki[2 + $ioff], 32 - $rot);
+        $ko[0 + $ooff] = Helper::leftShift32($ki[2 + $ioff], $rot) | Helper::rightShift32($ki[3 + $ioff], 32 - $rot);
+        $ko[1 + $ooff] = Helper::leftShift32($ki[3 + $ioff], $rot) | Helper::rightShift32($ki[0 + $ioff], 32 - $rot);
         $ki[0 + $ioff] = $ko[2 + $ooff];
         $ki[1 + $ioff] = $ko[3 + $ooff];
         $ki[2 + $ioff] = $ko[0 + $ooff];
         $ki[3 + $ioff] = $ko[1 + $ooff];
+        return [$ki, $ko];
     }
 
-    private static function roldqo32(int $rot, array $ki, int $ioff, array $ko, int $ooff): array
+    private static function roldqo32(
+        int $rot, array $ki, int $ioff, array $ko, int $ooff
+    ): array
     {
-        $ko[0 + $ooff] = ($ki[1 + $ioff] << ($rot - 32)) | ($ki[2 + $ioff] >> (64 - $rot));
-        $ko[1 + $ooff] = ($ki[2 + $ioff] << ($rot - 32)) | ($ki[3 + $ioff] >> (64 - $rot));
-        $ko[2 + $ooff] = ($ki[3 + $ioff] << ($rot - 32)) | ($ki[0 + $ioff] >> (64 - $rot));
-        $ko[3 + $ooff] = ($ki[0 + $ioff] << ($rot - 32)) | ($ki[1 + $ioff] >> (64 - $rot));
+        $ko[0 + $ooff] = Helper::leftShift32($ki[1 + $ioff], $rot - 32) | Helper::rightShift32($ki[2 + $ioff], 64 - $rot);
+        $ko[1 + $ooff] = Helper::leftShift32($ki[2 + $ioff], $rot - 32) | Helper::rightShift32($ki[3 + $ioff], 64 - $rot);
+        $ko[2 + $ooff] = Helper::leftShift32($ki[3 + $ioff], $rot - 32) | Helper::rightShift32($ki[0 + $ioff], 64 - $rot);
+        $ko[3 + $ooff] = Helper::leftShift32($ki[0 + $ioff], $rot - 32) | Helper::rightShift32($ki[1 + $ioff], 64 - $rot);
         $ki[0 + $ioff] = $ko[0 + $ooff];
         $ki[1 + $ioff] = $ko[1 + $ooff];
         $ki[2 + $ioff] = $ko[2 + $ooff];
         $ki[3 + $ioff] = $ko[3 + $ooff];
-        return $ko;
+        return [$ki, $ko];
     }
 
-    private static function decroldqo32(int $rot, array $ki, int $ioff, array $ko, int $ooff)
+    private static function decroldqo32(
+        int $rot, array $ki, int $ioff, array $ko, int $ooff
+    ): array
     {
-        $ko[2 + $ooff] = ($ki[1 + $ioff] << ($rot - 32)) | ($ki[2 + $ioff] >> (64 - $rot));
-        $ko[3 + $ooff] = ($ki[2 + $ioff] << ($rot - 32)) | ($ki[3 + $ioff] >> (64 - $rot));
-        $ko[0 + $ooff] = ($ki[3 + $ioff] << ($rot - 32)) | ($ki[0 + $ioff] >> (64 - $rot));
-        $ko[1 + $ooff] = ($ki[0 + $ioff] << ($rot - 32)) | ($ki[1 + $ioff] >> (64 - $rot));
+        $ko[2 + $ooff] = Helper::leftShift32($ki[1 + $ioff], $rot - 32) | Helper::rightShift32($ki[2 + $ioff], 64 - $rot);
+        $ko[3 + $ooff] = Helper::leftShift32($ki[2 + $ioff], $rot - 32) | Helper::rightShift32($ki[3 + $ioff], 64 - $rot);
+        $ko[0 + $ooff] = Helper::leftShift32($ki[3 + $ioff], $rot - 32) | Helper::rightShift32($ki[0 + $ioff], 64 - $rot);
+        $ko[1 + $ooff] = Helper::leftShift32($ki[0 + $ioff], $rot - 32) | Helper::rightShift32($ki[1 + $ioff], 64 - $rot);
         $ki[0 + $ioff] = $ko[2 + $ooff];
         $ki[1 + $ioff] = $ko[3 + $ooff];
         $ki[2 + $ioff] = $ko[0 + $ooff];
         $ki[3 + $ioff] = $ko[1 + $ooff];
+        return [$ki, $ko];
     }
 
     private static function bytes2int(array $src, int $offset): int
@@ -342,7 +580,7 @@ class Camellia extends BlockCipher
         $v ^= self::$sbox2_0222[($t2 >> 24) & Helper::MASK_8BITS];
 
         $s[2] ^= $u ^ $v;
-        $s[3] ^= $u ^ $v ^ Helper::rightRotate($u, 8);
+        $s[3] ^= $u ^ $v ^ Helper::rightRotate32($u, 8);
 
         $t1 = $s[2] ^ $skey[2 + $keyoff];
         $u = self::$sbox4_4404[$t1 & Helper::MASK_8BITS];
@@ -356,26 +594,26 @@ class Camellia extends BlockCipher
         $v ^= self::$sbox2_0222[($t2 >> 24) & Helper::MASK_8BITS];
 
         $s[0] ^= $u ^ $v;
-        $s[1] ^= $u ^ $v ^ Helper::rightRotate($u, 8);
+        $s[1] ^= $u ^ $v ^ Helper::rightRotate32($u, 8);
 
         return $s;
     }
 
     private static function camelliaFLs(array $s, array $fkey, int $keyoff): array
     {
-        $s[1] ^= Helper::leftRotate($s[0] & $fkey[0 + $keyoff], 1);
+        $s[1] ^= Helper::leftRotate32($s[0] & $fkey[0 + $keyoff], 1);
         $s[0] ^= $fkey[1 + $keyoff] | $s[1];
 
         $s[2] ^= $fkey[3 + $keyoff] | $s[3];
-        $s[3] ^= Helper::leftRotate($fkey[2 + $keyoff] & $s[2], 1);
+        $s[3] ^= Helper::leftRotate32($fkey[2 + $keyoff] & $s[2], 1);
 
         return $s;
     }
 
-    private function processBlock128(array $in, int $inOff, array $out, int $outOff): array
+    private function processBlock128(string $input, int $offset = 0): string
     {
         for ($i = 0; $i < 4; $i++) {
-            $this->state[$i] = self::bytes2int($in, $inOff + ($i * 4));
+            $this->state[$i] = Helper::bytesToLong($input, $offset + ($i * 4));
             $this->state[$i] ^= $this->kw[$i];
         }
 
@@ -396,18 +634,19 @@ class Camellia extends BlockCipher
         $this->state[0] ^= $this->kw[6];
         $this->state[1] ^= $this->kw[7];
 
-        $out = self::int2bytes($this->state[2], $out, $outOff);
-        $out = self::int2bytes($this->state[3], $out, $outOff + 4);
-        $out = self::int2bytes($this->state[0], $out, $outOff + 8);
-        $out = self::int2bytes($this->state[1], $out, $outOff + 12);
+        $out = array_fill(0, self::BLOCK_SIZE, 0);
+        $out = self::int2bytes($this->state[2], $out, 0);
+        $out = self::int2bytes($this->state[3], $out, 4);
+        $out = self::int2bytes($this->state[0], $out, 8);
+        $out = self::int2bytes($this->state[1], $out, 12);
 
-        return $out;
+        return implode(array_map(static fn (int $byte) => chr($byte), $out));
     }
 
-    private function processBlock192or256(array $in, int $inOff, array $out, int $outOff): array
+    private function processBlock192or256(string $input, int $offset = 0): string
     {
         for ($i = 0; $i < 4; $i++) {
-            $this->state[$i] = self::bytes2int($in, $inOff + ($i * 4));
+            $this->state[$i] = Helper::bytesToLong($input, $offset + ($i * 4));
             $this->state[$i] ^= $this->kw[$i];
         }
 
@@ -432,11 +671,12 @@ class Camellia extends BlockCipher
         $this->state[0] ^= $this->kw[6];
         $this->state[1] ^= $this->kw[7];
 
-        $out = self::int2bytes($this->state[2], $out, $outOff);
-        $out = self::int2bytes($this->state[3], $out, $outOff + 4);
-        $out = self::int2bytes($this->state[0], $out, $outOff + 8);
-        $out = self::int2bytes($this->state[1], $out, $outOff + 12);
+        $out = array_fill(0, self::BLOCK_SIZE, 0);
+        $out = self::int2bytes($this->state[2], $out, 0);
+        $out = self::int2bytes($this->state[3], $out, 4);
+        $out = self::int2bytes($this->state[0], $out, 8);
+        $out = self::int2bytes($this->state[1], $out, 12);
 
-        return $out;
+        return implode(array_map(static fn (int $byte) => chr($byte), $out));
     }
 }
