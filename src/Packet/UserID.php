@@ -11,7 +11,7 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\PacketTag;
-use OpenPGP\Type\ForSigningInterface;
+use OpenPGP\Type\{ForSigningInterface, UserIDPacketInterface};
 
 /**
  * UserID packet class
@@ -28,7 +28,7 @@ use OpenPGP\Type\ForSigningInterface;
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class UserID extends AbstractPacket implements ForSigningInterface
+class UserID extends AbstractPacket implements ForSigningInterface, UserIDPacketInterface
 {
     private readonly string $name;
 

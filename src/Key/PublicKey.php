@@ -8,24 +8,29 @@
  * file that was distributed with this source code.
  */
 
-namespace OpenPGP\Type;
+namespace OpenPGP\Key;
 
-use OpenPGP\Packet\PacketList;
+use OpenPGP\Common\Armor;
+use OpenPGP\Enum\ArmorType;
 
 /**
- * Armorable interface
+ * OpenPGP public key class
  * 
  * @package   OpenPGP
- * @category  Type
+ * @category  Key
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface ArmorableInterface
+class PublicKey extends AbstractKey
 {
     /**
-     * Returns ASCII armored text
-     *
-     * @return string
+     * {@inheritdoc}
      */
-	function armor(): string;
+    public function armor(): string
+    {
+        return Armor::encode(
+            ArmorType::PublicKey,
+            $this->toPacketList()->encode()
+        );
+    }
 }
