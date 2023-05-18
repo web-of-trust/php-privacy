@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Packet;
 
+use OpenPGP\Common\Helper;
 use OpenPGP\Enum\SignatureSubpacketType;
 
 /**
@@ -286,7 +287,7 @@ class SubpacketReader
         }
         elseif ($header == 255) {
             $isLong = true;
-            $length = unpack('N', substr($bytes, $offset, 4))[0];
+            $length = Helper::bytesToLong($bytes, $offset);
             $offset += 4;
         }
         else {

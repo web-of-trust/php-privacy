@@ -67,6 +67,6 @@ class SignatureExpirationTime extends SignatureSubpacket
      */
     public function getExpirationTime(): int
     {
-        return unpack('N', substr($this->getData(), 0, 4))[0];
+        return Helper::bytesToLong($this->getData());
     }
 }
