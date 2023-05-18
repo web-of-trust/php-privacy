@@ -16,7 +16,7 @@ use phpseclib3\File\ASN1;
 use phpseclib3\Math\BigInteger;
 
 use OpenPGP\Common\Helper;
-use OpenPGP\Enum\{CurveOid, HashAlgorithm, KekSize, KeyAlgorithm};
+use OpenPGP\Enum\{CurveOid, HashAlgorithm, KekSize, KeyAlgorithm, SymmetricAlgorithm};
 
 /**
  * ECDHSessionKeyParameters class.
@@ -83,13 +83,12 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
             $privateKey, $keyParameters->getPublicKey()
         );
 
-        $keySize = $keyParameters->getKdfSymmetric()->keySizeInByte();
-        $keyWrapper = new AesKeyWrapper(KekSize::from($keySize));
+        $keyWrapper = self::selectKeyWrapper($keyParameters->getKdfSymmetric());
         $kek = self::ecdhKdf(
             $keyParameters->getKdfHash(),
             $sharedKey,
             self::ecdhParameter($keyParameters, $fingerprint),
-            $keySize
+            $keyParameters->getKdfSymmetric()->keySizeInByte()
         );
         $wrappedKey = $keyWrapper->wrap(
             $kek, self::pkcs5Encode(implode([
@@ -177,13 +176,12 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
             $keyParameters->getPrivateKey(), $publicKey
         );
 
-        $keySize = $publicParams->getKdfSymmetric()->keySizeInByte();
-        $keyWrapper = new AesKeyWrapper(KekSize::from($keySize));
+        $keyWrapper = self::selectKeyWrapper($publicParams->getKdfSymmetric());
         $kek = self::ecdhKdf(
             $publicParams->getKdfHash(),
             $sharedKey,
             self::ecdhParameter($publicParams, $fingerprint),
-            $keySize
+            $publicParams->getKdfSymmetric()->keySizeInByte()
         );
         $key = $keyWrapper->unwrap($kek, $this->wrappedKey);
         return SessionKey::fromBytes(self::pkcs5Decode($key));
@@ -261,5 +259,18 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
             throw new \UnexpectedValueException('Invalid padding string.');
         }
         return substr($message, 0, -$n);
+    }
+
+    private static function selectKeyWrapper(
+        SymmetricAlgorithm $symmetric
+    ): KeyWrapper
+    {
+        $keySize = KekSize::from($symmetric->keySizeInByte());
+        return match ($symmetric) {
+            SymmetricAlgorithm::Camellia128 => new CamelliaKeyWrapper($keySize),
+            SymmetricAlgorithm::Camellia192 => new CamelliaKeyWrapper($keySize),
+            SymmetricAlgorithm::Camellia256 => new CamelliaKeyWrapper($keySize),
+            default => new AesKeyWrapper($keySize),
+        };
     }
 }

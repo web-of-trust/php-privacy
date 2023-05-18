@@ -17,6 +17,7 @@ use OpenPGP\Common\Helper;
 
 /**
  * Camellia class
+ * Based on RFC 3713.
  *
  * @package    OpenPGP
  * @category   Cryptor
@@ -218,10 +219,13 @@ class Camellia extends BlockCipher
 
     private array $subkey;
 
+    // for whitening
     private array $kw;
 
+    // for FL and FL^(-1)
     private array $ke;
 
+    // for encryption and decryption
     private array $state;
 
     private bool  $keyIs128 = false;
