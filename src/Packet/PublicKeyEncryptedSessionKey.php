@@ -12,6 +12,7 @@ namespace OpenPGP\Packet;
 
 use phpseclib3\Crypt\Random;
 use OpenPGP\Enum\{KeyAlgorithm, PacketTag, SymmetricAlgorithm};
+use OpenPGP\Type\SessionKeyParametersInterface;
 
 /**
  * PublicKeyEncryptedSessionKey represents a Public-Key Encrypted Session Key packet.
@@ -48,7 +49,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     public function __construct(
         private readonly string $publicKeyID,
         private readonly KeyAlgorithm $publicKeyAlgorithm,
-        private readonly Key\SessionKeyParametersInterface $sessionKeyParameters,
+        private readonly SessionKeyParametersInterface $sessionKeyParameters,
         private readonly ?Key\SessionKey $sessionKey = null
     )
     {
@@ -142,7 +143,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
      *
      * @return Key\SessionKeyParametersInterface
      */
-    public function getSessionKeyParameters(): Key\SessionKeyParametersInterface
+    public function getSessionKeyParameters(): SessionKeyParametersInterface
     {
         return $this->sessionKeyParameters;
     }
@@ -204,7 +205,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
 
     private static function produceParameters(
         Key\SessionKey $sessionKey, PublicKey $publicKey
-    ): Key\SessionKeyParametersInterface
+    ): SessionKeyParametersInterface
     {
         return match($publicKey->getKeyAlgorithm()) {
             KeyAlgorithm::RsaEncryptSign => Key\RSASessionKeyParameters::produceParameters(
@@ -227,7 +228,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
 
     private static function readParameters(
         string $bytes, KeyAlgorithm $keyAlgorithm
-    ): Key\SessionKeyParametersInterface
+    ): SessionKeyParametersInterface
     {
         return match($keyAlgorithm) {
             KeyAlgorithm::RsaEncryptSign => Key\RSASessionKeyParameters::fromBytes($bytes),

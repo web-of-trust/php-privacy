@@ -17,6 +17,7 @@ use phpseclib3\File\ASN1;
 use phpseclib3\Math\BigInteger;
 
 use OpenPGP\Enum\CurveOid;
+use OpenPGP\Type\KeyParametersInterface;
 
 /**
  * EC public parameters class

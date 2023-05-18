@@ -8,31 +8,18 @@
  * file that was distributed with this source code.
  */
 
-namespace OpenPGP\Packet;
+namespace OpenPGP\Type;
 
-use OpenPGP\Enum\PacketTag;
+use OpenPGP\Enum\{HashAlgorithm, KeyAlgorithm};
 
 /**
- * Packet interface
+ * Subkey packet interface
  * 
  * @package   OpenPGP
- * @category  Packet
+ * @category  Type
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface PacketInterface
+interface SubkeyPacketInterface extends KeyPacketInterface
 {
-    /**
-     * Gets packet tag
-     * 
-     * @return PacketTag
-     */
-    function getTag(): PacketTag;
-
-    /**
-     * Serializes packet to bytes
-     * 
-     * @return string
-     */
-    function encode(): string;
 }

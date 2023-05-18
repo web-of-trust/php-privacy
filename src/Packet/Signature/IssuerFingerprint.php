@@ -11,7 +11,8 @@
 namespace OpenPGP\Packet\Signature;
 
 use OpenPGP\Enum\SignatureSubpacketType;
-use OpenPGP\Packet\{KeyPacketInterface, SignatureSubpacket};
+use OpenPGP\Packet\SignatureSubpacket;
+use OpenPGP\Type\KeyPacketInterface;
 
 /**
  * IssuerFingerprint sub-packet class

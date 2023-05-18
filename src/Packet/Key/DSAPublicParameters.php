@@ -15,6 +15,7 @@ use phpseclib3\Crypt\DSA\PublicKey;
 use phpseclib3\Math\BigInteger;
 
 use OpenPGP\Common\Helper;
+use OpenPGP\Type\{KeyParametersInterface, VerifiableParametersInterface};
 
 /**
  * DSA public parameters class

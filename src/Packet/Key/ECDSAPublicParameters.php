@@ -11,6 +11,7 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
+use OpenPGP\Type\VerifiableParametersInterface;
 
 /**
  * ECDSA public parameters class

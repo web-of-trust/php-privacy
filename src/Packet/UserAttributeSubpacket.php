@@ -10,6 +10,8 @@
 
 namespace OpenPGP\Packet;
 
+use OpenPGP\Type\SubpacketInterface;
+
 /**
  * User attribute subpacket class
  *

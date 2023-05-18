@@ -14,6 +14,7 @@ use phpseclib3\Crypt\RSA;
 use phpseclib3\Crypt\RSA\{PrivateKey, PublicKey};
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
+use OpenPGP\Type\SessionKeyParametersInterface;
 
 /**
  * RSASessionKeyParameters class.

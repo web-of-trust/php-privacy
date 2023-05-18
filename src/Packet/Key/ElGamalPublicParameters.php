@@ -14,6 +14,7 @@ use phpseclib3\Math\BigInteger;
 
 use OpenPGP\Common\Helper;
 use OpenPGP\Cryptor\Asymmetric\ElGamalPublicKey;
+use OpenPGP\Type\KeyParametersInterface;
 
 /**
  * ElGamal public parameters class

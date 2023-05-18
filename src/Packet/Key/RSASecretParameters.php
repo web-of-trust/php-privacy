@@ -16,6 +16,7 @@ use phpseclib3\Math\BigInteger;
 
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{HashAlgorithm, RSAKeySize};
+use OpenPGP\Type\{KeyParametersInterface, SignableParametersInterface};
 
 /**
  * RSA secret parameters class

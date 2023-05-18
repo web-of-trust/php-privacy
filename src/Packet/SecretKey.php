@@ -22,6 +22,12 @@ use OpenPGP\Enum\{
     S2kUsage,
     SymmetricAlgorithm,
 };
+use OpenPGP\Type\{
+    ForSigningInterface,
+    KeyPacketInterface,
+    KeyParametersInterface,
+    SecretKeyPacketInterface
+};
 
 /**
  * Secret key packet class
@@ -42,7 +48,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
      * @param PublicKey $publicKey
      * @param S2kUsage $s2kUsage
      * @param string $keyData
-     * @param Key\KeyParametersInterface $keyParameters
+     * @param KeyParametersInterface $keyParameters
      * @param SymmetricAlgorithm $symmetric
      * @param Key\S2K $s2k
      * @param string $iv
@@ -52,7 +58,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
     public function __construct(
         private readonly PublicKey $publicKey,
         private readonly string $keyData = '',
-        private readonly ?Key\KeyParametersInterface $keyParameters = null,
+        private readonly ?KeyParametersInterface $keyParameters = null,
         private readonly S2kUsage $s2kUsage = S2kUsage::Sha1,
         private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         private readonly ?Key\S2K $s2k = null,
@@ -206,7 +212,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
     /**
      * {@inheritdoc}
      */
-    public function getKeyParameters(): ?Key\KeyParametersInterface
+    public function getKeyParameters(): ?KeyParametersInterface
     {
         return $this->keyParameters;
     }
@@ -280,7 +286,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
         S2kType $s2kType = S2kType::Iterated
     ): self
     {
-        if ($this->keyParameters instanceof Key\KeyParametersInterface) {
+        if ($this->keyParameters instanceof KeyParametersInterface) {
             $this->getLogger()->debug(
                 'Encrypt secret key with passphrase.'
             );
@@ -318,7 +324,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
      */
     public function decrypt(string $passphrase): self
     {
-        if ($this->keyParameters instanceof Key\KeyParametersInterface) {
+        if ($this->keyParameters instanceof KeyParametersInterface) {
             return $this;
         }
         else {
@@ -409,7 +415,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
 
     private static function readKeyParameters(
         string $bytes, PublicKey $publicKey
-    ): Key\KeyParametersInterface
+    ): KeyParametersInterface
     {
         $keyAlgorithm = $publicKey->getKeyAlgorithm();
         return match($keyAlgorithm) {

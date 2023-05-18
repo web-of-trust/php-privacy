@@ -15,6 +15,7 @@ use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Cryptor\Asymmetric\{ElGamal, ElGamalPrivateKey};
 use OpenPGP\Enum\DHKeySize;
+use OpenPGP\Type\KeyParametersInterface;
 
 /**
  * ElGamal secret parameters class

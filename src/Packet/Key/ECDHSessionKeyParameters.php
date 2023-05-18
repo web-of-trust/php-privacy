@@ -17,6 +17,7 @@ use phpseclib3\Math\BigInteger;
 
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{CurveOid, HashAlgorithm, KekSize, KeyAlgorithm, SymmetricAlgorithm};
+use OpenPGP\Type\SessionKeyParametersInterface;
 
 /**
  * ECDHSessionKeyParameters class.

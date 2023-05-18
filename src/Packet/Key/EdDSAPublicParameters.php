@@ -12,6 +12,7 @@ namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\HashAlgorithm;
+use OpenPGP\Type\VerifiableParametersInterface;
 
 /**
  * EdDSA public parameters class

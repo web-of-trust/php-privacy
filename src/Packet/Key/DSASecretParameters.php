@@ -16,6 +16,7 @@ use phpseclib3\Math\BigInteger;
 
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{DHKeySize, HashAlgorithm};
+use OpenPGP\Type\{KeyParametersInterface, SignableParametersInterface};
 
 /**
  * DSA secret parameters class

@@ -10,6 +10,8 @@
 
 namespace OpenPGP\Packet;
 
+use OpenPGP\Type\SubpacketInterface;
+
 /**
  * Signature sub-packet class
  * 

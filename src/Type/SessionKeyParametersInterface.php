@@ -8,34 +8,20 @@
  * file that was distributed with this source code.
  */
 
-namespace OpenPGP\Packet\Key;
+namespace OpenPGP\Type;
 
 /**
- * Key parameters interface
+ * Session key parameters interface
  * 
  * @package   OpenPGP
- * @category  Packet
+ * @category  Type
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface KeyParametersInterface
+interface SessionKeyParametersInterface
 {
     /**
-     * Returns public key parameters
-     * 
-     * @return KeyParametersInterface
-     */
-    function getPublicParams(): KeyParametersInterface;
-
-    /**
-     * Returns key parameters is valid
-     * 
-     * @return bool
-     */
-    function isValid(): bool;
-
-    /**
-     * Serializes key parameters to bytes
+     * Serializes session key parameters to bytes
      * 
      * @return string
      */

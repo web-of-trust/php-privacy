@@ -17,6 +17,12 @@ use OpenPGP\Enum\{
     SignatureSubpacketType,
     SignatureType,
 };
+use OpenPGP\Type\{
+    KeyPacketInterface,
+    SignaturePacketInterface,
+    SignableParametersInterface,
+    VerifiableParametersInterface
+};
 
 /**
  * Signature represents a signature.
@@ -268,7 +274,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         }
 
         $keyParams = $verifyKey->getKeyParameters();
-        if ($keyParams instanceof Key\VerifiableParametersInterface) {
+        if ($keyParams instanceof VerifiableParametersInterface) {
             return $keyParams->verify(
                 $this->hashAlgorithm, $message, $this->signature
             );
@@ -682,7 +688,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             case KeyAlgorithm::EcDsa:
             case KeyAlgorithm::EdDsa:
                 $keyParams = $signKey->getKeyParameters();
-                if ($keyParams instanceof Key\SignableParametersInterface) {
+                if ($keyParams instanceof SignableParametersInterface) {
                     return $keyParams->sign($hash, $message);
                 }
                 else {

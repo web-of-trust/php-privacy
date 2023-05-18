@@ -8,43 +8,31 @@
  * file that was distributed with this source code.
  */
 
-namespace OpenPGP\Packet;
+namespace OpenPGP\Type;
+
+use OpenPGP\Enum\PacketTag;
 
 /**
- * Subpacket interface
- *
+ * Packet interface
+ * 
  * @package   OpenPGP
- * @category  Packet
+ * @category  Type
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface SubpacketInterface
+interface PacketInterface
 {
     /**
-     * Gets type
+     * Gets packet tag
      * 
-     * @return int
+     * @return PacketTag
      */
-	function getType(): int;
+    function getTag(): PacketTag;
 
     /**
-     * Gets data
+     * Serializes packet to bytes
      * 
      * @return string
      */
-	function getData(): string;
-
-    /**
-     * Gets is long
-     * 
-     * @return bool
-     */
-	function isLong(): bool;
-
-    /**
-     * Serializes subpacket to bytes
-     * 
-     * @return string
-     */
-    function toBytes(): string;
+    function encode(): string;
 }

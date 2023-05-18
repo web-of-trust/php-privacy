@@ -11,6 +11,12 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\{CurveOid, HashAlgorithm, KeyAlgorithm, PacketTag};
+use OpenPGP\Type\{
+    ForSigningInterface,
+    KeyPacketInterface,
+    KeyParametersInterface,
+    SubkeyPacketInterface
+};
 
 /**
  * Public key packet class
@@ -35,13 +41,13 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
      * Constructor
      *
      * @param int $creationTime
-     * @param Key\KeyParametersInterface $keyParameters
+     * @param KeyParametersInterface $keyParameters
      * @param KeyAlgorithm $keyAlgorithm
      * @return self
      */
     public function __construct(
         private readonly int $creationTime,
-        private readonly Key\KeyParametersInterface $keyParameters,
+        private readonly KeyParametersInterface $keyParameters,
         private readonly KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
     )
     {
@@ -131,7 +137,7 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
     /**
      * {@inheritdoc}
      */
-    public function getKeyParameters(): ?Key\KeyParametersInterface
+    public function getKeyParameters(): ?KeyParametersInterface
     {
         return $this->keyParameters;
     }
@@ -190,7 +196,7 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
 
     private static function readKeyParameters(
         string $bytes, KeyAlgorithm $keyAlgorithm
-    ): Key\KeyParametersInterface
+    ): KeyParametersInterface
     {
         return match($keyAlgorithm) {
             KeyAlgorithm::RsaEncryptSign => Key\RSAPublicParameters::fromBytes($bytes),

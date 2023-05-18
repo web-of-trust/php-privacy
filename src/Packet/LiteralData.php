@@ -12,6 +12,7 @@ namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\LiteralFormat as Format;
 use OpenPGP\Enum\PacketTag;
+use OpenPGP\Type\ForSigningInterface;
 
 /**
  * Implementation of the Literal Data Packet (Tag 11)

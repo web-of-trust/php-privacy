@@ -8,22 +8,26 @@
  * file that was distributed with this source code.
  */
 
-namespace OpenPGP\Packet\Key;
+namespace OpenPGP\Type;
+
+use OpenPGP\Enum\HashAlgorithm;
 
 /**
- * Session key parameters interface
+ * Signable parameters interface
  * 
  * @package   OpenPGP
- * @category  Packet
+ * @category  Type
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface SessionKeyParametersInterface
+interface SignableParametersInterface extends KeyParametersInterface
 {
     /**
-     * Serializes session key parameters to bytes
+     * Signs a message and returns signature
      * 
+     * @param HashAlgorithm $hash
+     * @param string $message
      * @return string
      */
-    function toBytes(): string;
+    function sign(HashAlgorithm $hash, string $message): string;
 }

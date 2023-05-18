@@ -8,26 +8,31 @@
  * file that was distributed with this source code.
  */
 
-namespace OpenPGP\Packet\Key;
+namespace OpenPGP\Type;
 
 use OpenPGP\Enum\HashAlgorithm;
 
 /**
- * Signable parameters interface
+ * Verifiable parameters interface
  * 
  * @package   OpenPGP
- * @category  Packet
+ * @category  Type
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface SignableParametersInterface extends KeyParametersInterface
+interface VerifiableParametersInterface extends KeyParametersInterface
 {
     /**
-     * Signs a message and returns signature
+     * Verifies a signature with message
      * 
      * @param HashAlgorithm $hash
      * @param string $message
-     * @return string
+     * @param string $signature
+     * @return bool
      */
-    function sign(HashAlgorithm $hash, string $message): string;
+    function verify(
+        HashAlgorithm $hash,
+        string $message,
+        string $signature
+    ): bool;
 }

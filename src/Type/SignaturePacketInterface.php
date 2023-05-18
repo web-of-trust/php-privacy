@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace OpenPGP\Packet;
+namespace OpenPGP\Type;
 
 use OpenPGP\Enum\{HashAlgorithm, KeyAlgorithm, SignatureType};
 
@@ -16,7 +16,7 @@ use OpenPGP\Enum\{HashAlgorithm, KeyAlgorithm, SignatureType};
  * Signature packet interface
  * 
  * @package   OpenPGP
- * @category  Packet
+ * @category  Type
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */

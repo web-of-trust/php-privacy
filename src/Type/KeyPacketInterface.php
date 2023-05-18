@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace OpenPGP\Packet;
+namespace OpenPGP\Type;
 
 use OpenPGP\Enum\{HashAlgorithm, KeyAlgorithm};
 
@@ -16,7 +16,7 @@ use OpenPGP\Enum\{HashAlgorithm, KeyAlgorithm};
  * Key packet interface
  * 
  * @package   OpenPGP
- * @category  Packet
+ * @category  Type
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
@@ -46,9 +46,9 @@ interface KeyPacketInterface
     /**
      * Gets key parameters
      * 
-     * @return Key\KeyParametersInterface
+     * @return KeyParametersInterface
      */
-    function getKeyParameters(): ?Key\KeyParametersInterface;
+    function getKeyParameters(): ?KeyParametersInterface;
 
     /**
      * Gets fingerprint
