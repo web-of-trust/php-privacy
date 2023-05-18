@@ -5,6 +5,7 @@ namespace OpenPGP\Tests\Packet;
 use phpseclib3\Crypt\Random;
 use OpenPGP\Enum\KekSize;
 use OpenPGP\Packet\Key\AesKeyWrapper;
+use OpenPGP\Packet\Key\CamelliaKeyWrapper;
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
@@ -37,7 +38,7 @@ class KeyWrapperTest extends OpenPGPTestCase
         $this->assertSame($unwrappedKey, $keyData);
     }
 
-    public function testAes196()
+    public function testAes192()
     {
         $aes = new AesKeyWrapper(KekSize::S24);
         $wrappedKey128192 = "\x96\x77\x8b\x25\xae\x6c\xa4\x35\xf9\x2b\x5b\x97\xc0\x50\xae\xd2\x46\x8a\xb8\xa1\x7a\xd8\x4e\x5d";
@@ -86,6 +87,48 @@ class KeyWrapperTest extends OpenPGPTestCase
         $keyData = Random::string(32);
         $wrappedKey = $aes->wrap($key, $keyData);
         $unwrappedKey = $aes->unwrap($key, $wrappedKey);
+        $this->assertSame($unwrappedKey, $keyData);
+    }
+
+    public function testCamellia128()
+    {
+        $camellia = new CamelliaKeyWrapper(KekSize::S16);
+        $wrappedKey128 = $camellia->wrap($this->key128, $this->keyData128);
+        $unwrappedKey128 = $camellia->unwrap($this->key128, $wrappedKey128);
+        $this->assertSame($unwrappedKey128, $this->keyData128);
+
+        $key = Random::string(16);
+        $keyData = Random::string(32);
+        $wrappedKey = $camellia->wrap($key, $keyData);
+        $unwrappedKey = $camellia->unwrap($key, $wrappedKey);
+        $this->assertSame($unwrappedKey, $keyData);
+    }
+
+    public function testCamellia192()
+    {
+        $camellia = new CamelliaKeyWrapper(KekSize::S24);
+        $wrappedKey192 = $camellia->wrap($this->key192, $this->keyData192);
+        $unwrappedKey192 = $camellia->unwrap($this->key192, $wrappedKey192);
+        $this->assertSame($unwrappedKey192, $this->keyData192);
+
+        $key = Random::string(24);
+        $keyData = Random::string(32);
+        $wrappedKey = $camellia->wrap($key, $keyData);
+        $unwrappedKey = $camellia->unwrap($key, $wrappedKey);
+        $this->assertSame($unwrappedKey, $keyData);
+    }
+
+    public function testCamellia256()
+    {
+        $camellia = new CamelliaKeyWrapper(KekSize::S32);
+        $wrappedKey256 = $camellia->wrap($this->key256, $this->keyData256);
+        $unwrappedKey256 = $camellia->unwrap($this->key256, $wrappedKey256);
+        $this->assertSame($unwrappedKey256, $this->keyData256);
+
+        $key = Random::string(32);
+        $keyData = Random::string(32);
+        $wrappedKey = $camellia->wrap($key, $keyData);
+        $unwrappedKey = $camellia->unwrap($key, $wrappedKey);
         $this->assertSame($unwrappedKey, $keyData);
     }
 }
