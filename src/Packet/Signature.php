@@ -517,7 +517,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * Gets preferred compression algorithms sub packet
      *
-     * @return Signature\PreferredHashAlgorithms
+     * @return Signature\PreferredCompressionAlgorithms
      */
     public function getPreferredCompressionAlgorithms(): ?Signature\PreferredCompressionAlgorithms
     {
