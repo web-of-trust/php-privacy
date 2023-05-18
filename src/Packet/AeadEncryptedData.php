@@ -269,17 +269,4 @@ class AeadEncryptedData extends AbstractPacket
             $sessionKey->getSymmetric()
         );
     }
-
-    private static function crypt(
-        string $key,
-        string $data,
-        SymmetricAlgorithm $symmetricAlgorithm = SymmetricAlgorithm::Aes128,
-        AeadAlgorithm $aeadAlgorithm = AeadAlgorithm::Eax,
-        int $chunkSizeByte = 12,
-        string $iv = '',
-        bool $forEncrypt = true
-    ): string
-    {
-
-    }
 }
