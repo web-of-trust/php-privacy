@@ -547,7 +547,7 @@ class Camellia extends BlockCipher
         return [$ki, $ko];
     }
 
-    private static function bytes2int(array $src, int $offset): int
+    private static function bytes2Int(array $src, int $offset): int
     {
         $word = 0;
 
@@ -557,7 +557,7 @@ class Camellia extends BlockCipher
         return $word;
     }
 
-    private static function int2bytes(int $word, array $dst, int $offset): array
+    private static function int2Bytes(int $word, array $dst, int $offset): array
     {
         for ($i = 0; $i < 4; $i++) {
             $dst[(3 - $i) + $offset] = $word & Helper::MASK_8BITS;
@@ -635,10 +635,10 @@ class Camellia extends BlockCipher
         $this->state[1] ^= $this->kw[7];
 
         $out = array_fill(0, self::BLOCK_SIZE, 0);
-        $out = self::int2bytes($this->state[2], $out, 0);
-        $out = self::int2bytes($this->state[3], $out, 4);
-        $out = self::int2bytes($this->state[0], $out, 8);
-        $out = self::int2bytes($this->state[1], $out, 12);
+        $out = self::int2Bytes($this->state[2], $out, 0);
+        $out = self::int2Bytes($this->state[3], $out, 4);
+        $out = self::int2Bytes($this->state[0], $out, 8);
+        $out = self::int2Bytes($this->state[1], $out, 12);
 
         return implode(array_map(static fn (int $byte) => chr($byte), $out));
     }
@@ -672,10 +672,10 @@ class Camellia extends BlockCipher
         $this->state[1] ^= $this->kw[7];
 
         $out = array_fill(0, self::BLOCK_SIZE, 0);
-        $out = self::int2bytes($this->state[2], $out, 0);
-        $out = self::int2bytes($this->state[3], $out, 4);
-        $out = self::int2bytes($this->state[0], $out, 8);
-        $out = self::int2bytes($this->state[1], $out, 12);
+        $out = self::int2Bytes($this->state[2], $out, 0);
+        $out = self::int2Bytes($this->state[3], $out, 4);
+        $out = self::int2Bytes($this->state[0], $out, 8);
+        $out = self::int2Bytes($this->state[1], $out, 12);
 
         return implode(array_map(static fn (int $byte) => chr($byte), $out));
     }

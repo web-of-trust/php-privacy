@@ -4,7 +4,6 @@ namespace OpenPGP\Tests\Cryptor;
 
 use phpseclib3\Crypt\Random;
 use OpenPGP\Cryptor\Symmetric\Camellia;
-use OpenPGP\Cryptor\Symmetric\CamelliaLight;
 use OpenPGP\Cryptor\Symmetric\CAST5;
 use OpenPGP\Cryptor\Symmetric\IDEA;
 use OpenPGP\Tests\OpenPGPTestCase;
@@ -75,13 +74,6 @@ class SymmetricTest extends OpenPGPTestCase
         $this->assertSame('03030303030303030303030303030303', bin2hex($encrypted));
         $decrypted = $cipher->decrypt(hex2bin('03030303030303030303030303030303'));
         $this->assertSame('7968b08aba92193f2295121ef8d75c8a', bin2hex($decrypted));
-    }
-
-    public function testCamelliaLightCipher()
-    {
-        $cipher = new CamelliaLight('ecb');
-        $cipher->disablePadding();
-        $this->assertTrue(true);
     }
 
     public function testCAST5Cipher()
