@@ -249,6 +249,39 @@ class Camellia extends BlockCipher
     /**
      * {@inheritdoc}
      */
+    public function encrypt($plaintext)
+    {
+        return parent::encrypt($plaintext);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function decrypt($ciphertext)
+    {
+        return parent::decrypt($ciphertext);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function isValidEngineHelper($engine)
+    {
+        switch ($engine) {
+            case self::ENGINE_OPENSSL:
+                if ($this->block_size != self::BLOCK_SIZE) {
+                    return false;
+                }
+                $this->cipher_name_openssl_ecb = 'camellia-' . ($this->key_length << 3) . '-ecb';
+                $this->cipher_name_openssl = 'camellia-' . ($this->key_length << 3) . '-' . $this->openssl_translate_mode();
+                break;
+        }
+        return parent::isValidEngineHelper($engine);        
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function encryptBlock($input)
     {
         $this->reset();
