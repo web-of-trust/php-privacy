@@ -61,14 +61,20 @@ class SymmetricTest extends OpenPGPTestCase
         $cipher->setKey(hex2bin('0123456789abcdeffedcba987654321000112233445566778899aabbccddeeff'));
         $encrypted = $cipher->encrypt(hex2bin('0123456789abcdeffedcba9876543210'));
         $this->assertSame('9acc237dff16d76c20ef7c919e3a7509', bin2hex($encrypted));
+        $decrypted = $cipher->decrypt(hex2bin('9acc237dff16d76c20ef7c919e3a7509'));
+        $this->assertSame('0123456789abcdeffedcba9876543210', bin2hex($decrypted));
 
         $cipher->setKey(hex2bin('4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a'));
         $encrypted = $cipher->encrypt(hex2bin('057764fe3a500edbd988c5c3b56cba9a'));
         $this->assertSame('4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a', bin2hex($encrypted));
+        $decrypted = $cipher->decrypt(hex2bin('4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a'));
+        $this->assertSame('057764fe3a500edbd988c5c3b56cba9a', bin2hex($decrypted));
 
         $cipher->setKey(hex2bin('0303030303030303030303030303030303030303030303030303030303030303'));
         $encrypted = $cipher->encrypt(hex2bin('7968b08aba92193f2295121ef8d75c8a'));
         $this->assertSame('03030303030303030303030303030303', bin2hex($encrypted));
+        $decrypted = $cipher->decrypt(hex2bin('03030303030303030303030303030303'));
+        $this->assertSame('7968b08aba92193f2295121ef8d75c8a', bin2hex($decrypted));
     }
 
     public function testCamelliaLightCipher()
