@@ -12,7 +12,6 @@ namespace OpenPGP\Packet\Key;
 
 use phpseclib3\Crypt\RSA;
 use phpseclib3\Crypt\RSA\PrivateKey;
-use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Math\BigInteger;
 
 use OpenPGP\Common\Helper;
@@ -53,7 +52,7 @@ class RSASecretParameters implements SignableParametersInterface
         ?PrivateKey $privateKey = null
     )
     {
-        $this->privateKey = $privateKey ?? PublicKeyLoader::loadPrivateKey([
+        $this->privateKey = $privateKey ?? RSA::load([
             'e' => $publicParams->getExponent(),
             'n' => $publicParams->getModulus(),
             'd' => $exponent,

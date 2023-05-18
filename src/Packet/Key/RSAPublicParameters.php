@@ -10,7 +10,6 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Crypt\RSA;
 use phpseclib3\Crypt\RSA\PublicKey;
 use phpseclib3\Math\BigInteger;
@@ -46,7 +45,7 @@ class RSAPublicParameters implements VerifiableParametersInterface
         ?PublicKey $publicKey = null
     )
     {
-        $this->publicKey = $publicKey ?? PublicKeyLoader::loadPublicKey([
+        $this->publicKey = $publicKey ?? RSA::load([
             'e' => $exponent,
             'n' => $modulus,
         ]);

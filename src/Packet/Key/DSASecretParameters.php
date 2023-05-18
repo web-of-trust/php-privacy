@@ -10,9 +10,8 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\DSA\PrivateKey;
 use phpseclib3\Crypt\DSA;
-use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib3\Crypt\DSA\PrivateKey;
 use phpseclib3\Math\BigInteger;
 
 use OpenPGP\Common\Helper;
@@ -48,7 +47,7 @@ class DSASecretParameters implements SignableParametersInterface
         ?PrivateKey $privateKey = null
     )
     {
-        $this->privateKey = $privateKey ?? PublicKeyLoader::loadPrivateKey([
+        $this->privateKey = $privateKey ?? DSA::load([
             'p' => $publicParams->getPrime(),
             'q' => $publicParams->getOrder(),
             'g' => $publicParams->getGenerator(),

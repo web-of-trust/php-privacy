@@ -10,8 +10,8 @@
 
 namespace OpenPGP\Packet\Key;
 
+use phpseclib3\Crypt\DSA;
 use phpseclib3\Crypt\DSA\PublicKey;
-use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Math\BigInteger;
 
 use OpenPGP\Common\Helper;
@@ -51,7 +51,7 @@ class DSAPublicParameters implements VerifiableParametersInterface
         ?PublicKey $publicKey = null
     )
     {
-        $this->publicKey = $publicKey ?? PublicKeyLoader::loadPublicKey([
+        $this->publicKey = $publicKey ?? DSA::load([
             'p' => $prime,
             'q' => $order,
             'g' => $generator,
