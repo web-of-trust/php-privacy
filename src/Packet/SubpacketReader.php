@@ -286,8 +286,7 @@ class SubpacketReader
         }
         elseif ($header == 255) {
             $isLong = true;
-            $unpacked = unpack('N', substr($bytes, $offset, 4));
-            $length = reset($unpacked);
+            $length = unpack('N', substr($bytes, $offset, 4))[0];
             $offset += 4;
         }
         else {

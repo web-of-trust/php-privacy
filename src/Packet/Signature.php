@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Packet;
 
+use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{
     HashAlgorithm,
     KeyAlgorithm,
@@ -113,8 +114,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         $hashAlgorithm = HashAlgorithm::from(ord($bytes[$offset++]));
 
         // Reads hashed subpackets
-        $unpacked = unpack('n', substr($bytes, $offset, 2));
-        $hashedLength = reset($unpacked);
+        $hashedLength = Helper::bytesToShort($bytes, $offset);
         $offset += 2;
         $hashedSubpackets = self::readSubpackets(
             substr($bytes, $offset, $hashedLength)
@@ -122,8 +122,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         $offset += $hashedLength;
 
         // read unhashed subpackets
-        $unpacked = unpack('n', substr($bytes, $offset, 2));
-        $unhashedLength = reset($unpacked);
+        $unhashedLength = Helper::bytesToShort($bytes, $offset);
         $offset += 2;
         $unhashedSubpackets = self::readSubpackets(
             substr($bytes, $offset, $unhashedLength)

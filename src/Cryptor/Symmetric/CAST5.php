@@ -350,10 +350,8 @@ class CAST5 extends BlockCipher
      */
     protected function encryptBlock($input)
     {
-        $unpacked = unpack('N', substr($input, 0, 4));
-        $l0 = reset($unpacked);
-        $unpacked = unpack('N', substr($input, 4, 4));
-        $r0 = reset($unpacked);
+        $l0 = Helper::bytesToLong($input, 0);
+        $r0 = Helper::bytesToLong($input, 4);
 
         $result = $this->encipher($l0, $r0);
         return pack('N', $result[0]) . pack('N', $result[1]);
@@ -364,10 +362,8 @@ class CAST5 extends BlockCipher
      */
     protected function decryptBlock($input)
     {
-        $unpacked = unpack('N', substr($input, 0, 4));
-        $l16 = reset($unpacked);
-        $unpacked = unpack('N', substr($input, 4, 4));
-        $r16 = reset($unpacked);
+        $l16 = Helper::bytesToLong($input, 0);
+        $r16 = Helper::bytesToLong($input, 4);
 
         $result = $this->decipher($l16, $r16);
         return pack('N', $result[0]) . pack('N', $result[1]);

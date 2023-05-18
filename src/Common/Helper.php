@@ -62,8 +62,7 @@ final class Helper
      */
     public static function readMPI(string $bytes): BigInteger
     {
-        $unpacked = unpack('n', substr($bytes, 0 , 2));
-        $bitLength = reset($unpacked);
+        $bitLength = self::bytesToShort($bytes);
         return self::bin2BigInt(substr($bytes, 2, self::bit2ByteLength($bitLength)));
     }
 
@@ -114,11 +113,10 @@ final class Helper
      * @return int
      */
     public static function bytesToLong(
-        string $bytes, int $offset, bool $be = true
+        string $bytes, int $offset = 0, bool $be = true
     ): int
     {
-        $unpacked = unpack($be ? 'N' : 'V', substr($bytes, $offset, 4));
-        return reset($unpacked);
+        return array_values(unpack($be ? 'N' : 'V', substr($bytes, $offset, 4)))[0];
     }
 
     /**
@@ -130,11 +128,10 @@ final class Helper
      * @return int
      */
     public static function bytesToShort(
-        string $bytes, int $offset, bool $be = true
+        string $bytes, int $offset = 0, bool $be = true
     ): int
     {
-        $unpacked = unpack($be ? 'n' : 'v', substr($bytes, $offset, 2));
-        return reset($unpacked);
+        return array_values(unpack($be ? 'n' : 'v', substr($bytes, $offset, 2)))[0];
     }
 
     public static function rightRotate32(int $x, int $s): int

@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Packet;
 
+use OpenPGP\Common\Helper;
 use OpenPGP\Enum\LiteralFormat as Format;
 use OpenPGP\Enum\PacketTag;
 use OpenPGP\Type\ForSigningInterface;
@@ -63,8 +64,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
         $filename = substr($bytes, $offset, $length);
 
         $offset += $length;
-        $unpacked = unpack('N', substr($bytes, $offset, 4));
-        $time = reset($unpacked);
+        $time = Helper::bytesToLong($bytes, $offset);
 
         $offset += 4;
         $data = substr($bytes, $offset);

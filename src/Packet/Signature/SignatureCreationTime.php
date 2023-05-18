@@ -66,7 +66,6 @@ class SignatureCreationTime extends SignatureSubpacket
      */
     public function getCreationTime(): int
     {
-        $unpacked = unpack('N', substr($this->getData(), 0, 4));
-        return reset($unpacked);
+        return unpack('N', substr($this->getData(), 0, 4))[0];
     }
 }

@@ -13,6 +13,8 @@ namespace OpenPGP\Cryptor\Symmetric;
 use phpseclib3\Crypt\Common\BlockCipher;
 use phpseclib3\Exception\BadModeException;
 
+use OpenPGP\Common\Helper;
+
 /**
  * IDEA class
  * 
@@ -80,12 +82,6 @@ class IDEA extends BlockCipher
     {
     }
 
-    private static function bytesToWord(string $bytes, int $offset = 0): int
-    {
-        $unpacked = unpack('n', substr($bytes, $offset, 2));
-        return reset($unpacked);
-    }
-
     private static function wordToBytes(int $word, string $bytes, int $offset = 0): string
     {
         $replace = pack('n', $word);
@@ -114,10 +110,10 @@ class IDEA extends BlockCipher
     ): string
     {
         $keyOff = 0;
-        $x0 = self::bytesToWord($input, 0);
-        $x1 = self::bytesToWord($input, 2);
-        $x2 = self::bytesToWord($input, 4);
-        $x3 = self::bytesToWord($input, 6);
+        $x0 = Helper::bytesToShort($input, 0);
+        $x1 = Helper::bytesToShort($input, 2);
+        $x2 = Helper::bytesToShort($input, 4);
+        $x3 = Helper::bytesToShort($input, 6);
 
         for ($round = 0; $round < 8; $round++) {
             $x0 = self::mul($x0, $workingKey[$keyOff++]);
@@ -169,7 +165,7 @@ class IDEA extends BlockCipher
         }
 
         for ($i = 0; $i < 8; $i++) {
-            $key[$i] = self::bytesToWord($inKey, $i * 2);
+            $key[$i] = Helper::bytesToShort($inKey, $i * 2);
         }
 
         for ($i = 8; $i < self::KEY_SIZE; $i++) {

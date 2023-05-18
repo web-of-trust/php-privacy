@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Packet;
 
+use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{CurveOid, HashAlgorithm, KeyAlgorithm, PacketTag};
 use OpenPGP\Type\{
     ForSigningInterface,
@@ -77,8 +78,7 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
         }
 
         // A four-octet number denoting the time that the key was created.
-        $unpacked = unpack('N', substr($bytes, $offset, 4));
-        $creationTime = reset($unpacked);
+        $creationTime = Helper::bytesToLong($bytes, $offset);
         $offset += 4;
 
         // A one-octet number denoting the public-key algorithm of this key.
