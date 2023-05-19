@@ -34,7 +34,7 @@ class User implements PacketContainerInterface
      * Constructor
      *
      * @param KeyInterface $mainKey
-     * @param UserIDPacketInterface $userID
+     * @param UserIDPacketInterface $userIDPacket
      * @param array $revocationSignatures
      * @param array $selfCertifications
      * @param array $otherCertifications
@@ -42,7 +42,7 @@ class User implements PacketContainerInterface
      */
     public function __construct(
         private readonly KeyInterface $mainKey,
-        private readonly UserIDPacketInterface $userID,
+        private readonly UserIDPacketInterface $userIDPacket,
         private readonly array $revocationSignatures = [],
         private readonly array $selfCertifications = [],
         private readonly array $otherCertifications = []
@@ -65,9 +65,9 @@ class User implements PacketContainerInterface
      * 
      * @return UserIDPacketInterface
      */
-    public function getUserID(): UserIDPacketInterface
+    public function getUserIDPacket(): UserIDPacketInterface
     {
-        return $this->userID;
+        return $this->userIDPacket;
     }
 
     /**
@@ -119,7 +119,7 @@ class User implements PacketContainerInterface
                     $this->mainKey->toPublic()->getKeyPacket(),
                     implode([
                         $this->mainKey->getKeyPacket()->getSignBytes(),
-                        $this->userID->getSignBytes(),
+                        $this->userIDPacket->getSignBytes(),
                     ]),
                     $time
                 )) {
@@ -147,7 +147,7 @@ class User implements PacketContainerInterface
                 $this->mainKey->toPublic()->getKeyPacket(),
                 implode([
                     $this->mainKey->getKeyPacket()->getSignBytes(),
-                    $this->userID->getSignBytes(),
+                    $this->userIDPacket->getSignBytes(),
                 ]),
                 $time
             )) {
@@ -170,12 +170,12 @@ class User implements PacketContainerInterface
         $otherCertifications = $this->otherCertifications;
         $otherCertifications[] = Signature::createCertGeneric(
             $signKey->getKeyPacket(),
-            $this->userID,
+            $this->userIDPacket,
             $time
         );
         return new User(
             $this->mainKey,
-            $this->userID,
+            $this->userIDPacket,
             $this->revocationSignatures,
             $this->selfCertifications,
             $otherCertifications
@@ -199,13 +199,13 @@ class User implements PacketContainerInterface
         $revocationSignatures = $this->revocationSignatures;
         $revocationSignatures[] = Signature::createCertRevocation(
             $signKey->getKeyPacket(),
-            $this->userID,
+            $this->userIDPacket,
             $revocationReason,
             $time
         );
         return new User(
             $this->mainKey,
-            $this->userID,
+            $this->userIDPacket,
             $revocationSignatures,
             $this->selfCertifications,
             $this->otherCertifications
@@ -218,7 +218,7 @@ class User implements PacketContainerInterface
     public function toPacketList(): PacketListInterface
     {
         return new PacketList([
-            $this->userID,
+            $this->userIDPacket,
             ...$this->revocationSignatures,
             ...$this->selfCertifications,
             ...$this->otherCertifications,

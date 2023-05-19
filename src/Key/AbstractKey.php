@@ -11,11 +11,13 @@
 
 namespace OpenPGP\Key;
 
+use OpenPGP\Packet\UserID;
 use OpenPGP\Type\{
     ArmorableInterface,
     ContainedPacketInterface,
     KeyInterface,
-    KeyPacketInterface
+    KeyPacketInterface,
+    SignaturePacketInterface
 };
 
 /**
@@ -66,5 +68,58 @@ abstract class AbstractKey implements ArmorableInterface, ContainedPacketInterfa
     public function getKeyPacket(): KeyPacketInterface
     {
         return $this->keyPacket;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isRevoked(
+        ?SignaturePacketInterface $certificate = null,
+        ?DateTime $time = null
+    ): bool
+    {
+        $keyID = ($certificate != null) ? $certificate->getIssuerKeyID()->getKeyID() : '';
+        foreach ($this->revocationSignatures as $signature) {
+            if (empty($keyID) || $keyID === $signature->getIssuerKeyID()->getKeyID()) {
+                if ($signature->verify(
+                    $this->toPublic()->getKeyPacket(),
+                    $this->keyPacket->getSignBytes(),
+                    $time
+                )) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function verify(string $userID = '', ?DateTime $time = null): bool
+    {
+        if ($this->isRevoked(time: $time)) {
+            return false;
+        }
+        foreach ($this->users as $user) {
+            $packet = $user->getUserIDPacket();
+            if ($packet instanceof UserID) {
+                if (empty($userID) || $packet->getUserID() === $userID) {
+                    if (!$user->verify($time)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        foreach ($this->directSignatures as $signature) {
+            if (!$signature->verify(
+                $this->toPublic()->getKeyPacket(),
+                $this->keyPacket->getSignBytes(),
+                $time
+            )) {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -11,7 +11,6 @@
 namespace OpenPGP\Type;
 
 use DateTime;
-use OpenPGP\Packet\KeyPacketInterface;
 
 /**
  * Key interface
@@ -40,7 +39,21 @@ interface KeyInterface
     /**
      * Is revoked key
      *
+     * @param SignaturePacketInterface $certificate
+     * @param DateTime $time
      * @return bool
      */
-    function isRevoked(?DateTime $time = null): bool;
+    function isRevoked(
+        ?SignaturePacketInterface $certificate = null, ?DateTime $time = null
+    ): bool;
+
+    /**
+     * Verify key.
+     * Checks for revocation signatures, expiration time and valid self signature.
+     * 
+     * @param string $userID
+     * @param DateTime $time
+     * @return bool
+     */
+    function verify(string $userID = '', ?DateTime $time = null): bool;
 }

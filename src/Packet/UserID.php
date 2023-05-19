@@ -109,6 +109,16 @@ class UserID extends AbstractPacket implements ForSigningInterface, UserIDPacket
     }
 
     /**
+     * Gets user ID
+     *
+     * @return string
+     */
+    public function getUserID(): string
+    {
+        return $this->userID;
+    }
+
+    /**
      * Gets name
      *
      * @return string
