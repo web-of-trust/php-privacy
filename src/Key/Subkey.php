@@ -16,6 +16,7 @@ use OpenPGP\Packet\PacketList;
 use OpenPGP\Type\{
     KeyInterface,
     PacketContainerInterface,
+    PacketListInterface,
     SignaturePacketInterface,
     SubkeyPacketInterface
 };
@@ -181,7 +182,7 @@ class Subkey implements PacketContainerInterface
     /**
      * {@inheritdoc}
      */
-    public function toPacketList(): PacketList
+    public function toPacketList(): PacketListInterface
     {
         return new PacketList([
             $this->keyPacket,

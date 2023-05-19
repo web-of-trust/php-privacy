@@ -244,12 +244,15 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             return false;
         }
 
-        $signatureExpirationTime = $this->getSignatureExpirationTime();
-        if ($signatureExpirationTime instanceof Signature\SignatureExpirationTime) {
+        $expirationTime = $this->getSignatureExpirationTime();
+        if ($expirationTime instanceof DateTime) {
             $time = $time ?? new DateTime();
-            if ($signatureExpirationTime->getExpirationTime() < $time) {
+            if ($expirationTime < $time) {
                 $this->getLogger()->debug(
-                    'Signature is expired.'
+                    'Signature is expired at {expirationTime}.',
+                    [
+                        'expirationTime' => $expirationTime->format(DateTime::RFC3339_EXTENDED),
+                    ]
                 );
                 return false;
             }
@@ -352,7 +355,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      *
      * @return DateTime
      */
-    public function getSignatureCreationTime(): DateTime
+    public function getSignatureCreationTime(): ?DateTime
     {
         $subpacket = self::getSubpacket(
             $this->hashedSubpackets,

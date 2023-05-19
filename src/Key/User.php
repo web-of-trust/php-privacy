@@ -14,6 +14,7 @@ use OpenPGP\Packet\PacketList;
 use OpenPGP\Type\{
     KeyInterface,
     PacketContainerInterface,
+    PacketListInterface,
     SignaturePacketInterface,
     UserIDPacketInterface
 };
@@ -115,7 +116,10 @@ class User implements PacketContainerInterface
             if (empty($keyID) || $keyID === $signature->getIssuerKeyID()->getKeyID()) {
                 if ($signature->verify(
                     $this->mainKey->getKeyPacket(),
-                    $this->userID->getSignBytes(),
+                    implode([
+                        $this->mainKey->getKeyPacket()->getSignBytes(),
+                        $this->userID->getSignBytes(),
+                    ]),
                     $time
                 )) {
                     return true;
@@ -140,7 +144,10 @@ class User implements PacketContainerInterface
         foreach ($selfCertifications as $signature) {
             if (!$signature->verify(
                 $this->mainKey->getKeyPacket(),
-                $this->userID->getSignBytes(),
+                implode([
+                    $this->mainKey->getKeyPacket()->getSignBytes(),
+                    $this->userID->getSignBytes(),
+                ]),
                 $time
             )) {
                 return false;
@@ -152,7 +159,7 @@ class User implements PacketContainerInterface
     /**
      * {@inheritdoc}
      */
-    public function toPacketList(): PacketList
+    public function toPacketList(): PacketListInterface
     {
         return new PacketList([
             $this->userID,

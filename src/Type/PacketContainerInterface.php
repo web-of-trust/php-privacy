@@ -10,8 +10,6 @@
 
 namespace OpenPGP\Type;
 
-use OpenPGP\Packet\PacketList;
-
 /**
  * Packet container interface
  * 
@@ -25,7 +23,7 @@ interface PacketContainerInterface
     /**
      * Transforms structured data to packet list
      *
-     * @return PacketList
+     * @return PacketListInterface
      */
-    function toPacketList(): PacketList;
+    function toPacketList(): PacketListInterface;
 }

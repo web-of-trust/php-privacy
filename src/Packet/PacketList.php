@@ -11,7 +11,7 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\PacketTag;
-use OpenPGP\Type\PacketInterface;
+use OpenPGP\Type\{PacketInterface, PacketListInterface};
 
 /**
  * Packet list class
@@ -21,7 +21,7 @@ use OpenPGP\Type\PacketInterface;
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class PacketList implements \IteratorAggregate, \Countable
+class PacketList implements PacketListInterface
 {
     private readonly \ArrayIterator $packets;
 
@@ -151,18 +151,6 @@ class PacketList implements \IteratorAggregate, \Countable
     }
 
     /**
-     * Serializes packets to bytes
-     * 
-     * @return string
-     */
-    public function encode(): string
-    {
-        return implode(
-            array_map(static fn ($packet) => $packet->encode(), $this->packets->getArrayCopy())
-        );
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getIterator(): \Iterator
@@ -179,9 +167,17 @@ class PacketList implements \IteratorAggregate, \Countable
     }
 
     /**
-     * Get array packets
-     * 
-     * @return array
+     * {@inheritdoc}
+     */
+    public function encode(): string
+    {
+        return implode(
+            array_map(static fn ($packet) => $packet->encode(), $this->packets->getArrayCopy())
+        );
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function toArray(): array
     {
@@ -189,9 +185,7 @@ class PacketList implements \IteratorAggregate, \Countable
     }
 
     /**
-     * Return current array packet
-     * 
-     * @return PacketInterface
+     * {@inheritdoc}
      */
     public function current(): PacketInterface
     {
@@ -199,9 +193,7 @@ class PacketList implements \IteratorAggregate, \Countable
     }
 
     /**
-     * Gets packet for an offset
-     * 
-     * @return PacketInterface
+     * {@inheritdoc}
      */
     public function offsetGet($key): PacketInterface
     {
