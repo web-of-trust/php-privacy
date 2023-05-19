@@ -348,28 +348,31 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
-     * Gets signature creation time sub packet
+     * Gets signature creation time
      *
-     * @return Signature\SignatureCreationTime
+     * @return DateTime
      */
-    public function getSignatureCreationTime(): Signature\SignatureCreationTime
+    public function getSignatureCreationTime(): DateTime
     {
-        $type = SignatureSubpacketType::IssuerFingerprint;
-        return self::getSubpacket($this->hashedSubpackets, $type) ??
-               Signature\SignatureCreationTime::fromTime(new DateTime());
+        $subpacket = self::getSubpacket(
+            $this->hashedSubpackets,
+            SignatureSubpacketType::SignatureCreationTime
+        );
+        return $subpacket ? $subpacket->getCreationTime() : null;
     }
 
     /**
-     * Gets signature expiration time sub packet
+     * Gets signature expiration time
      *
-     * @return Signature\SignatureExpirationTime
+     * @return DateTime
      */
-    public function getSignatureExpirationTime(): ?Signature\SignatureExpirationTime
+    public function getSignatureExpirationTime(): ?DateTime
     {
-        return self::getSubpacket(
+        $subpacket = self::getSubpacket(
             $this->hashedSubpackets,
             SignatureSubpacketType::SignatureExpirationTime
         );
+        return $subpacket ? $subpacket->getExpirationTime() : null;
     }
 
     /**
@@ -466,7 +469,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * Gets issuer key ID sub packet
      *
-     * @return Signature\IssuerFingerprint
+     * @return Signature\IssuerKeyID
      */
     public function getIssuerKeyID(): Signature\IssuerKeyID
     {

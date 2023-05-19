@@ -10,10 +10,13 @@
 
 namespace OpenPGP\Key;
 
+use DateInterval;
+use DateTime;
 use OpenPGP\Packet\PacketList;
 use OpenPGP\Type\{
     KeyInterface,
     PacketContainerInterface,
+    SignaturePacketInterface,
     SubkeyPacketInterface
 };
 
@@ -85,22 +88,94 @@ class Subkey implements PacketContainerInterface
         return $this->bindingSignatures;
     }
 
-    public function getExpirationTime(): DateTime
+    /**
+     * Returns the expiration time of the subkey or Infinity if key does not expire.
+     * Returns null if the subkey is invalid.
+     * 
+     * @return DateTime
+     */
+    public function getExpirationTime(): ?DateTime
     {
-
+        if (!empty($this->bindingSignatures)) {
+            $bindingSignatures = usort(
+                $this->bindingSignatures,
+                static function ($a, $b) {
+                    $aTime = $a->getSignatureCreationTime() ?? (new DateTime())->setTimestamp(0);
+                    $bTime = $b->getSignatureCreationTime() ?? (new DateTime())->setTimestamp(0);
+                    if ($aTime == $bTime) {
+                        return 0;
+                    }
+                    return ($aTime > $bTime) ? -1 : 1;
+                }
+            );
+            $signature = $bindingSignatures[0];
+            $signatureExpirationTime = $signature->getSignatureExpirationTime();
+            $keyExpirationTime = $signature->getKeyExpirationTime();
+            if (!empty($keyExpirationTime)) {
+                $expirationTime = $keyExpirationTime->getExpirationTime();
+                $creationTime = $signature->getSignatureCreationTime();
+                return $creationTime->add(
+                    DateInterval::createFromDateString($expirationTime . ' seconds')
+                );
+            }
+        }
     }
 
+    /**
+     * Checks if a binding signature of a subkey is revoked
+     * 
+     * @param SignaturePacketInterface $certificate
+     * @param DateTime $time
+     * @return bool
+     */
     public function isRevoked(
-        ?SignaturePacket $signature = null,
+        ?SignaturePacketInterface $certificate = null,
         ?DateTime $time = null
     ): bool
     {
+        $keyID = ($certificate != null) ? $certificate->getIssuerKeyID()->getKeyID() : '';
+        foreach ($this->revocationSignatures as $signature) {
+            if (empty($keyID) || $keyID === $signature->getIssuerKeyID()->getKeyID()) {
+                if ($signature->verify(
+                    $this->mainKey->getKeyPacket(),
+                    implode([
+                        $this->mainKey->getKeyPacket()->getSignBytes(),
+                        $this->keyPacket->getSignBytes(),
+                    ]),
+                    $time
+                )) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
+    /**
+     * Verify subkey.
+     * Checks for revocation signatures, expiration time and valid binding signature.
+     * 
+     * @param DateTime $time
+     * @return bool
+     */
     public function verify(?DateTime $time = null): bool
     {
-        return false;
+        if ($this->isRevoked(time: $time)) {
+            return false;
+        }
+        foreach ($this->bindingSignatures as $signature) {
+            if (!$signature->verify(
+                $this->mainKey->getKeyPacket(),
+                implode([
+                    $this->mainKey->getKeyPacket()->getSignBytes(),
+                    $this->keyPacket->getSignBytes(),
+                ]),
+                $time
+            )) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
