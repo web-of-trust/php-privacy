@@ -199,7 +199,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
             $size = $symmetric->blockSize();
             $cipher = $symmetric->cipherEngine();
             $cipher->setKey($key);
-            $cipher->setIV(str_repeat("\x0", $size));
+            $cipher->setIV(str_repeat("\x00", $size));
 
             $decrypted = $cipher->decrypt($this->encrypted);
             $digestSize = strlen($decrypted) - HashAlgorithm::Sha1->digestSize();

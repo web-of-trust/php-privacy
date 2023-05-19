@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Packet\Signature;
 
+use DateTime;
 use OpenPGP\Enum\SignatureSubpacketType;
 use OpenPGP\Packet\SignatureSubpacket;
 
@@ -48,24 +49,26 @@ class SignatureCreationTime extends SignatureSubpacket
     /**
      * From time
      *
-     * @param int $seconds
+     * @param DateTime $time
      * @param bool $critical
      * @return self
      */
     public static function fromTime(
-        int $seconds, bool $critical = false
+        DateTime $time, bool $critical = false
     ): self
     {
-        return new self(pack('N', $seconds), $critical);
+        return new self(pack('N', $time->getTimestamp()), $critical);
     }
 
     /**
      * Gets creation time
      * 
-     * @return int
+     * @return DateTime
      */
-    public function getCreationTime(): int
+    public function getCreationTime(): DateTime
     {
-        return Helper::bytesToLong($this->getData());
+        return (new DateTime())->setTimestamp(
+            Helper::bytesToLong($this->getData())
+        );
     }
 }

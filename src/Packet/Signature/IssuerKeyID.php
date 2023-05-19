@@ -76,10 +76,11 @@ class IssuerKeyID extends SignatureSubpacket
     /**
      * Gets key ID
      * 
+     * @param bool $toHex
      * @return string
      */
-    public function getKeyID(): string
+    public function getKeyID(bool $toHex = false): string
     {
-        return $this->getData();
+        return $toHex ? bin2hex($this->getData()) : $this->getData();
     }
 }

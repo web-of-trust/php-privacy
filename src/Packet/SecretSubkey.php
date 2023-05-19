@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Packet;
 
+use DateTime;
 use OpenPGP\Enum\{
     CurveOid,
     DHKeySize,
@@ -84,7 +85,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
      * @param RSAKeySize $rsaKeySize
      * @param DHKeySize $dhKeySize
      * @param CurveOid $curveOid
-     * @param int $time
+     * @param DateTime $time
      * @return self
      */
     public static function generate(
@@ -92,7 +93,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         RSAKeySize $rsaKeySize = RSAKeySize::S2048,
         DHKeySize $dhKeySize = DHKeySize::L2048_N224,
         CurveOid $curveOid = CurveOid::Secp521r1,
-        int $time = 0
+        ?DateTime $time = null
     ): self
     {
         return self::fromSecretKey(SecretKey::generate(

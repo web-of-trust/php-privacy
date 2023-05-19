@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Packet;
 
+use DateTime;
 use phpseclib3\Crypt\Random;
 use OpenPGP\Enum\{
     CurveOid,
@@ -126,7 +127,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
      * @param RSAKeySize $rsaKeySize
      * @param DHKeySize $dhKeySize
      * @param CurveOid $curveOid
-     * @param int $time
+     * @param DateTime $time
      * @return self
      */
     public static function generate(
@@ -134,7 +135,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
         RSAKeySize $rsaKeySize = RSAKeySize::S2048,
         DHKeySize $dhKeySize = DHKeySize::L2048_N224,
         CurveOid $curveOid = CurveOid::Secp521r1,
-        int $time = 0
+        DateTime $time = null
     ): self
     {
         $keyParameters = match($keyAlgorithm) {
@@ -152,7 +153,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
         };
         return new self(
             new PublicKey(
-                empty($time) ? time() : $time,
+                $time ?? new DateTime(),
                 $keyParameters->getPublicParams(),
                 $keyAlgorithm
             ),
@@ -196,7 +197,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
     /**
      * {@inheritdoc}
      */
-    public function getCreationTime(): int
+    public function getCreationTime(): DateTime
     {
         return $this->publicKey->getCreationTime();
     }
@@ -220,17 +221,17 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
     /**
      * {@inheritdoc}
      */
-    public function getFingerprint(): string
+    public function getFingerprint(bool $toHex = false): string
     {
-        return $this->publicKey->getFingerprint();
+        return $this->publicKey->getFingerprint($toHex);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getKeyID(): string
+    public function getKeyID(bool $toHex = false): string
     {
-        return $this->publicKey->getKeyID();
+        return $this->publicKey->getKeyID($toHex);
     }
 
     /**

@@ -76,10 +76,11 @@ class IssuerFingerprint extends SignatureSubpacket
     /**
      * Gets fingerprint
      * 
+     * @param bool $toHex
      * @return string
      */
-    public function getKeyFingerprint(): string
+    public function getKeyFingerprint(bool $toHex = false): string
     {
-        return substr($this->getData(), 1);
+        return $toHex ? bin2hex(substr($this->getData(), 1)) : substr($this->getData(), 1);
     }
 }

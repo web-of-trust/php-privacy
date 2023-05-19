@@ -10,6 +10,8 @@
 
 namespace OpenPGP\Type;
 
+use DateTime;
+
 /**
  * Message interface
  * 
@@ -27,7 +29,7 @@ interface MessageInterface
      * @param int $time
      * @return MessageInterface
      */
-	function sign(array $signingKeys, int $time = 0): MessageInterface;
+	function sign(array $signingKeys, ?DateTime $time = null): MessageInterface;
 
     /**
      * Verify signatures of signed message
@@ -36,5 +38,5 @@ interface MessageInterface
      * @param int $time
      * @return MessageInterface
      */
-	function verify(array $verificationKeys, int $time = 0): MessageInterface;
+	function verify(array $verificationKeys, ?DateTime $time = null): MessageInterface;
 }

@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Packet;
 
+use DateTime;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{
     HashAlgorithm,
@@ -153,7 +154,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @param string $dataToSign
      * @param HashAlgorithm $hashAlgorithm
      * @param array $subpackets
-     * @param int $creationTime
+     * @param DateTime $creationTime
      * @return self
      */
     public static function createSignature(
@@ -162,7 +163,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         string $dataToSign,
         HashAlgorithm $hashAlgorithm = HashAlgorithm::Sha256,
         array $subpackets = [],
-        int $creationTime = 0
+        ?DateTime $creationTime = null
     ): self
     {
         $version = $signKey->getVersion();
@@ -171,7 +172,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 
         $hashedSubpackets = [
             Signature\SignatureCreationTime::fromTime(
-                $creationTime > 0 ? $creationTime : time()
+                $creationTime ?? new DateTime()
             ),
             Signature\IssuerFingerprint::fromKeyPacket($signKey),
             Signature\IssuerKeyID::fromKeyID($signKey->getKeyID()),
@@ -227,7 +228,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function verify(
         KeyPacketInterface $verifyKey,
         string $dataToVerify,
-        int $time = 0
+        ?DateTime $time = null
     ): bool
     {
         if ($this->getIssuerKeyID()->getKeyID() !== $verifyKey->getKeyID()) {
@@ -245,7 +246,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 
         $signatureExpirationTime = $this->getSignatureExpirationTime();
         if ($signatureExpirationTime instanceof Signature\SignatureExpirationTime) {
-            $time = empty($time) ? time() : $time;
+            $time = $time ?? new DateTime();
             if ($signatureExpirationTime->getExpirationTime() < $time) {
                 $this->getLogger()->debug(
                     'Signature is expired.'
@@ -355,7 +356,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     {
         $type = SignatureSubpacketType::IssuerFingerprint;
         return self::getSubpacket($this->hashedSubpackets, $type) ??
-               Signature\SignatureCreationTime::fromTime(time());
+               Signature\SignatureCreationTime::fromTime(new DateTime());
     }
 
     /**

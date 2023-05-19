@@ -11,7 +11,11 @@
 namespace OpenPGP\Key;
 
 use OpenPGP\Packet\PacketList;
-use OpenPGP\Type\ContainedPacketInterface;
+use OpenPGP\Type\{
+    KeyInterface,
+    PacketContainerInterface,
+    SubkeyPacketInterface
+};
 
 /**
  * OpenPGP sub key class
@@ -21,24 +25,82 @@ use OpenPGP\Type\ContainedPacketInterface;
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class Subkey implements ContainedPacketInterface
+class Subkey implements PacketContainerInterface
 {
     /**
      * Constructor
      *
-     * @param KeyPacketInterface $keyPacket
      * @param KeyInterface $mainKey
+     * @param SubkeyPacketInterface $keyPacket
      * @param array $revocationSignatures
      * @param array $bindingSignatures
      * @return self
      */
     public function __construct(
-        private readonly KeyPacketInterface $keyPacket,
         private readonly KeyInterface $mainKey,
+        private readonly SubkeyPacketInterface $keyPacket,
         private readonly array $revocationSignatures = [],
         private readonly array $bindingSignatures = []
     )
     {
+    }
+
+    /**
+     * Gets main key
+     * 
+     * @return KeyInterface
+     */
+    public function getMainKey(): KeyInterface
+    {
+        return $this->mainKey;
+    }
+
+    /**
+     * Gets key packet
+     * 
+     * @return SubkeyPacketInterface
+     */
+    public function getKeyPacket(): SubkeyPacketInterface
+    {
+        return $this->keyPacket;
+    }
+
+    /**
+     * Gets revocation signatures
+     * 
+     * @return array
+     */
+    public function getRevocationSignatures(): array
+    {
+        return $this->revocationSignatures;
+    }
+
+    /**
+     * Gets binding signatures
+     * 
+     * @return array
+     */
+    public function getBindingSignatures(): array
+    {
+        return $this->bindingSignatures;
+    }
+
+    public function getExpirationTime(): DateTime
+    {
+
+    }
+
+    public function isRevoked(
+        ?SignaturePacket $signature = null,
+        ?DateTime $time = null
+    ): bool
+    {
+        return false;
+    }
+
+    public function verify(?DateTime $time = null): bool
+    {
+        return false;
     }
 
     /**

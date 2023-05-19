@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Packet;
 
+use DateTime;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\LiteralFormat as Format;
 use OpenPGP\Enum\PacketTag;
@@ -28,7 +29,7 @@ use OpenPGP\Type\ForSigningInterface;
  */
 class LiteralData extends AbstractPacket implements ForSigningInterface
 {
-    private readonly int $time;
+    private readonly DateTime $time;
 
     /**
      * Constructor
@@ -36,18 +37,18 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
      * @param string $data
      * @param Format $format
      * @param string $filename
-     * @param int $time
+     * @param DateTime $time
      * @return self
      */
     public function __construct(
         private readonly string $data,
         private readonly Format $format = Format::Utf8,
         private readonly string $filename = '',
-        int $time = 0
+        ?DateTime $time = null
     )
     {
         parent::__construct(PacketTag::LiteralData);
-        $this->time = empty($time) ? time() : $time;
+        $this->time = $time ?? (new DateTime())->setTimestamp(time());
     }
 
     /**
@@ -64,7 +65,9 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
         $filename = substr($bytes, $offset, $length);
 
         $offset += $length;
-        $time = Helper::bytesToLong($bytes, $offset);
+        $time = (new DateTime())->setTimestamp(
+            Helper::bytesToLong($bytes, $offset)
+        );
 
         $offset += 4;
         $data = substr($bytes, $offset);
@@ -78,13 +81,13 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
      * Builds literal data packet from text
      *
      * @param string $text
-     * @param int $time
+     * @param DateTime $time
      * @return self
      */
-    public static function fromText(string $text, int $time = 0): self
+    public static function fromText(string $text, ?DateTime $time = null): self
     {
         return new self(
-            $text, Format::Utf8, '', empty($time) ? time() : $time
+            $text, Format::Utf8, '', $time
         );
     }
 
@@ -111,9 +114,9 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
     /**
      * Gets time
      *
-     * @return int
+     * @return DateTime
      */
-    public function getTime(): int
+    public function getTime(): DateTime
     {
         return $this->time;
     }
@@ -137,7 +140,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
             chr($this->format->value),
             chr(strlen($this->filename)),
             $this->filename,
-            pack('N', $this->time),
+            pack('N', $this->time->getTimestamp()),
             $this->getSignBytes(),
         ]);
     }

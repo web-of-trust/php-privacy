@@ -11,7 +11,11 @@
 namespace OpenPGP\Key;
 
 use OpenPGP\Packet\PacketList;
-use OpenPGP\Type\ContainedPacketInterface;
+use OpenPGP\Type\{
+    KeyInterface,
+    PacketContainerInterface,
+    UserIDPacketInterface
+};
 
 /**
  * OpenPGP User class
@@ -21,21 +25,21 @@ use OpenPGP\Type\ContainedPacketInterface;
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class User implements ContainedPacketInterface
+class User implements PacketContainerInterface
 {
     /**
      * Constructor
      *
-     * @param UserIDPacketInterface $userID
      * @param KeyInterface $mainKey
+     * @param UserIDPacketInterface $userID
      * @param array $selfCertifications
      * @param array $otherCertifications
      * @param array $revocationSignatures
      * @return self
      */
     public function __construct(
-        private readonly UserIDPacketInterface $userID,
         private readonly KeyInterface $mainKey,
+        private readonly UserIDPacketInterface $userID,
         private readonly array $selfCertifications = [],
         private readonly array $otherCertifications = [],
         private readonly array $revocationSignatures = []

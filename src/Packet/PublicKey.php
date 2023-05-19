@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Packet;
 
+use DateTime;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{CurveOid, HashAlgorithm, KeyAlgorithm, PacketTag};
 use OpenPGP\Type\{
@@ -41,13 +42,13 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
     /**
      * Constructor
      *
-     * @param int $creationTime
+     * @param DateTime $creationTime
      * @param KeyParametersInterface $keyParameters
      * @param KeyAlgorithm $keyAlgorithm
      * @return self
      */
     public function __construct(
-        private readonly int $creationTime,
+        private readonly DateTime $creationTime,
         private readonly KeyParametersInterface $keyParameters,
         private readonly KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
     )
@@ -78,7 +79,9 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
         }
 
         // A four-octet number denoting the time that the key was created.
-        $creationTime = Helper::bytesToLong($bytes, $offset);
+        $creationTime = (new DateTime())->setTimestamp(
+            Helper::bytesToLong($bytes, $offset)
+        );
         $offset += 4;
 
         // A one-octet number denoting the public-key algorithm of this key.
@@ -104,7 +107,7 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
     {
         return implode([
             chr(self::KEY_VERSION),
-            pack('N', $this->creationTime),
+            pack('N', $this->creationTime->getTimestamp()),
             chr($this->keyAlgorithm->value),
             $this->keyParameters->toBytes(),
         ]);
@@ -121,7 +124,7 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
     /**
      * {@inheritdoc}
      */
-    public function getCreationTime(): int
+    public function getCreationTime(): DateTime
     {
         return $this->creationTime;
     }
@@ -145,17 +148,17 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
     /**
      * {@inheritdoc}
      */
-    public function getFingerprint(): string
+    public function getFingerprint(bool $toHex = false): string
     {
-        return $this->fingerprint;
+        return $toHex ? bin2hex($this->fingerprint) : $this->fingerprint;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getKeyID(): string
+    public function getKeyID(bool $toHex = false): string
     {
-        return $this->keyID;
+        return $toHex ? bin2hex($this->keyID) : $this->keyID;
     }
 
     /**

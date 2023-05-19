@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Type;
 
+use DateTime;
 use OpenPGP\Enum\{HashAlgorithm, KeyAlgorithm};
 
 /**
@@ -32,9 +33,9 @@ interface KeyPacketInterface
     /**
      * Gets creation time
      * 
-     * @return int
+     * @return DateTime
      */
-    function getCreationTime(): int;
+    function getCreationTime(): DateTime;
 
     /**
      * Gets key algorithm
@@ -53,16 +54,18 @@ interface KeyPacketInterface
     /**
      * Gets fingerprint
      * 
+     * @param bool $toHex
      * @return string
      */
-    function getFingerprint(): string;
+    function getFingerprint(bool $toHex = false): string;
 
     /**
      * Gets key ID
      * 
+     * @param bool $toHex
      * @return string
      */
-    function getKeyID(): string;
+    function getKeyID(bool $toHex = false): string;
 
     /**
      * Return key packete is subkey

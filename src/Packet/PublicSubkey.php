@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Packet;
 
+use DateTime;
 use OpenPGP\Enum\{KeyAlgorithm, PacketTag};
 use OpenPGP\Type\{KeyParametersInterface, SubkeyPacketInterface};
 
@@ -26,13 +27,13 @@ class PublicSubkey extends PublicKey implements SubkeyPacketInterface
     /**
      * Constructor
      *
-     * @param int $creationTime
+     * @param DateTime $creationTime
      * @param KeyParametersInterface $keyParameters
      * @param KeyAlgorithm $algorithm
      * @return self
      */
     public function __construct(
-        int $creationTime,
+        DateTime $creationTime,
         KeyParametersInterface $keyParameters,
         KeyAlgorithm $algorithm = KeyAlgorithm::RsaEncryptSign
     )

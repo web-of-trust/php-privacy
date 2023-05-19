@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Type;
 
+use DateTime;
 use OpenPGP\Enum\{HashAlgorithm, KeyAlgorithm, SignatureType};
 
 /**
@@ -83,12 +84,12 @@ interface SignaturePacketInterface
      *
      * @param KeyPacketInterface $verifyKey
      * @param string $dataToVerify
-     * @param int $time
+     * @param DateTime $time
      * @return bool
      */
     function verify(
         KeyPacketInterface $verifyKey,
         string $dataToVerify,
-        int $time = 0
+        ?DateTime $time = null
     ): bool;
 }
