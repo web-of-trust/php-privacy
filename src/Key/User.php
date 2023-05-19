@@ -30,6 +30,12 @@ use OpenPGP\Type\{
  */
 class User implements PacketContainerInterface
 {
+    private array $revocationSignatures;
+
+    private array $selfCertifications;
+
+    private array $otherCertifications;
+
     /**
      * Constructor
      *
@@ -43,11 +49,23 @@ class User implements PacketContainerInterface
     public function __construct(
         private readonly KeyInterface $mainKey,
         private readonly UserIDPacketInterface $userIDPacket,
-        private readonly array $revocationSignatures = [],
-        private readonly array $selfCertifications = [],
-        private readonly array $otherCertifications = []
+        array $revocationSignatures = [],
+        array $selfCertifications = [],
+        array $otherCertifications = []
     )
     {
+        $this->revocationSignatures = array_filter(
+            $revocationSignatures,
+            static fn ($signature) => $signature instanceof SignaturePacketInterface
+        );
+        $this->selfCertifications = array_filter(
+            $selfCertifications,
+            static fn ($signature) => $signature instanceof SignaturePacketInterface
+        );
+        $this->otherCertifications = array_filter(
+            $otherCertifications,
+            static fn ($signature) => $signature instanceof SignaturePacketInterface
+        );
     }
 
     /**

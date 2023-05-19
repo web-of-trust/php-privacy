@@ -32,6 +32,10 @@ use OpenPGP\Type\{
  */
 class Subkey implements PacketContainerInterface, SubkeyInterface
 {
+    private array $revocationSignatures;
+
+    private array $bindingSignatures;
+
     /**
      * Constructor
      *
@@ -44,10 +48,18 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
     public function __construct(
         private readonly KeyInterface $mainKey,
         private readonly SubkeyPacketInterface $keyPacket,
-        private readonly array $revocationSignatures = [],
-        private readonly array $bindingSignatures = []
+        array $revocationSignatures = [],
+        array $bindingSignatures = []
     )
     {
+        $this->revocationSignatures = array_filter(
+            $revocationSignatures,
+            static fn ($signature) => $signature instanceof SignaturePacketInterface
+        );
+        $this->bindingSignatures = array_filter(
+            $bindingSignatures,
+            static fn ($signature) => $signature instanceof SignaturePacketInterface
+        );
     }
 
     /**

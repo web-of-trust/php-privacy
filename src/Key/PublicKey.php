@@ -12,6 +12,8 @@ namespace OpenPGP\Key;
 
 use OpenPGP\Common\Armor;
 use OpenPGP\Enum\ArmorType;
+use OpenPGP\Packet\PacketList;
+use OpenPGP\Type\PacketListInterface;
 
 /**
  * OpenPGP public key class
@@ -23,6 +25,52 @@ use OpenPGP\Enum\ArmorType;
  */
 class PublicKey extends AbstractKey
 {
+    public static function fromArmored(string $armored): self
+    {
+        $armor = Armor::decode($armored);
+        if ($armor->getType() !== ArmorType::PublicKey) {
+            throw new \UnexpectedValueException(
+                'Armored text not of public key type'
+            );
+        }
+        return self::fromPacketList(
+            PacketList::decode($armor->getData())
+        );
+    }
+
+    public static function fromPacketList(PacketListInterface $packetList): self
+    {
+        $keyMap = self::readPacketList($packetList);
+        $publicKey = new self(
+            $keyMap['keyPacket'],
+            $keyMap['revocationSignatures'],
+            $keyMap['directSignatures']
+        );
+        $users = array_map(
+            static fn ($user) => new User(
+                $publicKey,
+                $user['userIDPacket'],
+                $user['revocationSignatures'],
+                $user['selfCertifications'],
+                $user['otherCertifications']
+            ),
+            $keyMap['users']
+        );
+        $publicKey->setUsers($users);
+        $subkeys = array_map(
+            static fn ($subkey) => new Subkey(
+                $publicKey,
+                $subkey['keyPacket'],
+                $subkey['revocationSignatures'],
+                $subkey['bindingSignatures']
+            ),
+            $keyMap['subkeys']
+        );
+        $publicKey->setSubkeys($subkeys);
+
+        return $publicKey;
+    }
+
     /**
      * {@inheritdoc}
      */

@@ -11,13 +11,17 @@
 
 namespace OpenPGP\Key;
 
+use OpenPGP\Enum\PacketTag;
 use OpenPGP\Packet\UserID;
 use OpenPGP\Type\{
     ArmorableInterface,
     ContainedPacketInterface,
     KeyInterface,
     KeyPacketInterface,
-    SignaturePacketInterface
+    PacketListInterface,
+    SignaturePacketInterface,
+    SubkeyPacketInterface,
+    UserIDPacketInterface
 };
 
 /**
@@ -30,6 +34,14 @@ use OpenPGP\Type\{
  */
 abstract class AbstractKey implements ArmorableInterface, ContainedPacketInterface, KeyInterface
 {
+    private array $revocationSignatures;
+
+    private array $directSignatures;
+
+    private array $users;
+
+    private array $subkeys;
+
     /**
      * Constructor
      *
@@ -42,23 +54,47 @@ abstract class AbstractKey implements ArmorableInterface, ContainedPacketInterfa
      */
     public function __construct(
         private readonly KeyPacketInterface $keyPacket,
-        private readonly array $revocationSignatures = [],
-        private readonly array $directSignatures = [],
-        private readonly array $users = [],
-        private readonly array $subkeys = []
+        array $revocationSignatures = [],
+        array $directSignatures = [],
+        array $users = [],
+        array $subkeys = []
     )
     {
+        $this->revocationSignatures = array_filter(
+            $revocationSignatures,
+            static fn ($signature) => $signature instanceof SignaturePacketInterface
+        );
+        $this->directSignatures = array_filter(
+            $directSignatures,
+            static fn ($signature) => $signature instanceof SignaturePacketInterface
+        );
+        $this->setUsers($users)->setSubkeys($subkeys);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function toPacketList(): PacketList
+    public function toPacketList(): PacketListInterface
     {
+        $userPacketList = [];
+        foreach ($this->users as $user) {
+            $userPacketList = array_merge(
+                $userPacketList, $user->toPacketList()->toArray()
+            );
+        }
+        $subkeyPacketList = [];
+        foreach ($this->subkeys as $subkey) {
+            $subkeyPacketList = array_merge(
+                $subkeyPacketList, $subkey->toPacketList()->toArray()
+            );
+        }
+
         return new PacketList([
             $this->keyPacket,
             ...$this->revocationSignatures,
             ...$this->directSignatures,
+            ...$userPacketList,
+            ...$subkeyPacketList,
         ]);
     }
 
@@ -68,6 +104,44 @@ abstract class AbstractKey implements ArmorableInterface, ContainedPacketInterfa
     public function getKeyPacket(): KeyPacketInterface
     {
         return $this->keyPacket;
+    }
+
+    public function getRevocationSignatures(): array
+    {
+        return $this->revocationSignatures;
+    }
+
+    public function getDirectSignatures(): array
+    {
+        return $this->directSignatures;
+    }
+
+    public function getUsers(): array
+    {
+        return $this->users;
+    }
+
+    public function getSubkeys(): array
+    {
+        return $this->subkeys;
+    }
+
+    protected function setUsers(array $users): self
+    {
+        $this->users = array_filter(
+            $users,
+            static fn ($user) => $user instanceof User
+        );
+        return $this;
+    }
+
+    protected function setSubkeys(array $subkeys): self
+    {
+        $this->subkeys = array_filter(
+            $subkeys,
+            static fn ($subkey) => $subkey instanceof Subkey
+        );
+        return $this;
     }
 
     /**
@@ -121,5 +195,114 @@ abstract class AbstractKey implements ArmorableInterface, ContainedPacketInterfa
             }
         }
         return true;
+    }
+
+    protected static function readPacketList(PacketListInterface $packetList): array
+    {
+        $revocationSignatures = $directSignatures = $users = $subkeys = [];
+        $keyPacket = $primaryKeyID = null;
+
+        foreach ($packetList->toArray() as $packet) {
+            switch ($packet->getTag()) {
+                case PacketTag::PublicKey:
+                case PacketTag::SecretKey:
+                    if (!empty($keyPacket)) {
+                        throw new \UnexpectedValueException(
+                            'Key block contains multiple keys'
+                        );
+                    }
+                    if ($packet instanceof KeyPacketInterface) {
+                        $keyPacket = $packet;
+                        $primaryKeyID = $packet->getKeyID();
+                    }
+                    break;
+                case PacketTag::PublicSubkey:
+                case PacketTag::SecretSubkey:
+                    if ($packet instanceof SubkeyPacketInterface) {
+                        $subkeys[] = [
+                            'keyPacket' => $packet,
+                            'revocationSignatures' => [],
+                            'bindingSignatures' => [],
+                        ];
+                    }
+                    break;
+                case PacketTag::UserID:
+                case PacketTag::UserAttribute:
+                    if ($packet instanceof UserIDPacketInterface) {
+                        $users[] = [
+                            'userIDPacket' => $packet,
+                            'revocationSignatures' => [],
+                            'selfCertifications' => [],
+                            'otherCertifications' => [],
+                        ];
+                    }
+                    break;
+                case PacketTag::Signature:
+                    if ($packet instanceof SignaturePacketInterface) {
+                        switch ($packet->getSignatureType()) {
+                            case SignatureType::CertGeneric:
+                            case SignatureType::CertPersona:
+                            case SignatureType::CertCasual:
+                            case SignatureType::CertPositive:
+                                $user = array_pop($users);
+                                if (!empty($user)) {
+                                    if ($packet->getIssuerKeyID()->getKeyID() === $primaryKeyID) {
+                                        $user['selfCertifications'][] = $packet;
+                                    }
+                                    else {
+                                        $user['otherCertifications'][] = $packet;
+                                    }
+                                    $users[] = $user;
+                                }
+                                break;
+                            case SignatureType::CertRevocation:
+                                $user = array_pop($users);
+                                if (!empty($user)) {
+                                    $user['revocationSignatures'][] = $packet;
+                                    $users[] = $user;
+                                }
+                                else {
+                                    $directSignatures[] = $packet;
+                                }
+                                break;
+                            case SignatureType::SubkeyBinding:
+                                $subkey = array_pop($subkeys);
+                                if (!empty($subkey)) {
+                                    $subkey['bindingSignatures'][] = $packet;
+                                    $subkeys[] = $subkey;
+                                }
+                                break;
+                            case SignatureType::SubkeyRevocation:
+                                $subkey = array_pop($subkeys);
+                                if (!empty($subkey)) {
+                                    $subkey['revocationSignatures'][] = $packet;
+                                    $subkeys[] = $subkey;
+                                }
+                                break;
+                            case SignatureType::Key:
+                                $directSignatures[] = $packet;
+                                break;
+                            case SignatureType::KeyRevocation:
+                                $revocationSignatures[] = $packet;
+                                break;
+                        }
+                    }
+                    break;
+            }
+        }
+
+        if (empty($keyPacket)) {
+            throw new \UnexpectedValueException(
+                'Key packet not found in packet list'
+            );
+        }
+
+        return [
+            'keyPacket' => $keyPacket,
+            'revocationSignatures' => $revocationSignatures,
+            'directSignatures' => $directSignatures,
+            'users' => $users,
+            'subkeys' => $subkeys,
+        ];
     }
 }
