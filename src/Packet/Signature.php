@@ -15,6 +15,7 @@ use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{
     HashAlgorithm,
     KeyAlgorithm,
+    KeyFlag,
     PacketTag,
     SignatureSubpacketType,
     SignatureType,
@@ -23,6 +24,7 @@ use OpenPGP\Type\{
     KeyPacketInterface,
     SignaturePacketInterface,
     SignableParametersInterface,
+    UserIDPacketInterface,
     VerifiableParametersInterface
 };
 
@@ -147,7 +149,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
-     * Creates signature
+     * Create signature
      *
      * @param SecretKey $signKey
      * @param SignatureType $signatureType
@@ -206,6 +208,37 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             ), 0, 2),
             self::signMessage($signKey, $hashAlgorithm, $message),
             $hashedSubpackets,
+        );
+    }
+
+    /**
+     * Create certify signature
+     *
+     * @param SecretKey $signKey
+     * @param UserIDPacketInterface $userID
+     * @param DateTime $creationTime
+     * @return self
+     */
+    public static function createCertify(
+        SecretKey $signKey,
+        UserIDPacketInterface $userID,
+        ?DateTime $creationTime = null
+    ): self
+    {
+        return self::createSignature(
+            $signKey,
+            SignatureType::CertGeneric,
+            implode([
+                $signKey->getSignBytes(),
+                $this->userID->getSignBytes(),
+            ]),
+            HashAlgorithm::Sha256,
+            [
+                Signature\KeyFlags::fromFlags(
+                    KeyFlag::CertifyKeys->value | KeyFlag::SignData->value
+                ),
+            ],
+            $creationTime
         );
     }
 

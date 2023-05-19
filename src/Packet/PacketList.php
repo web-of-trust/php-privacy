@@ -179,6 +179,20 @@ class PacketList implements PacketListInterface
     /**
      * {@inheritdoc}
      */
+    public function filterByTag(PacketTag $tag): self
+    {
+        $packets = array_filter(
+            $this->packets->getArrayCopy(),
+            static function ($packet) use ($tag) {
+                return $packet->getTag() === $tag;
+            }
+        );
+        return new self($packets);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function toArray(): array
     {
         return $this->packets->getArrayCopy();

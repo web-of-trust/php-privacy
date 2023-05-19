@@ -10,7 +10,8 @@
 
 namespace OpenPGP\Key;
 
-use OpenPGP\Packet\PacketList;
+use OpenPGP\Enum\{HashAlgorithm, SignatureType};
+use OpenPGP\Packet\{PacketList, Signature};
 use OpenPGP\Type\{
     KeyInterface,
     PacketContainerInterface,
@@ -141,7 +142,7 @@ class User implements PacketContainerInterface
         if ($this->isRevoked(time: $time)) {
             return false;
         }
-        foreach ($selfCertifications as $signature) {
+        foreach ($this->selfCertifications as $signature) {
             if (!$signature->verify(
                 $this->mainKey->getKeyPacket(),
                 implode([
@@ -154,6 +155,40 @@ class User implements PacketContainerInterface
             }
         }
         return true;
+    }
+
+    /**
+     * Generate third-party certifications over this user and its primary key
+     * return new user with new certifications.
+     * 
+     * @param array $signKeys
+     * @param DateTime $time
+     * @return self
+     */
+    public function certify(array $signKeys, ?DateTime $time = null): self
+    {
+        $signKeys = array_filter(
+            $signKeys,
+            static fn ($key) => $key instanceof PrivateKey
+        );
+        if (!empty($signKeys)) {
+            $otherCertifications = array_map(
+                static fn ($signKey) => Signature::createCertify(
+                    $signKey->getKeyPacket(),
+                    $this->userID,
+                    $time
+                ),
+                $signKeys
+            );
+            return new User(
+                $this->mainKey,
+                $this->userID,
+                $this->revocationSignatures,
+                $this->selfCertifications,
+                $otherCertifications
+            );
+        }
+        return $this;
     }
 
     /**

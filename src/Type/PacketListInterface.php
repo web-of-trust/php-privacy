@@ -10,6 +10,8 @@
 
 namespace OpenPGP\Type;
 
+use OpenPGP\Enum\PacketTag;
+
 /**
  * Packet list interface
  * 
@@ -26,6 +28,14 @@ interface PacketListInterface extends \IteratorAggregate, \Countable
      * @return string
      */
     function encode(): string;
+
+    /**
+     * Filter packets by tag
+     * 
+     * @param PacketTag $tag
+     * @return self
+     */
+    function filterByTag(PacketTag $tag): self;
 
     /**
      * Get array packets
