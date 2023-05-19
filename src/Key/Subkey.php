@@ -18,6 +18,7 @@ use OpenPGP\Type\{
     PacketContainerInterface,
     PacketListInterface,
     SignaturePacketInterface,
+    SubkeyInterface,
     SubkeyPacketInterface
 };
 
@@ -29,7 +30,7 @@ use OpenPGP\Type\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class Subkey implements PacketContainerInterface
+class Subkey implements PacketContainerInterface, SubkeyInterface
 {
     /**
      * Constructor
@@ -60,16 +61,6 @@ class Subkey implements PacketContainerInterface
     }
 
     /**
-     * Gets key packet
-     * 
-     * @return SubkeyPacketInterface
-     */
-    public function getKeyPacket(): SubkeyPacketInterface
-    {
-        return $this->keyPacket;
-    }
-
-    /**
      * Gets revocation signatures
      * 
      * @return array
@@ -90,10 +81,15 @@ class Subkey implements PacketContainerInterface
     }
 
     /**
-     * Returns the expiration time of the subkey or Infinity if key does not expire.
-     * Returns null if the subkey is invalid.
-     * 
-     * @return DateTime
+     * {@inheritdoc}
+     */
+    public function getKeyPacket(): SubkeyPacketInterface
+    {
+        return $this->keyPacket;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function getExpirationTime(): ?DateTime
     {
@@ -132,11 +128,7 @@ class Subkey implements PacketContainerInterface
     }
 
     /**
-     * Checks if a binding signature of a subkey is revoked
-     * 
-     * @param SignaturePacketInterface $certificate
-     * @param DateTime $time
-     * @return bool
+     * {@inheritdoc}
      */
     public function isRevoked(
         ?SignaturePacketInterface $certificate = null,
@@ -162,11 +154,7 @@ class Subkey implements PacketContainerInterface
     }
 
     /**
-     * Verify subkey.
-     * Checks for revocation signatures, expiration time and valid binding signature.
-     * 
-     * @param DateTime $time
-     * @return bool
+     * {@inheritdoc}
      */
     public function verify(?DateTime $time = null): bool
     {

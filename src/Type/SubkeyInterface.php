@@ -13,39 +13,32 @@ namespace OpenPGP\Type;
 use DateTime;
 
 /**
- * Key interface
+ * Subkey interface
  * 
  * @package   OpenPGP
  * @category  Type
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface KeyInterface
+interface SubkeyInterface
 {
     /**
      * Returns key packet
      *
-     * @return KeyPacketInterface
+     * @return SubkeyPacketInterface
      */
-    function getKeyPacket(): KeyPacketInterface;
+    function getKeyPacket(): SubkeyPacketInterface;
 
     /**
-     * Returns key as public key
-     *
-     * @return KeyInterface
-     */
-    function toPublic(): KeyInterface;
-
-    /**
-     * Returns the expiration time of the key or null if key does not expire.
-     *
+     * Returns the expiration time of the subkey or null if subkey does not expire.
+     * 
      * @return DateTime
      */
     function getExpirationTime(): ?DateTime;
 
     /**
-     * Is revoked key
-     *
+     * Checks if a binding signature of a subkey is revoked
+     * 
      * @param SignaturePacketInterface $certificate
      * @param DateTime $time
      * @return bool
@@ -55,12 +48,11 @@ interface KeyInterface
     ): bool;
 
     /**
-     * Verify key.
-     * Checks for revocation signatures, expiration time and valid self signature.
+     * Verify subkey.
+     * Checks for revocation signatures, expiration time and valid binding signature.
      * 
-     * @param string $userID
      * @param DateTime $time
      * @return bool
      */
-    function verify(string $userID = '', ?DateTime $time = null): bool;
+    function verify(?DateTime $time = null): bool;
 }
