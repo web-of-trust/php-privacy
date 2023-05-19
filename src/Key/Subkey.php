@@ -110,14 +110,23 @@ class Subkey implements PacketContainerInterface
                 }
             );
             $signature = $bindingSignatures[0];
-            $signatureExpirationTime = $signature->getSignatureExpirationTime();
             $keyExpirationTime = $signature->getKeyExpirationTime();
             if (!empty($keyExpirationTime)) {
                 $expirationTime = $keyExpirationTime->getExpirationTime();
-                $creationTime = $signature->getSignatureCreationTime();
-                return $creationTime->add(
+                $creationTime = $signature->getSignatureCreationTime() ?? new DateTime();
+                $keyExpiration = $creationTime->add(
                     DateInterval::createFromDateString($expirationTime . ' seconds')
                 );
+                $signatureExpiration = $signature->getSignatureExpirationTime();
+                if (empty($signatureExpiration)) {
+                    return $keyExpiration;
+                }
+                else {
+                    return $keyExpiration < $signatureExpiration ? $keyExpiration : $signatureExpiration;
+                }
+            }
+            else {
+                return $signature->getSignatureExpirationTime();
             }
         }
     }
