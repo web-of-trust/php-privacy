@@ -33,4 +33,12 @@ class PublicKey extends AbstractKey
             $this->toPacketList()->encode()
         );
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toPublic(): KeyInterface
+    {
+        return $this;
+    }
 }

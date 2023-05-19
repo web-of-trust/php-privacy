@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Type;
 
+use DateTime;
 use OpenPGP\Packet\KeyPacketInterface;
 
 /**
@@ -37,23 +38,9 @@ interface KeyInterface
     function toPublic(): KeyInterface;
 
     /**
-     * Is signing key
-     *
-     * @return bool
-     */
-    function isSigningKey(): bool;
-
-    /**
-     * Is encryption key
-     *
-     * @return bool
-     */
-    function isEncryptionKey(): bool;
-
-    /**
      * Is revoked key
      *
      * @return bool
      */
-    function isRevoked(): bool;
+    function isRevoked(?DateTime $time = null): bool;
 }

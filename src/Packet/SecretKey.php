@@ -213,6 +213,22 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
     /**
      * {@inheritdoc}
      */
+    public function isSigningKey(): bool
+    {
+        return $this->publicKey->isSigningKey();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isEncryptionKey(): bool
+    {
+        return $this->publicKey->isEncryptionKey();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getKeyParameters(): ?KeyParametersInterface
     {
         return $this->keyParameters;

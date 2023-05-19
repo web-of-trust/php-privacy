@@ -150,7 +150,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
-     * Create signature
+     * Creates signature
      *
      * @param SecretKey $signKey
      * @param SignatureType $signatureType
@@ -213,7 +213,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
-     * Create cert generic signature
+     * Creates cert generic signature
      *
      * @param SecretKey $signKey
      * @param UserIDPacketInterface $userID
@@ -244,7 +244,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
-     * Create cert revocation signature
+     * Creates cert revocation signature
      *
      * @param SecretKey $signKey
      * @param UserIDPacketInterface $userID
@@ -349,8 +349,12 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
                 $this->hashAlgorithm, $message, $this->signature
             );
         }
-
-        return false;
+        else {
+            $this->getLogger()->debug(
+                'Verify key parameters is not verifiable.'
+            );
+            return false;
+        }
     }
 
     /**

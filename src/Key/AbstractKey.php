@@ -59,4 +59,12 @@ abstract class AbstractKey implements ArmorableInterface, ContainedPacketInterfa
             ...$this->directSignatures,
         ]);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getKeyPacket(): KeyPacketInterface
+    {
+        return $this->keyPacket;
+    }
 }

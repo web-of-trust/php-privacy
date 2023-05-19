@@ -172,6 +172,36 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
     /**
      * {@inheritdoc}
      */
+    public function isSigningKey(): bool
+    {
+        return match ($this->keyAlgorithm) {
+            KeyAlgorithm::RsaEncrypt => false,
+            KeyAlgorithm::ElGamal => false,
+            KeyAlgorithm::Ecdh => false,
+            KeyAlgorithm::DiffieHellman => false,
+            KeyAlgorithm::Aedh => false,
+            default => true,
+        };
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isEncryptionKey(): bool
+    {
+        return match ($this->keyAlgorithm) {
+            KeyAlgorithm::RsaSign => false,
+            KeyAlgorithm::Dsa => false,
+            KeyAlgorithm::EcDsa => false,
+            KeyAlgorithm::EdDsa => false,
+            KeyAlgorithm::AeDsa => false,
+            default => true,
+        };
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getPreferredHash(
         ?HashAlgorithm $preferredHash = null
     ): HashAlgorithm

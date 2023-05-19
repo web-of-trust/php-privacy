@@ -138,7 +138,7 @@ class Subkey implements PacketContainerInterface
         foreach ($this->revocationSignatures as $signature) {
             if (empty($keyID) || $keyID === $signature->getIssuerKeyID()->getKeyID()) {
                 if ($signature->verify(
-                    $this->mainKey->getKeyPacket(),
+                    $this->mainKey->toPublic()->getKeyPacket(),
                     implode([
                         $this->mainKey->getKeyPacket()->getSignBytes(),
                         $this->keyPacket->getSignBytes(),
@@ -166,7 +166,7 @@ class Subkey implements PacketContainerInterface
         }
         foreach ($this->bindingSignatures as $signature) {
             if (!$signature->verify(
-                $this->mainKey->getKeyPacket(),
+                $this->mainKey->toPublic()->getKeyPacket(),
                 implode([
                     $this->mainKey->getKeyPacket()->getSignBytes(),
                     $this->keyPacket->getSignBytes(),

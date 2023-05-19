@@ -75,6 +75,20 @@ interface KeyPacketInterface
     function isSubkey(): bool;
 
     /**
+     * Is signing key
+     *
+     * @return bool
+     */
+    function isSigningKey(): bool;
+
+    /**
+     * Is encryption key
+     *
+     * @return bool
+     */
+    function isEncryptionKey(): bool;
+
+    /**
      * Gets preferred hash algorithm
      * 
      * @param HashAlgorithm $preferredHash

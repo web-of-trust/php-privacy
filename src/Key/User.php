@@ -16,7 +16,6 @@ use OpenPGP\Type\{
     KeyInterface,
     PacketContainerInterface,
     PacketListInterface,
-    SecretKeyPacketInterface,
     SignaturePacketInterface,
     UserIDPacketInterface
 };
@@ -117,7 +116,7 @@ class User implements PacketContainerInterface
         foreach ($this->revocationSignatures as $signature) {
             if (empty($keyID) || $keyID === $signature->getIssuerKeyID()->getKeyID()) {
                 if ($signature->verify(
-                    $this->mainKey->getKeyPacket(),
+                    $this->mainKey->toPublic()->getKeyPacket(),
                     implode([
                         $this->mainKey->getKeyPacket()->getSignBytes(),
                         $this->userID->getSignBytes(),
@@ -145,7 +144,7 @@ class User implements PacketContainerInterface
         }
         foreach ($this->selfCertifications as $signature) {
             if (!$signature->verify(
-                $this->mainKey->getKeyPacket(),
+                $this->mainKey->toPublic()->getKeyPacket(),
                 implode([
                     $this->mainKey->getKeyPacket()->getSignBytes(),
                     $this->userID->getSignBytes(),
@@ -159,46 +158,51 @@ class User implements PacketContainerInterface
     }
 
     /**
-     * Generate third-party certifications over this user and its primary key
-     * return new user with new certifications.
+     * Generate third-party certification over this user and its primary key
+     * return new user with new certification.
      * 
-     * @param array $signKeys
+     * @param PrivateKey $signKey
      * @param DateTime $time
      * @return self
      */
-    public function certify(array $signKeys, ?DateTime $time = null): self
+    public function certify(PrivateKey $signKey, ?DateTime $time = null): self
     {
-        $signKeys = array_filter(
-            $signKeys,
-            static fn ($key) => $key instanceof PrivateKey
+        $otherCertifications = $this->otherCertifications;
+        $otherCertifications[] = Signature::createCertGeneric(
+            $signKey->getKeyPacket(),
+            $this->userID,
+            $time
         );
-        if (!empty($signKeys)) {
-            $otherCertifications = array_map(
-                static fn ($signKey) => Signature::createCertGeneric(
-                    $signKey->getKeyPacket(),
-                    $this->userID,
-                    $time
-                ),
-                $signKeys
-            );
-            return new User(
-                $this->mainKey,
-                $this->userID,
-                $this->revocationSignatures,
-                $this->selfCertifications,
-                $otherCertifications
-            );
-        }
-        return $this;
+        return new User(
+            $this->mainKey,
+            $this->userID,
+            $this->revocationSignatures,
+            $this->selfCertifications,
+            $otherCertifications
+        );
     }
 
+    /**
+     * Revokes the user
+     * 
+     * @param PrivateKey $signKey
+     * @param string $revocationReason
+     * @param DateTime $time
+     * @return self
+     */
     public function revoke(
-        SecretKeyPacketInterface $primaryKey,
+        PrivateKey $signKey,
         string $revocationReason = '',
         ?DateTime $time = null
     ): self
     {
         $revocationSignatures = $this->revocationSignatures;
+        $revocationSignatures[] = Signature::createCertRevocation(
+            $signKey->getKeyPacket(),
+            $this->userID,
+            $revocationReason,
+            $time
+        );
         return new User(
             $this->mainKey,
             $this->userID,
