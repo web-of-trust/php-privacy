@@ -16,6 +16,7 @@ use OpenPGP\Type\{
     KeyInterface,
     PacketContainerInterface,
     PacketListInterface,
+    SecretKeyPacketInterface,
     SignaturePacketInterface,
     UserIDPacketInterface
 };
@@ -173,7 +174,7 @@ class User implements PacketContainerInterface
         );
         if (!empty($signKeys)) {
             $otherCertifications = array_map(
-                static fn ($signKey) => Signature::createCertify(
+                static fn ($signKey) => Signature::createCertGeneric(
                     $signKey->getKeyPacket(),
                     $this->userID,
                     $time
@@ -189,6 +190,22 @@ class User implements PacketContainerInterface
             );
         }
         return $this;
+    }
+
+    public function revoke(
+        SecretKeyPacketInterface $primaryKey,
+        string $revocationReason = '',
+        ?DateTime $time = null
+    ): self
+    {
+        $revocationSignatures = $this->revocationSignatures;
+        return new User(
+            $this->mainKey,
+            $this->userID,
+            $revocationSignatures,
+            $this->selfCertifications,
+            $this->otherCertifications
+        );
     }
 
     /**

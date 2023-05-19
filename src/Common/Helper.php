@@ -34,7 +34,7 @@ final class Helper
     /**
      * Gets a logger.
      *
-     * @return LoggerInterface $logger
+     * @return LoggerInterface
      */
     public static function getLogger(): LoggerInterface
     {

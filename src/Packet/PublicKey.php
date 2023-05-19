@@ -11,7 +11,7 @@
 namespace OpenPGP\Packet;
 
 use DateTime;
-use OpenPGP\Common\Helper;
+use OpenPGP\Common\{Config, Helper};
 use OpenPGP\Enum\{CurveOid, HashAlgorithm, KeyAlgorithm, PacketTag};
 use OpenPGP\Type\{
     ForSigningInterface,
@@ -180,7 +180,7 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
             return $this->keyParameters->getCurveOid()->hashAlgorithm();
         }
         else {
-            return $preferredHash ?? HashAlgorithm::Sha256;
+            return $preferredHash ?? Config::getPreferredHash();
         }
     }
 

@@ -11,12 +11,13 @@
 namespace OpenPGP\Packet;
 
 use DateTime;
-use OpenPGP\Common\Helper;
+use OpenPGP\Common\{Config, Helper};
 use OpenPGP\Enum\{
     HashAlgorithm,
     KeyAlgorithm,
     KeyFlag,
     PacketTag,
+    RevocationReasonTag,
     SignatureSubpacketType,
     SignatureType,
 };
@@ -212,14 +213,14 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
-     * Create certify signature
+     * Create cert generic signature
      *
      * @param SecretKey $signKey
      * @param UserIDPacketInterface $userID
      * @param DateTime $creationTime
      * @return self
      */
-    public static function createCertify(
+    public static function createCertGeneric(
         SecretKey $signKey,
         UserIDPacketInterface $userID,
         ?DateTime $creationTime = null
@@ -230,13 +231,46 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             SignatureType::CertGeneric,
             implode([
                 $signKey->getSignBytes(),
-                $this->userID->getSignBytes(),
+                $userID->getSignBytes(),
             ]),
-            HashAlgorithm::Sha256,
+            Config::getPreferredHash(),
             [
                 Signature\KeyFlags::fromFlags(
                     KeyFlag::CertifyKeys->value | KeyFlag::SignData->value
                 ),
+            ],
+            $creationTime
+        );
+    }
+
+    /**
+     * Create cert revocation signature
+     *
+     * @param SecretKey $signKey
+     * @param UserIDPacketInterface $userID
+     * @param string $revocationReason
+     * @param DateTime $creationTime
+     * @return self
+     */
+    public static function createCertRevocation(
+        SecretKey $signKey,
+        UserIDPacketInterface $userID,
+        string $revocationReason = '',
+        ?DateTime $creationTime = null
+    ): self
+    {
+        return self::createSignature(
+            $signKey,
+            SignatureType::CertRevocation,
+            implode([
+                $signKey->getSignBytes(),
+                $userID->getSignBytes(),
+            ]),
+            Config::getPreferredHash(),
+            [
+                Signature\RevocationReason::fromRevocation(
+                    RevocationReasonTag::NoReason, $revocationReason
+                )
             ],
             $creationTime
         );
