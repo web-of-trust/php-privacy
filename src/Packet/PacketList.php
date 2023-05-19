@@ -183,9 +183,7 @@ class PacketList implements PacketListInterface
     {
         $packets = array_filter(
             $this->packets->getArrayCopy(),
-            static function ($packet) use ($tag) {
-                return $packet->getTag() === $tag;
-            }
+            static fn ($packet) => $packet->getTag() === $tag
         );
         return new self($packets);
     }
