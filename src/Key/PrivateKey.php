@@ -221,6 +221,26 @@ class PrivateKey extends AbstractKey
     }
 
     /**
+     * Returns true if the key packet is encrypted.
+     * 
+     * @return bool
+     */
+    public function isEncrypted(): bool
+    {
+        return $this->getKeyPacket()->isEncrypted();
+    }
+
+    /**
+     * Returns true if the key packet is decrypted.
+     * 
+     * @return bool
+     */
+    public function isDecrypted(): bool
+    {
+        return $this->getKeyPacket()->isDecrypted();
+    }
+
+    /**
      * Lock a private key with the given passphrase.
      * This method does not change the original key.
      * 

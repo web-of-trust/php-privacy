@@ -304,6 +304,14 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
     /**
      * {@inheritdoc}
      */
+    public function isDecrypted(): bool
+    {
+        return $this->keyParameters instanceof KeyParametersInterface;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function encrypt(
         string $passphrase,
         S2kUsage $s2kUsage = S2kUsage::Sha1,

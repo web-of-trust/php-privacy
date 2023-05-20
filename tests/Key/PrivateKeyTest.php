@@ -3,6 +3,7 @@
 namespace OpenPGP\Tests\Cryptor;
 
 use OpenPGP\Key\PrivateKey;
+use OpenPGP\Key\PublicKey;
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
@@ -76,7 +77,12 @@ OXuzG9xtWoPJ1f2eD+/4Vi+RpUeiZX181VvGANbqgqkdgw==
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
 
-        $privateKey = PrivateKey::fromArmored($data)->decrypt(self::PASSPHRASE);
+        $privateKey = PrivateKey::fromArmored($data);
+        $this->assertTrue($privateKey->isEncrypted());
+        $this->assertFalse($privateKey->isDecrypted());
+
+        $privateKey = $privateKey->decrypt(self::PASSPHRASE);
+        $this->assertTrue($privateKey->isDecrypted());
         $this->assertSame('fc5004df9473277107eaa605184d0dc4f5c532b2', $privateKey->getFingerprint(true));
         $this->assertSame('184d0dc4f5c532b2', $privateKey->getKeyID(true));
         $this->assertSame(2048, $privateKey->getKeyStrength());
@@ -90,6 +96,10 @@ EOT;
         $user = $privateKey->getUsers()[0];
         $this->assertSame('rsa php pg key <php-pg@dummy.com>', $user->getUserID());
         $this->assertTrue($user->verify());
+
+        $publicKey = $privateKey->toPublic();
+        $this->assertTrue($publicKey instanceof PublicKey);
+        $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
 
         $this->assertEquals($privateKey, PrivateKey::fromArmored($privateKey->armor())->decrypt(self::PASSPHRASE));
     }
@@ -142,7 +152,12 @@ ArLY
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
 
-        $privateKey = PrivateKey::fromArmored($data)->decrypt(self::PASSPHRASE);
+        $privateKey = PrivateKey::fromArmored($data);
+        $this->assertTrue($privateKey->isEncrypted());
+        $this->assertFalse($privateKey->isDecrypted());
+
+        $privateKey = $privateKey->decrypt(self::PASSPHRASE);
+        $this->assertTrue($privateKey->isDecrypted());
         $this->assertSame('3e57913d5f6ccbdb9022f7dee3b11d642248a092', $privateKey->getFingerprint(true));
         $this->assertSame('e3b11d642248a092', $privateKey->getKeyID(true));
         $this->assertSame(2048, $privateKey->getKeyStrength());
@@ -156,6 +171,10 @@ EOT;
         $user = $privateKey->getUsers()[0];
         $this->assertSame('dsa php pg key <php-pg@dummy.com>', $user->getUserID());
         $this->assertTrue($user->verify());
+
+        $publicKey = $privateKey->toPublic();
+        $this->assertTrue($publicKey instanceof PublicKey);
+        $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
 
         $this->assertEquals($privateKey, PrivateKey::fromArmored($privateKey->armor())->decrypt(self::PASSPHRASE));
     }
@@ -186,7 +205,12 @@ ilKlxxYtbdD/dzH9pEv/jSZT+qKSSrWalKQR09/qVMH3UrU=
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
 
-        $privateKey = PrivateKey::fromArmored($data)->decrypt(self::PASSPHRASE);
+        $privateKey = PrivateKey::fromArmored($data);
+        $this->assertTrue($privateKey->isEncrypted());
+        $this->assertFalse($privateKey->isDecrypted());
+
+        $privateKey = $privateKey->decrypt(self::PASSPHRASE);
+        $this->assertTrue($privateKey->isDecrypted());
         $this->assertSame('05c085492d14f90976e7c2b6b202d9e2eada440c', $privateKey->getFingerprint(true));
         $this->assertSame('b202d9e2eada440c', $privateKey->getKeyID(true));
         $this->assertSame(384, $privateKey->getKeyStrength());
@@ -200,6 +224,10 @@ EOT;
         $user = $privateKey->getUsers()[0];
         $this->assertSame('ec p-384 php pg key <php-pg@dummy.com>', $user->getUserID());
         $this->assertTrue($user->verify());
+
+        $publicKey = $privateKey->toPublic();
+        $this->assertTrue($publicKey instanceof PublicKey);
+        $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
     }
 
     public function testReadEcBrainpoolPrivateKey()
@@ -225,7 +253,12 @@ ehhtAP4ujUY9gC/lHikQyYjwN3rj1oKnPnIHEq7pm6CCm3vhOg==
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
 
-        $privateKey = PrivateKey::fromArmored($data)->decrypt(self::PASSPHRASE);
+        $privateKey = PrivateKey::fromArmored($data);
+        $this->assertTrue($privateKey->isEncrypted());
+        $this->assertFalse($privateKey->isDecrypted());
+
+        $privateKey = $privateKey->decrypt(self::PASSPHRASE);
+        $this->assertTrue($privateKey->isDecrypted());
         $this->assertSame('06fee3085d46dc007c0ec2f01cbcd043db44c5d6', $privateKey->getFingerprint(true));
         $this->assertSame('1cbcd043db44c5d6', $privateKey->getKeyID(true));
         $this->assertSame(256, $privateKey->getKeyStrength());
@@ -263,7 +296,12 @@ T3ryNIYca7l/BO+m8zgP
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
 
-        $privateKey = PrivateKey::fromArmored($data)->decrypt(self::PASSPHRASE);
+        $privateKey = PrivateKey::fromArmored($data);
+        $this->assertTrue($privateKey->isEncrypted());
+        $this->assertFalse($privateKey->isDecrypted());
+
+        $privateKey = $privateKey->decrypt(self::PASSPHRASE);
+        $this->assertTrue($privateKey->isDecrypted());
         $this->assertSame('1c4116eb2b58cfa196c57ddbbdff135160c56a0b', $privateKey->getFingerprint(true));
         $this->assertSame('bdff135160c56a0b', $privateKey->getKeyID(true));
         $this->assertSame(255, $privateKey->getKeyStrength());
@@ -277,5 +315,9 @@ EOT;
         $user = $privateKey->getUsers()[0];
         $this->assertSame('curve 25519 php pg key <php-pg@dummy.com>', $user->getUserID());
         $this->assertTrue($user->verify());
+
+        $publicKey = $privateKey->toPublic();
+        $this->assertTrue($publicKey instanceof PublicKey);
+        $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
     }
 }
