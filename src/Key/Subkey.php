@@ -230,6 +230,35 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
     }
 
     /**
+     * Revokes the subkey
+     * 
+     * @param PrivateKey $signKey
+     * @param string $revocationReason
+     * @param DateTime $time
+     * @return self
+     */
+    public function revoke(
+        PrivateKey $signKey,
+        string $revocationReason = '',
+        ?DateTime $time = null
+    ): self
+    {
+        $revocationSignatures = $this->revocationSignatures;
+        $revocationSignatures[] = Signature::createSubkeyRevocation(
+            $signKey->getKeyPacket(),
+            $this->keyPacket,
+            $revocationReason,
+            $time
+        );
+        return new User(
+            $this->mainKey,
+            $this->keyPacket,
+            $revocationSignatures,
+            $this->bindingSignatures
+        );
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function toPacketList(): PacketListInterface

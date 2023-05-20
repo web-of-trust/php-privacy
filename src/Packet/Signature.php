@@ -25,6 +25,7 @@ use OpenPGP\Type\{
     KeyPacketInterface,
     SignaturePacketInterface,
     SignableParametersInterface,
+    SubkeyPacketInterface,
     UserIDPacketInterface,
     VerifiableParametersInterface
 };
@@ -265,6 +266,39 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             implode([
                 $signKey->getSignBytes(),
                 $userID->getSignBytes(),
+            ]),
+            Config::getPreferredHash(),
+            [
+                Signature\RevocationReason::fromRevocation(
+                    RevocationReasonTag::NoReason, $revocationReason
+                )
+            ],
+            $creationTime
+        );
+    }
+
+    /**
+     * Creates subkey revocation signature
+     *
+     * @param SecretKey $signKey
+     * @param SubkeyPacketInterface $userID
+     * @param string $revocationReason
+     * @param DateTime $creationTime
+     * @return self
+     */
+    public static function createSubkeyRevocation(
+        SecretKey $signKey,
+        SubkeyPacketInterface $subkey,
+        string $revocationReason = '',
+        ?DateTime $creationTime = null
+    ): self
+    {
+        return self::createSignature(
+            $signKey,
+            SignatureType::SubkeyRevocation,
+            implode([
+                $signKey->getSignBytes(),
+                $subkey->getSignBytes(),
             ]),
             Config::getPreferredHash(),
             [
