@@ -11,6 +11,7 @@
 namespace OpenPGP\Type;
 
 use DateTime;
+use OpenPGP\Enum\KeyAlgorithm;
 
 /**
  * Key interface
@@ -42,6 +43,43 @@ interface KeyInterface
      * @return DateTime
      */
     function getExpirationTime(): ?DateTime;
+
+    /**
+     * Gets creation time
+     * 
+     * @return DateTime
+     */
+    function getCreationTime(): DateTime;
+
+    /**
+     * Gets key algorithm
+     * 
+     * @return KeyAlgorithm
+     */
+    function getKeyAlgorithm(): KeyAlgorithm;
+
+    /**
+     * Gets fingerprint
+     * 
+     * @param bool $toHex
+     * @return string
+     */
+    function getFingerprint(bool $toHex = false): string;
+
+    /**
+     * Gets key ID
+     * 
+     * @param bool $toHex
+     * @return string
+     */
+    function getKeyID(bool $toHex = false): string;
+
+    /**
+     * Gets key strength
+     * 
+     * @return int
+     */
+    function getKeyStrength(): int;
 
     /**
      * Is revoked key

@@ -1,4 +1,3 @@
-
 <?php declare(strict_types=1);
 /**
  * This file is part of the PHP PG library.
@@ -11,13 +10,19 @@
 
 namespace OpenPGP\Key;
 
-use OpenPGP\Enum\PacketTag;
+use DateInterval;
+use DateTime;
+use OpenPGP\Enum\{
+    KeyAlgorithm,
+    PacketTag,
+    SignatureType
+};
 use OpenPGP\Packet\UserID;
 use OpenPGP\Type\{
     ArmorableInterface,
-    ContainedPacketInterface,
     KeyInterface,
     KeyPacketInterface,
+    PacketContainerInterface,
     PacketListInterface,
     SignaturePacketInterface,
     SubkeyPacketInterface,
@@ -32,7 +37,7 @@ use OpenPGP\Type\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-abstract class AbstractKey implements ArmorableInterface, ContainedPacketInterface, KeyInterface
+abstract class AbstractKey implements ArmorableInterface, PacketContainerInterface, KeyInterface
 {
     private array $revocationSignatures;
 
@@ -142,6 +147,85 @@ abstract class AbstractKey implements ArmorableInterface, ContainedPacketInterfa
             static fn ($subkey) => $subkey instanceof Subkey
         );
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getExpirationTime(): ?DateTime
+    {
+        if (!empty($this->directSignatures)) {
+            $directSignatures = usort(
+                $this->directSignatures,
+                static function ($a, $b) {
+                    $aTime = $a->getSignatureCreationTime() ?? (new DateTime())->setTimestamp(0);
+                    $bTime = $b->getSignatureCreationTime() ?? (new DateTime())->setTimestamp(0);
+                    if ($aTime == $bTime) {
+                        return 0;
+                    }
+                    return ($aTime > $bTime) ? -1 : 1;
+                }
+            );
+            $signature = $directSignatures[0];
+            $keyExpirationTime = $signature->getKeyExpirationTime();
+            if (!empty($keyExpirationTime)) {
+                $expirationTime = $keyExpirationTime->getExpirationTime();
+                $creationTime = $signature->getSignatureCreationTime() ?? new DateTime();
+                $keyExpiration = $creationTime->add(
+                    DateInterval::createFromDateString($expirationTime . ' seconds')
+                );
+                $signatureExpiration = $signature->getSignatureExpirationTime();
+                if (empty($signatureExpiration)) {
+                    return $keyExpiration;
+                }
+                else {
+                    return $keyExpiration < $signatureExpiration ? $keyExpiration : $signatureExpiration;
+                }
+            }
+            else {
+                return $signature->getSignatureExpirationTime();
+            }
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCreationTime(): DateTime
+    {
+        return $this->keyPacket->getCreationTime();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getKeyAlgorithm(): KeyAlgorithm
+    {
+        return $this->keyPacket->getKeyAlgorithm();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFingerprint(bool $toHex = false): string
+    {
+        return $this->keyPacket->getFingerprint($toHex);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getKeyID(bool $toHex = false): string
+    {
+        return $this->keyPacket->getKeyID($toHex);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getKeyStrength(): int
+    {
+        return $this->keyPacket->getKeyStrength();
     }
 
     /**

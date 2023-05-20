@@ -164,6 +164,26 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
     /**
      * {@inheritdoc}
      */
+    public function getKeyStrength(): int
+    {
+        if ($this->keyParameters instanceof Key\RSAPublicParameters) {
+            return $this->keyParameters->getModulus()->getLength();
+        }
+        elseif ($this->keyParameters instanceof Key\DSAPublicParameters) {
+            return $this->keyParameters->getPrime()->getLength();
+        }
+        elseif ($this->keyParameters instanceof Key\ElGamalPublicParameters) {
+            return $this->keyParameters->getPrime()->getLength();
+        }
+        elseif ($this->keyParameters instanceof Key\ECPublicParameters) {
+            return $this->keyParameters->getPublicKey()->getLength();
+        };
+        return 0;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isSubkey(): bool
     {
         $this instanceof SubkeyPacketInterface;

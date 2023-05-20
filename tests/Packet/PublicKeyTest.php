@@ -21,8 +21,8 @@ YlrMl9Lcz9vbntpK45aq35P3cfg5UEjCLj1TAq6LPFnfiwbQcNkbsTRsxPqWpX4J6v5ZabJIFGyd
 K14eiohYTbp7Uvr/e3yRhTirWYz4KnJwuFOsemuSjSAGi3C5ABEBAAE=
 EOT;
         $publicKey = PublicKey::fromBytes(base64_decode($data));
-        $this->assertSame('fc5004df9473277107eaa605184d0dc4f5c532b2', bin2hex($publicKey->getFingerprint()));
-        $this->assertSame('184d0dc4f5c532b2', bin2hex($publicKey->getKeyID()));
+        $this->assertSame('fc5004df9473277107eaa605184d0dc4f5c532b2', $publicKey->getFingerprint(true));
+        $this->assertSame('184d0dc4f5c532b2', $publicKey->getKeyID(true));
     }
 
     public function testRsaPublicSubkey()
@@ -35,8 +35,8 @@ fegaEYESkM32/vygrCOWNC1Tea7kWe1A0+/ZYbgPh3blorNGICkUqiKfST9Xq26Lb67Kc38Gxjij
 X9LAnOoxEyCjmCv/+ajNIDvMSQOtnTCapLpRrhLlzjvIDtOnABEBAAE=
 EOT;
         $publicSubkey = PublicSubkey::fromBytes(base64_decode($data));
-        $this->assertSame('42badbbe0f2acabacd6cac7c4be1b3a621ef906f', bin2hex($publicSubkey->getFingerprint()));
-        $this->assertSame('4be1b3a621ef906f', bin2hex($publicSubkey->getKeyID()));
+        $this->assertSame('42badbbe0f2acabacd6cac7c4be1b3a621ef906f', $publicSubkey->getFingerprint(true));
+        $this->assertSame('4be1b3a621ef906f', $publicSubkey->getKeyID(true));
     }
 
     public function testDsaPublicKey()
@@ -59,8 +59,8 @@ JN3kg8cu61aYn2FKiZDRQEDbHFVHJ52e34OZAmmWZLvzUk11E7dQdnpItffEwp8aGro7pUwGo79k
 2R6iMnzQc3iIUX0Ns/vE3A==
 EOT;
         $publicKey = PublicKey::fromBytes(base64_decode($data));
-        $this->assertSame('3e57913d5f6ccbdb9022f7dee3b11d642248a092', bin2hex($publicKey->getFingerprint()));
-        $this->assertSame('e3b11d642248a092', bin2hex($publicKey->getKeyID()));
+        $this->assertSame('3e57913d5f6ccbdb9022f7dee3b11d642248a092', $publicKey->getFingerprint(true));
+        $this->assertSame('e3b11d642248a092', $publicKey->getKeyID(true));
     }
 
     public function testElGamalPublicSubkey()
@@ -78,8 +78,8 @@ pXQHGaN/KFh/UlbLKdBnaVaPy8I4HyzTqyjzvKmN5h8s1cv+7/SJKqWoqipdsp+PBYPdPVujT4Rt
 ZSgDj7aW2N0nvDT5
 EOT;
         $publicSubkey = PublicSubkey::fromBytes(base64_decode($data));
-        $this->assertSame('420a452a98ea130c7747e0b2c0453c8aabe775db', bin2hex($publicSubkey->getFingerprint()));
-        $this->assertSame('c0453c8aabe775db', bin2hex($publicSubkey->getKeyID()));
+        $this->assertSame('420a452a98ea130c7747e0b2c0453c8aabe775db', $publicSubkey->getFingerprint(true));
+        $this->assertSame('c0453c8aabe775db', $publicSubkey->getKeyID(true));
     }
 
     public function testEcdsaP384PublicKey()
@@ -89,8 +89,8 @@ BGRYd7UTBSuBBAAiAwME3Z/lmJrDGnYHvT7xe5ei8xFfsCsrH+6AjmSftcJEYCCTy4CupXlvp5wb
 FLQ2klduC2c09LzjULVFn4uQKdMacYb7X0UjI2q6MLGP1fpmg7mq4F8myVJx6lkvpHK44xDh
 EOT;
         $publicKey = PublicKey::fromBytes(base64_decode($data));
-        $this->assertSame('05c085492d14f90976e7c2b6b202d9e2eada440c', bin2hex($publicKey->getFingerprint()));
-        $this->assertSame('b202d9e2eada440c', bin2hex($publicKey->getKeyID()));
+        $this->assertSame('05c085492d14f90976e7c2b6b202d9e2eada440c', $publicKey->getFingerprint(true));
+        $this->assertSame('b202d9e2eada440c', $publicKey->getKeyID(true));
     }
 
     public function testEcdhP384PublicSubkey()
@@ -101,8 +101,8 @@ c1s1wntRUFb9OjS06I8YQVBIPdyegmsMZj9J/fa0qFkd2r3siXb2x3zGqsxe1lvrYDVj9gDYAwEJ
 CQ==
 EOT;
         $publicSubkey = PublicSubkey::fromBytes(base64_decode($data));
-        $this->assertSame('7d5bfac8919d26290b28ec56c0b7b9c6bf5824b6', bin2hex($publicSubkey->getFingerprint()));
-        $this->assertSame('c0b7b9c6bf5824b6', bin2hex($publicSubkey->getKeyID()));
+        $this->assertSame('7d5bfac8919d26290b28ec56c0b7b9c6bf5824b6', $publicSubkey->getFingerprint(true));
+        $this->assertSame('c0b7b9c6bf5824b6', $publicSubkey->getKeyID(true));
     }
 
     public function testEcdsaBrainpoolP256PublicKey()
@@ -112,8 +112,8 @@ BGRYXMETCSskAwMCCAEBBwIDBHKh5xdXoTfino6vulZBw4fl5lMtKgzXIeG9zhJuBInpE7gOlxes
 07/JY2b9aIUph0fAku1xE+ljP5I/5pI5qrQ=
 EOT;
         $publicKey = PublicKey::fromBytes(base64_decode($data));
-        $this->assertSame('06fee3085d46dc007c0ec2f01cbcd043db44c5d6', bin2hex($publicKey->getFingerprint()));
-        $this->assertSame('1cbcd043db44c5d6', bin2hex($publicKey->getKeyID()));
+        $this->assertSame('06fee3085d46dc007c0ec2f01cbcd043db44c5d6', $publicKey->getFingerprint(true));
+        $this->assertSame('1cbcd043db44c5d6', $publicKey->getKeyID(true));
     }
 
     public function testEcdhBrainpoolP256PublicSubkey()
@@ -123,8 +123,8 @@ BGRYXMESCSskAwMCCAEBBwIDBINvienMnFyJJCblEBJ2J9sBZ/hCAHGLbgDZPCC+mTLqDJJx47Sr
 B3ZgWmrx1NRoT2pQfD2qqYo8jQJK8XlgyqIDAQgH
 EOT;
         $publicSubkey = PublicSubkey::fromBytes(base64_decode($data));
-        $this->assertSame('457b5979545fba09be179db808a55bdb1d673d5d', bin2hex($publicSubkey->getFingerprint()));
-        $this->assertSame('08a55bdb1d673d5d', bin2hex($publicSubkey->getKeyID()));
+        $this->assertSame('457b5979545fba09be179db808a55bdb1d673d5d', $publicSubkey->getFingerprint(true));
+        $this->assertSame('08a55bdb1d673d5d', $publicSubkey->getKeyID(true));
     }
 
     public function testEddsaCurve25519PublicKey()
@@ -133,8 +133,8 @@ EOT;
 BGRYXQUWCSsGAQQB2kcPAQEHQLvR0VoiVSt3+xzxSSQrR7/yrMzQG8OXueMhIkQb0UPM
 EOT;
         $publicKey = PublicKey::fromBytes(base64_decode($data));
-        $this->assertSame('1c4116eb2b58cfa196c57ddbbdff135160c56a0b', bin2hex($publicKey->getFingerprint()));
-        $this->assertSame('bdff135160c56a0b', bin2hex($publicKey->getKeyID()));
+        $this->assertSame('1c4116eb2b58cfa196c57ddbbdff135160c56a0b', $publicKey->getFingerprint(true));
+        $this->assertSame('bdff135160c56a0b', $publicKey->getKeyID(true));
     }
 
     public function testEcdhCurve25519PublicSubkey()
@@ -143,7 +143,7 @@ EOT;
 BGRYXQUSCisGAQQBl1UBBQEBB0BCbUFNqFZKpFLBB339cZrp7udovohvVMiG7qP9+ij6AQMBCAc=
 EOT;
         $publicSubkey = PublicSubkey::fromBytes(base64_decode($data));
-        $this->assertSame('8efa53a375fc569aa9ca564a044eac93f0b69ea0', bin2hex($publicSubkey->getFingerprint()));
-        $this->assertSame('044eac93f0b69ea0', bin2hex($publicSubkey->getKeyID()));
+        $this->assertSame('8efa53a375fc569aa9ca564a044eac93f0b69ea0', $publicSubkey->getFingerprint(true));
+        $this->assertSame('044eac93f0b69ea0', $publicSubkey->getKeyID(true));
     }
 }

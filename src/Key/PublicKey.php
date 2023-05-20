@@ -13,7 +13,7 @@ namespace OpenPGP\Key;
 use OpenPGP\Common\Armor;
 use OpenPGP\Enum\ArmorType;
 use OpenPGP\Packet\PacketList;
-use OpenPGP\Type\PacketListInterface;
+use OpenPGP\Type\{KeyInterface, PacketListInterface};
 
 /**
  * OpenPGP public key class

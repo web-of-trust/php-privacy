@@ -11,6 +11,7 @@
 namespace OpenPGP\Type;
 
 use DateTime;
+use OpenPGP\Enum\KeyAlgorithm;
 
 /**
  * Subkey interface
@@ -35,6 +36,43 @@ interface SubkeyInterface
      * @return DateTime
      */
     function getExpirationTime(): ?DateTime;
+
+    /**
+     * Gets creation time
+     * 
+     * @return DateTime
+     */
+    function getCreationTime(): DateTime;
+
+    /**
+     * Gets key algorithm
+     * 
+     * @return KeyAlgorithm
+     */
+    function getKeyAlgorithm(): KeyAlgorithm;
+
+    /**
+     * Gets fingerprint
+     * 
+     * @param bool $toHex
+     * @return string
+     */
+    function getFingerprint(bool $toHex = false): string;
+
+    /**
+     * Gets key ID
+     * 
+     * @param bool $toHex
+     * @return string
+     */
+    function getKeyID(bool $toHex = false): string;
+
+    /**
+     * Gets key strength
+     * 
+     * @return string
+     */
+    function getKeyStrength(): int;
 
     /**
      * Checks if a binding signature of a subkey is revoked

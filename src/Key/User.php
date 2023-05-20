@@ -11,7 +11,7 @@
 namespace OpenPGP\Key;
 
 use OpenPGP\Enum\{HashAlgorithm, SignatureType};
-use OpenPGP\Packet\{PacketList, Signature};
+use OpenPGP\Packet\{PacketList, Signature, UserID};
 use OpenPGP\Type\{
     KeyInterface,
     PacketContainerInterface,
@@ -116,6 +116,16 @@ class User implements PacketContainerInterface
     public function getOtherCertifications(): array
     {
         return $this->otherCertifications;
+    }
+
+    /**
+     * Gets user ID
+     * 
+     * @return string
+     */
+    public function getUserID(): string
+    {
+        return ($this->userIDPacket instanceof UserID) ? $this->userIDPacket->getUserID() : '';
     }
 
     /**

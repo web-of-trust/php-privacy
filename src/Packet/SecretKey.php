@@ -253,6 +253,14 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
     /**
      * {@inheritdoc}
      */
+    public function getKeyStrength(): int
+    {
+        return $this->publicKey->getKeyStrength();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isSubkey(): bool
     {
         return $this instanceof SubkeyPacketInterface;

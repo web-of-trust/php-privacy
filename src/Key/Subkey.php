@@ -12,6 +12,7 @@ namespace OpenPGP\Key;
 
 use DateInterval;
 use DateTime;
+use OpenPGP\Enum\KeyAlgorithm;
 use OpenPGP\Packet\PacketList;
 use OpenPGP\Type\{
     KeyInterface,
@@ -137,6 +138,46 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
                 return $signature->getSignatureExpirationTime();
             }
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCreationTime(): DateTime
+    {
+        return $this->keyPacket->getCreationTime();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getKeyAlgorithm(): KeyAlgorithm
+    {
+        return $this->keyPacket->getKeyAlgorithm();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFingerprint(bool $toHex = false): string
+    {
+        return $this->keyPacket->getFingerprint($toHex);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getKeyID(bool $toHex = false): string
+    {
+        return $this->keyPacket->getKeyID($toHex);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getKeyStrength(): int
+    {
+        return $this->keyPacket->getKeyStrength();
     }
 
     /**

@@ -53,19 +53,19 @@ class UserID extends AbstractPacket implements ForSigningInterface, UserIDPacket
             $this->comment = trim($matches[2]);
         }
         // User IDs of the form: "name <email>"
-        elseif (preg_match('/^([^<]+)\s+<([^>]+)>$/', $this->data, $matches)) {
+        elseif (preg_match('/^([^<]+)\s+<([^>]+)>$/', $this->userID, $matches)) {
             $this->name  = trim($matches[1]);
             $this->email = trim($matches[2]);
             $this->comment = '';
         }
         // User IDs of the form: "name"
-        elseif (preg_match('/^([^<]+)$/', $this->data, $matches)) {
+        elseif (preg_match('/^([^<]+)$/', $this->userID, $matches)) {
             $this->name = trim($matches[1]);
             $this->email = '';
             $this->comment = '';
         }
         // User IDs of the form: "<email>"
-        elseif (preg_match('/^<([^>]+)>$/', $this->data, $matches)) {
+        elseif (preg_match('/^<([^>]+)>$/', $this->userID, $matches)) {
             $this->name = '';
             $this->email = trim($matches[2]);
             $this->comment = '';

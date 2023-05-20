@@ -68,6 +68,13 @@ interface KeyPacketInterface
     function getKeyID(bool $toHex = false): string;
 
     /**
+     * Gets key Strength
+     * 
+     * @return int
+     */
+    function getKeyStrength(): int;
+
+    /**
      * Return key packete is subkey
      * 
      * @return string
