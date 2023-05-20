@@ -27,7 +27,7 @@ use OpenPGP\Packet\{
     Signature,
     UserID
 };
-use OpenPGP\Type\PacketListInterface;
+use OpenPGP\Type\{PacketListInterface, SecretKeyPacketInterface};
 
 /**
  * OpenPGP private key class
@@ -67,6 +67,11 @@ class PrivateKey extends AbstractKey
     public static function fromPacketList(PacketListInterface $packetList): self
     {
         $keyMap = self::readPacketList($packetList);
+        if (!($keyMap['keyPacket'] instanceof SecretKeyPacketInterface)) {
+            throw new \UnexpectedValueException(
+                'Key packet is not secret key type'
+            );
+        }
         $privateKey = new self(
             $keyMap['keyPacket'],
             $keyMap['revocationSignatures'],
@@ -209,5 +214,114 @@ class PrivateKey extends AbstractKey
             }
         }
         return PublicKey::fromPacketList((new PacketList($packets)));
+    }
+
+    /**
+     * Lock a private key with the given passphrase.
+     * This method does not change the original key.
+     * 
+     * @param string $passphrase
+     * @param array $subkeyPassphrases
+     * @return self
+     */
+    public function encrypt(
+        string $passphrase,
+        array $subkeyPassphrases = []
+    ): self
+    {
+        if (empty($passphrase)) {
+            throw new \InvalidArgumentException(
+                'passphrase are required for key encryption'
+            );
+        }
+        $privateKey = self(
+            $this->keyPacket->encrypt($passphrase),
+            $this->getRevocationSignatures(),
+            $this->getDirectSignatures(),
+        );
+
+        $users = array_map(
+            static fn ($user) => new User(
+                $privateKey,
+                $user->getUserIDPacket(),
+                $user->getRevocationCertifications(),
+                $user->getSelfCertifications(),
+                $user->getOtherCertifications()
+            ),
+            $this->getUsers()
+        );
+        $privateKey->setUsers($users);
+
+        $subkeys = [];
+        foreach ($this->getSubkeys() as $key => $subkey) {
+            $subkeyPassphrase = isset($subkeyPassphrases[$key]) ? $subkeyPassphrases[$key] : $passphrase;
+            $keyPacket = $subkey->getKeyPacket()->encrypt($subkeyPassphrase);
+            $subkeys[] = new Subkey(
+                $privateKey,
+                $keyPacket,
+                $subkey->getRevocationSignatures(),
+                $subkey->getRevocationSignatures()
+            );
+        }
+        $privateKey->setSubkeys($subkeys);
+
+        return $privateKey;
+    }
+
+    /**
+     * Unlock a private key with the given passphrase.
+     * This method does not change the original key.
+     * 
+     * @param string $passphrase
+     * @param array $subkeyPassphrases
+     * @return self
+     */
+    public function decrypt(
+        string $passphrase, array $subkeyPassphrases = []
+    ): self
+    {
+        if (empty($passphrase)) {
+            throw new \InvalidArgumentException(
+                'passphrase are required for key decryption'
+            );
+        }
+        $secretKey = $this->keyPacket->decrypt($passphrase);
+        if (!$secretKey->isValid()) {
+            throw new \UnexpectedValueException(
+                'The key parameters are not consistent'
+            );
+        }
+        $privateKey = self(
+            $secretKey,
+            $this->getRevocationSignatures(),
+            $this->getDirectSignatures(),
+        );
+
+        $users = array_map(
+            static fn ($user) => new User(
+                $privateKey,
+                $user->getUserIDPacket(),
+                $user->getRevocationCertifications(),
+                $user->getSelfCertifications(),
+                $user->getOtherCertifications()
+            ),
+            $this->getUsers()
+        );
+        $privateKey->setUsers($users);
+
+        $subkeys = [];
+        foreach ($this->getSubkeys() as $key => $subkey) {
+            $subkeyPassphrase = isset($subkeyPassphrases[$key]) ? $subkeyPassphrases[$key] : $passphrase;
+            $keyPacket = $subkey->getKeyPacket()->decrypt($subkeyPassphrase);
+            $subkeys[] = new Subkey(
+                $privateKey,
+                $keyPacket,
+                $subkey->getRevocationSignatures(),
+                $subkey->getRevocationSignatures()
+            );
+        }
+        $privateKey->setSubkeys($subkeys);
+
+        new $privateKey;
     }
 }

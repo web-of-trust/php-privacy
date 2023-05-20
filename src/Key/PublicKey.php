@@ -53,6 +53,11 @@ class PublicKey extends AbstractKey
     public static function fromPacketList(PacketListInterface $packetList): self
     {
         $keyMap = self::readPacketList($packetList);
+        if (!($keyMap['keyPacket'] instanceof KeyPacketInterface)) {
+            throw new \UnexpectedValueException(
+                'Key packet is not key type'
+            );
+        }
         $publicKey = new self(
             $keyMap['keyPacket'],
             $keyMap['revocationSignatures'],

@@ -57,8 +57,10 @@ EOT;
         $this->assertTrue($subkey->verify());
 
         $user = $publicKey->getUsers()[0];
-        $this->assertSame('rsa php pg key <php-pg@dummy.com>', $user->getUserID(true));
+        $this->assertSame('rsa php pg key <php-pg@dummy.com>', $user->getUserID());
         $this->assertTrue($user->verify());
+
+        $this->assertEquals($publicKey, PublicKey::fromArmored($publicKey->armor()));
     }
 
     public function testReadDSAPublicKey()
@@ -117,8 +119,10 @@ EOT;
         $this->assertTrue($subkey->verify());
 
         $user = $publicKey->getUsers()[0];
-        $this->assertSame('dsa php pg key <php-pg@dummy.com>', $user->getUserID(true));
+        $this->assertSame('dsa php pg key <php-pg@dummy.com>', $user->getUserID());
         $this->assertTrue($user->verify());
+
+        $this->assertEquals($publicKey, PublicKey::fromArmored($publicKey->armor()));
     }
 
     public function testReadEcP384PublicKey()
@@ -155,7 +159,7 @@ EOT;
         $this->assertTrue($subkey->verify());
 
         $user = $publicKey->getUsers()[0];
-        $this->assertSame('ec p-384 php pg key <php-pg@dummy.com>', $user->getUserID(true));
+        $this->assertSame('ec p-384 php pg key <php-pg@dummy.com>', $user->getUserID());
         $this->assertTrue($user->verify());
     }
 
@@ -191,7 +195,7 @@ EOT;
         $this->assertTrue($subkey->verify());
 
         $user = $publicKey->getUsers()[0];
-        $this->assertSame('ec brainpool p-256 php pg key <php-pg@dummy.com>', $user->getUserID(true));
+        $this->assertSame('ec brainpool p-256 php pg key <php-pg@dummy.com>', $user->getUserID());
         $this->assertTrue($user->verify());
     }
 
@@ -225,7 +229,7 @@ EOT;
         $this->assertTrue($subkey->verify());
 
         $user = $publicKey->getUsers()[0];
-        $this->assertSame('curve 25519 php pg key <php-pg@dummy.com>', $user->getUserID(true));
+        $this->assertSame('curve 25519 php pg key <php-pg@dummy.com>', $user->getUserID());
         $this->assertTrue($user->verify());
     }
 }
