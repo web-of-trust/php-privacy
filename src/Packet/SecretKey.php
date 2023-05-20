@@ -133,7 +133,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
      */
     public static function generate(
         KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
-        RSAKeySize $rsaKeySize = RSAKeySize::S2048,
+        RSAKeySize $rsaKeySize = RSAKeySize::S4096,
         DHKeySize $dhKeySize = DHKeySize::L2048_N224,
         CurveOid $curveOid = CurveOid::Secp521r1,
         ?DateTime $time = null

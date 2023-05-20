@@ -14,6 +14,7 @@ use DateTime;
 use OpenPGP\Common\Armor;
 use OpenPGP\Enum\{
     ArmorType,
+    CurveOid,
     DHKeySize,
     KeyAlgorithm,
     KeyType,
@@ -118,7 +119,7 @@ class PrivateKey extends AbstractKey
      * @param RSAKeySize $rsaKeySize
      * @param DHKeySize $dhKeySize
      * @param CurveOid $curve
-     * @param CurveOid $keyExpiry
+     * @param int $keyExpiry
      * @param DateTime $date
      * @return self
      */

@@ -2,6 +2,7 @@
 
 namespace OpenPGP\Tests\Cryptor;
 
+use OpenPGP\Enum\KeyType;
 use OpenPGP\Key\PrivateKey;
 use OpenPGP\Key\PublicKey;
 use OpenPGP\Tests\OpenPGPTestCase;
@@ -319,5 +320,31 @@ EOT;
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
         $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
+    }
+
+    public function testGenerateRSAPrivateKey()
+    {
+        $name = $this->faker->unique()->name();
+        $email = $this->faker->unique()->safeEmail();
+        $comment = $this->faker->unique()->sentence(3);
+        $passphrase = $this->faker->unique()->password();
+        $userID = implode([$name, "($comment)", "<$email>"]);
+
+        $privateKey = PrivateKey::generate(
+            [$userID],
+            $passphrase,
+            KeyType::Rsa
+        );
+        $this->assertTrue($privateKey->isEncrypted());
+        $this->assertTrue($privateKey->isDecrypted());
+        $this->assertSame(4096, $privateKey->getKeyStrength());
+
+        $subkey = $privateKey->getSubKeys()[0];
+        // $this->assertSame(4096, $subkey->getKeyStrength());
+        $this->assertTrue($subkey->verify());
+
+        $user = $privateKey->getUsers()[0];
+        $this->assertSame($userID, $user->getUserID());
+        $this->assertTrue($user->verify());
     }
 }

@@ -37,7 +37,7 @@ class RSAPublicParameters implements VerifiableParametersInterface
      * Constructor
      *
      * @param BigInteger $modulus
-     * @param BigInteger $publicExponent
+     * @param BigInteger $exponent
      * @return self
      */
     public function __construct(
@@ -47,8 +47,8 @@ class RSAPublicParameters implements VerifiableParametersInterface
     )
     {
         $this->publicKey = $publicKey ?? RSA::load([
-            'e' => $exponent,
             'n' => $modulus,
+            'e' => $exponent,
         ]);
     }
 

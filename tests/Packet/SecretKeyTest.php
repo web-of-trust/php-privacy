@@ -205,6 +205,7 @@ EOT;
         $secretKey = SecretKey::generate(KeyAlgorithm::RsaEncryptSign);
         $this->assertFalse($secretKey->isEncrypted());
         $this->assertTrue($secretKey->getKeyParameters()->isValid());
+        $this->assertSame(4096, $secretKey->getKeyStrength());
 
         $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
         $this->assertTrue($encryptedSecretKey->isEncrypted());
@@ -222,6 +223,7 @@ EOT;
         $secretKey = SecretKey::generate(KeyAlgorithm::Dsa);
         $this->assertFalse($secretKey->isEncrypted());
         $this->assertTrue($secretKey->getKeyParameters()->isValid());
+        $this->assertSame(2048, $secretKey->getKeyStrength());
 
         $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
         $this->assertTrue($encryptedSecretKey->isEncrypted());
@@ -239,6 +241,7 @@ EOT;
         $secretKey = SecretKey::generate(KeyAlgorithm::ElGamal);
         $this->assertFalse($secretKey->isEncrypted());
         $this->assertTrue($secretKey->getKeyParameters()->isValid());
+        $this->assertSame(2048, $secretKey->getKeyStrength());
 
         $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
         $this->assertTrue($encryptedSecretKey->isEncrypted());
@@ -259,6 +262,7 @@ EOT;
         );
         $this->assertFalse($secretKey->isEncrypted());
         $this->assertTrue($secretKey->getKeyParameters()->isValid());
+        $this->assertSame(521, $secretKey->getKeyStrength());
 
         $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
         $this->assertTrue($encryptedSecretKey->isEncrypted());
@@ -279,6 +283,7 @@ EOT;
         );
         $this->assertFalse($secretKey->isEncrypted());
         $this->assertTrue($secretKey->getKeyParameters()->isValid());
+        $this->assertSame(512, $secretKey->getKeyStrength());
 
         $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
         $this->assertTrue($encryptedSecretKey->isEncrypted());
@@ -299,6 +304,7 @@ EOT;
         );
         $this->assertFalse($secretKey->isEncrypted());
         $this->assertTrue($secretKey->getKeyParameters()->isValid());
+        $this->assertSame(255, $secretKey->getKeyStrength());
 
         $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
         $this->assertTrue($encryptedSecretKey->isEncrypted());
@@ -319,6 +325,7 @@ EOT;
         );
         $this->assertFalse($secretKey->isEncrypted());
         $this->assertTrue($secretKey->getKeyParameters()->isValid());
+        $this->assertSame(521, $secretKey->getKeyStrength());
 
         $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
         $this->assertTrue($encryptedSecretKey->isEncrypted());
@@ -339,6 +346,7 @@ EOT;
         );
         $this->assertFalse($secretKey->isEncrypted());
         $this->assertTrue($secretKey->getKeyParameters()->isValid());
+        $this->assertSame(512, $secretKey->getKeyStrength());
 
         $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
         $this->assertTrue($encryptedSecretKey->isEncrypted());
@@ -359,6 +367,7 @@ EOT;
         );
         $this->assertFalse($secretKey->isEncrypted());
         $this->assertTrue($secretKey->getKeyParameters()->isValid());
+        $this->assertSame(255, $secretKey->getKeyStrength());
 
         $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
         $this->assertTrue($encryptedSecretKey->isEncrypted());

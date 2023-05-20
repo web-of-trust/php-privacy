@@ -98,7 +98,7 @@ class RSASecretParameters implements SignableParametersInterface
     public static function generate(RSAKeySize $keySize): self
     {
         $privateKey = RSA::createKey($keySize->value);
-        $rawKey = RSA::createKey($keySize->value)->toString('Raw');
+        $rawKey = $privateKey->toString('Raw');
         $primeP = $rawKey['primes'][1];
         $primeQ = $rawKey['primes'][2];
         return new self(
