@@ -101,7 +101,19 @@ EOT;
         $this->assertTrue($publicKey instanceof PublicKey);
         $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
 
-        $this->assertEquals($privateKey, PrivateKey::fromArmored($privateKey->armor())->decrypt(self::PASSPHRASE));
+        $passphrase = $this->faker->unique()->password();
+        $this->assertEquals(
+            $privateKey->getFingerprint(true),
+            PrivateKey::fromArmored(
+                $privateKey->armor()
+            )->decrypt(self::PASSPHRASE)->getFingerprint(true)
+        );
+        $this->assertEquals(
+            $privateKey->getFingerprint(true),
+            PrivateKey::fromArmored(
+                $privateKey->encrypt($passphrase)->armor()
+            )->decrypt($passphrase)->getFingerprint(true)
+        );
     }
 
     public function testReadDSAPrivateKey()
@@ -176,7 +188,19 @@ EOT;
         $this->assertTrue($publicKey instanceof PublicKey);
         $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
 
-        $this->assertEquals($privateKey, PrivateKey::fromArmored($privateKey->armor())->decrypt(self::PASSPHRASE));
+        $passphrase = $this->faker->unique()->password();
+        $this->assertEquals(
+            $privateKey->getFingerprint(true),
+            PrivateKey::fromArmored(
+                $privateKey->armor()
+            )->decrypt(self::PASSPHRASE)->getFingerprint(true)
+        );
+        $this->assertEquals(
+            $privateKey->getFingerprint(true),
+            PrivateKey::fromArmored(
+                $privateKey->encrypt($passphrase)->armor()
+            )->decrypt($passphrase)->getFingerprint(true)
+        );
     }
 
     public function testReadEcP384PrivateKey()
@@ -228,6 +252,20 @@ EOT;
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
         $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
+
+        $passphrase = $this->faker->unique()->password();
+        $this->assertEquals(
+            $privateKey->getFingerprint(true),
+            PrivateKey::fromArmored(
+                $privateKey->armor()
+            )->decrypt(self::PASSPHRASE)->getFingerprint(true)
+        );
+        $this->assertEquals(
+            $privateKey->getFingerprint(true),
+            PrivateKey::fromArmored(
+                $privateKey->encrypt($passphrase)->armor()
+            )->decrypt($passphrase)->getFingerprint(true)
+        );
     }
 
     public function testReadEcBrainpoolPrivateKey()
@@ -272,6 +310,24 @@ EOT;
         $user = $privateKey->getUsers()[0];
         $this->assertSame('ec brainpool p-256 php pg key <php-pg@dummy.com>', $user->getUserID());
         $this->assertTrue($user->verify());
+
+        $publicKey = $privateKey->toPublic();
+        $this->assertTrue($publicKey instanceof PublicKey);
+        $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
+
+        $passphrase = $this->faker->unique()->password();
+        $this->assertEquals(
+            $privateKey->getFingerprint(true),
+            PrivateKey::fromArmored(
+                $privateKey->armor()
+            )->decrypt(self::PASSPHRASE)->getFingerprint(true)
+        );
+        $this->assertEquals(
+            $privateKey->getFingerprint(true),
+            PrivateKey::fromArmored(
+                $privateKey->encrypt($passphrase)->armor()
+            )->decrypt($passphrase)->getFingerprint(true)
+        );
     }
 
     public function testReadEcCurve25519PrivateKey()
@@ -319,6 +375,20 @@ EOT;
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
         $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
+
+        $passphrase = $this->faker->unique()->password();
+        $this->assertEquals(
+            $privateKey->getFingerprint(true),
+            PrivateKey::fromArmored(
+                $privateKey->armor()
+            )->decrypt(self::PASSPHRASE)->getFingerprint(true)
+        );
+        $this->assertEquals(
+            $privateKey->getFingerprint(true),
+            PrivateKey::fromArmored(
+                $privateKey->encrypt($passphrase)->armor()
+            )->decrypt($passphrase)->getFingerprint(true)
+        );
     }
 
     public function testGenerateRSAPrivateKey()
@@ -349,6 +419,12 @@ EOT;
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
         $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
+
+        $privateKey = PrivateKey::fromArmored($privateKey->armor());
+        $this->assertTrue($privateKey->isEncrypted());
+        $this->assertFalse($privateKey->isDecrypted());
+        $privateKey = $privateKey->decrypt($passphrase);
+        $this->assertTrue($privateKey->isDecrypted());
     }
 
     public function testGenerateDSAPrivateKey()
@@ -379,6 +455,12 @@ EOT;
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
         $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
+
+        $privateKey = PrivateKey::fromArmored($privateKey->armor());
+        $this->assertTrue($privateKey->isEncrypted());
+        $this->assertFalse($privateKey->isDecrypted());
+        $privateKey = $privateKey->decrypt($passphrase);
+        $this->assertTrue($privateKey->isDecrypted());
     }
 
     public function testGenerateEccSecp521r1PrivateKey()
@@ -410,6 +492,12 @@ EOT;
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
         $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
+
+        $privateKey = PrivateKey::fromArmored($privateKey->armor());
+        $this->assertTrue($privateKey->isEncrypted());
+        $this->assertFalse($privateKey->isDecrypted());
+        $privateKey = $privateKey->decrypt($passphrase);
+        $this->assertTrue($privateKey->isDecrypted());
     }
 
     public function testGenerateEccBrainpoolP512r1PrivateKey()
@@ -441,6 +529,12 @@ EOT;
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
         $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
+
+        $privateKey = PrivateKey::fromArmored($privateKey->armor());
+        $this->assertTrue($privateKey->isEncrypted());
+        $this->assertFalse($privateKey->isDecrypted());
+        $privateKey = $privateKey->decrypt($passphrase);
+        $this->assertTrue($privateKey->isDecrypted());
     }
 
     public function testGenerateEccEd25519PrivateKey()
@@ -472,5 +566,11 @@ EOT;
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
         $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
+
+        $privateKey = PrivateKey::fromArmored($privateKey->armor());
+        $this->assertTrue($privateKey->isEncrypted());
+        $this->assertFalse($privateKey->isDecrypted());
+        $privateKey = $privateKey->decrypt($passphrase);
+        $this->assertTrue($privateKey->isDecrypted());
     }
 }
