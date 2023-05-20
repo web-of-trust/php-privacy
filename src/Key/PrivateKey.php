@@ -141,6 +141,7 @@ class PrivateKey extends AbstractKey
         }
         $keyAlgorithm = KeyAlgorithm::RsaEncryptSign;
         $subkeyAlgorithm = KeyAlgorithm::RsaEncryptSign;
+        $subkeyCurve = $curve;
         if ($type == KeyType::Dsa) {
             $keyAlgorithm = KeyAlgorithm::Dsa;
             $subkeyAlgorithm = KeyAlgorithm::ElGamal;
@@ -148,6 +149,8 @@ class PrivateKey extends AbstractKey
         elseif ($type == KeyType::Ecc) {
             if ($curve == CurveOid::Ed25519 || $curve == CurveOid::Curve25519) {
                 $keyAlgorithm = KeyAlgorithm::EdDsa;
+                $curve = CurveOid::Ed25519;
+                $subkeyCurve = CurveOid::Curve25519;
             }
             else {
                 $keyAlgorithm = KeyAlgorithm::EcDsa;
@@ -166,7 +169,7 @@ class PrivateKey extends AbstractKey
             $subkeyAlgorithm,
             $rsaKeySize,
             $dhKeySize,
-            $curve,
+            $subkeyCurve,
             $date,
         )->encrypt($passphrase);
 

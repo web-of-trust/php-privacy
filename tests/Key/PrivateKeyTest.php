@@ -2,9 +2,8 @@
 
 namespace OpenPGP\Tests\Cryptor;
 
-use OpenPGP\Enum\KeyType;
-use OpenPGP\Key\PrivateKey;
-use OpenPGP\Key\PublicKey;
+use OpenPGP\Enum\{CurveOid, KeyType};
+use OpenPGP\Key\{PrivateKey, PublicKey};
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
@@ -371,6 +370,99 @@ EOT;
 
         $subkey = $privateKey->getSubKeys()[0];
         $this->assertSame(2048, $subkey->getKeyStrength());
+        $this->assertTrue($subkey->verify());
+
+        $user = $privateKey->getUsers()[0];
+        $this->assertSame($userID, $user->getUserID());
+        $this->assertTrue($user->verify());
+
+        $publicKey = $privateKey->toPublic();
+        $this->assertTrue($publicKey instanceof PublicKey);
+        $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
+    }
+
+    public function testGenerateEccSecp521r1PrivateKey()
+    {
+        $name = $this->faker->unique()->name();
+        $email = $this->faker->unique()->safeEmail();
+        $comment = $this->faker->unique()->sentence(3);
+        $passphrase = $this->faker->unique()->password();
+        $userID = implode([$name, "($comment)", "<$email>"]);
+
+        $privateKey = PrivateKey::generate(
+            [$userID],
+            $passphrase,
+            KeyType::Ecc,
+            curve: CurveOid::Secp521r1
+        );
+        $this->assertTrue($privateKey->isEncrypted());
+        $this->assertTrue($privateKey->isDecrypted());
+        $this->assertSame(521, $privateKey->getKeyStrength());
+
+        $subkey = $privateKey->getSubKeys()[0];
+        $this->assertSame(521, $subkey->getKeyStrength());
+        $this->assertTrue($subkey->verify());
+
+        $user = $privateKey->getUsers()[0];
+        $this->assertSame($userID, $user->getUserID());
+        $this->assertTrue($user->verify());
+
+        $publicKey = $privateKey->toPublic();
+        $this->assertTrue($publicKey instanceof PublicKey);
+        $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
+    }
+
+    public function testGenerateEccBrainpoolP512r1PrivateKey()
+    {
+        $name = $this->faker->unique()->name();
+        $email = $this->faker->unique()->safeEmail();
+        $comment = $this->faker->unique()->sentence(3);
+        $passphrase = $this->faker->unique()->password();
+        $userID = implode([$name, "($comment)", "<$email>"]);
+
+        $privateKey = PrivateKey::generate(
+            [$userID],
+            $passphrase,
+            KeyType::Ecc,
+            curve: CurveOid::BrainpoolP512r1
+        );
+        $this->assertTrue($privateKey->isEncrypted());
+        $this->assertTrue($privateKey->isDecrypted());
+        $this->assertSame(512, $privateKey->getKeyStrength());
+
+        $subkey = $privateKey->getSubKeys()[0];
+        $this->assertSame(512, $subkey->getKeyStrength());
+        $this->assertTrue($subkey->verify());
+
+        $user = $privateKey->getUsers()[0];
+        $this->assertSame($userID, $user->getUserID());
+        $this->assertTrue($user->verify());
+
+        $publicKey = $privateKey->toPublic();
+        $this->assertTrue($publicKey instanceof PublicKey);
+        $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
+    }
+
+    public function testGenerateEccEd25519PrivateKey()
+    {
+        $name = $this->faker->unique()->name();
+        $email = $this->faker->unique()->safeEmail();
+        $comment = $this->faker->unique()->sentence(3);
+        $passphrase = $this->faker->unique()->password();
+        $userID = implode([$name, "($comment)", "<$email>"]);
+
+        $privateKey = PrivateKey::generate(
+            [$userID],
+            $passphrase,
+            KeyType::Ecc,
+            curve: CurveOid::Ed25519
+        );
+        $this->assertTrue($privateKey->isEncrypted());
+        $this->assertTrue($privateKey->isDecrypted());
+        $this->assertSame(255, $privateKey->getKeyStrength());
+
+        $subkey = $privateKey->getSubKeys()[0];
+        $this->assertSame(255, $subkey->getKeyStrength());
         $this->assertTrue($subkey->verify());
 
         $user = $privateKey->getUsers()[0];
