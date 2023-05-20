@@ -278,10 +278,36 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
+     * Creates subkey binding signature
+     *
+     * @param SecretKey $signKey
+     * @param SubkeyPacketInterface $subkey
+     * @param DateTime $creationTime
+     * @return self
+     */
+    public static function createSubkeyBinding(
+        SecretKey $signKey,
+        SubkeyPacketInterface $subkey,
+        ?DateTime $creationTime = null
+    ): self
+    {
+        return self::createSignature(
+            $signKey,
+            SignatureType::SubkeyBinding,
+            implode([
+                $signKey->getSignBytes(),
+                $subkey->getSignBytes(),
+            ]),
+            Config::getPreferredHash(),
+            $creationTime
+        );
+    }
+
+    /**
      * Creates subkey revocation signature
      *
      * @param SecretKey $signKey
-     * @param SubkeyPacketInterface $userID
+     * @param SubkeyPacketInterface $subkey
      * @param string $revocationReason
      * @param DateTime $creationTime
      * @return self

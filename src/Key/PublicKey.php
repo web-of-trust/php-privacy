@@ -25,6 +25,12 @@ use OpenPGP\Type\{KeyInterface, PacketListInterface};
  */
 class PublicKey extends AbstractKey
 {
+    /**
+     * Reads public key from armored string
+     *
+     * @param string $armored
+     * @return self
+     */
     public static function fromArmored(string $armored): self
     {
         $armor = Armor::decode($armored);
@@ -38,6 +44,12 @@ class PublicKey extends AbstractKey
         );
     }
 
+    /**
+     * Reads public key from packet list
+     *
+     * @param PacketListInterface $packetList
+     * @return self
+     */
     public static function fromPacketList(PacketListInterface $packetList): self
     {
         $keyMap = self::readPacketList($packetList);

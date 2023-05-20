@@ -17,7 +17,7 @@ use OpenPGP\Enum\{
     PacketTag,
     SignatureType
 };
-use OpenPGP\Packet\UserID;
+use OpenPGP\Packet\{PacketList, UserID};
 use OpenPGP\Type\{
     ArmorableInterface,
     KeyInterface,

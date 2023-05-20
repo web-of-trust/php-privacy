@@ -135,7 +135,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
         RSAKeySize $rsaKeySize = RSAKeySize::S2048,
         DHKeySize $dhKeySize = DHKeySize::L2048_N224,
         CurveOid $curveOid = CurveOid::Secp521r1,
-        DateTime $time = null
+        ?DateTime $time = null
     ): self
     {
         $keyParameters = match($keyAlgorithm) {

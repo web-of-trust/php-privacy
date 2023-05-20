@@ -10,9 +10,23 @@
 
 namespace OpenPGP\Key;
 
+use DateTime;
 use OpenPGP\Common\Armor;
-use OpenPGP\Enum\ArmorType;
-use OpenPGP\Packet\PacketList;
+use OpenPGP\Enum\{
+    ArmorType,
+    DHKeySize,
+    KeyAlgorithm,
+    KeyType,
+    PacketTag,
+    RSAKeySize
+};
+use OpenPGP\Packet\{
+    PacketList,
+    SecretKey,
+    SecretSubkey,
+    Signature,
+    UserID
+};
 use OpenPGP\Type\PacketListInterface;
 
 /**
@@ -25,6 +39,12 @@ use OpenPGP\Type\PacketListInterface;
  */
 class PrivateKey extends AbstractKey
 {
+    /**
+     * Reads private key from armored string
+     *
+     * @param string $armored
+     * @return self
+     */
     public static function fromArmored(string $armored): self
     {
         $armor = Armor::decode($armored);
@@ -38,6 +58,12 @@ class PrivateKey extends AbstractKey
         );
     }
 
+    /**
+     * Reads private key from packet list
+     *
+     * @param PacketListInterface $packetList
+     * @return self
+     */
     public static function fromPacketList(PacketListInterface $packetList): self
     {
         $keyMap = self::readPacketList($packetList);
@@ -72,6 +98,89 @@ class PrivateKey extends AbstractKey
     }
 
     /**
+     * Generates a new OpenPGP key pair. Supports RSA and ECC keys.
+     * By default, primary and subkeys will be of same type.
+     * The generated primary key will have signing capabilities.
+     * By default, one subkey with encryption capabilities is also generated.
+     *
+     * @param array $userIDs
+     * @param string $passphrase
+     * @param KeyType $type
+     * @param RSAKeySize $rsaKeySize
+     * @param DHKeySize $dhKeySize
+     * @param CurveOid $curve
+     * @param CurveOid $keyExpiry
+     * @param DateTime $date
+     * @return self
+     */
+    public static function generate(
+        array $userIDs,
+        string $passphrase,
+        KeyType $type = KeyType::Rsa,
+        RSAKeySize $rsaKeySize = RSAKeySize::S4096,
+        DHKeySize $dhKeySize = DHKeySize::L2048_N224,
+        CurveOid $curve = CurveOid::Secp521r1,
+        int $keyExpiry = 0,
+        ?DateTime $date = null
+    ): self
+    {
+        if (empty($userIDs) || empty($passphrase)) {
+            throw new \InvalidArgumentException(
+                'UserIDs and passphrase are required for key generation',
+            );
+        }
+        $keyAlgorithm = KeyAlgorithm::RsaEncryptSign;
+        $subkeyAlgorithm = KeyAlgorithm::RsaEncryptSign;
+        if ($type = KeyType::Dsa) {
+            $keyAlgorithm = KeyAlgorithm::Dsa;
+            $subkeyAlgorithm = KeyAlgorithm::ElGamal;
+        }
+        elseif ($type = KeyType::Ecc) {
+            if ($curve == CurveOid::Ed25519 || $curve == CurveOid::Curve25519) {
+                $keyAlgorithm = KeyAlgorithm::EdDsa;
+            }
+            else {
+                $keyAlgorithm = KeyAlgorithm::EcDsa;
+            }
+            $subkeyAlgorithm = KeyAlgorithm::Ecdh;
+        }
+
+        $secretKey = SecretKey::generate(
+            $keyAlgorithm,
+            $rsaKeySize,
+            $dhKeySize,
+            $curve,
+            $date,
+        )->encrypt($passphrase);
+        $secretSubkey = SecretSubkey::generate(
+            $subkeyAlgorithm,
+            $rsaKeySize,
+            $dhKeySize,
+            $curve,
+            $date,
+        )->encrypt($passphrase);
+
+        $packets = [$secretKey];
+
+        // Wrap user id with certificate signature
+        foreach ($userIDs as $userID) {
+            $packet = new UserID($userID);
+            $packets[] = $packet;
+            $packets[] = Signature::createCertGeneric(
+                $secretKey, $packet, $date
+            );
+        }
+
+        // Wrap secret subkey with binding signature
+        $packets[] = $secretSubkey;
+        $packets[] = Signature::createSubkeyBinding(
+            $secretKey, $secretSubkey, $date
+        );
+
+        return self::fromPacketList((new PacketList($packets)));
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function armor(): string
@@ -87,6 +196,18 @@ class PrivateKey extends AbstractKey
      */
     public function toPublic(): KeyInterface
     {
-        return $this;
+        $packets = [];
+        foreach ($this->toPacketList()->toArray() as $packet) {
+            switch ($packet->getTag()) {
+                case PacketTag::SecretKey:
+                case PacketTag::SecretSubkey:
+                    $packets[] = $packet->getPublicKey();
+                    break;
+                default:
+                    $packets[] = $packet;
+                    break;
+            }
+        }
+        return PublicKey::fromPacketList((new PacketList($packets)));
     }
 }
