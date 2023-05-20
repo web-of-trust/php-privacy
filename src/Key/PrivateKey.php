@@ -141,11 +141,11 @@ class PrivateKey extends AbstractKey
         }
         $keyAlgorithm = KeyAlgorithm::RsaEncryptSign;
         $subkeyAlgorithm = KeyAlgorithm::RsaEncryptSign;
-        if ($type = KeyType::Dsa) {
+        if ($type == KeyType::Dsa) {
             $keyAlgorithm = KeyAlgorithm::Dsa;
             $subkeyAlgorithm = KeyAlgorithm::ElGamal;
         }
-        elseif ($type = KeyType::Ecc) {
+        elseif ($type == KeyType::Ecc) {
             if ($curve == CurveOid::Ed25519 || $curve == CurveOid::Curve25519) {
                 $keyAlgorithm = KeyAlgorithm::EdDsa;
             }
@@ -184,7 +184,7 @@ class PrivateKey extends AbstractKey
         // Wrap secret subkey with binding signature
         $packets[] = $secretSubkey;
         $packets[] = Signature::createSubkeyBinding(
-            $secretKey, $secretSubkey, $keyExpiry, $date
+            $secretKey, $secretSubkey, $keyExpiry, false, $date
         );
 
         return self::fromPacketList((new PacketList($packets)));

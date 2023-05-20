@@ -283,6 +283,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @param SecretKey $signKey
      * @param SubkeyPacketInterface $subkey
      * @param int $keyExpiry
+     * @param bool $subkeySign
      * @param DateTime $creationTime
      * @return self
      */
@@ -290,12 +291,36 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         SecretKey $signKey,
         SubkeyPacketInterface $subkey,
         int $keyExpiry = 0,
+        bool $subkeySign = false,
         ?DateTime $creationTime = null
     ): self
     {
         $subpackets = [];
         if ($keyExpiry > 0) {
-            $subpackets[] = Key\KeyExpirationTime::fromTime($keyExpiry);
+            $subpackets[] = Signature\KeyExpirationTime::fromTime($keyExpiry);
+        }
+        if ($subkeySign) {
+            $subpackets[] = Signature\KeyFlags::fromFlags(
+                KeyFlag::SignData->value
+            );
+            $subpackets[] = Signature\EmbeddedSignature::fromSignature(
+                self::createSignature(
+                    $subkey,
+                    SignatureType::KeyBinding,
+                    implode([
+                        $signKey->getSignBytes(),
+                        $subkey->getSignBytes(),
+                    ]),
+                    Config::getPreferredHash(),
+                    [],
+                    $creationTime
+                )
+            );
+        }
+        else {
+            $subpackets[] = Signature\KeyFlags::fromFlags(
+                KeyFlag::EncryptCommunication->value | KeyFlag::EncryptStorage->value
+            );
         }
         return self::createSignature(
             $signKey,

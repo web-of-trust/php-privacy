@@ -340,11 +340,45 @@ EOT;
         $this->assertSame(4096, $privateKey->getKeyStrength());
 
         $subkey = $privateKey->getSubKeys()[0];
-        // $this->assertSame(4096, $subkey->getKeyStrength());
+        $this->assertSame(4096, $subkey->getKeyStrength());
         $this->assertTrue($subkey->verify());
 
         $user = $privateKey->getUsers()[0];
         $this->assertSame($userID, $user->getUserID());
         $this->assertTrue($user->verify());
+
+        $publicKey = $privateKey->toPublic();
+        $this->assertTrue($publicKey instanceof PublicKey);
+        $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
+    }
+
+    public function testGenerateDSAPrivateKey()
+    {
+        $name = $this->faker->unique()->name();
+        $email = $this->faker->unique()->safeEmail();
+        $comment = $this->faker->unique()->sentence(3);
+        $passphrase = $this->faker->unique()->password();
+        $userID = implode([$name, "($comment)", "<$email>"]);
+
+        $privateKey = PrivateKey::generate(
+            [$userID],
+            $passphrase,
+            KeyType::Dsa
+        );
+        $this->assertTrue($privateKey->isEncrypted());
+        $this->assertTrue($privateKey->isDecrypted());
+        $this->assertSame(2048, $privateKey->getKeyStrength());
+
+        $subkey = $privateKey->getSubKeys()[0];
+        $this->assertSame(2048, $subkey->getKeyStrength());
+        $this->assertTrue($subkey->verify());
+
+        $user = $privateKey->getUsers()[0];
+        $this->assertSame($userID, $user->getUserID());
+        $this->assertTrue($user->verify());
+
+        $publicKey = $privateKey->toPublic();
+        $this->assertTrue($publicKey instanceof PublicKey);
+        $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
     }
 }
