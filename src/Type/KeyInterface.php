@@ -82,6 +82,13 @@ interface KeyInterface
     function getKeyStrength(): int;
 
     /**
+     * Return key is private
+     * 
+     * @return bool
+     */
+    function isPrivate(): bool;
+
+    /**
      * Is revoked key
      *
      * @param SignaturePacketInterface $certificate

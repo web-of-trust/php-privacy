@@ -231,6 +231,14 @@ abstract class AbstractKey implements ArmorableInterface, PacketContainerInterfa
     /**
      * {@inheritdoc}
      */
+    public function isPrivate(): bool
+    {
+        return $this->keyPacket->getTag() === PacketTag::SecretKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isRevoked(
         ?SignaturePacketInterface $certificate = null,
         ?DateTime $time = null

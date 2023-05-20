@@ -27,7 +27,11 @@ use OpenPGP\Packet\{
     Signature,
     UserID
 };
-use OpenPGP\Type\{PacketListInterface, SecretKeyPacketInterface};
+use OpenPGP\Type\{
+    KeyInterface,
+    PacketListInterface,
+    SecretKeyPacketInterface
+};
 
 /**
  * OpenPGP private key class
@@ -179,7 +183,7 @@ class PrivateKey extends AbstractKey
         // Wrap secret subkey with binding signature
         $packets[] = $secretSubkey;
         $packets[] = Signature::createSubkeyBinding(
-            $secretKey, $secretSubkey, $date
+            $secretKey, $secretSubkey, $keyExpiry, $date
         );
 
         return self::fromPacketList((new PacketList($packets)));
@@ -234,8 +238,8 @@ class PrivateKey extends AbstractKey
                 'passphrase are required for key encryption'
             );
         }
-        $privateKey = self(
-            $this->keyPacket->encrypt($passphrase),
+        $privateKey = new self(
+            $this->getKeyPacket()->encrypt($passphrase),
             $this->getRevocationSignatures(),
             $this->getDirectSignatures(),
         );
@@ -285,13 +289,13 @@ class PrivateKey extends AbstractKey
                 'passphrase are required for key decryption'
             );
         }
-        $secretKey = $this->keyPacket->decrypt($passphrase);
-        if (!$secretKey->isValid()) {
+        $secretKey = $this->getKeyPacket()->decrypt($passphrase);
+        if (!$secretKey->getKeyParameters()->isValid()) {
             throw new \UnexpectedValueException(
                 'The key parameters are not consistent'
             );
         }
-        $privateKey = self(
+        $privateKey = new self(
             $secretKey,
             $this->getRevocationSignatures(),
             $this->getDirectSignatures(),
@@ -322,6 +326,6 @@ class PrivateKey extends AbstractKey
         }
         $privateKey->setSubkeys($subkeys);
 
-        new $privateKey;
+        return $privateKey;
     }
 }

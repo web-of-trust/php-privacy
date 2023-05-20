@@ -27,7 +27,8 @@ use OpenPGP\Type\{
     ForSigningInterface,
     KeyPacketInterface,
     KeyParametersInterface,
-    SecretKeyPacketInterface
+    SecretKeyPacketInterface,
+    SubkeyPacketInterface
 };
 
 /**
