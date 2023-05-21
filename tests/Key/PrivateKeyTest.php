@@ -2,7 +2,7 @@
 
 namespace OpenPGP\Tests\Cryptor;
 
-use OpenPGP\Enum\{CurveOid, KeyType};
+use OpenPGP\Enum\{CurveOid, KeyAlgorithm, KeyType};
 use OpenPGP\Key\{PrivateKey, PublicKey};
 use OpenPGP\Tests\OpenPGPTestCase;
 
@@ -425,6 +425,10 @@ EOT;
         $this->assertFalse($privateKey->isDecrypted());
         $privateKey = $privateKey->decrypt($passphrase);
         $this->assertTrue($privateKey->isDecrypted());
+
+        $privateKey = $privateKey->addSubkey($passphrase, KeyAlgorithm::RsaEncryptSign);
+        $subkey = $privateKey->getSubKeys()[1];
+        $this->assertTrue($subkey->verify());
     }
 
     public function testGenerateDSAPrivateKey()
@@ -461,6 +465,10 @@ EOT;
         $this->assertFalse($privateKey->isDecrypted());
         $privateKey = $privateKey->decrypt($passphrase);
         $this->assertTrue($privateKey->isDecrypted());
+
+        $privateKey = $privateKey->addSubkey($passphrase, KeyAlgorithm::ElGamal);
+        $subkey = $privateKey->getSubKeys()[1];
+        $this->assertTrue($subkey->verify());
     }
 
     public function testGenerateEccSecp521r1PrivateKey()
@@ -498,6 +506,12 @@ EOT;
         $this->assertFalse($privateKey->isDecrypted());
         $privateKey = $privateKey->decrypt($passphrase);
         $this->assertTrue($privateKey->isDecrypted());
+
+        $privateKey = $privateKey->addSubkey(
+            $passphrase, KeyAlgorithm::Ecdh, curve: CurveOid::Secp521r1
+        );
+        $subkey = $privateKey->getSubKeys()[1];
+        $this->assertTrue($subkey->verify());
     }
 
     public function testGenerateEccBrainpoolP512r1PrivateKey()
@@ -535,6 +549,12 @@ EOT;
         $this->assertFalse($privateKey->isDecrypted());
         $privateKey = $privateKey->decrypt($passphrase);
         $this->assertTrue($privateKey->isDecrypted());
+
+        $privateKey = $privateKey->addSubkey(
+            $passphrase, KeyAlgorithm::Ecdh, curve: CurveOid::BrainpoolP512r1
+        );
+        $subkey = $privateKey->getSubKeys()[1];
+        $this->assertTrue($subkey->verify());
     }
 
     public function testGenerateEccEd25519PrivateKey()
@@ -572,5 +592,11 @@ EOT;
         $this->assertFalse($privateKey->isDecrypted());
         $privateKey = $privateKey->decrypt($passphrase);
         $this->assertTrue($privateKey->isDecrypted());
+
+        $privateKey = $privateKey->addSubkey(
+            $passphrase, KeyAlgorithm::Ecdh, curve: CurveOid::Curve25519
+        );
+        $subkey = $privateKey->getSubKeys()[1];
+        $this->assertTrue($subkey->verify());
     }
 }

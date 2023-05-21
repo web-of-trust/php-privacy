@@ -352,4 +352,57 @@ class PrivateKey extends AbstractKey
 
         return $privateKey;
     }
+
+    /**
+     * Generates a new OpenPGP subkey,
+     * and returns a clone of the Key object with the new subkey added.
+     * 
+     * @param string $passphrase
+     * @param KeyAlgorithm $keyAlgorithm
+     * @param RSAKeySize $rsaKeySize
+     * @param DHKeySize $dhKeySize
+     * @param CurveOid $curve
+     * @param int $keyExpiry
+     * @param bool $subkeySign
+     * @param DateTime $date
+     * @return self
+     */
+    public function addSubkey(
+        string $passphrase,
+        KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
+        RSAKeySize $rsaKeySize = RSAKeySize::S4096,
+        DHKeySize $dhKeySize = DHKeySize::L2048_N224,
+        CurveOid $curve = CurveOid::Secp521r1,
+        int $keyExpiry = 0,
+        bool $subkeySign = false,
+        ?DateTime $date = null
+    ): self
+    {
+        if (empty($passphrase)) {
+            throw new \InvalidArgumentException(
+                'passphrase are required for key generation',
+            );
+        }
+
+        $secretSubkey = SecretSubkey::generate(
+            $keyAlgorithm,
+            $rsaKeySize,
+            $dhKeySize,
+            $curve,
+            $date,
+        )->encrypt($passphrase);
+
+        // Wrap secret subkey with binding signature
+        $packets = $this->toPacketList()->toArray();
+        $packets[] = $secretSubkey;
+        $packets[] = Signature::createSubkeyBinding(
+            $this->getKeyPacket(),
+            $secretSubkey,
+            $keyExpiry,
+            $subkeySign,
+            $date
+        );
+
+        return self::fromPacketList((new PacketList($packets)));
+    }
 }
