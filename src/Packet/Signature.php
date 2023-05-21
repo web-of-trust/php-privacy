@@ -13,6 +13,7 @@ namespace OpenPGP\Packet;
 use DateTime;
 use OpenPGP\Common\{Config, Helper};
 use OpenPGP\Enum\{
+    CompressionAlgorithm,
     HashAlgorithm,
     KeyAlgorithm,
     KeyFlag,
@@ -20,6 +21,8 @@ use OpenPGP\Enum\{
     RevocationReasonTag,
     SignatureSubpacketType,
     SignatureType,
+    SupportFeature,
+    SymmetricAlgorithm,
 };
 use OpenPGP\Type\{
     KeyPacketInterface,
@@ -210,6 +213,61 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             ), 0, 2),
             self::signMessage($signKey, $hashAlgorithm, $message),
             $hashedSubpackets,
+        );
+    }
+
+    /**
+     * Creates self signature
+     *
+     * @param SecretKey $signKey
+     * @param UserIDPacketInterface $userID
+     * @param DateTime $creationTime
+     * @return self
+     */
+    public static function createSelfCertificate(
+        SecretKey $signKey,
+        UserIDPacketInterface $userID,
+        ?DateTime $creationTime = null
+    )
+    {
+        return self::createSignature(
+            $signKey,
+            SignatureType::CertGeneric,
+            implode([
+                $signKey->getSignBytes(),
+                $userID->getSignBytes(),
+            ]),
+            Config::getPreferredHash(),
+            [
+                Signature\KeyFlags::fromFlags(
+                    KeyFlag::CertifyKeys->value | KeyFlag::SignData->value
+                ),
+                new Signature\PreferredSymmetricAlgorithms(
+                    implode([
+                        chr(SymmetricAlgorithm::Aes128->value),
+                        chr(SymmetricAlgorithm::Aes192->value),
+                        chr(SymmetricAlgorithm::Aes256->value),
+                    ])
+                ),
+                new Signature\PreferredHashAlgorithms(
+                    implode([
+                        chr(HashAlgorithm::Sha256->value),
+                        chr(HashAlgorithm::Sha512->value),
+                    ])
+                ),
+                new Signature\PreferredCompressionAlgorithms(
+                    implode([
+                        chr(CompressionAlgorithm::Uncompressed->value),
+                        chr(CompressionAlgorithm::Zip->value),
+                        chr(CompressionAlgorithm::Zlib->value),
+                        chr(CompressionAlgorithm::BZip2->value),
+                    ])
+                ),
+                new Signature\Features(
+                    chr(SupportFeature::ModificationDetection->value)
+                ),
+            ],
+            $creationTime
         );
     }
 

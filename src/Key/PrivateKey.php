@@ -179,7 +179,7 @@ class PrivateKey extends AbstractKey
         foreach ($userIDs as $userID) {
             $packet = new UserID($userID);
             $packets[] = $packet;
-            $packets[] = Signature::createCertGeneric(
+            $packets[] = Signature::createSelfCertificate(
                 $secretKey, $packet, $date
             );
         }
