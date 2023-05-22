@@ -176,12 +176,14 @@ class PrivateKey extends AbstractKey
         $packets = [$secretKey];
 
         // Wrap user id with certificate signature
+        $index = 0;
         foreach ($userIDs as $userID) {
             $packet = new UserID($userID);
             $packets[] = $packet;
             $packets[] = Signature::createSelfCertificate(
-                $secretKey, $packet, $time
+                $secretKey, $packet, ($index === 0) ? true : false, $time
             );
+            $index++;
         }
 
         // Wrap secret subkey with binding signature
@@ -247,10 +249,42 @@ class PrivateKey extends AbstractKey
     /**
      * Returns array of key packets that is available for decryption
      * 
+     * @param DateTime $time
      * @return array
      */
-    public function getDecryptionKeyPackets(): array
+    public function getDecryptionKeyPackets(?DateTime $time = null): array
     {
+        if (!$this->verify(time: $time)) {
+            throw new \UnexpectedValueException(
+                'Primary key is invalid.'
+            );
+        }
+        $subkeys = $this->subkeys;
+        usort(
+            $subkeys,
+            static fn ($a, $b) => $b->getCreationTime()->getTimestamp() - $a->getCreationTime()->getTimestamp()
+        );
+
+        $keyPackets = [];
+        foreach ($subkeys as $subkey) {
+            if (empty($keyID) || $keyID === $subkey->getKeyID()) {
+                if ($subkey->verify($time)) {
+                    if (!self::isValidEncryptionKey(
+                        $subkey->getKeyPacket(), $subkey->getLatestBindingSignature()
+                    )) {
+                        continue;
+                    }
+                    $keyPackets[] = $subkey->getKeyPacket();
+                }
+            }
+        }
+
+        $primaryUser = $this->getPrimaryUser($time);
+        if (self::isValidEncryptionKey($this->getKeyPacket(), $primaryUser->getLatestSelfCertification())) {
+            $keyPackets[] = $this->getKeyPacket();
+        }
+
+        return $keyPackets;
     }
 
     /**

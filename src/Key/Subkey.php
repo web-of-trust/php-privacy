@@ -95,22 +95,25 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
     }
 
     /**
-     * Gets Latest binding signature
+     * Gets latest binding signature
      * 
      * @return SignaturePacketInterface
      */
-    public function getLatestBindingSignature(): SignaturePacketInterface
+    public function getLatestBindingSignature(): ?SignaturePacketInterface
     {
-        $signatures = $this->bindingSignatures;
-        usort(
-            $signatures,
-            static function ($a, $b) {
-                $aTime = $a->getSignatureCreationTime() ?? (new DateTime())->setTimestamp(0);
-                $bTime = $b->getSignatureCreationTime() ?? (new DateTime())->setTimestamp(0);
-                return $bTime->getTimestamp() - $aTime->getTimestamp();
-            }
-        );
-        return reset($signatures);
+        if (!empty($this->bindingSignatures)) {
+            $signatures = $this->bindingSignatures;
+            usort(
+                $signatures,
+                static function ($a, $b) {
+                    $aTime = $a->getSignatureCreationTime() ?? new DateTime();
+                    $bTime = $b->getSignatureCreationTime() ?? new DateTime();
+                    return $aTime->getTimestamp() - $bTime->getTimestamp();
+                }
+            );
+            return array_pop($signatures);
+        }
+        return null;
     }
 
     /**

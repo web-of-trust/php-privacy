@@ -221,12 +221,14 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      *
      * @param SecretKey $signKey
      * @param UserIDPacketInterface $userID
+     * @param bool $isPrimaryUser
      * @param DateTime $time
      * @return self
      */
     public static function createSelfCertificate(
         SecretKey $signKey,
         UserIDPacketInterface $userID,
+        bool $isPrimaryUser = false,
         ?DateTime $time = null
     )
     {
@@ -263,6 +265,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
                         chr(CompressionAlgorithm::BZip2->value),
                     ])
                 ),
+                new Signature\PrimaryUserID($isPrimaryUser ? "\x01" : "\x00"),
                 new Signature\Features(
                     chr(SupportFeature::ModificationDetection->value)
                 ),
@@ -782,16 +785,17 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
-     * Gets primary user ID sub packet
+     * Return is primary user ID
      *
-     * @return Signature\PrimaryUserID
+     * @return bool
      */
-    public function getPrimaryUserID(): ?Signature\PrimaryUserID
+    public function isPrimaryUserID(): bool
     {
-        return self::getSubpacket(
+        $subpacket = self::getSubpacket(
             $this->hashedSubpackets,
             SignatureSubpacketType::PrimaryUserID
         );
+        return !empty($subpacket) ? $subpacket->isPrimaryUserID() : false;
     }
 
     /**

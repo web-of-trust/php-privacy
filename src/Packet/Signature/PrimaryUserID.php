@@ -46,11 +46,11 @@ class PrimaryUserID extends SignatureSubpacket
     }
 
     /**
-     * Is primary
+     * Is primary user ID
      *
      * @return string
      */
-    public function isPrimary(): string
+    public function isPrimaryUserID(): string
     {
         return ord($this->getData()) != 0;
     }

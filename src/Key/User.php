@@ -110,6 +110,28 @@ class User implements PacketContainerInterface
     }
 
     /**
+     * Gets latest self certification
+     * 
+     * @return SignaturePacketInterface
+     */
+    public function getLatestSelfCertification(): ?SignaturePacketInterface
+    {
+        if (!empty($this->selfCertifications)) {
+            $signatures = $this->selfCertifications;
+            usort(
+                $signatures,
+                static function ($a, $b) {
+                    $aTime = $a->getSignatureCreationTime() ?? new DateTime();
+                    $bTime = $b->getSignatureCreationTime() ?? new DateTime();
+                    return $aTime->getTimestamp() - $bTime->getTimestamp();
+                }
+            );
+            return array_pop($signatures);
+        }
+        return null;
+    }
+
+    /**
      * Gets other signatures
      * 
      * @return array

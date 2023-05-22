@@ -417,6 +417,46 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
         return true;
     }
 
+    /**
+     * Returns primary user
+     * 
+     * @param DateTime $time
+     * @return User
+     */
+    public function getPrimaryUser(?DateTime $time = null): User
+    {
+        $users = [];
+        foreach ($this->users as $user) {
+            if ($user->verify($time)) {
+                $users[] = $user;
+            }
+        }
+        if (empty($users)) {
+            throw new \UnexpectedValueException(
+                'Could not find primary user'
+            );
+        }
+        usort(
+            $users,
+            static function ($a, $b) {
+                $aCert = $a->getLatestSelfCertification();
+                $bCert = $b->getLatestSelfCertification();
+
+                $aPrimary = (int) $aCert->isPrimaryUserID();
+                $bPrimary = (int) $bCert->isPrimaryUserID();
+                if ($aPrimary === $bPrimary) {
+                    $aTime = $aCert->getSignatureCreationTime() ?? new DateTime();
+                    $bTime = $bCert->getSignatureCreationTime() ?? new DateTime();
+                    return $aTime->getTimestamp() - $bTime->getTimestamp();
+                }
+                else {
+                    return $aPrimary - $bPrimary;
+                }
+            }
+        );
+        return array_pop($users);
+    }
+
     protected static function readPacketList(PacketListInterface $packetList): array
     {
         $revocationSignatures = $directSignatures = $users = $subkeys = [];
@@ -526,7 +566,7 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
         ];
     }
 
-    private static function isValidSigningKey(
+    protected static function isValidSigningKey(
         KeyPacketInterface $keyPacket, SignaturePacketInterface $signature
     ): bool
     {
@@ -540,7 +580,7 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
         return true;
     }
 
-    private static function isValidEncryptionKey(
+    protected static function isValidEncryptionKey(
         KeyPacketInterface $keyPacket, SignaturePacketInterface $signature
     ): bool
     {

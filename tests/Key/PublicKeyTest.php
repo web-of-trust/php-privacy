@@ -59,6 +59,8 @@ EOT;
         $user = $publicKey->getUsers()[0];
         $this->assertSame('rsa php pg key <php-pg@dummy.com>', $user->getUserID());
         $this->assertTrue($user->verify());
+        $primaryUser = $publicKey->getPrimaryUser();
+        $this->assertSame('rsa php pg key <php-pg@dummy.com>', $primaryUser->getUserID());
 
         $signingKey = $publicKey->getSigningKeyPacket();
         $this->assertSame('fc5004df9473277107eaa605184d0dc4f5c532b2', $signingKey->getFingerprint(true));
@@ -126,6 +128,8 @@ EOT;
         $user = $publicKey->getUsers()[0];
         $this->assertSame('dsa php pg key <php-pg@dummy.com>', $user->getUserID());
         $this->assertTrue($user->verify());
+        $primaryUser = $publicKey->getPrimaryUser();
+        $this->assertSame('dsa php pg key <php-pg@dummy.com>', $primaryUser->getUserID());
 
         $signingKey = $publicKey->getSigningKeyPacket();
         $this->assertSame('3e57913d5f6ccbdb9022f7dee3b11d642248a092', $signingKey->getFingerprint(true));
@@ -171,6 +175,8 @@ EOT;
         $user = $publicKey->getUsers()[0];
         $this->assertSame('ec p-384 php pg key <php-pg@dummy.com>', $user->getUserID());
         $this->assertTrue($user->verify());
+        $primaryUser = $publicKey->getPrimaryUser();
+        $this->assertSame('ec p-384 php pg key <php-pg@dummy.com>', $primaryUser->getUserID());
 
         $signingKey = $publicKey->getSigningKeyPacket();
         $this->assertSame('05c085492d14f90976e7c2b6b202d9e2eada440c', $signingKey->getFingerprint(true));
@@ -212,6 +218,8 @@ EOT;
         $user = $publicKey->getUsers()[0];
         $this->assertSame('ec brainpool p-256 php pg key <php-pg@dummy.com>', $user->getUserID());
         $this->assertTrue($user->verify());
+        $primaryUser = $publicKey->getPrimaryUser();
+        $this->assertSame('ec brainpool p-256 php pg key <php-pg@dummy.com>', $primaryUser->getUserID());
 
         $signingKey = $publicKey->getSigningKeyPacket();
         $this->assertSame('06fee3085d46dc007c0ec2f01cbcd043db44c5d6', $signingKey->getFingerprint(true));
@@ -251,6 +259,8 @@ EOT;
         $user = $publicKey->getUsers()[0];
         $this->assertSame('curve 25519 php pg key <php-pg@dummy.com>', $user->getUserID());
         $this->assertTrue($user->verify());
+        $primaryUser = $publicKey->getPrimaryUser();
+        $this->assertSame('curve 25519 php pg key <php-pg@dummy.com>', $primaryUser->getUserID());
 
         $signingKey = $publicKey->getSigningKeyPacket();
         $this->assertSame('1c4116eb2b58cfa196c57ddbbdff135160c56a0b', $signingKey->getFingerprint(true));

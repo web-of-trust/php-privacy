@@ -67,8 +67,8 @@ final class Helper
         usort(
             $signatures,
             static function ($a, $b) {
-                $aTime = $a->getSignatureCreationTime() ?? (new DateTime())->setTimestamp(0);
-                $bTime = $b->getSignatureCreationTime() ?? (new DateTime())->setTimestamp(0);
+                $aTime = $a->getSignatureCreationTime() ?? new DateTime();
+                $bTime = $b->getSignatureCreationTime() ?? new DateTime();
                 return $bTime->getTimestamp() - $aTime->getTimestamp();
             }
         );

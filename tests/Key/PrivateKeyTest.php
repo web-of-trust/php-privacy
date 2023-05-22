@@ -97,6 +97,8 @@ EOT;
         $user = $privateKey->getUsers()[0];
         $this->assertSame('rsa php pg key <php-pg@dummy.com>', $user->getUserID());
         $this->assertTrue($user->verify());
+        $primaryUser = $privateKey->getPrimaryUser();
+        $this->assertSame('rsa php pg key <php-pg@dummy.com>', $primaryUser->getUserID());
 
         $signingKey = $privateKey->getSigningKeyPacket();
         $this->assertTrue($signingKey instanceof SecretKeyPacketInterface);
@@ -191,6 +193,8 @@ EOT;
         $user = $privateKey->getUsers()[0];
         $this->assertSame('dsa php pg key <php-pg@dummy.com>', $user->getUserID());
         $this->assertTrue($user->verify());
+        $primaryUser = $privateKey->getPrimaryUser();
+        $this->assertSame('dsa php pg key <php-pg@dummy.com>', $primaryUser->getUserID());
 
         $signingKey = $privateKey->getSigningKeyPacket();
         $this->assertTrue($signingKey instanceof SecretKeyPacketInterface);
@@ -263,6 +267,8 @@ EOT;
         $user = $privateKey->getUsers()[0];
         $this->assertSame('ec p-384 php pg key <php-pg@dummy.com>', $user->getUserID());
         $this->assertTrue($user->verify());
+        $primaryUser = $privateKey->getPrimaryUser();
+        $this->assertSame('ec p-384 php pg key <php-pg@dummy.com>', $primaryUser->getUserID());
 
         $signingKey = $privateKey->getSigningKeyPacket();
         $this->assertTrue($signingKey instanceof SecretKeyPacketInterface);
@@ -332,6 +338,8 @@ EOT;
         $user = $privateKey->getUsers()[0];
         $this->assertSame('ec brainpool p-256 php pg key <php-pg@dummy.com>', $user->getUserID());
         $this->assertTrue($user->verify());
+        $primaryUser = $privateKey->getPrimaryUser();
+        $this->assertSame('ec brainpool p-256 php pg key <php-pg@dummy.com>', $primaryUser->getUserID());
 
         $signingKey = $privateKey->getSigningKeyPacket();
         $this->assertTrue($signingKey instanceof SecretKeyPacketInterface);
@@ -400,6 +408,8 @@ EOT;
         $user = $privateKey->getUsers()[0];
         $this->assertSame('curve 25519 php pg key <php-pg@dummy.com>', $user->getUserID());
         $this->assertTrue($user->verify());
+        $primaryUser = $privateKey->getPrimaryUser();
+        $this->assertSame('curve 25519 php pg key <php-pg@dummy.com>', $primaryUser->getUserID());
 
         $signingKey = $privateKey->getSigningKeyPacket();
         $this->assertTrue($signingKey instanceof SecretKeyPacketInterface);
@@ -453,6 +463,8 @@ EOT;
         $user = $privateKey->getUsers()[0];
         $this->assertSame($userID, $user->getUserID());
         $this->assertTrue($user->verify());
+        $primaryUser = $privateKey->getPrimaryUser();
+        $this->assertSame($userID, $primaryUser->getUserID());
 
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
@@ -511,6 +523,8 @@ EOT;
         $user = $privateKey->getUsers()[0];
         $this->assertSame($userID, $user->getUserID());
         $this->assertTrue($user->verify());
+        $primaryUser = $privateKey->getPrimaryUser();
+        $this->assertSame($userID, $primaryUser->getUserID());
 
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
@@ -570,6 +584,8 @@ EOT;
         $user = $privateKey->getUsers()[0];
         $this->assertSame($userID, $user->getUserID());
         $this->assertTrue($user->verify());
+        $primaryUser = $privateKey->getPrimaryUser();
+        $this->assertSame($userID, $primaryUser->getUserID());
 
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
@@ -630,6 +646,8 @@ EOT;
         $user = $privateKey->getUsers()[0];
         $this->assertSame($userID, $user->getUserID());
         $this->assertTrue($user->verify());
+        $primaryUser = $privateKey->getPrimaryUser();
+        $this->assertSame($userID, $primaryUser->getUserID());
 
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
@@ -690,6 +708,8 @@ EOT;
         $user = $privateKey->getUsers()[0];
         $this->assertSame($userID, $user->getUserID());
         $this->assertTrue($user->verify());
+        $primaryUser = $privateKey->getPrimaryUser();
+        $this->assertSame($userID, $primaryUser->getUserID());
 
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
