@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Packet\Signature;
 
+use OpenPGP\Common\Helper;
 use OpenPGP\Enum\SignatureSubpacketType;
 use OpenPGP\Packet\SignatureSubpacket;
 

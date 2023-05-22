@@ -244,6 +244,10 @@ class PrivateKey extends AbstractKey
         return $this->getKeyPacket()->isDecrypted();
     }
 
+    public function getDecryptionKeyPackets(string $keyID = ''): array
+    {
+    }
+
     /**
      * Lock a private key with the given passphrase.
      * This method does not change the original key.

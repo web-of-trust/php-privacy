@@ -13,7 +13,7 @@ namespace OpenPGP\Key;
 use DateInterval;
 use DateTime;
 use OpenPGP\Enum\KeyAlgorithm;
-use OpenPGP\Packet\PacketList;
+use OpenPGP\Packet\{PacketList, Signature};
 use OpenPGP\Type\{
     KeyInterface,
     PacketContainerInterface,
@@ -107,7 +107,7 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
     public function getExpirationTime(): ?DateTime
     {
         if (!empty($this->bindingSignatures)) {
-            $bindingSignatures = usort(
+            usort(
                 $this->bindingSignatures,
                 static function ($a, $b) {
                     $aTime = $a->getSignatureCreationTime() ?? (new DateTime())->setTimestamp(0);
@@ -118,26 +118,29 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
                     return ($aTime > $bTime) ? -1 : 1;
                 }
             );
-            $signature = $bindingSignatures[0];
-            $keyExpirationTime = $signature->getKeyExpirationTime();
-            if (!empty($keyExpirationTime)) {
-                $expirationTime = $keyExpirationTime->getExpirationTime();
-                $creationTime = $signature->getSignatureCreationTime() ?? new DateTime();
-                $keyExpiration = $creationTime->add(
-                    DateInterval::createFromDateString($expirationTime . ' seconds')
-                );
-                $signatureExpiration = $signature->getSignatureExpirationTime();
-                if (empty($signatureExpiration)) {
-                    return $keyExpiration;
+            foreach ($this->bindingSignatures as $signature) {
+                $signature = $this->bindingSignatures[0];
+                $keyExpirationTime = $signature->getKeyExpirationTime();
+                if (!empty($keyExpirationTime)) {
+                    $expirationTime = $keyExpirationTime->getExpirationTime();
+                    $creationTime = $signature->getSignatureCreationTime() ?? new DateTime();
+                    $keyExpiration = $creationTime->add(
+                        DateInterval::createFromDateString($expirationTime . ' seconds')
+                    );
+                    $signatureExpiration = $signature->getSignatureExpirationTime();
+                    if (empty($signatureExpiration)) {
+                        return $keyExpiration;
+                    }
+                    else {
+                        return $keyExpiration < $signatureExpiration ? $keyExpiration : $signatureExpiration;
+                    }
                 }
                 else {
-                    return $keyExpiration < $signatureExpiration ? $keyExpiration : $signatureExpiration;
+                    return $signature->getSignatureExpirationTime();
                 }
             }
-            else {
-                return $signature->getSignatureExpirationTime();
-            }
         }
+        return null;
     }
 
     /**
@@ -250,7 +253,7 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
             $revocationReason,
             $time
         );
-        return new User(
+        return new self(
             $this->mainKey,
             $this->keyPacket,
             $revocationSignatures,

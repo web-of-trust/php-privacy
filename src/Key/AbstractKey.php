@@ -111,26 +111,52 @@ abstract class AbstractKey implements ArmorableInterface, PacketContainerInterfa
         return $this->keyPacket;
     }
 
+    /**
+     * Gets revocation signatures
+     * 
+     * @return array
+     */
     public function getRevocationSignatures(): array
     {
         return $this->revocationSignatures;
     }
 
+    /**
+     * Get direct signatures
+     * 
+     * @return array
+     */
     public function getDirectSignatures(): array
     {
         return $this->directSignatures;
     }
 
+    /**
+     * Gets users
+     * 
+     * @return array
+     */
     public function getUsers(): array
     {
         return $this->users;
     }
 
+    /**
+     * Gets subkeys
+     * 
+     * @return array
+     */
     public function getSubkeys(): array
     {
         return $this->subkeys;
     }
 
+    /**
+     * Sets users
+     * 
+     * @param array $users
+     * @return self
+     */
     protected function setUsers(array $users): self
     {
         $this->users = array_filter(
@@ -140,6 +166,12 @@ abstract class AbstractKey implements ArmorableInterface, PacketContainerInterfa
         return $this;
     }
 
+    /**
+     * Sets subkeys
+     * 
+     * @param array $subkeys
+     * @return self
+     */
     protected function setSubkeys(array $subkeys): self
     {
         $this->subkeys = array_filter(
@@ -149,13 +181,21 @@ abstract class AbstractKey implements ArmorableInterface, PacketContainerInterfa
         return $this;
     }
 
+    public function getSigningKeyPacket(string $keyID = ''): KeyPacketInterface
+    {
+    }
+
+    public function getEncryptionKeyPacket(string $keyID = ''): KeyPacketInterface
+    {
+    }
+
     /**
      * {@inheritdoc}
      */
     public function getExpirationTime(): ?DateTime
     {
         if (!empty($this->directSignatures)) {
-            $directSignatures = usort(
+            usort(
                 $this->directSignatures,
                 static function ($a, $b) {
                     $aTime = $a->getSignatureCreationTime() ?? (new DateTime())->setTimestamp(0);
@@ -166,26 +206,29 @@ abstract class AbstractKey implements ArmorableInterface, PacketContainerInterfa
                     return ($aTime > $bTime) ? -1 : 1;
                 }
             );
-            $signature = $directSignatures[0];
-            $keyExpirationTime = $signature->getKeyExpirationTime();
-            if (!empty($keyExpirationTime)) {
-                $expirationTime = $keyExpirationTime->getExpirationTime();
-                $creationTime = $signature->getSignatureCreationTime() ?? new DateTime();
-                $keyExpiration = $creationTime->add(
-                    DateInterval::createFromDateString($expirationTime . ' seconds')
-                );
-                $signatureExpiration = $signature->getSignatureExpirationTime();
-                if (empty($signatureExpiration)) {
-                    return $keyExpiration;
+            foreach ($this->directSignatures as $signature) {
+                $signature = $this->directSignatures[0];
+                $keyExpirationTime = $signature->getKeyExpirationTime();
+                if (!empty($keyExpirationTime)) {
+                    $expirationTime = $keyExpirationTime->getExpirationTime();
+                    $creationTime = $signature->getSignatureCreationTime() ?? new DateTime();
+                    $keyExpiration = $creationTime->add(
+                        DateInterval::createFromDateString($expirationTime . ' seconds')
+                    );
+                    $signatureExpiration = $signature->getSignatureExpirationTime();
+                    if (empty($signatureExpiration)) {
+                        return $keyExpiration;
+                    }
+                    else {
+                        return $keyExpiration < $signatureExpiration ? $keyExpiration : $signatureExpiration;
+                    }
                 }
                 else {
-                    return $keyExpiration < $signatureExpiration ? $keyExpiration : $signatureExpiration;
+                    return $signature->getSignatureExpirationTime();
                 }
             }
-            else {
-                return $signature->getSignatureExpirationTime();
-            }
         }
+        return null;
     }
 
     /**

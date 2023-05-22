@@ -61,7 +61,7 @@ class RevocationReason extends SignatureSubpacket
     ): self
     {
         return new self(
-            $this->revocationToBytes($reason, $description), $critical
+            self::revocationToBytes($reason, $description), $critical
         );
     }
 
@@ -85,7 +85,7 @@ class RevocationReason extends SignatureSubpacket
         return substr($this->getData(), 1);
     }
 
-    private function revocationToBytes(
+    private static function revocationToBytes(
         RevocationReasonTag $reason,
         string $description
     )

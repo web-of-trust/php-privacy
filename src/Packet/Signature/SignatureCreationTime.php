@@ -11,6 +11,7 @@
 namespace OpenPGP\Packet\Signature;
 
 use DateTime;
+use OpenPGP\Common\Helper;
 use OpenPGP\Enum\SignatureSubpacketType;
 use OpenPGP\Packet\SignatureSubpacket;
 
