@@ -269,9 +269,7 @@ class PrivateKey extends AbstractKey
         foreach ($subkeys as $subkey) {
             if (empty($keyID) || $keyID === $subkey->getKeyID()) {
                 if ($subkey->verify($time)) {
-                    if (!self::isValidEncryptionKey(
-                        $subkey->getKeyPacket(), $subkey->getLatestBindingSignature()
-                    )) {
+                    if (!$subkey->isEncryptionKey()) {
                         continue;
                     }
                     $keyPackets[] = $subkey->getKeyPacket();
@@ -279,8 +277,7 @@ class PrivateKey extends AbstractKey
             }
         }
 
-        $primaryUser = $this->getPrimaryUser($time);
-        if (self::isValidEncryptionKey($this->getKeyPacket(), $primaryUser->getLatestSelfCertification())) {
+        if ($this->isEncryptionKey()) {
             $keyPackets[] = $this->getKeyPacket();
         }
 

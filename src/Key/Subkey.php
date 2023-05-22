@@ -225,6 +225,41 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
     }
 
     /**
+     * Return subkey is signing or verification key
+     * 
+     * @return bool
+     */
+    public function isSigningKey(): bool
+    {
+        if (!$this->keyPacket->isSigningKey()) {
+            return false;
+        }
+        $keyFlags = $this->getLatestBindingSignature()?->getKeyFlags();
+        if (!empty($keyFlags) && !$keyFlags->isSignData()) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Return subkey is encryption or decryption key
+     * 
+     * @return bool
+     */
+    public function isEncryptionKey(): bool
+    {
+        if (!$this->keyPacket->isEncryptionKey()) {
+            return false;
+        }
+        $keyFlags = $this->getLatestBindingSignature()?->getKeyFlags();
+        if (!empty($keyFlags) &&
+           !($keyFlags->isEncryptCommunication() || $keyFlags->isEncryptStorage())) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Revokes the subkey
      * 
      * @param PrivateKey $signKey

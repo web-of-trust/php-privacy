@@ -219,9 +219,7 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
         foreach ($subkeys as $subkey) {
             if (empty($keyID) || $keyID === $subkey->getKeyID()) {
                 if ($subkey->verify($time)) {
-                    if (!self::isValidSigningKey(
-                        $subkey->getKeyPacket(), $subkey->getLatestBindingSignature()
-                    )) {
+                    if (!$subkey->isSigningKey()) {
                         continue;
                     }
                     $embeddedSignature = $subkey->getLatestBindingSignature()->getEmbeddedSignature();
@@ -243,9 +241,10 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
             }
         }
 
-        if (!$this->keyPacket->isSigningKey() ||
-           (!empty($keyID) && $keyID !== $this->getKeyID())) {
-            throw new \UnexpectedValueException('Could not find valid signing key packet.');
+        if (!$this->isSigningKey() || (!empty($keyID) && $keyID !== $this->getKeyID())) {
+            throw new \UnexpectedValueException(
+                'Could not find valid signing key packet.'
+            );
         }
 
         return $this->keyPacket;
@@ -271,9 +270,7 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
         foreach ($subkeys as $subkey) {
             if (empty($keyID) || $keyID === $subkey->getKeyID()) {
                 if ($subkey->verify($time)) {
-                    if (!self::isValidEncryptionKey(
-                        $subkey->getKeyPacket(), $subkey->getLatestBindingSignature()
-                    )) {
+                    if (!$subkey->isEncryptionKey()) {
                         continue;
                     }
                     return $subkey->getKeyPacket();
@@ -281,9 +278,10 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
             }
         }
 
-        if (!$this->keyPacket->isEncryptionKey() ||
-           (!empty($keyID) && $keyID !== $this->getKeyID())) {
-            throw new \UnexpectedValueException('Could not find valid encryption key packet.');
+        if (!$this->isEncryptionKey() || (!empty($keyID) && $keyID !== $this->getKeyID())) {
+            throw new \UnexpectedValueException(
+                'Could not find valid encryption key packet.'
+            );
         }
 
         return $this->keyPacket;
@@ -454,6 +452,43 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
         return array_pop($users);
     }
 
+    /**
+     * Return the key is signing or verification key
+     * 
+     * @return bool
+     */
+    protected function isSigningKey(?DateTime $time = null): bool
+    {
+        if (!$this->keyPacket->isSigningKey()) {
+            return false;
+        }
+        $primaryUser = $this->getPrimaryUser($time);
+        $keyFlags = $primaryUser->getLatestSelfCertification()?->getKeyFlags();
+        if (!empty($keyFlags) && !$keyFlags->isSignData()) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Return the key is encryption or decryption key
+     * 
+     * @return bool
+     */
+    protected function isEncryptionKey(?DateTime $time = null): bool
+    {
+        if (!$this->keyPacket->isEncryptionKey()) {
+            return false;
+        }
+        $primaryUser = $this->getPrimaryUser($time);
+        $keyFlags = $primaryUser->getLatestSelfCertification()?->getKeyFlags();
+        if (!empty($keyFlags) &&
+           !($keyFlags->isEncryptCommunication() || $keyFlags->isEncryptStorage())) {
+            return false;
+        }
+        return true;
+    }
+
     protected static function readPacketList(PacketListInterface $packetList): array
     {
         $revocationSignatures = $directSignatures = $users = $subkeys = [];
@@ -561,34 +596,5 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
             'users' => $users,
             'subkeys' => $subkeys,
         ];
-    }
-
-    protected static function isValidSigningKey(
-        KeyPacketInterface $keyPacket, SignaturePacketInterface $signature
-    ): bool
-    {
-        if (!$keyPacket->isSigningKey()) {
-            return false;
-        }
-        $keyFlags = $signature->getKeyFlags();
-        if (!empty($keyFlags) && !$keyFlags->isSignData()) {
-            return false;
-        }
-        return true;
-    }
-
-    protected static function isValidEncryptionKey(
-        KeyPacketInterface $keyPacket, SignaturePacketInterface $signature
-    ): bool
-    {
-        if (!$keyPacket->isEncryptionKey()) {
-            return false;
-        }
-        $keyFlags = $signature->getKeyFlags();
-        if (!empty($keyFlags) &&
-           !($keyFlags->isEncryptCommunication() || $keyFlags->isEncryptStorage())) {
-            return false;
-        }
-        return true;
     }
 }
