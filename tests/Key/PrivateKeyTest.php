@@ -478,6 +478,7 @@ EOT;
         $user = $privateKey->getUsers()[0];
         $this->assertSame($userID, $user->getUserID());
         $this->assertTrue($user->verify());
+        $this->assertTrue($user->isPrimary());
         $primaryUser = $privateKey->getPrimaryUser();
         $this->assertSame($userID, $primaryUser->getUserID());
 
@@ -538,6 +539,7 @@ EOT;
         $user = $privateKey->getUsers()[0];
         $this->assertSame($userID, $user->getUserID());
         $this->assertTrue($user->verify());
+        $this->assertTrue($user->isPrimary());
         $primaryUser = $privateKey->getPrimaryUser();
         $this->assertSame($userID, $primaryUser->getUserID());
 
@@ -599,6 +601,7 @@ EOT;
         $user = $privateKey->getUsers()[0];
         $this->assertSame($userID, $user->getUserID());
         $this->assertTrue($user->verify());
+        $this->assertTrue($user->isPrimary());
         $primaryUser = $privateKey->getPrimaryUser();
         $this->assertSame($userID, $primaryUser->getUserID());
 
@@ -661,6 +664,7 @@ EOT;
         $user = $privateKey->getUsers()[0];
         $this->assertSame($userID, $user->getUserID());
         $this->assertTrue($user->verify());
+        $this->assertTrue($user->isPrimary());
         $primaryUser = $privateKey->getPrimaryUser();
         $this->assertSame($userID, $primaryUser->getUserID());
 
@@ -723,6 +727,7 @@ EOT;
         $user = $privateKey->getUsers()[0];
         $this->assertSame($userID, $user->getUserID());
         $this->assertTrue($user->verify());
+        $this->assertTrue($user->isPrimary());
         $primaryUser = $privateKey->getPrimaryUser();
         $this->assertSame($userID, $primaryUser->getUserID());
 

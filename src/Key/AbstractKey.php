@@ -439,14 +439,11 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
         usort(
             $users,
             static function ($a, $b) {
-                $aCert = $a->getLatestSelfCertification();
-                $bCert = $b->getLatestSelfCertification();
-
-                $aPrimary = (int) $aCert->isPrimaryUserID();
-                $bPrimary = (int) $bCert->isPrimaryUserID();
+                $aPrimary = (int) $a->isPrimary();
+                $bPrimary = (int) $b->isPrimary();
                 if ($aPrimary === $bPrimary) {
-                    $aTime = $aCert->getSignatureCreationTime() ?? new DateTime();
-                    $bTime = $bCert->getSignatureCreationTime() ?? new DateTime();
+                    $aTime = $a->getLatestSelfCertification()->getSignatureCreationTime() ?? new DateTime();
+                    $bTime = $b->getLatestSelfCertification()->getSignatureCreationTime() ?? new DateTime();
                     return $aTime->getTimestamp() - $bTime->getTimestamp();
                 }
                 else {

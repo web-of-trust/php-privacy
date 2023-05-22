@@ -48,9 +48,9 @@ class PrimaryUserID extends SignatureSubpacket
     /**
      * Is primary user ID
      *
-     * @return string
+     * @return bool
      */
-    public function isPrimaryUserID(): string
+    public function isPrimaryUserID(): bool
     {
         return ord($this->getData()) != 0;
     }

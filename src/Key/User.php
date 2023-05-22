@@ -152,6 +152,17 @@ class User implements PacketContainerInterface
     }
 
     /**
+     * Returns user is primary
+     * 
+     * @return bool
+     */
+    public function isPrimary(): bool
+    {
+        $selfCert = $this->getLatestSelfCertification();
+        return !empty($selfCert) ? $selfCert->isPrimaryUserID() : false;
+    }
+
+    /**
      * Checks if a given certificate of the user is revoked
      * 
      * @param SignaturePacketInterface $certificate
