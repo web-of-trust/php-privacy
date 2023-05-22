@@ -120,7 +120,7 @@ class PrivateKey extends AbstractKey
      * @param DHKeySize $dhKeySize
      * @param CurveOid $curve
      * @param int $keyExpiry
-     * @param DateTime $date
+     * @param DateTime $time
      * @return self
      */
     public static function generate(
@@ -131,7 +131,7 @@ class PrivateKey extends AbstractKey
         DHKeySize $dhKeySize = DHKeySize::L2048_N224,
         CurveOid $curve = CurveOid::Secp521r1,
         int $keyExpiry = 0,
-        ?DateTime $date = null
+        ?DateTime $time = null
     ): self
     {
         if (empty($userIDs) || empty($passphrase)) {
@@ -163,14 +163,14 @@ class PrivateKey extends AbstractKey
             $rsaKeySize,
             $dhKeySize,
             $curve,
-            $date,
+            $time,
         )->encrypt($passphrase);
         $secretSubkey = SecretSubkey::generate(
             $subkeyAlgorithm,
             $rsaKeySize,
             $dhKeySize,
             $subkeyCurve,
-            $date,
+            $time,
         )->encrypt($passphrase);
 
         $packets = [$secretKey];
@@ -180,14 +180,14 @@ class PrivateKey extends AbstractKey
             $packet = new UserID($userID);
             $packets[] = $packet;
             $packets[] = Signature::createSelfCertificate(
-                $secretKey, $packet, $date
+                $secretKey, $packet, $time
             );
         }
 
         // Wrap secret subkey with binding signature
         $packets[] = $secretSubkey;
         $packets[] = Signature::createSubkeyBinding(
-            $secretKey, $secretSubkey, $keyExpiry, false, $date
+            $secretKey, $secretSubkey, $keyExpiry, false, $time
         );
 
         return self::fromPacketList((new PacketList($packets)));
@@ -244,7 +244,12 @@ class PrivateKey extends AbstractKey
         return $this->getKeyPacket()->isDecrypted();
     }
 
-    public function getDecryptionKeyPackets(string $keyID = ''): array
+    /**
+     * Returns array of key packets that is available for decryption
+     * 
+     * @return array
+     */
+    public function getDecryptionKeyPackets(): array
     {
     }
 
@@ -368,7 +373,7 @@ class PrivateKey extends AbstractKey
      * @param CurveOid $curve
      * @param int $keyExpiry
      * @param bool $subkeySign
-     * @param DateTime $date
+     * @param DateTime $time
      * @return self
      */
     public function addSubkey(
@@ -379,7 +384,7 @@ class PrivateKey extends AbstractKey
         CurveOid $curve = CurveOid::Secp521r1,
         int $keyExpiry = 0,
         bool $subkeySign = false,
-        ?DateTime $date = null
+        ?DateTime $time = null
     ): self
     {
         if (empty($passphrase)) {
@@ -393,7 +398,7 @@ class PrivateKey extends AbstractKey
             $rsaKeySize,
             $dhKeySize,
             $curve,
-            $date,
+            $time,
         )->encrypt($passphrase);
 
         // Wrap secret subkey with binding signature
@@ -404,7 +409,7 @@ class PrivateKey extends AbstractKey
             $secretSubkey,
             $keyExpiry,
             $subkeySign,
-            $date
+            $time
         );
 
         return self::fromPacketList((new PacketList($packets)));
@@ -416,7 +421,7 @@ class PrivateKey extends AbstractKey
      * 
      * @param string $userID
      * @param string $revocationReason
-     * @param DateTime $date
+     * @param DateTime $time
      * @return self
      */
     public function revokeUser(
@@ -449,7 +454,7 @@ class PrivateKey extends AbstractKey
      * 
      * @param string $keyID
      * @param string $revocationReason
-     * @param DateTime $date
+     * @param DateTime $time
      * @return self
      */
     public function revokeSubkey(

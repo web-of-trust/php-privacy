@@ -82,6 +82,22 @@ interface KeyInterface
     function getKeyStrength(): int;
 
     /**
+     * Returns last created key packet or key packet by given keyID that is available for verification
+     * 
+     * @param string $keyID
+     * @return KeyPacketInterface
+     */
+    function getVerificationKeyPacket(string $keyID = ''): KeyPacketInterface;
+
+    /**
+     * Returns last created key packet or key packet by given keyID that is available for encryption
+     * 
+     * @param string $keyID
+     * @return KeyPacketInterface
+     */
+    function getEncryptionKeyPacket(string $keyID = ''): KeyPacketInterface;
+
+    /**
      * Return key is private
      * 
      * @return bool

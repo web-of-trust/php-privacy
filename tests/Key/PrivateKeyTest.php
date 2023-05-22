@@ -395,9 +395,8 @@ EOT;
     {
         $name = $this->faker->unique()->name();
         $email = $this->faker->unique()->safeEmail();
-        $comment = $this->faker->unique()->sentence(3);
+        $comment = $this->faker->unique()->sentence(1);
         $passphrase = $this->faker->unique()->password();
-        $keyExpiry = $this->faker->unique()->randomNumber();
         $userID = implode([$name, "($comment)", "<$email>"]);
 
         $privateKey = PrivateKey::generate(
@@ -427,10 +426,13 @@ EOT;
         $privateKey = $privateKey->decrypt($passphrase);
         $this->assertTrue($privateKey->isDecrypted());
 
+        $keyExpiry = $this->faker->unique()->randomNumber(3, true);
+        $now = new \DateTime();
         $privateKey = $privateKey->addSubkey(
             $passphrase,
             KeyAlgorithm::RsaEncryptSign,
-            keyExpiry: $keyExpiry
+            keyExpiry: $keyExpiry,
+            time: $now
         );
         $subkey = $privateKey->getSubKeys()[1];
         $this->assertTrue($subkey->verify());
@@ -438,7 +440,7 @@ EOT;
             \DateInterval::createFromDateString($keyExpiry . ' seconds')
         );
         $this->assertSame(
-            $expirationTime->format('Y-m-d H:i:s'), (new \DateTime())->format('Y-m-d H:i:s')
+            $expirationTime->format('Y-m-d H:i:s'), $now->format('Y-m-d H:i:s')
         );
 
         $subkey = $privateKey->revokeSubkey($subkey->getKeyID())->getSubKeys()[1];
@@ -451,9 +453,8 @@ EOT;
     {
         $name = $this->faker->unique()->name();
         $email = $this->faker->unique()->safeEmail();
-        $comment = $this->faker->unique()->sentence(3);
+        $comment = $this->faker->unique()->sentence(1);
         $passphrase = $this->faker->unique()->password();
-        $keyExpiry = $this->faker->unique()->randomNumber();
         $userID = implode([$name, "($comment)", "<$email>"]);
 
         $privateKey = PrivateKey::generate(
@@ -483,10 +484,13 @@ EOT;
         $privateKey = $privateKey->decrypt($passphrase);
         $this->assertTrue($privateKey->isDecrypted());
 
+        $keyExpiry = $this->faker->unique()->randomNumber(3, true);
+        $now = new \DateTime();
         $privateKey = $privateKey->addSubkey(
             $passphrase,
             KeyAlgorithm::ElGamal,
-            keyExpiry: $keyExpiry
+            keyExpiry: $keyExpiry,
+            time: $now
         );
         $subkey = $privateKey->getSubKeys()[1];
         $this->assertTrue($subkey->verify());
@@ -494,7 +498,7 @@ EOT;
             \DateInterval::createFromDateString($keyExpiry . ' seconds')
         );
         $this->assertSame(
-            $expirationTime->format('Y-m-d H:i:s'), (new \DateTime())->format('Y-m-d H:i:s')
+            $expirationTime->format('Y-m-d H:i:s'), $now->format('Y-m-d H:i:s')
         );
 
         $subkey = $privateKey->revokeSubkey($subkey->getKeyID())->getSubKeys()[1];
@@ -507,9 +511,8 @@ EOT;
     {
         $name = $this->faker->unique()->name();
         $email = $this->faker->unique()->safeEmail();
-        $comment = $this->faker->unique()->sentence(3);
+        $comment = $this->faker->unique()->sentence(1);
         $passphrase = $this->faker->unique()->password();
-        $keyExpiry = $this->faker->unique()->randomNumber();
         $userID = implode([$name, "($comment)", "<$email>"]);
 
         $privateKey = PrivateKey::generate(
@@ -540,11 +543,14 @@ EOT;
         $privateKey = $privateKey->decrypt($passphrase);
         $this->assertTrue($privateKey->isDecrypted());
 
+        $keyExpiry = $this->faker->unique()->randomNumber(3, true);
+        $now = new \DateTime();
         $privateKey = $privateKey->addSubkey(
             $passphrase,
             KeyAlgorithm::Ecdh,
             curve: CurveOid::Secp521r1,
-            keyExpiry: $keyExpiry
+            keyExpiry: $keyExpiry,
+            time: $now
         );
         $subkey = $privateKey->getSubKeys()[1];
         $this->assertTrue($subkey->verify());
@@ -552,7 +558,7 @@ EOT;
             \DateInterval::createFromDateString($keyExpiry . ' seconds')
         );
         $this->assertSame(
-            $expirationTime->format('Y-m-d H:i:s'), (new \DateTime())->format('Y-m-d H:i:s')
+            $expirationTime->format('Y-m-d H:i:s'), $now->format('Y-m-d H:i:s')
         );
 
         $subkey = $privateKey->revokeSubkey($subkey->getKeyID())->getSubKeys()[1];
@@ -565,9 +571,8 @@ EOT;
     {
         $name = $this->faker->unique()->name();
         $email = $this->faker->unique()->safeEmail();
-        $comment = $this->faker->unique()->sentence(3);
+        $comment = $this->faker->unique()->sentence(1);
         $passphrase = $this->faker->unique()->password();
-        $keyExpiry = $this->faker->unique()->randomNumber();
         $userID = implode([$name, "($comment)", "<$email>"]);
 
         $privateKey = PrivateKey::generate(
@@ -598,11 +603,14 @@ EOT;
         $privateKey = $privateKey->decrypt($passphrase);
         $this->assertTrue($privateKey->isDecrypted());
 
+        $keyExpiry = $this->faker->unique()->randomNumber(3, true);
+        $now = new \DateTime();
         $privateKey = $privateKey->addSubkey(
             $passphrase,
             KeyAlgorithm::Ecdh,
             curve: CurveOid::BrainpoolP512r1,
-            keyExpiry: $keyExpiry
+            keyExpiry: $keyExpiry,
+            time: $now
         );
         $subkey = $privateKey->getSubKeys()[1];
         $this->assertTrue($subkey->verify());
@@ -610,7 +618,7 @@ EOT;
             \DateInterval::createFromDateString($keyExpiry . ' seconds')
         );
         $this->assertSame(
-            $expirationTime->format('Y-m-d H:i:s'), (new \DateTime())->format('Y-m-d H:i:s')
+            $expirationTime->format('Y-m-d H:i:s'), $now->format('Y-m-d H:i:s')
         );
 
         $subkey = $privateKey->revokeSubkey($subkey->getKeyID())->getSubKeys()[1];
@@ -623,9 +631,8 @@ EOT;
     {
         $name = $this->faker->unique()->name();
         $email = $this->faker->unique()->safeEmail();
-        $comment = $this->faker->unique()->sentence(3);
+        $comment = $this->faker->unique()->sentence(1);
         $passphrase = $this->faker->unique()->password();
-        $keyExpiry = $this->faker->unique()->randomNumber();
         $userID = implode([$name, "($comment)", "<$email>"]);
 
         $privateKey = PrivateKey::generate(
@@ -656,11 +663,14 @@ EOT;
         $privateKey = $privateKey->decrypt($passphrase);
         $this->assertTrue($privateKey->isDecrypted());
 
+        $keyExpiry = $this->faker->unique()->randomNumber(3, true);
+        $now = new \DateTime();
         $privateKey = $privateKey->addSubkey(
             $passphrase,
             KeyAlgorithm::Ecdh,
             curve: CurveOid::Curve25519,
-            keyExpiry: $keyExpiry
+            keyExpiry: $keyExpiry,
+            time: $now
         );
         $subkey = $privateKey->getSubKeys()[1];
         $this->assertTrue($subkey->verify());
@@ -668,7 +678,7 @@ EOT;
             \DateInterval::createFromDateString($keyExpiry . ' seconds')
         );
         $this->assertSame(
-            $expirationTime->format('Y-m-d H:i:s'), (new \DateTime())->format('Y-m-d H:i:s')
+            $expirationTime->format('Y-m-d H:i:s'), $now->format('Y-m-d H:i:s')
         );
 
         $subkey = $privateKey->revokeSubkey($subkey->getKeyID())->getSubKeys()[1];

@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Key;
 
+use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{HashAlgorithm, SignatureType};
 use OpenPGP\Packet\{PacketList, Signature, UserID};
 use OpenPGP\Type\{
@@ -168,6 +169,9 @@ class User implements PacketContainerInterface
     public function verify(?DateTime $time = null): bool
     {
         if ($this->isRevoked(time: $time)) {
+            Helper::getLogger()->debug(
+                'User is revoked.'
+            );
             return false;
         }
         foreach ($this->selfCertifications as $signature) {

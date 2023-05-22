@@ -12,6 +12,7 @@ namespace OpenPGP\Key;
 
 use DateInterval;
 use DateTime;
+use OpenPGP\Commom\Helper;
 use OpenPGP\Enum\KeyAlgorithm;
 use OpenPGP\Packet\{PacketList, Signature};
 use OpenPGP\Type\{
@@ -106,41 +107,7 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
      */
     public function getExpirationTime(): ?DateTime
     {
-        if (!empty($this->bindingSignatures)) {
-            usort(
-                $this->bindingSignatures,
-                static function ($a, $b) {
-                    $aTime = $a->getSignatureCreationTime() ?? (new DateTime())->setTimestamp(0);
-                    $bTime = $b->getSignatureCreationTime() ?? (new DateTime())->setTimestamp(0);
-                    if ($aTime == $bTime) {
-                        return 0;
-                    }
-                    return ($aTime > $bTime) ? -1 : 1;
-                }
-            );
-            foreach ($this->bindingSignatures as $signature) {
-                $signature = $this->bindingSignatures[0];
-                $keyExpirationTime = $signature->getKeyExpirationTime();
-                if (!empty($keyExpirationTime)) {
-                    $expirationTime = $keyExpirationTime->getExpirationTime();
-                    $creationTime = $signature->getSignatureCreationTime() ?? new DateTime();
-                    $keyExpiration = $creationTime->add(
-                        DateInterval::createFromDateString($expirationTime . ' seconds')
-                    );
-                    $signatureExpiration = $signature->getSignatureExpirationTime();
-                    if (empty($signatureExpiration)) {
-                        return $keyExpiration;
-                    }
-                    else {
-                        return $keyExpiration < $signatureExpiration ? $keyExpiration : $signatureExpiration;
-                    }
-                }
-                else {
-                    return $signature->getSignatureExpirationTime();
-                }
-            }
-        }
-        return null;
+        return AbstractKey::getKeyExpirationTime($this->bindingSignatures);
     }
 
     /**
@@ -215,6 +182,9 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
     public function verify(?DateTime $time = null): bool
     {
         if ($this->isRevoked(time: $time)) {
+            Helper::getLogger()->debug(
+                'Subkey is revoked.'
+            );
             return false;
         }
         foreach ($this->bindingSignatures as $signature) {
