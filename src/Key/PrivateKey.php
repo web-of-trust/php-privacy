@@ -297,7 +297,7 @@ class PrivateKey extends AbstractKey
                 $privateKey,
                 $keyPacket,
                 $subkey->getRevocationSignatures(),
-                $subkey->getRevocationSignatures()
+                $subkey->getBindingSignatures()
             );
         }
         $privateKey->setSubkeys($subkeys);
@@ -354,7 +354,7 @@ class PrivateKey extends AbstractKey
                 $privateKey,
                 $keyPacket,
                 $subkey->getRevocationSignatures(),
-                $subkey->getRevocationSignatures()
+                $subkey->getBindingSignatures()
             );
         }
         $privateKey->setSubkeys($subkeys);
