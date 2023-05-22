@@ -397,6 +397,8 @@ EOT;
         $email = $this->faker->unique()->safeEmail();
         $comment = $this->faker->unique()->sentence(1);
         $passphrase = $this->faker->unique()->password();
+        $keyExpiry = $this->faker->unique()->randomNumber(3, true);
+        $now = new \DateTime();
         $userID = implode([$name, "($comment)", "<$email>"]);
 
         $privateKey = PrivateKey::generate(
@@ -426,8 +428,6 @@ EOT;
         $privateKey = $privateKey->decrypt($passphrase);
         $this->assertTrue($privateKey->isDecrypted());
 
-        $keyExpiry = $this->faker->unique()->randomNumber(3, true);
-        $now = new \DateTime();
         $privateKey = $privateKey->addSubkey(
             $passphrase,
             KeyAlgorithm::RsaEncryptSign,
@@ -455,6 +455,8 @@ EOT;
         $email = $this->faker->unique()->safeEmail();
         $comment = $this->faker->unique()->sentence(1);
         $passphrase = $this->faker->unique()->password();
+        $keyExpiry = $this->faker->unique()->randomNumber(3, true);
+        $now = new \DateTime();
         $userID = implode([$name, "($comment)", "<$email>"]);
 
         $privateKey = PrivateKey::generate(
@@ -484,8 +486,6 @@ EOT;
         $privateKey = $privateKey->decrypt($passphrase);
         $this->assertTrue($privateKey->isDecrypted());
 
-        $keyExpiry = $this->faker->unique()->randomNumber(3, true);
-        $now = new \DateTime();
         $privateKey = $privateKey->addSubkey(
             $passphrase,
             KeyAlgorithm::ElGamal,
@@ -513,6 +513,8 @@ EOT;
         $email = $this->faker->unique()->safeEmail();
         $comment = $this->faker->unique()->sentence(1);
         $passphrase = $this->faker->unique()->password();
+        $keyExpiry = $this->faker->unique()->randomNumber(3, true);
+        $now = new \DateTime();
         $userID = implode([$name, "($comment)", "<$email>"]);
 
         $privateKey = PrivateKey::generate(
@@ -543,8 +545,6 @@ EOT;
         $privateKey = $privateKey->decrypt($passphrase);
         $this->assertTrue($privateKey->isDecrypted());
 
-        $keyExpiry = $this->faker->unique()->randomNumber(3, true);
-        $now = new \DateTime();
         $privateKey = $privateKey->addSubkey(
             $passphrase,
             KeyAlgorithm::Ecdh,
@@ -573,6 +573,8 @@ EOT;
         $email = $this->faker->unique()->safeEmail();
         $comment = $this->faker->unique()->sentence(1);
         $passphrase = $this->faker->unique()->password();
+        $keyExpiry = $this->faker->unique()->randomNumber(3, true);
+        $now = new \DateTime();
         $userID = implode([$name, "($comment)", "<$email>"]);
 
         $privateKey = PrivateKey::generate(
@@ -603,8 +605,6 @@ EOT;
         $privateKey = $privateKey->decrypt($passphrase);
         $this->assertTrue($privateKey->isDecrypted());
 
-        $keyExpiry = $this->faker->unique()->randomNumber(3, true);
-        $now = new \DateTime();
         $privateKey = $privateKey->addSubkey(
             $passphrase,
             KeyAlgorithm::Ecdh,
@@ -633,6 +633,8 @@ EOT;
         $email = $this->faker->unique()->safeEmail();
         $comment = $this->faker->unique()->sentence(1);
         $passphrase = $this->faker->unique()->password();
+        $keyExpiry = $this->faker->unique()->randomNumber(3, true);
+        $now = new \DateTime();
         $userID = implode([$name, "($comment)", "<$email>"]);
 
         $privateKey = PrivateKey::generate(
@@ -663,8 +665,6 @@ EOT;
         $privateKey = $privateKey->decrypt($passphrase);
         $this->assertTrue($privateKey->isDecrypted());
 
-        $keyExpiry = $this->faker->unique()->randomNumber(3, true);
-        $now = new \DateTime();
         $privateKey = $privateKey->addSubkey(
             $passphrase,
             KeyAlgorithm::Ecdh,

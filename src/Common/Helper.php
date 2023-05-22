@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Common;
 
+use {DateInterval, DateTime};
 use phpseclib3\Crypt\Random;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Enum\SymmetricAlgorithm;
@@ -52,6 +53,48 @@ final class Helper
     public static function setLogger(LoggerInterface $logger): void
     {
         self::$logger = $logger;
+    }
+
+    /**
+     * Gets gey expiration from signatures.
+     *
+     * @param array $signatures
+     * @return DateTime
+     */
+    public static function getKeyExpiration(array $signatures): ?DateTime
+    {
+        usort(
+            $signatures,
+            static function ($a, $b) {
+                $aTime = $a->getSignatureCreationTime() ?? (new DateTime())->setTimestamp(0);
+                $bTime = $b->getSignatureCreationTime() ?? (new DateTime())->setTimestamp(0);
+                if ($aTime == $bTime) {
+                    return 0;
+                }
+                return ($aTime > $bTime) ? -1 : 1;
+            }
+        );
+        foreach ($signatures as $signature) {
+            $keyExpirationTime = $signature->getKeyExpirationTime();
+            if (!empty($keyExpirationTime)) {
+                $expirationTime = $keyExpirationTime->getExpirationTime();
+                $creationTime = $signature->getSignatureCreationTime() ?? new DateTime();
+                $keyExpiration = $creationTime->add(
+                    DateInterval::createFromDateString($expirationTime . ' seconds')
+                );
+                $signatureExpiration = $signature->getSignatureExpirationTime();
+                if (empty($signatureExpiration)) {
+                    return $keyExpiration;
+                }
+                else {
+                    return $keyExpiration < $signatureExpiration ? $keyExpiration : $signatureExpiration;
+                }
+            }
+            else {
+                return $signature->getSignatureExpirationTime();
+            }
+        }
+        return null;
     }
 
     /**

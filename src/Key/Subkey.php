@@ -107,7 +107,7 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
      */
     public function getExpirationTime(): ?DateTime
     {
-        return AbstractKey::getKeyExpirationTime($this->bindingSignatures);
+        return Helper::getKeyExpiration($this->bindingSignatures);
     }
 
     /**

@@ -81,8 +81,9 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
             $directSignatures,
             static fn ($signature) => $signature instanceof SignaturePacketInterface
         );
-        $this->setUsers($users)->setSubkeys($subkeys);
-        $this->setLogger(Helper::getLogger());
+        $this->setUsers($users)
+             ->setSubkeys($subkeys)
+             ->setLogger(Helper::getLogger());
     }
 
     /**
@@ -222,10 +223,10 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
             $selfCertifications = array_merge($selfCertifications, $user->getSelfCertifications());
         }
         if (!empty($selfCertifications)) {
-            return self::getKeyExpirationTime($selfCertifications);
+            return Helper::getKeyExpiration($selfCertifications);
         }
         if (!empty($this->directSignatures)) {
-            return self::getKeyExpirationTime($this->directSignatures);
+            return Helper::getKeyExpiration($this->directSignatures);
         }
         return null;
     }
@@ -328,43 +329,14 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
                 return false;
             }
         }
-        return true;
-    }
-
-    public static function getKeyExpirationTime(array $signatures): ?DateTime
-    {
-        usort(
-            $signatures,
-            static function ($a, $b) {
-                $aTime = $a->getSignatureCreationTime() ?? (new DateTime())->setTimestamp(0);
-                $bTime = $b->getSignatureCreationTime() ?? (new DateTime())->setTimestamp(0);
-                if ($aTime == $bTime) {
-                    return 0;
-                }
-                return ($aTime > $bTime) ? -1 : 1;
-            }
-        );
-        foreach ($signatures as $signature) {
-            $keyExpirationTime = $signature->getKeyExpirationTime();
-            if (!empty($keyExpirationTime)) {
-                $expirationTime = $keyExpirationTime->getExpirationTime();
-                $creationTime = $signature->getSignatureCreationTime() ?? new DateTime();
-                $keyExpiration = $creationTime->add(
-                    DateInterval::createFromDateString($expirationTime . ' seconds')
-                );
-                $signatureExpiration = $signature->getSignatureExpirationTime();
-                if (empty($signatureExpiration)) {
-                    return $keyExpiration;
-                }
-                else {
-                    return $keyExpiration < $signatureExpiration ? $keyExpiration : $signatureExpiration;
-                }
-            }
-            else {
-                return $signature->getSignatureExpirationTime();
-            }
+        $expirationTime = $this->getExpirationTime();
+        if ($expirationTime instanceof DateTime && $expirationTime < new DateTime()) {
+            $this->getLogger()->debug(
+                'Primary key is expired.'
+            );
+            return false;
         }
-        return null;
+        return true;
     }
 
     protected static function readPacketList(PacketListInterface $packetList): array
