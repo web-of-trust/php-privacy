@@ -60,6 +60,12 @@ EOT;
         $this->assertSame('rsa php pg key <php-pg@dummy.com>', $user->getUserID());
         $this->assertTrue($user->verify());
 
+        $signingKey = $publicKey->getSigningKeyPacket();
+        $this->assertSame('fc5004df9473277107eaa605184d0dc4f5c532b2', $signingKey->getFingerprint(true));
+
+        $encryptionKey = $publicKey->getEncryptionKeyPacket();
+        $this->assertSame('42badbbe0f2acabacd6cac7c4be1b3a621ef906f', $encryptionKey->getFingerprint(true));
+
         $this->assertEquals($publicKey, PublicKey::fromArmored($publicKey->armor()));
     }
 

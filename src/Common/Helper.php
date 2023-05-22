@@ -10,7 +10,8 @@
 
 namespace OpenPGP\Common;
 
-use {DateInterval, DateTime};
+use DateInterval;
+use DateTime;
 use phpseclib3\Crypt\Random;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Enum\SymmetricAlgorithm;
@@ -68,10 +69,7 @@ final class Helper
             static function ($a, $b) {
                 $aTime = $a->getSignatureCreationTime() ?? (new DateTime())->setTimestamp(0);
                 $bTime = $b->getSignatureCreationTime() ?? (new DateTime())->setTimestamp(0);
-                if ($aTime == $bTime) {
-                    return 0;
-                }
-                return ($aTime > $bTime) ? -1 : 1;
+                return $bTime->getTimestamp() - $aTime->getTimestamp();
             }
         );
         foreach ($signatures as $signature) {

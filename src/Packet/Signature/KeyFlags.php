@@ -67,13 +67,10 @@ class KeyFlags extends SignatureSubpacket
      */
     public function getFlags(): int
     {
-        static $flags = null;
-        if (null == $flags) {
-            $flags = 0;
-            $data = $this->getData();
-            for ($i = 0; $i != strlen($data); $i++) {
-              $flags |= ord($data[$i]) << ($i * 8);
-            }
+        $flags = 0;
+        $data = $this->getData();
+        for ($i = 0; $i != strlen($data); $i++) {
+          $flags |= ord($data[$i]) << ($i * 8);
         }
         return $flags;
     }
@@ -124,10 +121,11 @@ class KeyFlags extends SignatureSubpacket
 
     private static function flagsToBytes(int $flags): string
     {
+        $size = 0;
         $bytes = [];
-        for ($i = 0; $i != 4; $i++) {
+        for ($i = 0; $i < 4; $i++) {
             $bytes[$i] = chr(($flags >> ($i * 8)) & 0xff);
-            if ($bytes[$i] != 0) {
+            if (ord($bytes[$i]) != 0) {
                 $size = $i;
             }
         }

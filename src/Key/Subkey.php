@@ -12,7 +12,7 @@ namespace OpenPGP\Key;
 
 use DateInterval;
 use DateTime;
-use OpenPGP\Commom\Helper;
+use OpenPGP\Common\Helper;
 use OpenPGP\Enum\KeyAlgorithm;
 use OpenPGP\Packet\{PacketList, Signature};
 use OpenPGP\Type\{
@@ -92,6 +92,25 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
     public function getBindingSignatures(): array
     {
         return $this->bindingSignatures;
+    }
+
+    /**
+     * Gets Latest binding signature
+     * 
+     * @return SignaturePacketInterface
+     */
+    public function getLatestBindingSignature(): SignaturePacketInterface
+    {
+        $signatures = $this->bindingSignatures;
+        usort(
+            $signatures,
+            static function ($a, $b) {
+                $aTime = $a->getSignatureCreationTime() ?? (new DateTime())->setTimestamp(0);
+                $bTime = $b->getSignatureCreationTime() ?? (new DateTime())->setTimestamp(0);
+                return $bTime->getTimestamp() - $aTime->getTimestamp();
+            }
+        );
+        return reset($signatures);
     }
 
     /**

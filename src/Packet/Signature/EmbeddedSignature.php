@@ -55,4 +55,14 @@ class EmbeddedSignature extends SignatureSubpacket
     {
         return new self($signature->toBytes());
     }
+
+    /**
+     * Gets signature package
+     *
+     * @return Signature
+     */
+    public function getSignature(): Signature
+    {
+        return Signature::fromBytes($this->getData());
+    }
 }

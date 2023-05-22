@@ -202,15 +202,91 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
     /**
      * {@inheritdoc}
      */
-    public function getVerificationKeyPacket(string $keyID = ''): KeyPacketInterface
+    public function getSigningKeyPacket(
+        string $keyID = '', ?DateTime $time = null
+    ): KeyPacketInterface
     {
+        if (!$this->verify(time: $time)) {
+            throw new \UnexpectedValueException(
+                'Primary key is invalid.'
+            );
+        }
+        $subkeys = $this->subkeys;
+        usort(
+            $subkeys,
+            static fn ($a, $b) => $b->getCreationTime()->getTimestamp() - $a->getCreationTime()->getTimestamp()
+        );
+        foreach ($subkeys as $subkey) {
+            if (empty($keyID) || $keyID === $subkey->getKeyID()) {
+                if ($subkey->verify($time)) {
+                    if (!self::isValidSigningKey(
+                        $subkey->getKeyPacket(), $subkey->getLatestBindingSignature()
+                    )) {
+                        continue;
+                    }
+                    $embeddedSignature = $subkey->getLatestBindingSignature()->getEmbeddedSignature();
+                    if (empty($embeddedSignature)) {
+                        throw new \UnexpectedValueException('Missing embedded signature');
+                    }
+                    // verify embedded signature
+                    if ($embeddedSignature->verify(
+                        $subkey->getKeyPacket(),
+                        implode([
+                            $this->getKeyPacket()->getSignBytes(),
+                            $subkey->getKeyPacket()->getSignBytes(),
+                        ]),
+                        $time
+                    )) {
+                        return $subkey->getKeyPacket();
+                    }
+                }
+            }
+        }
+
+        if (!$this->keyPacket->isSigningKey() ||
+           (!empty($keyID) && $keyID !== $this->getKeyID())) {
+            throw new \UnexpectedValueException('Could not find valid signing key packet.');
+        }
+
+        return $this->keyPacket;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getEncryptionKeyPacket(string $keyID = ''): KeyPacketInterface
+    public function getEncryptionKeyPacket(
+        string $keyID = '', ?DateTime $time = null
+    ): KeyPacketInterface
     {
+        if (!$this->verify(time: $time)) {
+            throw new \UnexpectedValueException(
+                'Primary key is invalid.'
+            );
+        }
+        $subkeys = $this->subkeys;
+        usort(
+            $subkeys,
+            static fn ($a, $b) => $b->getCreationTime()->getTimestamp() - $a->getCreationTime()->getTimestamp()
+        );
+        foreach ($subkeys as $subkey) {
+            if (empty($keyID) || $keyID === $subkey->getKeyID()) {
+                if ($subkey->verify($time)) {
+                    if (!self::isValidEncryptionKey(
+                        $subkey->getKeyPacket(), $subkey->getLatestBindingSignature()
+                    )) {
+                        continue;
+                    }
+                    return $subkey->getKeyPacket();
+                }
+            }
+        }
+
+        if (!$this->keyPacket->isEncryptionKey() ||
+           (!empty($keyID) && $keyID !== $this->getKeyID())) {
+            throw new \UnexpectedValueException('Could not find valid encryption key packet.');
+        }
+
+        return $this->keyPacket;
     }
 
     /**
@@ -220,7 +296,9 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
     {
         $selfCertifications = [];
         foreach ($this->users as $user) {
-            $selfCertifications = array_merge($selfCertifications, $user->getSelfCertifications());
+            $selfCertifications = array_merge(
+                $selfCertifications, $user->getSelfCertifications()
+            );
         }
         if (!empty($selfCertifications)) {
             return Helper::getKeyExpiration($selfCertifications);
@@ -350,7 +428,7 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
                 case PacketTag::SecretKey:
                     if (!empty($keyPacket)) {
                         throw new \UnexpectedValueException(
-                            'Key block contains multiple keys'
+                            'Key block contains multiple keys.'
                         );
                     }
                     if ($packet instanceof KeyPacketInterface) {
@@ -435,7 +513,7 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
 
         if (empty($keyPacket)) {
             throw new \UnexpectedValueException(
-                'Key packet not found in packet list'
+                'Key packet not found in packet list.'
             );
         }
 
@@ -446,5 +524,34 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
             'users' => $users,
             'subkeys' => $subkeys,
         ];
+    }
+
+    private static function isValidSigningKey(
+        KeyPacketInterface $keyPacket, SignaturePacketInterface $signature
+    ): bool
+    {
+        if (!$keyPacket->isSigningKey()) {
+            return false;
+        }
+        $keyFlags = $signature->getKeyFlags();
+        if (!empty($keyFlags) && !$keyFlags->isSignData()) {
+            return false;
+        }
+        return true;
+    }
+
+    private static function isValidEncryptionKey(
+        KeyPacketInterface $keyPacket, SignaturePacketInterface $signature
+    ): bool
+    {
+        if (!$keyPacket->isEncryptionKey()) {
+            return false;
+        }
+        $keyFlags = $signature->getKeyFlags();
+        if (!empty($keyFlags) &&
+           !($keyFlags->isEncryptCommunication() || $keyFlags->isEncryptStorage())) {
+            return false;
+        }
+        return true;
     }
 }
