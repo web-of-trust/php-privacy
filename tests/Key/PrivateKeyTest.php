@@ -481,7 +481,11 @@ EOT;
         $privateKey = $privateKey->decrypt($passphrase);
         $this->assertTrue($privateKey->isDecrypted());
 
-        $privateKey = $privateKey->addSubkey($passphrase, KeyAlgorithm::ElGamal);
+        $privateKey = $privateKey->addSubkey(
+            $passphrase,
+            KeyAlgorithm::ElGamal,
+            keyExpiry: $keyExpiry
+        );
         $subkey = $privateKey->getSubKeys()[1];
         $this->assertTrue($subkey->verify());
         $subkey = $subkey->revoke($privateKey);
@@ -533,7 +537,10 @@ EOT;
         $this->assertTrue($privateKey->isDecrypted());
 
         $privateKey = $privateKey->addSubkey(
-            $passphrase, KeyAlgorithm::Ecdh, curve: CurveOid::Secp521r1
+            $passphrase,
+            KeyAlgorithm::Ecdh,
+            curve: CurveOid::Secp521r1,
+            keyExpiry: $keyExpiry
         );
         $subkey = $privateKey->getSubKeys()[1];
         $this->assertTrue($subkey->verify());
@@ -586,7 +593,10 @@ EOT;
         $this->assertTrue($privateKey->isDecrypted());
 
         $privateKey = $privateKey->addSubkey(
-            $passphrase, KeyAlgorithm::Ecdh, curve: CurveOid::BrainpoolP512r1
+            $passphrase,
+            KeyAlgorithm::Ecdh,
+            curve: CurveOid::BrainpoolP512r1,
+            keyExpiry: $keyExpiry
         );
         $subkey = $privateKey->getSubKeys()[1];
         $this->assertTrue($subkey->verify());
@@ -639,7 +649,10 @@ EOT;
         $this->assertTrue($privateKey->isDecrypted());
 
         $privateKey = $privateKey->addSubkey(
-            $passphrase, KeyAlgorithm::Ecdh, curve: CurveOid::Curve25519
+            $passphrase,
+            KeyAlgorithm::Ecdh,
+            curve: CurveOid::Curve25519,
+            keyExpiry: $keyExpiry
         );
         $subkey = $privateKey->getSubKeys()[1];
         $this->assertTrue($subkey->verify());
