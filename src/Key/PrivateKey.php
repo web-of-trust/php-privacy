@@ -259,7 +259,7 @@ class PrivateKey extends AbstractKey
                 'Primary key is invalid.'
             );
         }
-        $subkeys = $this->subkeys;
+        $subkeys = $this->getSubkeys();
         usort(
             $subkeys,
             static fn ($a, $b) => $b->getCreationTime()->getTimestamp() - $a->getCreationTime()->getTimestamp()

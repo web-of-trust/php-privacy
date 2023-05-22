@@ -106,6 +106,8 @@ EOT;
         $encryptionKey = $privateKey->getEncryptionKeyPacket();
         $this->assertTrue($encryptionKey instanceof SecretKeyPacketInterface);
         $this->assertSame('42badbbe0f2acabacd6cac7c4be1b3a621ef906f', $encryptionKey->getFingerprint(true));
+        $decryptionKey = $privateKey->getDecryptionKeyPackets()[0];
+        $this->assertSame('42badbbe0f2acabacd6cac7c4be1b3a621ef906f', $decryptionKey->getFingerprint(true));
 
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
@@ -202,6 +204,8 @@ EOT;
         $encryptionKey = $privateKey->getEncryptionKeyPacket();
         $this->assertTrue($encryptionKey instanceof SecretKeyPacketInterface);
         $this->assertSame('420a452a98ea130c7747e0b2c0453c8aabe775db', $encryptionKey->getFingerprint(true));
+        $decryptionKey = $privateKey->getDecryptionKeyPackets()[0];
+        $this->assertSame('420a452a98ea130c7747e0b2c0453c8aabe775db', $decryptionKey->getFingerprint(true));
 
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
@@ -276,6 +280,8 @@ EOT;
         $encryptionKey = $privateKey->getEncryptionKeyPacket();
         $this->assertTrue($encryptionKey instanceof SecretKeyPacketInterface);
         $this->assertSame('7d5bfac8919d26290b28ec56c0b7b9c6bf5824b6', $encryptionKey->getFingerprint(true));
+        $decryptionKey = $privateKey->getDecryptionKeyPackets()[0];
+        $this->assertSame('7d5bfac8919d26290b28ec56c0b7b9c6bf5824b6', $decryptionKey->getFingerprint(true));
 
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
@@ -347,6 +353,8 @@ EOT;
         $encryptionKey = $privateKey->getEncryptionKeyPacket();
         $this->assertTrue($encryptionKey instanceof SecretKeyPacketInterface);
         $this->assertSame('457b5979545fba09be179db808a55bdb1d673d5d', $encryptionKey->getFingerprint(true));
+        $decryptionKey = $privateKey->getDecryptionKeyPackets()[0];
+        $this->assertSame('457b5979545fba09be179db808a55bdb1d673d5d', $decryptionKey->getFingerprint(true));
 
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
@@ -417,6 +425,8 @@ EOT;
         $encryptionKey = $privateKey->getEncryptionKeyPacket();
         $this->assertTrue($encryptionKey instanceof SecretKeyPacketInterface);
         $this->assertSame('8efa53a375fc569aa9ca564a044eac93f0b69ea0', $encryptionKey->getFingerprint(true));
+        $decryptionKey = $privateKey->getDecryptionKeyPackets()[0];
+        $this->assertSame('8efa53a375fc569aa9ca564a044eac93f0b69ea0', $decryptionKey->getFingerprint(true));
 
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
