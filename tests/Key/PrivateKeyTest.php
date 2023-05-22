@@ -79,6 +79,7 @@ OXuzG9xtWoPJ1f2eD+/4Vi+RpUeiZX181VvGANbqgqkdgw==
 EOT;
 
         $privateKey = PrivateKey::fromArmored($data);
+        $this->assertTrue($privateKey->isPrivate());
         $this->assertTrue($privateKey->isEncrypted());
         $this->assertFalse($privateKey->isDecrypted());
 
@@ -177,6 +178,7 @@ ArLY
 EOT;
 
         $privateKey = PrivateKey::fromArmored($data);
+        $this->assertTrue($privateKey->isPrivate());
         $this->assertTrue($privateKey->isEncrypted());
         $this->assertFalse($privateKey->isDecrypted());
 
@@ -253,6 +255,7 @@ ilKlxxYtbdD/dzH9pEv/jSZT+qKSSrWalKQR09/qVMH3UrU=
 EOT;
 
         $privateKey = PrivateKey::fromArmored($data);
+        $this->assertTrue($privateKey->isPrivate());
         $this->assertTrue($privateKey->isEncrypted());
         $this->assertFalse($privateKey->isDecrypted());
 
@@ -326,6 +329,7 @@ ehhtAP4ujUY9gC/lHikQyYjwN3rj1oKnPnIHEq7pm6CCm3vhOg==
 EOT;
 
         $privateKey = PrivateKey::fromArmored($data);
+        $this->assertTrue($privateKey->isPrivate());
         $this->assertTrue($privateKey->isEncrypted());
         $this->assertFalse($privateKey->isDecrypted());
 
@@ -398,6 +402,7 @@ T3ryNIYca7l/BO+m8zgP
 EOT;
 
         $privateKey = PrivateKey::fromArmored($data);
+        $this->assertTrue($privateKey->isPrivate());
         $this->assertTrue($privateKey->isEncrypted());
         $this->assertFalse($privateKey->isDecrypted());
 
