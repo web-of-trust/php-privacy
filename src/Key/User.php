@@ -232,9 +232,14 @@ class User implements PacketContainerInterface
      */
     public function certify(PrivateKey $signKey, ?DateTime $time = null): self
     {
+        if ($signKey->getFingerprint() === $this->mainKey->getFingerprint()) {
+            throw new \InvalidArgumentException(
+                'The user\'s own key can only be used for self-certifications'
+            );
+        }
         $otherCertifications = $this->otherCertifications;
         $otherCertifications[] = Signature::createCertGeneric(
-            $signKey->getKeyPacket(),
+            $signKey->getSigningKeyPacket(),
             $this->userIDPacket,
             $time
         );

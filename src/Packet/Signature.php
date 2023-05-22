@@ -232,6 +232,38 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         ?DateTime $time = null
     )
     {
+        $subpackets = [
+            Signature\KeyFlags::fromFlags(
+                KeyFlag::CertifyKeys->value | KeyFlag::SignData->value
+            ),
+            new Signature\PreferredSymmetricAlgorithms(
+                implode([
+                    chr(SymmetricAlgorithm::Aes128->value),
+                    chr(SymmetricAlgorithm::Aes192->value),
+                    chr(SymmetricAlgorithm::Aes256->value),
+                ])
+            ),
+            new Signature\PreferredHashAlgorithms(
+                implode([
+                    chr(HashAlgorithm::Sha256->value),
+                    chr(HashAlgorithm::Sha512->value),
+                ])
+            ),
+            new Signature\PreferredCompressionAlgorithms(
+                implode([
+                    chr(CompressionAlgorithm::Uncompressed->value),
+                    chr(CompressionAlgorithm::Zip->value),
+                    chr(CompressionAlgorithm::Zlib->value),
+                    chr(CompressionAlgorithm::BZip2->value),
+                ])
+            ),
+            new Signature\Features(
+                chr(SupportFeature::ModificationDetection->value)
+            ),
+        ];
+        if ($isPrimaryUser) {
+            $subpackets[] = new Signature\PrimaryUserID("\x01");
+        }
         return self::createSignature(
             $signKey,
             SignatureType::CertGeneric,
@@ -240,36 +272,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
                 $userID->getSignBytes(),
             ]),
             Config::getPreferredHash(),
-            [
-                Signature\KeyFlags::fromFlags(
-                    KeyFlag::CertifyKeys->value | KeyFlag::SignData->value
-                ),
-                new Signature\PreferredSymmetricAlgorithms(
-                    implode([
-                        chr(SymmetricAlgorithm::Aes128->value),
-                        chr(SymmetricAlgorithm::Aes192->value),
-                        chr(SymmetricAlgorithm::Aes256->value),
-                    ])
-                ),
-                new Signature\PreferredHashAlgorithms(
-                    implode([
-                        chr(HashAlgorithm::Sha256->value),
-                        chr(HashAlgorithm::Sha512->value),
-                    ])
-                ),
-                new Signature\PreferredCompressionAlgorithms(
-                    implode([
-                        chr(CompressionAlgorithm::Uncompressed->value),
-                        chr(CompressionAlgorithm::Zip->value),
-                        chr(CompressionAlgorithm::Zlib->value),
-                        chr(CompressionAlgorithm::BZip2->value),
-                    ])
-                ),
-                new Signature\PrimaryUserID($isPrimaryUser ? "\x01" : "\x00"),
-                new Signature\Features(
-                    chr(SupportFeature::ModificationDetection->value)
-                ),
-            ],
+            $subpackets,
             $time
         );
     }
