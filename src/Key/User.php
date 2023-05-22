@@ -231,7 +231,7 @@ class User implements PacketContainerInterface
             $revocationReason,
             $time
         );
-        return new User(
+        return new self(
             $this->mainKey,
             $this->userIDPacket,
             $revocationSignatures,

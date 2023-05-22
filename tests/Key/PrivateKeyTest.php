@@ -434,15 +434,17 @@ EOT;
         );
         $subkey = $privateKey->getSubKeys()[1];
         $this->assertTrue($subkey->verify());
-        $subkey = $subkey->revoke($privateKey);
-        $this->assertTrue($subkey->isRevoked());
-
         $expirationTime = $subkey->getExpirationTime()->sub(
             \DateInterval::createFromDateString($keyExpiry . ' seconds')
         );
         $this->assertSame(
             $expirationTime->format('Y-m-d H:i:s'), (new \DateTime())->format('Y-m-d H:i:s')
         );
+
+        $subkey = $privateKey->revokeSubkey($subkey->getKeyID())->getSubKeys()[1];
+        $this->assertTrue($subkey->isRevoked());
+        $user = $privateKey->revokeUser($userID)->getUsers()[0];
+        $this->assertTrue($user->isRevoked());
     }
 
     public function testGenerateDSAPrivateKey()
@@ -488,15 +490,17 @@ EOT;
         );
         $subkey = $privateKey->getSubKeys()[1];
         $this->assertTrue($subkey->verify());
-        $subkey = $subkey->revoke($privateKey);
-        $this->assertTrue($subkey->isRevoked());
-
         $expirationTime = $subkey->getExpirationTime()->sub(
             \DateInterval::createFromDateString($keyExpiry . ' seconds')
         );
         $this->assertSame(
             $expirationTime->format('Y-m-d H:i:s'), (new \DateTime())->format('Y-m-d H:i:s')
         );
+
+        $subkey = $privateKey->revokeSubkey($subkey->getKeyID())->getSubKeys()[1];
+        $this->assertTrue($subkey->isRevoked());
+        $user = $privateKey->revokeUser($userID)->getUsers()[0];
+        $this->assertTrue($user->isRevoked());
     }
 
     public function testGenerateEccSecp521r1PrivateKey()
@@ -544,15 +548,17 @@ EOT;
         );
         $subkey = $privateKey->getSubKeys()[1];
         $this->assertTrue($subkey->verify());
-        $subkey = $subkey->revoke($privateKey);
-        $this->assertTrue($subkey->isRevoked());
-
         $expirationTime = $subkey->getExpirationTime()->sub(
             \DateInterval::createFromDateString($keyExpiry . ' seconds')
         );
         $this->assertSame(
             $expirationTime->format('Y-m-d H:i:s'), (new \DateTime())->format('Y-m-d H:i:s')
         );
+
+        $subkey = $privateKey->revokeSubkey($subkey->getKeyID())->getSubKeys()[1];
+        $this->assertTrue($subkey->isRevoked());
+        $user = $privateKey->revokeUser($userID)->getUsers()[0];
+        $this->assertTrue($user->isRevoked());
     }
 
     public function testGenerateEccBrainpoolP512r1PrivateKey()
@@ -600,15 +606,17 @@ EOT;
         );
         $subkey = $privateKey->getSubKeys()[1];
         $this->assertTrue($subkey->verify());
-        $subkey = $subkey->revoke($privateKey);
-        $this->assertTrue($subkey->isRevoked());
-
         $expirationTime = $subkey->getExpirationTime()->sub(
             \DateInterval::createFromDateString($keyExpiry . ' seconds')
         );
         $this->assertSame(
             $expirationTime->format('Y-m-d H:i:s'), (new \DateTime())->format('Y-m-d H:i:s')
         );
+
+        $subkey = $privateKey->revokeSubkey($subkey->getKeyID())->getSubKeys()[1];
+        $this->assertTrue($subkey->isRevoked());
+        $user = $privateKey->revokeUser($userID)->getUsers()[0];
+        $this->assertTrue($user->isRevoked());
     }
 
     public function testGenerateEccEd25519PrivateKey()
@@ -656,14 +664,16 @@ EOT;
         );
         $subkey = $privateKey->getSubKeys()[1];
         $this->assertTrue($subkey->verify());
-        $subkey = $subkey->revoke($privateKey);
-        $this->assertTrue($subkey->isRevoked());
-
         $expirationTime = $subkey->getExpirationTime()->sub(
             \DateInterval::createFromDateString($keyExpiry . ' seconds')
         );
         $this->assertSame(
             $expirationTime->format('Y-m-d H:i:s'), (new \DateTime())->format('Y-m-d H:i:s')
         );
+
+        $subkey = $privateKey->revokeSubkey($subkey->getKeyID())->getSubKeys()[1];
+        $this->assertTrue($subkey->isRevoked());
+        $user = $privateKey->revokeUser($userID)->getUsers()[0];
+        $this->assertTrue($user->isRevoked());
     }
 }

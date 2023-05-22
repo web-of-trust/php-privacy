@@ -409,4 +409,70 @@ class PrivateKey extends AbstractKey
 
         return self::fromPacketList((new PacketList($packets)));
     }
+
+    /**
+     * Revokes User,
+     * and returns a clone of the key object with the new revoked user.
+     * 
+     * @param string $userID
+     * @param string $revocationReason
+     * @param DateTime $date
+     * @return self
+     */
+    public function revokeUser(
+        string $userID,
+        string $revocationReason = '',
+        ?DateTime $time = null
+    )
+    {
+        $users = $this->getUsers();
+        foreach ($users as $key => $user) {
+            if ($user->getUserID() === $userID) {
+                $users[$key] = $user->revoke(
+                    $this, $revocationReason, $time
+                );
+            }
+        }
+
+        return new self(
+            $this->getKeyPacket(),
+            $this->getRevocationSignatures(),
+            $this->getDirectSignatures(),
+            $users,
+            $this->getSubkeys()
+        );
+    }
+
+    /**
+     * Revokes subkey,
+     * and returns a clone of the key object with the new revoked subkey.
+     * 
+     * @param string $keyID
+     * @param string $revocationReason
+     * @param DateTime $date
+     * @return self
+     */
+    public function revokeSubkey(
+        string $keyID,
+        string $revocationReason = '',
+        ?DateTime $time = null
+    )
+    {
+        $subkeys = $this->getSubkeys();
+        foreach ($subkeys as $key => $subkey) {
+            if ($subkey->getKeyID() === $keyID) {
+                $subkeys[$key] = $subkey->revoke(
+                    $this, $revocationReason, $time
+                );
+            }
+        }
+
+        return new self(
+            $this->getKeyPacket(),
+            $this->getRevocationSignatures(),
+            $this->getDirectSignatures(),
+            $this->getUsers(),
+            $subkeys
+        );
+    }
 }
