@@ -10,6 +10,11 @@
 
 namespace OpenPGP\Message;
 
+use OpenPGP\Type\{
+    SignatureInterface,
+    VerificationInterface
+};
+
 /**
  * Verification class
  *
@@ -18,6 +23,45 @@ namespace OpenPGP\Message;
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class Verification
+class Verification implements VerificationInterface
 {
+    /**
+     * Constructor
+     *
+     * @param string $keyID
+     * @param SignatureInterface $signature
+     * @param bool $isVerified
+     * @return self
+     */
+    public function __construct(
+        private readonly string $keyID,
+        private readonly SignatureInterface $signature,
+        private readonly bool $isVerified = false,
+    )
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getKeyID(): string
+    {
+        return $this->keyID;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSignature(): SignatureInterface
+    {
+        return $this->signature;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
 }

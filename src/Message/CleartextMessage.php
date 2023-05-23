@@ -11,7 +11,14 @@
 namespace OpenPGP\Message;
 
 use \DateTime;
-use OpenPGP\Type\MessageInterface;
+use OpenPGP\Key\PrivateKey;
+use OpenPGP\Packet\LiteralData;
+use OpenPGP\Packet\Signature as SignaturePacket;
+use OpenPGP\Type\{
+    MessageInterface,
+    SignatureInterface,
+    SignedMessageInterface
+};
 
 /**
  * Cleartext message class
@@ -55,11 +62,31 @@ class CleartextMessage implements MessageInterface
         return preg_replace('/\r\n/im', "\n", $this->text);
     }
 
-    public function sign(array $signingKeys, ?DateTime $time): SignedMessageInterface
+    /**
+     * {@inheritdoc}
+     */
+    public function sign(array $signingKeys, ?DateTime $time = null): SignedMessageInterface
     {
+        $signingKeys = array_filter($signingKeys, static fn ($key) => $key instanceof PrivateKey);
+        if (empty($signingKeys)) {
+            throw new \InvalidArgumentException('No signing keys provided');
+        }
+        $packets = array_map(
+            static fn ($key) => SignaturePacket::createLiteralData(
+                $key->getSigningKeyPacket(),
+                LiteralData::fromText($this->text),
+                $time
+            ),
+            $signingKeys
+        );
+        return new SignedMessage($this->text, new Signature($packets));
     }
 
-    public function signDetached(array $signingKeys, ?DateTime $time): SignatureInterface
+    /**
+     * {@inheritdoc}
+     */
+    public function signDetached(array $signingKeys, ?DateTime $time = null): SignatureInterface
     {
+        return $this->sign($signingKeys, $time)->getSignature();
     }
 }

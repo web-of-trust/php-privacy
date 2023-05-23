@@ -17,6 +17,7 @@ use OpenPGP\Enum\{
     HashAlgorithm,
     KeyAlgorithm,
     KeyFlag,
+    LiteralFormat,
     PacketTag,
     RevocationReasonTag,
     SignatureSubpacketType,
@@ -428,6 +429,35 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
                     RevocationReasonTag::NoReason, $revocationReason
                 )
             ],
+            $time
+        );
+    }
+
+    /**
+     * Creates literal data signature
+     *
+     * @param SecretKey $signKey
+     * @param LiteralData $literalData
+     * @param DateTime $time
+     * @return self
+     */
+    public static function createLiteralData(
+        SecretKey $signKey,
+        LiteralData $literalData,
+        ?DateTime $time = null
+    )
+    {
+        $signatureType = SignatureType::Binary;
+        $format = $literalData->getFormat();
+        if ($format === LiteralFormat::Text || $format === LiteralFormat::Utf8) {
+            $signatureType = SignatureType::Text;
+        }
+        return self::createSignature(
+            $signKey,
+            $signatureType,
+            $literalData->getSignBytes(),
+            Config::getPreferredHash(),
+            [],
             $time
         );
     }
