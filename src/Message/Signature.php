@@ -129,7 +129,7 @@ class Signature implements ArmorableInterface, PacketContainerInterface, Signatu
                     );
                 }
                 catch (\Throwable $e) {
-                    Helper::getLooger()->error($e->getMessage());
+                    Helper::getLogger()->error($e->getMessage());
                 }
             }
         }
