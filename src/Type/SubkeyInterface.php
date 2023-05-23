@@ -77,12 +77,15 @@ interface SubkeyInterface
     /**
      * Checks if a binding signature of a subkey is revoked
      * 
+     * @param KeyPacketInterface $keyPacket
      * @param SignaturePacketInterface $certificate
      * @param DateTime $time
      * @return bool
      */
     function isRevoked(
-        ?SignaturePacketInterface $certificate = null, ?DateTime $time = null
+        ?KeyPacketInterface $keyPacket = null,
+        ?SignaturePacketInterface $certificate = null,
+        ?DateTime $time = null
     ): bool;
 
     /**

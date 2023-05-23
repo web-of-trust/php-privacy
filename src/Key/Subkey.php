@@ -17,6 +17,7 @@ use OpenPGP\Enum\KeyAlgorithm;
 use OpenPGP\Packet\{PacketList, Signature};
 use OpenPGP\Type\{
     KeyInterface,
+    KeyPacketInterface,
     PacketContainerInterface,
     PacketListInterface,
     SignaturePacketInterface,
@@ -176,19 +177,22 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
      * {@inheritdoc}
      */
     public function isRevoked(
+        ?KeyPacketInterface $keyPacket = null,
         ?SignaturePacketInterface $certificate = null,
         ?DateTime $time = null
     ): bool
     {
         $keyID = ($certificate != null) ? $certificate->getIssuerKeyID()->getKeyID() : '';
+        $keyPacket = $keyPacket ?? $this->mainKey->toPublic()->getKeyPacket();
+        $dataToVerify = implode([
+            $keyPacket->getSignBytes(),
+            $this->keyPacket->getSignBytes(),
+        ]);
         foreach ($this->revocationSignatures as $signature) {
             if (empty($keyID) || $keyID === $signature->getIssuerKeyID()->getKeyID()) {
                 if ($signature->verify(
-                    $this->mainKey->toPublic()->getKeyPacket(),
-                    implode([
-                        $this->mainKey->getKeyPacket()->getSignBytes(),
-                        $this->keyPacket->getSignBytes(),
-                    ]),
+                    $keyPacket,
+                    $dataToVerify,
                     $time
                 )) {
                     return true;
@@ -209,13 +213,15 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
             );
             return false;
         }
+        $keyPacket = $this->mainKey->toPublic()->getKeyPacket();
+        $dataToVerify = implode([
+            $keyPacket->getSignBytes(),
+            $this->keyPacket->getSignBytes(),
+        ]);
         foreach ($this->bindingSignatures as $signature) {
             if (!$signature->verify(
-                $this->mainKey->toPublic()->getKeyPacket(),
-                implode([
-                    $this->mainKey->getKeyPacket()->getSignBytes(),
-                    $this->keyPacket->getSignBytes(),
-                ]),
+                $keyPacket,
+                $dataToVerify,
                 $time
             )) {
                 return false;
@@ -275,7 +281,7 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
     {
         $revocationSignatures = $this->revocationSignatures;
         $revocationSignatures[] = Signature::createSubkeyRevocation(
-            $signKey->getKeyPacket(),
+            $signKey->getSigningKeyPacket(),
             $this->keyPacket,
             $revocationReason,
             $time

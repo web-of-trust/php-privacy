@@ -15,6 +15,7 @@ use OpenPGP\Enum\{HashAlgorithm, SignatureType};
 use OpenPGP\Packet\{PacketList, Signature, UserID};
 use OpenPGP\Type\{
     KeyInterface,
+    KeyPacketInterface,
     PacketContainerInterface,
     PacketListInterface,
     SignaturePacketInterface,
@@ -165,24 +166,28 @@ class User implements PacketContainerInterface
     /**
      * Checks if a given certificate of the user is revoked
      * 
+     * @param KeyPacketInterface $keyPacket
      * @param SignaturePacketInterface $certificate
      * @param DateTime $time
      * @return bool
      */
     public function isRevoked(
+        ?KeyPacketInterface $keyPacket = null,
         ?SignaturePacketInterface $certificate = null,
         ?DateTime $time = null
     ): bool
     {
         $keyID = ($certificate != null) ? $certificate->getIssuerKeyID()->getKeyID() : '';
+        $keyPacket = $keyPacket ?? $this->mainKey->toPublic()->getKeyPacket();
+        $dataToVerify = implode([
+            $keyPacket->getSignBytes(),
+            $this->userIDPacket->getSignBytes(),
+        ]);
         foreach ($this->revocationSignatures as $signature) {
             if (empty($keyID) || $keyID === $signature->getIssuerKeyID()->getKeyID()) {
                 if ($signature->verify(
-                    $this->mainKey->toPublic()->getKeyPacket(),
-                    implode([
-                        $this->mainKey->getKeyPacket()->getSignBytes(),
-                        $this->userIDPacket->getSignBytes(),
-                    ]),
+                    $keyPacket,
+                    $dataToVerify,
                     $time
                 )) {
                     return true;
@@ -207,13 +212,15 @@ class User implements PacketContainerInterface
             );
             return false;
         }
+        $keyPacket = $this->mainKey->toPublic()->getKeyPacket();
+        $dataToVerify = implode([
+            $keyPacket->getSignBytes(),
+            $this->userIDPacket->getSignBytes(),
+        ]);
         foreach ($this->selfCertifications as $signature) {
             if (!$signature->verify(
-                $this->mainKey->toPublic()->getKeyPacket(),
-                implode([
-                    $this->mainKey->getKeyPacket()->getSignBytes(),
-                    $this->userIDPacket->getSignBytes(),
-                ]),
+                $keyPacket,
+                $dataToVerify,
                 $time
             )) {
                 return false;
@@ -268,7 +275,7 @@ class User implements PacketContainerInterface
     {
         $revocationSignatures = $this->revocationSignatures;
         $revocationSignatures[] = Signature::createCertRevocation(
-            $signKey->getKeyPacket(),
+            $signKey->getSigningKeyPacket(),
             $this->userIDPacket,
             $revocationReason,
             $time
