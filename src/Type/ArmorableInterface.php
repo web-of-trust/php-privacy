@@ -10,8 +10,6 @@
 
 namespace OpenPGP\Type;
 
-use OpenPGP\Packet\PacketList;
-
 /**
  * Armorable interface
  * 

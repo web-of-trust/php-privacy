@@ -18,6 +18,32 @@ namespace OpenPGP\Message;
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class SignedMessage
+class SignedMessage extends CleartextMessage implements ArmorableInterface, SignedMessageInterface
 {
+    /**
+     * Constructor
+     *
+     * @param string $text
+     * @param Signature $signature
+     * @param array $verifications
+     * @return self
+     */
+    public function __construct(
+        string $text,
+        private readonly Signature $signature,
+        private readonly array $verifications = [],
+    )
+    {
+        parent::__construct($text);
+    }
+
+    public function getSignature(): Signature
+    {
+        return $this->signature;
+    }
+
+    public function getVerifications(): array
+    {
+        return $this->verifications;
+    }
 }

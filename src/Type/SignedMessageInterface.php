@@ -13,30 +13,21 @@ namespace OpenPGP\Type;
 use DateTime;
 
 /**
- * Message interface
+ * Signed message interface
  * 
  * @package   OpenPGP
  * @category  Type
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface MessageInterface
+interface SignedMessageInterface extends MessageInterface
 {
     /**
-     * Sign the message
+     * Verify signatures of signed message
      *
-     * @param array $signingKeys
+     * @param array $verificationKeys
      * @param int $time
      * @return SignedMessageInterface
      */
-    function sign(array $signingKeys, ?DateTime $time = null): SignedMessageInterface;
-
-    /**
-     * Create a detached signature for the message
-     *
-     * @param array $signingKeys
-     * @param int $time
-     * @return MessageInterface
-     */
-    function signDetached(array $signingKeys, ?DateTime $time = null): SignatureInterface;
+    function verify(array $verificationKeys, ?DateTime $time = null): SignedMessageInterface;
 }
