@@ -51,7 +51,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface, Literal
     )
     {
         parent::__construct(PacketTag::LiteralData);
-        $this->time = $time ?? new DateTime();
+        $this->time = $time ?? (new DateTime())->setTimestamp(time());
     }
 
     /**
