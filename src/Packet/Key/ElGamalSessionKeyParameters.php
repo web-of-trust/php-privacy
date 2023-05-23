@@ -13,7 +13,10 @@ namespace OpenPGP\Packet\Key;
 use phpseclib3\Crypt\Random;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
-use OpenPGP\Cryptor\Asymmetric\{ElGamalPrivateKey, ElGamalPublicKey};
+use OpenPGP\Cryptor\Asymmetric\{
+    ElGamalPrivateKey,
+    ElGamalPublicKey,
+};
 use OpenPGP\Type\SessionKeyParametersInterface;
 
 /**

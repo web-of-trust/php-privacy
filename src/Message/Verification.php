@@ -12,7 +12,7 @@ namespace OpenPGP\Message;
 
 use OpenPGP\Type\{
     SignatureInterface,
-    VerificationInterface
+    VerificationInterface,
 };
 
 /**

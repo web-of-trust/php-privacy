@@ -13,7 +13,7 @@ namespace OpenPGP\Common;
 use OpenPGP\Enum\{
     CompressionAlgorithm,
     HashAlgorithm,
-    SymmetricAlgorithm
+    SymmetricAlgorithm,
 };
 
 /**
@@ -26,6 +26,9 @@ use OpenPGP\Enum\{
  */
 final class Config
 {
+    const VERSION = 'PHP PG v1.0.0';
+    const COMMENT = 'PHP Privacy Guard';
+
     private static HashAlgorithm $preferredHash = HashAlgorithm::Sha256;
 
     private static SymmetricAlgorithm $preferredSymmetric = SymmetricAlgorithm::Aes128;

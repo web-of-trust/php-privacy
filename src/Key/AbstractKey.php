@@ -16,7 +16,7 @@ use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{
     KeyAlgorithm,
     PacketTag,
-    SignatureType
+    SignatureType,
 };
 use OpenPGP\Packet\PacketList;
 use OpenPGP\Type\{
@@ -27,7 +27,7 @@ use OpenPGP\Type\{
     PacketListInterface,
     SignaturePacketInterface,
     SubkeyPacketInterface,
-    UserIDPacketInterface
+    UserIDPacketInterface,
 };
 use Psr\Log\{
     LoggerAwareInterface,

@@ -11,7 +11,10 @@
 namespace OpenPGP\Packet;
 
 use DateTime;
-use OpenPGP\Common\{Config, Helper};
+use OpenPGP\Common\{
+    Config,
+    Helper,
+};
 use OpenPGP\Enum\{
     CompressionAlgorithm,
     HashAlgorithm,
@@ -31,7 +34,7 @@ use OpenPGP\Type\{
     SignableParametersInterface,
     SubkeyPacketInterface,
     UserIDPacketInterface,
-    VerifiableParametersInterface
+    VerifiableParametersInterface,
 };
 
 /**

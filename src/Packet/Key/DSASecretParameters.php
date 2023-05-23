@@ -13,10 +13,15 @@ namespace OpenPGP\Packet\Key;
 use phpseclib3\Crypt\DSA;
 use phpseclib3\Crypt\DSA\PrivateKey;
 use phpseclib3\Math\BigInteger;
-
 use OpenPGP\Common\Helper;
-use OpenPGP\Enum\{DHKeySize, HashAlgorithm};
-use OpenPGP\Type\{KeyParametersInterface, SignableParametersInterface};
+use OpenPGP\Enum\{
+    DHKeySize,
+    HashAlgorithm,
+};
+use OpenPGP\Type\{
+    KeyParametersInterface,
+    SignableParametersInterface,
+};
 
 /**
  * DSA secret parameters class

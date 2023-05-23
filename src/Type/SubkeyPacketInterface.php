@@ -10,8 +10,6 @@
 
 namespace OpenPGP\Type;
 
-use OpenPGP\Enum\{HashAlgorithm, KeyAlgorithm};
-
 /**
  * Subkey packet interface
  * 

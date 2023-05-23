@@ -15,7 +15,10 @@ use DateTime;
 use phpseclib3\Crypt\Random;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Enum\SymmetricAlgorithm;
-use Psr\Log\{LoggerInterface, NullLogger};
+use Psr\Log\{
+    LoggerInterface,
+    NullLogger,
+};
 
 /**
  * Helper class

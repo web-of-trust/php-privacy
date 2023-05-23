@@ -22,7 +22,10 @@ use OpenPGP\Enum\{
     S2kUsage,
     SymmetricAlgorithm,
 };
-use OpenPGP\Type\{KeyParametersInterface, SubkeyPacketInterface};
+use OpenPGP\Type\{
+    KeyParametersInterface,
+    SubkeyPacketInterface,
+};
 
 /**
  * Secret sub key packet class

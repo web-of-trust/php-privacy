@@ -14,7 +14,10 @@ use DateInterval;
 use DateTime;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\KeyAlgorithm;
-use OpenPGP\Packet\{PacketList, Signature};
+use OpenPGP\Packet\{
+    PacketList,
+    Signature,
+};
 use OpenPGP\Type\{
     KeyInterface,
     KeyPacketInterface,
@@ -22,7 +25,7 @@ use OpenPGP\Type\{
     PacketListInterface,
     SignaturePacketInterface,
     SubkeyInterface,
-    SubkeyPacketInterface
+    SubkeyPacketInterface,
 };
 
 /**

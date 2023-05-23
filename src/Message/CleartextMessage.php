@@ -17,7 +17,7 @@ use OpenPGP\Packet\Signature as SignaturePacket;
 use OpenPGP\Type\{
     MessageInterface,
     SignatureInterface,
-    SignedMessageInterface
+    SignedMessageInterface,
 };
 
 /**

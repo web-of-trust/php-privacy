@@ -11,7 +11,10 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\PacketTag;
-use OpenPGP\Type\{PacketInterface, PacketListInterface};
+use OpenPGP\Type\{
+    PacketInterface,
+    PacketListInterface,
+};
 
 /**
  * Packet list class

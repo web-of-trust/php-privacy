@@ -23,6 +23,13 @@ use OpenPGP\Enum\SymmetricAlgorithm;
 interface EncryptedMessageInterface extends SignedMessageInterface
 {
     /**
+     * Returns contained packets
+     *
+     * @return array
+     */
+    function getPackets(): array;
+
+    /**
      * Encrypt the message either with public keys, passwords, or both at once.
      * Return new message with encrypted content.
      *

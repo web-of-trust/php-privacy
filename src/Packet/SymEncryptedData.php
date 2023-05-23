@@ -12,7 +12,10 @@ namespace OpenPGP\Packet;
 
 use phpseclib3\Crypt\Random;
 use OpenPGP\Common\Helper;
-use OpenPGP\Enum\{PacketTag, SymmetricAlgorithm};
+use OpenPGP\Enum\{
+    PacketTag,
+    SymmetricAlgorithm,
+};
 
 /**
  * SymEncryptedData packet (tag 9) represents a Symmetrically Encrypted Data packet.

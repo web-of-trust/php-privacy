@@ -16,7 +16,7 @@ use OpenPGP\Packet\PacketList;
 use OpenPGP\Type\{
     KeyInterface,
     KeyPacketInterface,
-    PacketListInterface
+    PacketListInterface,
 };
 
 /**

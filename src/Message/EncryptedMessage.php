@@ -11,14 +11,16 @@
 namespace OpenPGP\Message;
 
 use OpenPGP\Common\Armor;
-use OpenPGP\Enum\ArmorType;
+use OpenPGP\Enum\{ArmorType, SymmetricAlgorithm};
 use OpenPGP\Packet\{LiteralData, PacketList};
 use OpenPGP\Type\{
     ArmorableInterface,
     EncryptedMessageInterface,
     PacketContainerInterface,
     PacketInterface,
-    PacketListInterface
+    PacketListInterface,
+    SignatureInterface,
+    SignedMessageInterface,
 };
 
 /**
@@ -71,6 +73,14 @@ class EncryptedMessage implements ArmorableInterface, PacketContainerInterface, 
     /**
      * {@inheritdoc}
      */
+    public function getPackets(): array
+    {
+        return this->packets;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function armor(): string
     {
         return Armor::encode(
@@ -85,5 +95,55 @@ class EncryptedMessage implements ArmorableInterface, PacketContainerInterface, 
     public function toPacketList(): PacketListInterface
     {
         return new PacketList($this->packets);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function sign(
+        array $signingKeys, ?DateTime $time = null
+    ): SignedMessageInterface
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function signDetached(
+        array $signingKeys, ?DateTime $time = null
+    ): SignatureInterface
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function verify(
+        array $verificationKeys, ?DateTime $time = null
+    ): array
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function encrypt(
+        array $encryptionKeys,
+        array $passwords = [],
+        SymmetricAlgorithm $sessionKeySymmetric = SymmetricAlgorithm::Aes128,
+        SymmetricAlgorithm $encryptionKeySymmetric = SymmetricAlgorithm::Aes128
+    ): self
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function decrypt(
+        array $decryptionKeys,
+        array $passwords = [],
+        bool $allowUnauthenticatedMessages = false
+    ): self
+    {
     }
 }

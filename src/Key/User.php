@@ -11,15 +11,22 @@
 namespace OpenPGP\Key;
 
 use OpenPGP\Common\Helper;
-use OpenPGP\Enum\{HashAlgorithm, SignatureType};
-use OpenPGP\Packet\{PacketList, Signature, UserID};
+use OpenPGP\Enum\{
+    HashAlgorithm,
+    SignatureType,
+};
+use OpenPGP\Packet\{
+    PacketList,
+    Signature,
+    UserID,
+};
 use OpenPGP\Type\{
     KeyInterface,
     KeyPacketInterface,
     PacketContainerInterface,
     PacketListInterface,
     SignaturePacketInterface,
-    UserIDPacketInterface
+    UserIDPacketInterface,
 };
 
 /**

@@ -11,7 +11,11 @@
 namespace OpenPGP\Packet\Signature;
 
 use OpenPGP\Enum\SignatureSubpacketType;
-use OpenPGP\Packet\{Signature, SignatureSubpacket};
+use OpenPGP\Packet\{
+    Signature,
+    SignatureSubpacket,
+};
+use OpenPGP\Type\SignaturePacketInterface;
 
 /**
  * EmbeddedSignature sub-packet class
@@ -48,10 +52,10 @@ class EmbeddedSignature extends SignatureSubpacket
     /**
      * Embed signature package
      *
-     * @param Signature $signature
+     * @param SignaturePacketInterface $signature
      * @return self
      */
-    public static function fromSignature(Signature $signature): self
+    public static function fromSignature(SignaturePacketInterface $signature): self
     {
         return new self($signature->toBytes());
     }
@@ -59,9 +63,9 @@ class EmbeddedSignature extends SignatureSubpacket
     /**
      * Gets signature package
      *
-     * @return Signature
+     * @return SignaturePacketInterface
      */
-    public function getSignature(): Signature
+    public function getSignature(): SignaturePacketInterface
     {
         return Signature::fromBytes($this->getData());
     }

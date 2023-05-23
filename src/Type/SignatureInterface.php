@@ -25,14 +25,14 @@ interface SignatureInterface
      *
      * @return array
      */
-	function getSignaturePackets(): array;
+    function getSignaturePackets(): array;
 
     /**
      * Returns signing key IDs
      *
      * @return array
      */
-	function getSigningKeyIDs(): array;
+    function getSigningKeyIDs(): array;
 
     /**
      * Verify signature with cleartext
@@ -43,5 +43,7 @@ interface SignatureInterface
      * @param DateTime $time
      * @return array
      */
-    function verify(array $verificationKeys, string $text, ?DateTime $time = null): array;
+    function verify(
+        array $verificationKeys, string $text, ?DateTime $time = null
+    ): array;
 }

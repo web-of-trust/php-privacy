@@ -11,7 +11,6 @@
 namespace OpenPGP\Common;
 
 use OpenPGP\Enum\ArmorType;
-use OpenPGP\OpenPGP;
 
 /**
  * Armor class
@@ -283,8 +282,8 @@ final class Armor
     private static function addHeader(string $customComment = ''): string
     {
         $headers = [
-            'Version: ' . OpenPGP::VERSION . self::EOL,
-            'Comment: ' . OpenPGP::COMMENT . self::EOL,
+            'Version: ' . Config::VERSION . self::EOL,
+            'Comment: ' . Config::COMMENT . self::EOL,
         ];
         if (!empty($customComment)) {
             $headers[] = 'Comment: ' . $customComment . self::EOL;

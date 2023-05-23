@@ -11,7 +11,11 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Common\Helper;
-use OpenPGP\Enum\{HashAlgorithm, PacketTag, SymmetricAlgorithm};
+use OpenPGP\Enum\{
+    HashAlgorithm,
+    PacketTag,
+    SymmetricAlgorithm,
+};
 
 /**
  * Implementation of the Sym. Encrypted Integrity Protected Data Packet (Tag 18)

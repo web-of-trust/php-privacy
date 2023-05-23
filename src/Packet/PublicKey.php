@@ -11,13 +11,21 @@
 namespace OpenPGP\Packet;
 
 use DateTime;
-use OpenPGP\Common\{Config, Helper};
-use OpenPGP\Enum\{CurveOid, HashAlgorithm, KeyAlgorithm, PacketTag};
+use OpenPGP\Common\{
+    Config,
+    Helper,
+};
+use OpenPGP\Enum\{
+    CurveOid,
+    HashAlgorithm,
+    KeyAlgorithm,
+    PacketTag,
+};
 use OpenPGP\Type\{
     ForSigningInterface,
     KeyPacketInterface,
     KeyParametersInterface,
-    SubkeyPacketInterface
+    SubkeyPacketInterface,
 };
 
 /**

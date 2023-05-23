@@ -11,7 +11,11 @@
 namespace OpenPGP\Packet;
 
 use phpseclib3\Crypt\Random;
-use OpenPGP\Enum\{KeyAlgorithm, PacketTag, SymmetricAlgorithm};
+use OpenPGP\Enum\{
+    KeyAlgorithm,
+    PacketTag,
+    SymmetricAlgorithm,
+};
 use OpenPGP\Type\SessionKeyParametersInterface;
 
 /**

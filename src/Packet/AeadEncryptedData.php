@@ -10,7 +10,11 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Enum\{AeadAlgorithm, PacketTag, SymmetricAlgorithm};
+use OpenPGP\Enum\{
+    AeadAlgorithm,
+    PacketTag,
+    SymmetricAlgorithm,
+};
 
 /**
  * AEAD Protected Data Packet class

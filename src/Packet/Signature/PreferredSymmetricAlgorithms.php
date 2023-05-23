@@ -10,8 +10,10 @@
 
 namespace OpenPGP\Packet\Signature;
 
-use OpenPGP\Enum\SignatureSubpacketType;
-use OpenPGP\Enum\SymmetricAlgorithm;
+use OpenPGP\Enum\{
+    SignatureSubpacketType,
+    SymmetricAlgorithm,
+};
 use OpenPGP\Packet\SignatureSubpacket;
 
 /**

@@ -11,7 +11,12 @@
 namespace OpenPGP\Packet;
 
 use phpseclib3\Crypt\Random;
-use OpenPGP\Enum\{HashAlgorithm, PacketTag, S2kType, SymmetricAlgorithm};
+use OpenPGP\Enum\{
+    HashAlgorithm,
+    PacketTag,
+    S2kType,
+    SymmetricAlgorithm,
+};
 
 /**
  * SymEncryptedSessionKey packet class

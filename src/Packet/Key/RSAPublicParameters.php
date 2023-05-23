@@ -13,10 +13,12 @@ namespace OpenPGP\Packet\Key;
 use phpseclib3\Crypt\RSA;
 use phpseclib3\Crypt\RSA\PublicKey;
 use phpseclib3\Math\BigInteger;
-
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\HashAlgorithm;
-use OpenPGP\Type\{KeyParametersInterface, VerifiableParametersInterface};
+use OpenPGP\Type\{
+    KeyParametersInterface,
+    VerifiableParametersInterface,
+};
 
 /**
  * RSA public parameters class

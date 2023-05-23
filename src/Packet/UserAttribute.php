@@ -11,7 +11,10 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\PacketTag;
-use OpenPGP\Type\{ForSigningInterface, UserIDPacketInterface};
+use OpenPGP\Type\{
+    ForSigningInterface,
+    UserIDPacketInterface,
+};
 
 /**
  * User attribute packet class

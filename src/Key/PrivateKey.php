@@ -19,19 +19,19 @@ use OpenPGP\Enum\{
     KeyAlgorithm,
     KeyType,
     PacketTag,
-    RSAKeySize
+    RSAKeySize,
 };
 use OpenPGP\Packet\{
     PacketList,
     SecretKey,
     SecretSubkey,
     Signature,
-    UserID
+    UserID,
 };
 use OpenPGP\Type\{
     KeyInterface,
     PacketListInterface,
-    SecretKeyPacketInterface
+    SecretKeyPacketInterface,
 };
 
 /**

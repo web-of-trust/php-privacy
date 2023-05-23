@@ -11,8 +11,11 @@
 namespace OpenPGP\Packet;
 
 use DateTime;
-use OpenPGP\Enum\{KeyAlgorithm, PacketTag};
-use OpenPGP\Type\{KeyParametersInterface, SubkeyPacketInterface};
+use OpenPGP\Enum\KeyAlgorithm;
+use OpenPGP\Type\{
+    KeyParametersInterface,
+    SubkeyPacketInterface,
+};
 
 /**
  * Public sub key packet class

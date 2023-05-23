@@ -11,7 +11,10 @@
 namespace OpenPGP\Type;
 
 use OpenPGP\Enum\{
-    HashAlgorithm, S2kType, S2kUsage, SymmetricAlgorithm
+    HashAlgorithm,
+    S2kType,
+    S2kUsage,
+    SymmetricAlgorithm,
 };
 
 /**

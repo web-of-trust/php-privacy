@@ -19,6 +19,4 @@ namespace OpenPGP;
  */
 class OpenPGP
 {
-    const VERSION = 'PHP PG v1.0.0';
-    const COMMENT = 'PHP Privacy Guard';
 }

@@ -10,7 +10,10 @@
 
 namespace OpenPGP\Packet\Signature;
 
-use OpenPGP\Enum\{CompressionAlgorithm, SignatureSubpacketType};
+use OpenPGP\Enum\{
+    CompressionAlgorithm,
+    SignatureSubpacketType,
+};
 use OpenPGP\Packet\SignatureSubpacket;
 
 /**

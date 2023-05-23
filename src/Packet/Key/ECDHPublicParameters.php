@@ -12,9 +12,11 @@ namespace OpenPGP\Packet\Key;
 
 use phpseclib3\Crypt\EC\PublicKey;
 use phpseclib3\Math\BigInteger;
-
 use OpenPGP\Common\Helper;
-use OpenPGP\Enum\{HashAlgorithm, SymmetricAlgorithm};
+use OpenPGP\Enum\{
+    HashAlgorithm,
+    SymmetricAlgorithm,
+};
 
 /**
  * ECDH public parameters class

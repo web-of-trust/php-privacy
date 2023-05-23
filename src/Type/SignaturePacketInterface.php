@@ -11,7 +11,11 @@
 namespace OpenPGP\Type;
 
 use DateTime;
-use OpenPGP\Enum\{HashAlgorithm, KeyAlgorithm, SignatureType};
+use OpenPGP\Enum\{
+    HashAlgorithm,
+    KeyAlgorithm,
+    SignatureType,
+};
 
 /**
  * Signature packet interface

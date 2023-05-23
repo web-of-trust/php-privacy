@@ -10,13 +10,13 @@
 
 namespace OpenPGP\Message;
 
-use OpenPGP\Common\{Armor, Helper};
+use OpenPGP\Common\Armor;
 use OpenPGP\Enum\ArmorType;
 use OpenPGP\Packet\LiteralData;
 use OpenPGP\Type\{
     ArmorableInterface,
     SignatureInterface,
-    SignedMessageInterface
+    SignedMessageInterface,
 };
 
 /**
