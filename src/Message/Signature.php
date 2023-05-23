@@ -12,7 +12,10 @@ namespace OpenPGP\Message;
 
 use OpenPGP\Common\Armor;
 use OpenPGP\Enum\ArmorType;
-use OpenPGP\Packet\{LiteralData, PacketList};
+use OpenPGP\Packet\{
+    LiteralData,
+    PacketList,
+};
 use OpenPGP\Type\{
     ArmorableInterface,
     KeyInterface,
