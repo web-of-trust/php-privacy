@@ -21,18 +21,18 @@ namespace OpenPGP\Type;
 interface VerificationInterface
 {
     /**
-     * Returns key ID
+     * Returns verification key ID
      *
      * @return string
      */
 	function getKeyID(): string;
 
     /**
-     * Returns signature
+     * Returns signature packet
      *
-     * @return SignatureInterface
+     * @return SignaturePacketInterface
      */
-	function getSignature(): SignatureInterface;
+	function getSignaturePacket(): SignaturePacketInterface;
 
     /**
      * Is verified

@@ -115,7 +115,7 @@ class Signature implements ArmorableInterface, PacketContainerInterface, Signatu
                     );
                     $verifications[] = new Verification(
                         $keyPacket->getKeyID(),
-                        new Signature([$packet]),
+                        $packet,
                         $packet->verify(
                             $keyPacket,
                             $literalData->getSignBytes(),

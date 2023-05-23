@@ -11,7 +11,7 @@
 namespace OpenPGP\Message;
 
 use OpenPGP\Type\{
-    SignatureInterface,
+    SignaturePacketInterface,
     VerificationInterface,
 };
 
@@ -29,13 +29,13 @@ class Verification implements VerificationInterface
      * Constructor
      *
      * @param string $keyID
-     * @param SignatureInterface $signature
+     * @param SignaturePacketInterface $signaturePacket
      * @param bool $isVerified
      * @return self
      */
     public function __construct(
         private readonly string $keyID,
-        private readonly SignatureInterface $signature,
+        private readonly SignaturePacketInterface $signaturePacket,
         private readonly bool $isVerified = false,
     )
     {
@@ -52,9 +52,9 @@ class Verification implements VerificationInterface
     /**
      * {@inheritdoc}
      */
-    public function getSignature(): SignatureInterface
+    public function getSignaturePacket(): SignaturePacketInterface
     {
-        return $this->signature;
+        return $this->signaturePacket;
     }
 
     /**
