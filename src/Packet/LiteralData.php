@@ -151,7 +151,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
     public function getSignBytes(): string
     {
         if ($this->format == Format::Text || $this->format == Format::Utf8) {
-            return preg_replace('/\r?\n/', "\r\n", $this->data);
+            return preg_replace('/\r?\n/m', "\r\n", $this->data);
         }
         else {
             return $this->data;

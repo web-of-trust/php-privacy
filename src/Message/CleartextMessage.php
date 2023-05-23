@@ -49,7 +49,7 @@ class CleartextMessage implements MessageInterface
      */
     public function getText(): string
     {
-        return $this->text;
+        return rtrim($this->text);
     }
 
     /**
@@ -59,33 +59,39 @@ class CleartextMessage implements MessageInterface
      */
     public function getNormalizeText(): string
     {
-        return preg_replace('/\r\n/im', "\n", $this->text);
+        return preg_replace('/\r\n/m', "\n", rtrim($this->text));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sign(array $signingKeys, ?DateTime $time = null): SignedMessageInterface
+    public function sign(
+        array $signingKeys, ?DateTime $time = null
+    ): SignedMessageInterface
     {
-        $signingKeys = array_filter($signingKeys, static fn ($key) => $key instanceof PrivateKey);
+        $signingKeys = array_filter(
+            $signingKeys, static fn ($key) => $key instanceof PrivateKey
+        );
         if (empty($signingKeys)) {
             throw new \InvalidArgumentException('No signing keys provided');
         }
         $packets = array_map(
             static fn ($key) => SignaturePacket::createLiteralData(
                 $key->getSigningKeyPacket(),
-                LiteralData::fromText($this->text),
+                LiteralData::fromText($this->getText()),
                 $time
             ),
             $signingKeys
         );
-        return new SignedMessage($this->text, new Signature($packets));
+        return new SignedMessage($this->getText(), new Signature($packets));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function signDetached(array $signingKeys, ?DateTime $time = null): SignatureInterface
+    public function signDetached(
+        array $signingKeys, ?DateTime $time = null
+    ): SignatureInterface
     {
         return $this->sign($signingKeys, $time)->getSignature();
     }

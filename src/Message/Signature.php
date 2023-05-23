@@ -10,18 +10,22 @@
 
 namespace OpenPGP\Message;
 
+use OpenPGP\Common\Armor;
 use OpenPGP\Enum\ArmorType;
+use OpenPGP\Packet\{LiteralData, PacketList};
 use OpenPGP\Type\{
     ArmorableInterface,
+    KeyInterface,
     PacketContainerInterface,
     PacketListInterface,
     SignatureInterface,
-    SignaturePacketInterface
+    SignaturePacketInterface,
+    VerificationInterface
 };
 
 /**
  * Signature class
- * Class that represents an OpenPGP signature.
+ * Class that represents a detacted OpenPGP signature.
  *
  * @package   OpenPGP
  * @category  Message
@@ -39,7 +43,7 @@ class Signature implements ArmorableInterface, PacketContainerInterface, Signatu
      * @return self
      */
     public function __construct(
-        array $signaturePackets
+        array $signaturePackets,
     )
     {
         $this->signaturePackets = array_filter(
@@ -84,6 +88,47 @@ class Signature implements ArmorableInterface, PacketContainerInterface, Signatu
             static fn ($packet) => $packet->getIssuerKeyID()->getKeyID(),
             $this->signaturePackets
         );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function verify(
+        array $verificationKeys, string $text, ?DateTime $time = null
+    ): array
+    {
+        $verificationKeys = array_filter(
+            $verificationKeys, static fn ($key) => $key instanceof KeyInterface
+        );
+        if (empty($verificationKeys)) {
+            throw new \InvalidArgumentException(
+                'No verification keys provided'
+            );
+        }
+        $literalData = LiteralData::fromText(rtrim($text));
+        $verifications = [];
+        foreach ($this->signaturePackets as $packet) {
+            foreach ($verificationKeys as $key) {
+                try {
+                    $keyPacket = $key->toPublic()->getSigningKeyPacket(
+                        $packet->getIssuerKeyID()->getKeyID()
+                    );
+                    $verifications[] = new Verification(
+                        $keyPacket->getKeyID(),
+                        new Signature([$packet]),
+                        $packet->verify(
+                            $keyPacket,
+                            $literalData->getSignBytes(),
+                            $time
+                        )
+                    );
+                }
+                catch (\Throwable $e) {
+                    Helper::getLooger()->error($e->getMessage());
+                }
+            }
+        }
+        return $verifications;
     }
 
     /**

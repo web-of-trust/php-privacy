@@ -33,4 +33,15 @@ interface SignatureInterface
      * @return array
      */
 	function getSigningKeyIDs(): array;
+
+    /**
+     * Verify signature with cleartext
+     * Return verification array
+     *
+     * @param array $verificationKeys
+     * @param string $text
+     * @param DateTime $time
+     * @return array
+     */
+    function verify(array $verificationKeys, string $text, ?DateTime $time = null): array;
 }

@@ -15,10 +15,8 @@ use OpenPGP\Enum\ArmorType;
 use OpenPGP\Packet\LiteralData;
 use OpenPGP\Type\{
     ArmorableInterface,
-    KeyInterface,
     SignatureInterface,
-    SignedMessageInterface,
-    VerificationInterface
+    SignedMessageInterface
 };
 
 /**
@@ -31,27 +29,19 @@ use OpenPGP\Type\{
  */
 class SignedMessage extends CleartextMessage implements ArmorableInterface, SignedMessageInterface
 {
-    private readonly array $verifications;
-
     /**
      * Constructor
      *
      * @param string $text
      * @param SignatureInterface $signature
-     * @param array $verifications
      * @return self
      */
     public function __construct(
         string $text,
-        private readonly SignatureInterface $signature,
-        array $verifications = [],
+        private readonly SignatureInterface $signature
     )
     {
         parent::__construct($text);
-        $this->verifications = array_filter(
-            $verifications,
-            static fn ($verification) => $verification instanceof VerificationInterface
-        );
     }
 
     /**
@@ -87,22 +77,14 @@ class SignedMessage extends CleartextMessage implements ArmorableInterface, Sign
     }
 
     /**
-     * Gets verifications 
-     *
-     * @return array
-     */
-    public function getVerifications(): array
-    {
-        return $this->verifications;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function armor(): string
     {
         $hashes = array_map(
-            static fn ($packet) => strtoupper($packet->getHashAlgorithm()->name),
+            static fn ($packet) => strtoupper(
+                $packet->getHashAlgorithm()->name
+            ),
             $this->signature->getSignaturePackets()
         );
         return Armor::encode(
@@ -118,35 +100,10 @@ class SignedMessage extends CleartextMessage implements ArmorableInterface, Sign
      */
     public function verify(
         array $verificationKeys, ?DateTime $time = null
-    ): self
+    ): array
     {
-        $verificationKeys = array_filter($verificationKeys, static fn ($key) => $key instanceof KeyInterface);
-        if (empty($verificationKeys)) {
-            throw new \InvalidArgumentException('No verification keys provided');
-        }
-        $literalData = LiteralData::fromText($this->getText());
-        $verifications = [];
-        foreach ($this->signature->getSignaturePackets() as $packet) {
-            foreach ($verificationKeys as $key) {
-                try {
-                    $keyPacket = $key->toPublic()->getSigningKeyPacket(
-                        $packet->getIssuerKeyID()->getKeyID()
-                    );
-                    $verifications[] = new Verification(
-                        $keyPacket->getKeyID(),
-                        new Signature([$packet]),
-                        $packet->verify(
-                            $keyPacket,
-                            $literalData->getSignBytes(),
-                            $time
-                        )
-                    );
-                }
-                catch (\Throwable $e) {
-                    Helper::getLooger()->error($e->getMessage());
-                }
-            }
-        }
-        return new self($this->getText(), $this->signature, $verifications);
+        return $this->signature->verify(
+            $verificationKeys, $this->getText(), $time
+        );
     }
 }

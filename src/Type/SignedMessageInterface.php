@@ -24,11 +24,11 @@ interface SignedMessageInterface extends MessageInterface
 {
     /**
      * Verify signatures of signed message
-     * Return new signed message with verifications
+     * Return verification array
      *
      * @param array $verificationKeys
-     * @param int $time
-     * @return self
+     * @param DateTime $time
+     * @return array
      */
-    function verify(array $verificationKeys, ?DateTime $time = null): self;
+    function verify(array $verificationKeys, ?DateTime $time = null): array;
 }
