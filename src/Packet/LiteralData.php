@@ -14,7 +14,10 @@ use DateTime;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\LiteralFormat as Format;
 use OpenPGP\Enum\PacketTag;
-use OpenPGP\Type\ForSigningInterface;
+use OpenPGP\Type\{
+    ForSigningInterface,
+    LiteralDataPacketInterface,
+};
 
 /**
  * Implementation of the Literal Data Packet (Tag 11)
@@ -27,7 +30,7 @@ use OpenPGP\Type\ForSigningInterface;
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class LiteralData extends AbstractPacket implements ForSigningInterface
+class LiteralData extends AbstractPacket implements ForSigningInterface, LiteralDataPacketInterface
 {
     private readonly DateTime $time;
 
@@ -48,7 +51,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
     )
     {
         parent::__construct(PacketTag::LiteralData);
-        $this->time = $time ?? (new DateTime())->setTimestamp(time());
+        $this->time = $time ?? new DateTime();
     }
 
     /**
@@ -84,7 +87,9 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
      * @param DateTime $time
      * @return self
      */
-    public static function fromText(string $text, ?DateTime $time = null): self
+    public static function fromText(
+        string $text, ?DateTime $time = null
+    ): self
     {
         return new self(
             $text, Format::Utf8, '', $time
@@ -92,9 +97,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
     }
 
     /**
-     * Gets literal format
-     *
-     * @return Format
+     * {@inheritdoc}
      */
     public function getFormat(): Format
     {
@@ -102,9 +105,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
     }
 
     /**
-     * Gets filename
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getFilename(): string
     {
@@ -112,9 +113,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
     }
 
     /**
-     * Gets time
-     *
-     * @return DateTime
+     * {@inheritdoc}
      */
     public function getTime(): DateTime
     {
@@ -122,9 +121,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface
     }
 
     /**
-     * Gets data
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getData(): string
     {

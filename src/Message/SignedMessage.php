@@ -103,7 +103,7 @@ class SignedMessage extends CleartextMessage implements ArmorableInterface, Sign
     ): array
     {
         return $this->signature->verify(
-            $verificationKeys, $this->getText(), $time
+            $verificationKeys, LiteralData::fromText($this->getText()), $time
         );
     }
 }

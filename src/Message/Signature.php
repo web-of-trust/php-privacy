@@ -16,6 +16,7 @@ use OpenPGP\Packet\{LiteralData, PacketList};
 use OpenPGP\Type\{
     ArmorableInterface,
     KeyInterface,
+    LiteralDataPacketInterface,
     PacketContainerInterface,
     PacketListInterface,
     SignatureInterface,
@@ -94,7 +95,9 @@ class Signature implements ArmorableInterface, PacketContainerInterface, Signatu
      * {@inheritdoc}
      */
     public function verify(
-        array $verificationKeys, string $text, ?DateTime $time = null
+        array $verificationKeys,
+        LiteralDataPacketInterface $literalData,
+        ?DateTime $time = null
     ): array
     {
         $verificationKeys = array_filter(
@@ -105,7 +108,6 @@ class Signature implements ArmorableInterface, PacketContainerInterface, Signatu
                 'No verification keys provided'
             );
         }
-        $literalData = LiteralData::fromText(rtrim($text));
         $verifications = [];
         foreach ($this->signaturePackets as $packet) {
             foreach ($verificationKeys as $key) {
