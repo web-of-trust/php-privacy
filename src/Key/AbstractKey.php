@@ -12,7 +12,10 @@ namespace OpenPGP\Key;
 
 use DateInterval;
 use DateTime;
-use OpenPGP\Common\Helper;
+use OpenPGP\Common\{
+    Config,
+    Helper,
+};
 use OpenPGP\Enum\{
     KeyAlgorithm,
     PacketTag,
@@ -47,8 +50,18 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
 {
     use LoggerAwareTrait;
 
+    /**
+     * Revocation signature packets
+     * 
+     * @var array
+     */
     private array $revocationSignatures;
 
+    /**
+     * Direct signature packets
+     * 
+     * @var array
+     */
     private array $directSignatures;
 
     private array $users;
@@ -83,7 +96,7 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
         );
         $this->setUsers($users)
              ->setSubkeys($subkeys)
-             ->setLogger(Helper::getLogger());
+             ->setLogger(Config::getLogger());
     }
 
     /**
@@ -118,7 +131,7 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
      */
     public function getLogger(): LoggerInterface
     {
-        return $this->logger ?? Helper::getLogger();
+        return $this->logger ?? Config::getLogger();
     }
 
     /**
@@ -299,10 +312,10 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
             );
         }
         if (!empty($selfCertifications)) {
-            return Helper::getKeyExpiration($selfCertifications);
+            return self::getKeyExpiration($selfCertifications);
         }
         if (!empty($this->directSignatures)) {
-            return Helper::getKeyExpiration($this->directSignatures);
+            return self::getKeyExpiration($this->directSignatures);
         }
         return null;
     }
@@ -487,6 +500,45 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
             return false;
         }
         return true;
+    }
+
+    /**
+     * Gets key expiration from signatures.
+     *
+     * @param array $signatures
+     * @return DateTime
+     */
+    public static function getKeyExpiration(array $signatures): ?DateTime
+    {
+        usort(
+            $signatures,
+            static function ($a, $b) {
+                $aTime = $a->getSignatureCreationTime() ?? new DateTime();
+                $bTime = $b->getSignatureCreationTime() ?? new DateTime();
+                return $bTime->getTimestamp() - $aTime->getTimestamp();
+            }
+        );
+        foreach ($signatures as $signature) {
+            $keyExpirationTime = $signature->getKeyExpirationTime();
+            if (!empty($keyExpirationTime)) {
+                $expirationTime = $keyExpirationTime->getExpirationTime();
+                $creationTime = $signature->getSignatureCreationTime() ?? new DateTime();
+                $keyExpiration = $creationTime->add(
+                    DateInterval::createFromDateString($expirationTime . ' seconds')
+                );
+                $signatureExpiration = $signature->getSignatureExpirationTime();
+                if (empty($signatureExpiration)) {
+                    return $keyExpiration;
+                }
+                else {
+                    return $keyExpiration < $signatureExpiration ? $keyExpiration : $signatureExpiration;
+                }
+            }
+            else {
+                return $signature->getSignatureExpirationTime();
+            }
+        }
+        return null;
     }
 
     protected static function readPacketList(PacketListInterface $packetList): array

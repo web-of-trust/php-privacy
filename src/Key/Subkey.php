@@ -12,7 +12,7 @@ namespace OpenPGP\Key;
 
 use DateInterval;
 use DateTime;
-use OpenPGP\Common\Helper;
+use OpenPGP\Common\Config;
 use OpenPGP\Enum\KeyAlgorithm;
 use OpenPGP\Packet\{
     PacketList,
@@ -38,8 +38,18 @@ use OpenPGP\Type\{
  */
 class Subkey implements PacketContainerInterface, SubkeyInterface
 {
+    /**
+     * Revocation signature packets
+     * 
+     * @var array
+     */
     private array $revocationSignatures;
 
+    /**
+     * Binding signature packets
+     * 
+     * @var array
+     */
     private array $bindingSignatures;
 
     /**
@@ -133,7 +143,7 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
      */
     public function getExpirationTime(): ?DateTime
     {
-        return Helper::getKeyExpiration($this->bindingSignatures);
+        return AbstractKey::getKeyExpiration($this->bindingSignatures);
     }
 
     /**
@@ -211,7 +221,7 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
     public function verify(?DateTime $time = null): bool
     {
         if ($this->isRevoked(time: $time)) {
-            Helper::getLogger()->debug(
+            Config::getLogger()->debug(
                 'Subkey is revoked.'
             );
             return false;

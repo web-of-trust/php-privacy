@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Key;
 
-use OpenPGP\Common\Helper;
+use OpenPGP\Common\Config;
 use OpenPGP\Enum\{
     HashAlgorithm,
     SignatureType,
@@ -39,10 +39,25 @@ use OpenPGP\Type\{
  */
 class User implements PacketContainerInterface
 {
+    /**
+     * Revocation signature packets
+     * 
+     * @var array
+     */
     private array $revocationSignatures;
 
+    /**
+     * Self certification signature packets
+     * 
+     * @var array
+     */
     private array $selfCertifications;
 
+    /**
+     * Other certification signature packets
+     * 
+     * @var array
+     */
     private array $otherCertifications;
 
     /**
@@ -214,7 +229,7 @@ class User implements PacketContainerInterface
     public function verify(?DateTime $time = null): bool
     {
         if ($this->isRevoked(time: $time)) {
-            Helper::getLogger()->debug(
+            Config::getLogger()->debug(
                 'User is revoked.'
             );
             return false;

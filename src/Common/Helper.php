@@ -10,15 +10,9 @@
 
 namespace OpenPGP\Common;
 
-use DateInterval;
-use DateTime;
 use phpseclib3\Crypt\Random;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Enum\SymmetricAlgorithm;
-use Psr\Log\{
-    LoggerInterface,
-    NullLogger,
-};
 
 /**
  * Helper class
@@ -33,70 +27,6 @@ final class Helper
     const MASK_8BITS  = 0xff;
     const MASK_16BITS = 0xffff;
     const MASK_32BITS = 0xffffffff;
-
-    private static ?LoggerInterface $logger = null;
-
-    /**
-     * Gets a logger.
-     *
-     * @return LoggerInterface
-     */
-    public static function getLogger(): LoggerInterface
-    {
-        if (!(self::$logger instanceof LoggerInterface)) {
-            self::$logger = new NullLogger();
-        }
-        return self::$logger;
-    }
-
-    /**
-     * Sets a logger.
-     *
-     * @param LoggerInterface $logger
-     */
-    public static function setLogger(LoggerInterface $logger): void
-    {
-        self::$logger = $logger;
-    }
-
-    /**
-     * Gets gey expiration from signatures.
-     *
-     * @param array $signatures
-     * @return DateTime
-     */
-    public static function getKeyExpiration(array $signatures): ?DateTime
-    {
-        usort(
-            $signatures,
-            static function ($a, $b) {
-                $aTime = $a->getSignatureCreationTime() ?? new DateTime();
-                $bTime = $b->getSignatureCreationTime() ?? new DateTime();
-                return $bTime->getTimestamp() - $aTime->getTimestamp();
-            }
-        );
-        foreach ($signatures as $signature) {
-            $keyExpirationTime = $signature->getKeyExpirationTime();
-            if (!empty($keyExpirationTime)) {
-                $expirationTime = $keyExpirationTime->getExpirationTime();
-                $creationTime = $signature->getSignatureCreationTime() ?? new DateTime();
-                $keyExpiration = $creationTime->add(
-                    DateInterval::createFromDateString($expirationTime . ' seconds')
-                );
-                $signatureExpiration = $signature->getSignatureExpirationTime();
-                if (empty($signatureExpiration)) {
-                    return $keyExpiration;
-                }
-                else {
-                    return $keyExpiration < $signatureExpiration ? $keyExpiration : $signatureExpiration;
-                }
-            }
-            else {
-                return $signature->getSignatureExpirationTime();
-            }
-        }
-        return null;
-    }
 
     /**
      * Reads multiprecision integer (MPI) from binary data

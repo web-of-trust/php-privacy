@@ -15,6 +15,10 @@ use OpenPGP\Enum\{
     HashAlgorithm,
     SymmetricAlgorithm,
 };
+use Psr\Log\{
+    LoggerInterface,
+    NullLogger,
+};
 
 /**
  * Config class
@@ -34,6 +38,8 @@ final class Config
     private static SymmetricAlgorithm $preferredSymmetric = SymmetricAlgorithm::Aes128;
 
     private static CompressionAlgorithm $preferredCompression = CompressionAlgorithm::Uncompressed;
+
+    private static ?LoggerInterface $logger = null;
 
     /**
      * Gets preferred hash algorithm.
@@ -93,5 +99,28 @@ final class Config
     public static function setPreferredCompression(CompressionAlgorithm $compression): void
     {
         self::$preferredCompression = $compression;
+    }
+
+    /**
+     * Gets a logger.
+     *
+     * @return LoggerInterface
+     */
+    public static function getLogger(): LoggerInterface
+    {
+        if (!(self::$logger instanceof LoggerInterface)) {
+            self::$logger = new NullLogger();
+        }
+        return self::$logger;
+    }
+
+    /**
+     * Sets a logger.
+     *
+     * @param LoggerInterface $logger
+     */
+    public static function setLogger(LoggerInterface $logger): void
+    {
+        self::$logger = $logger;
     }
 }

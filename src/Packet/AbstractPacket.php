@@ -11,7 +11,7 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\PacketTag;
-use OpenPGP\Common\Helper;
+use OpenPGP\Common\Config;
 use OpenPGP\Type\PacketInterface;
 use Psr\Log\{
     LoggerAwareInterface,
@@ -39,7 +39,7 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, 
      */
     public function __construct(private readonly PacketTag $tag)
     {
-        $this->setLogger(Helper::getLogger());
+        $this->setLogger(Config::getLogger());
     }
 
     /**
@@ -83,7 +83,7 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, 
      */
     public function getLogger(): LoggerInterface
     {
-        return $this->logger ?? Helper::getLogger();
+        return $this->logger ?? Config::getLogger();
     }
 
     /**

@@ -11,7 +11,7 @@
 namespace OpenPGP\Message;
 
 use DateTime;
-use OpenPGP\Common\{Armor, Helper};
+use OpenPGP\Common\{Armor, Config};
 use OpenPGP\Enum\ArmorType;
 use OpenPGP\Packet\{
     LiteralData,
@@ -131,7 +131,7 @@ class Signature implements ArmorableInterface, PacketContainerInterface, Signatu
                     );
                 }
                 catch (\Throwable $e) {
-                    Helper::getLogger()->error($e->getMessage());
+                    Config::getLogger()->error($e->getMessage());
                 }
             }
         }
