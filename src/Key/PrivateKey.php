@@ -262,7 +262,8 @@ class PrivateKey extends AbstractKey
         $subkeys = $this->getSubkeys();
         usort(
             $subkeys,
-            static fn ($a, $b) => $b->getCreationTime()->getTimestamp() - $a->getCreationTime()->getTimestamp()
+            static fn ($a, $b) => $b->getCreationTime()->getTimestamp()
+                                - $a->getCreationTime()->getTimestamp()
         );
 
         $keyPackets = [];
@@ -322,7 +323,7 @@ class PrivateKey extends AbstractKey
 
         $subkeys = [];
         foreach ($this->getSubkeys() as $key => $subkey) {
-            $subkeyPassphrase = isset($subkeyPassphrases[$key]) ? $subkeyPassphrases[$key] : $passphrase;
+            $subkeyPassphrase = $subkeyPassphrases[$key] ?? $passphrase;
             $keyPacket = $subkey->getKeyPacket()->encrypt($subkeyPassphrase);
             $subkeys[] = new Subkey(
                 $privateKey,
@@ -379,7 +380,7 @@ class PrivateKey extends AbstractKey
 
         $subkeys = [];
         foreach ($this->getSubkeys() as $key => $subkey) {
-            $subkeyPassphrase = isset($subkeyPassphrases[$key]) ? $subkeyPassphrases[$key] : $passphrase;
+            $subkeyPassphrase = $subkeyPassphrases[$key] ?? $passphrase;
             $keyPacket = $subkey->getKeyPacket()->decrypt($subkeyPassphrase);
             $subkeys[] = new Subkey(
                 $privateKey,

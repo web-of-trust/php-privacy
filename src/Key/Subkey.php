@@ -195,7 +195,7 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
         ?DateTime $time = null
     ): bool
     {
-        $keyID = ($certificate != null) ? $certificate->getIssuerKeyID()->getKeyID() : '';
+        $keyID = $certificate?->getIssuerKeyID()->getKeyID() ?? '';
         $keyPacket = $keyPacket ?? $this->mainKey->toPublic()->getKeyPacket();
         $dataToVerify = implode([
             $keyPacket->getSignBytes(),
@@ -272,7 +272,8 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
         }
         $keyFlags = $this->getLatestBindingSignature()?->getKeyFlags();
         if (!empty($keyFlags) &&
-           !($keyFlags->isEncryptCommunication() || $keyFlags->isEncryptStorage())) {
+           !($keyFlags->isEncryptCommunication() || $keyFlags->isEncryptStorage()))
+        {
             return false;
         }
         return true;

@@ -12,10 +12,7 @@ namespace OpenPGP\Key;
 
 use DateInterval;
 use DateTime;
-use OpenPGP\Common\{
-    Config,
-    Helper,
-};
+use OpenPGP\Common\Config;
 use OpenPGP\Enum\{
     KeyAlgorithm,
     PacketTag,
@@ -64,8 +61,18 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
      */
     private array $directSignatures;
 
+    /**
+     * Users of the key
+     * 
+     * @var array
+     */
     private array $users;
 
+    /**
+     * Subkeys of the key
+     * 
+     * @var array
+     */
     private array $subkeys;
 
     /**
@@ -227,7 +234,8 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
         $subkeys = $this->subkeys;
         usort(
             $subkeys,
-            static fn ($a, $b) => $b->getCreationTime()->getTimestamp() - $a->getCreationTime()->getTimestamp()
+            static fn ($a, $b) => $b->getCreationTime()->getTimestamp()
+                                - $a->getCreationTime()->getTimestamp()
         );
         foreach ($subkeys as $subkey) {
             if (empty($keyID) || $keyID === $subkey->getKeyID()) {
@@ -235,12 +243,12 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
                     if (!$subkey->isSigningKey()) {
                         continue;
                     }
-                    $embeddedSignature = $subkey->getLatestBindingSignature()->getEmbeddedSignature();
-                    if (empty($embeddedSignature)) {
+                    $signature = $subkey->getLatestBindingSignature()->getEmbeddedSignature();
+                    if (empty($signature)) {
                         throw new \UnexpectedValueException('Missing embedded signature');
                     }
                     // verify embedded signature
-                    if ($embeddedSignature->verify(
+                    if ($signature->verify(
                         $subkey->getKeyPacket(),
                         implode([
                             $this->getKeyPacket()->getSignBytes(),
@@ -254,7 +262,9 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
             }
         }
 
-        if (!$this->isSigningKey() || (!empty($keyID) && $keyID !== $this->getKeyID())) {
+        if (!$this->isSigningKey() ||
+           (!empty($keyID) && $keyID !== $this->getKeyID()))
+        {
             throw new \UnexpectedValueException(
                 'Could not find valid signing key packet.'
             );
@@ -278,7 +288,8 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
         $subkeys = $this->subkeys;
         usort(
             $subkeys,
-            static fn ($a, $b) => $b->getCreationTime()->getTimestamp() - $a->getCreationTime()->getTimestamp()
+            static fn ($a, $b) => $b->getCreationTime()->getTimestamp()
+                                - $a->getCreationTime()->getTimestamp()
         );
         foreach ($subkeys as $subkey) {
             if (empty($keyID) || $keyID === $subkey->getKeyID()) {
@@ -291,7 +302,9 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
             }
         }
 
-        if (!$this->isEncryptionKey() || (!empty($keyID) && $keyID !== $this->getKeyID())) {
+        if (!$this->isEncryptionKey() ||
+           (!empty($keyID) && $keyID !== $this->getKeyID()))
+        {
             throw new \UnexpectedValueException(
                 'Could not find valid encryption key packet.'
             );
@@ -453,8 +466,8 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
                 $aPrimary = (int) $a->isPrimary();
                 $bPrimary = (int) $b->isPrimary();
                 if ($aPrimary === $bPrimary) {
-                    $aTime = $a->getLatestSelfCertification()->getSignatureCreationTime() ?? new DateTime();
-                    $bTime = $b->getLatestSelfCertification()->getSignatureCreationTime() ?? new DateTime();
+                    $aTime = $a->getLatestSelfCertification()?->getSignatureCreationTime() ?? new DateTime();
+                    $bTime = $b->getLatestSelfCertification()?->getSignatureCreationTime() ?? new DateTime();
                     return $aTime->getTimestamp() - $bTime->getTimestamp();
                 }
                 else {
@@ -496,7 +509,8 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
         $primaryUser = $this->getPrimaryUser($time);
         $keyFlags = $primaryUser->getLatestSelfCertification()?->getKeyFlags();
         if (!empty($keyFlags) &&
-           !($keyFlags->isEncryptCommunication() || $keyFlags->isEncryptStorage())) {
+           !($keyFlags->isEncryptCommunication() || $keyFlags->isEncryptStorage()))
+        {
             return false;
         }
         return true;
@@ -523,15 +537,15 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
             if (!empty($keyExpirationTime)) {
                 $expirationTime = $keyExpirationTime->getExpirationTime();
                 $creationTime = $signature->getSignatureCreationTime() ?? new DateTime();
-                $keyExpiration = $creationTime->add(
+                $keyExpiry = $creationTime->add(
                     DateInterval::createFromDateString($expirationTime . ' seconds')
                 );
-                $signatureExpiration = $signature->getSignatureExpirationTime();
-                if (empty($signatureExpiration)) {
-                    return $keyExpiration;
+                $signatureExpiry = $signature->getSignatureExpirationTime();
+                if (empty($signatureExpiry)) {
+                    return $keyExpiry;
                 }
                 else {
-                    return $keyExpiration < $signatureExpiration ? $keyExpiration : $signatureExpiration;
+                    return $keyExpiry < $signatureExpiry ? $keyExpiry : $signatureExpiry;
                 }
             }
             else {

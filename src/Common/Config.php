@@ -76,7 +76,9 @@ final class Config
      *
      * @param SymmetricAlgorithm $symmetric
      */
-    public static function setPreferredSymmetric(SymmetricAlgorithm $symmetric): void
+    public static function setPreferredSymmetric(
+        SymmetricAlgorithm $symmetric
+    ): void
     {
         self::$preferredSymmetric = $symmetric;
     }
@@ -96,7 +98,9 @@ final class Config
      *
      * @param CompressionAlgorithm $compression
      */
-    public static function setPreferredCompression(CompressionAlgorithm $compression): void
+    public static function setPreferredCompression(
+        CompressionAlgorithm $compression
+    ): void
     {
         self::$preferredCompression = $compression;
     }

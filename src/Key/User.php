@@ -199,7 +199,7 @@ class User implements PacketContainerInterface
         ?DateTime $time = null
     ): bool
     {
-        $keyID = ($certificate != null) ? $certificate->getIssuerKeyID()->getKeyID() : '';
+        $keyID = $certificate?->getIssuerKeyID()->getKeyID() ?? '';
         $keyPacket = $keyPacket ?? $this->mainKey->toPublic()->getKeyPacket();
         $dataToVerify = implode([
             $keyPacket->getSignBytes(),
@@ -221,7 +221,8 @@ class User implements PacketContainerInterface
 
     /**
      * Verify user.
-     * Checks for existence of self signatures, revocation signatures and validity of self signature.
+     * Checks for existence of self signatures, revocation signatures
+     * and validity of self signature.
      * 
      * @param DateTime $time
      * @return bool

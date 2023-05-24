@@ -117,7 +117,9 @@ final class Armor
      * @param bool $checksumRequired
      * @return self
      */
-    public static function decode(string $armoredText, bool $checksumRequired = true): self
+    public static function decode(
+        string $armoredText, bool $checksumRequired = true
+    ): self
     {
         $textDone = false;
         $checksum = '';
@@ -159,7 +161,9 @@ final class Armor
         }
 
         $data = base64_decode(implode($dataLines));
-        if (($checksum != self::crc24Checksum($data)) && (!empty($checksum) || $checksumRequired)) {
+        if (($checksum != self::crc24Checksum($data)) &&
+           (!empty($checksum) || $checksumRequired))
+        {
             throw new \UnexpectedValueException(
                 'Ascii armor integrity check failed'
             );

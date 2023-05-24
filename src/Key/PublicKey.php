@@ -54,7 +54,9 @@ class PublicKey extends AbstractKey
      * @param PacketListInterface $packetList
      * @return self
      */
-    public static function fromPacketList(PacketListInterface $packetList): self
+    public static function fromPacketList(
+        PacketListInterface $packetList
+    ): self
     {
         $keyMap = self::readPacketList($packetList);
         if (!($keyMap['keyPacket'] instanceof KeyPacketInterface)) {
