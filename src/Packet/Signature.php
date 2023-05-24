@@ -226,6 +226,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @param SecretKey $signKey
      * @param UserIDPacketInterface $userID
      * @param bool $isPrimaryUser
+     * @param int $keyExpiry
      * @param DateTime $time
      * @return self
      */
@@ -233,6 +234,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         SecretKey $signKey,
         UserIDPacketInterface $userID,
         bool $isPrimaryUser = false,
+        int $keyExpiry = 0,
         ?DateTime $time = null
     )
     {
@@ -267,6 +269,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         ];
         if ($isPrimaryUser) {
             $subpackets[] = new Signature\PrimaryUserID("\x01");
+        }
+        if ($keyExpiry > 0) {
+            $subpackets[] = Signature\KeyExpirationTime::fromTime($keyExpiry);
         }
         return self::createSignature(
             $signKey,

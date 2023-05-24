@@ -181,7 +181,11 @@ class PrivateKey extends AbstractKey
             $packet = new UserID($userID);
             $packets[] = $packet;
             $packets[] = Signature::createSelfCertificate(
-                $secretKey, $packet, ($index === 0) ? true : false, $time
+                $secretKey,
+                $packet,
+                ($index === 0) ? true : false,
+                $keyExpiry,
+                $time
             );
             $index++;
         }
