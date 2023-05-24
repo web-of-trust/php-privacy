@@ -10,32 +10,27 @@
 
 namespace OpenPGP\Type;
 
-use DateTime;
-
 /**
- * Signed message interface
+ * Cleartext message interface
  * 
  * @package   OpenPGP
  * @category  Type
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface SignedMessageInterface extends CleartextMessagenterface
+interface CleartextMessagenterface extends MessageInterface
 {
     /**
-     * Gets signature 
+     * Gets cleartext
      *
-     * @return SignatureInterface
+     * @return string
      */
-    function getSignature(): SignatureInterface;
+    function getText(): string;
 
     /**
-     * Verify signatures of signed message
-     * Return verification array
+     * Gets normalized cleartext
      *
-     * @param array $verificationKeys
-     * @param DateTime $time
-     * @return array
+     * @return string
      */
-    function verify(array $verificationKeys, ?DateTime $time = null): array;
+    function getNormalizeText(): string;
 }

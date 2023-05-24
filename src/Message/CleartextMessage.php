@@ -28,7 +28,7 @@ use OpenPGP\Type\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class CleartextMessage implements MessageInterface
+class CleartextMessage implements CleartextMessagenterface
 {
     /**
      * Constructor
@@ -43,9 +43,7 @@ class CleartextMessage implements MessageInterface
     }
 
     /**
-     * Gets cleartext
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getText(): string
     {
@@ -53,9 +51,7 @@ class CleartextMessage implements MessageInterface
     }
 
     /**
-     * Gets normalized cleartext
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getNormalizeText(): string
     {
