@@ -19,13 +19,14 @@ use OpenPGP\Packet\{
 };
 use OpenPGP\Type\{
     ArmorableInterface,
+    CleartextMessagenterface,
     KeyInterface,
     LiteralDataPacketInterface,
     PacketContainerInterface,
     PacketListInterface,
     SignatureInterface,
     SignaturePacketInterface,
-    VerificationInterface
+    VerificationInterface,
 };
 
 /**
@@ -135,6 +136,20 @@ class Signature implements ArmorableInterface, PacketContainerInterface, Signatu
             }
         }
         return $verifications;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function verifyCleartext(
+        array $verificationKeys,
+        CleartextMessagenterface $cleartext,
+        ?DateTime $time = null
+    ): array
+    {
+        return $this->verify(
+            $verificationKeys, LiteralData::fromText($cleartext->getText()), $time
+        );
     }
 
     /**

@@ -13,10 +13,7 @@ namespace OpenPGP\Message;
 use DateTime;
 use OpenPGP\Common\Armor;
 use OpenPGP\Enum\ArmorType;
-use OpenPGP\Packet\{
-    LiteralData,
-    PacketList,
-};
+use OpenPGP\Packet\PacketList;
 use OpenPGP\Type\{
     ArmorableInterface,
     SignatureInterface,
@@ -104,8 +101,8 @@ class SignedMessage extends CleartextMessage implements ArmorableInterface, Sign
         array $verificationKeys, ?DateTime $time = null
     ): array
     {
-        return $this->signature->verify(
-            $verificationKeys, LiteralData::fromText($this->getText()), $time
+        return $this->signature->verifyCleartext(
+            $verificationKeys, $this, $time
         );
     }
 }

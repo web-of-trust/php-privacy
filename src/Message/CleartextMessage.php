@@ -15,6 +15,7 @@ use OpenPGP\Key\PrivateKey;
 use OpenPGP\Packet\LiteralData;
 use OpenPGP\Packet\Signature as SignaturePacket;
 use OpenPGP\Type\{
+    CleartextMessagenterface,
     MessageInterface,
     SignatureInterface,
     SignedMessageInterface,

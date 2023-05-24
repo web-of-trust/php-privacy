@@ -37,7 +37,7 @@ interface SignatureInterface
     function getSigningKeyIDs(): array;
 
     /**
-     * Verify signature with cleartext
+     * Verify signature with literal data
      * Return verification array
      *
      * @param array $verificationKeys
@@ -48,6 +48,21 @@ interface SignatureInterface
     function verify(
         array $verificationKeys,
         LiteralDataPacketInterface $literalData,
+        ?DateTime $time = null
+    ): array;
+
+    /**
+     * Verify signature with cleartext
+     * Return verification array
+     *
+     * @param array $verificationKeys
+     * @param CleartextMessagenterface $cleartext
+     * @param DateTime $time
+     * @return array
+     */
+    function verifyCleartext(
+        array $verificationKeys,
+        CleartextMessagenterface $cleartext,
         ?DateTime $time = null
     ): array;
 }
