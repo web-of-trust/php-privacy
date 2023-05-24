@@ -41,6 +41,8 @@ final class Config
 
     private static ?LoggerInterface $logger = null;
 
+    private static int $s2kItCount = 224;
+
     /**
      * Gets preferred hash algorithm.
      *
@@ -126,5 +128,25 @@ final class Config
     public static function setLogger(LoggerInterface $logger): void
     {
         self::$logger = $logger;
+    }
+
+    /**
+     * Gets S2K iteration count byte.
+     *
+     * @return int
+     */
+    public static function getS2kItCount(): int
+    {
+        return self::$s2kItCount;
+    }
+
+    /**
+     * Sets S2K iteration count byte.
+     *
+     * @param int $s2kItCount
+     */
+    public static function setS2kItCount(int $s2kItCount): void
+    {
+        self::$s2kItCount = $s2kItCount;
     }
 }

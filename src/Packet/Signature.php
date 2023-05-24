@@ -460,8 +460,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             $signatureType,
             $literalData->getSignBytes(),
             Config::getPreferredHash(),
-            [],
-            $time
+            time: $time
         );
     }
 
@@ -507,7 +506,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
                 $this->getLogger()->debug(
                     'Signature is expired at {expirationTime}.',
                     [
-                        'expirationTime' => $expirationTime->format(DateTime::RFC3339_EXTENDED),
+                        'expirationTime' => $expirationTime->format(
+                            DateTime::RFC3339_EXTENDED
+                        ),
                     ]
                 );
                 return false;
@@ -617,11 +618,10 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      */
     public function getSignatureCreationTime(): ?DateTime
     {
-        $subpacket = self::getSubpacket(
+        return self::getSubpacket(
             $this->hashedSubpackets,
             SignatureSubpacketType::SignatureCreationTime
-        );
-        return $subpacket ? $subpacket->getCreationTime() : null;
+        )?->getCreationTime() ?? null;
     }
 
     /**
@@ -631,11 +631,10 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      */
     public function getSignatureExpirationTime(): ?DateTime
     {
-        $subpacket = self::getSubpacket(
+        return self::getSubpacket(
             $this->hashedSubpackets,
             SignatureSubpacketType::SignatureExpirationTime
-        );
-        return $subpacket ? $subpacket->getExpirationTime() : null;
+        )?->getExpirationTime() ?? null;
     }
 
     /**
@@ -827,11 +826,10 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      */
     public function isPrimaryUserID(): bool
     {
-        $subpacket = self::getSubpacket(
+        return self::getSubpacket(
             $this->hashedSubpackets,
             SignatureSubpacketType::PrimaryUserID
-        );
-        return !empty($subpacket) ? $subpacket->isPrimaryUserID() : false;
+        )?->isPrimaryUserID() ?? false;
     }
 
     /**
@@ -979,9 +977,10 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 
     private static function subpacketsToBytes(array $subpackets): string
     {
-        $bytes = implode(
-            array_map(static fn ($subpacket) => $subpacket->toBytes(), $subpackets)
-        );
+        $bytes = implode(array_map(
+            static fn ($subpacket) => $subpacket->toBytes(),
+            $subpackets
+        ));
         return pack('n', strlen($bytes)) . $bytes;
     }
 
@@ -993,7 +992,6 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             $subpackets,
             static fn ($subpacket) => $subpacket->getType() === $type->value
         );
-        $subpacket = reset($subpackets);
-        return $subpacket ? $subpacket : null;
+        return array_pop($subpackets);
     }
 }

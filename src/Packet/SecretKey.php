@@ -12,6 +12,7 @@ namespace OpenPGP\Packet;
 
 use DateTime;
 use phpseclib3\Crypt\Random;
+use OpenPGP\Common\Config;
 use OpenPGP\Enum\{
     CurveOid,
     DHKeySize,
@@ -320,11 +321,16 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
         S2kType $s2kType = S2kType::Iterated
     ): self
     {
-        if ($this->keyParameters instanceof KeyParametersInterface) {
+        if ($this->isDecrypted()) {
             $this->getLogger()->debug(
                 'Encrypt secret key with passphrase.'
             );
-            $s2k = new Key\S2K(Random::string(Key\S2K::SALT_LENGTH), $s2kType, $hash);
+            $s2k = new Key\S2K(
+                Random::string(Key\S2K::SALT_LENGTH),
+                $s2kType,
+                $hash,
+                Config::getS2kItCount()
+            );
             $iv = Random::string($symmetric->blockSize());
             $cipher = $symmetric->cipherEngine();
             $cipher->setIV($iv);
@@ -358,7 +364,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
      */
     public function decrypt(string $passphrase): self
     {
-        if ($this->keyParameters instanceof KeyParametersInterface) {
+        if ($this->isDecrypted() || !$this->isEncrypted()) {
             return $this;
         }
         else {

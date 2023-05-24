@@ -11,6 +11,7 @@
 namespace OpenPGP\Packet;
 
 use phpseclib3\Crypt\Random;
+use OpenPGP\Common\Config;
 use OpenPGP\Enum\{
     HashAlgorithm,
     PacketTag,
@@ -110,7 +111,12 @@ class SymEncryptedSessionKey extends AbstractPacket
         S2kType $s2kType = S2kType::Iterated
     ): self
     {
-        $s2k = new S2K(Random::string(S2K::SALT_LENGTH), $s2kType, $hash);
+        $s2k = new Key\S2K(
+            Random::string(Key\S2K::SALT_LENGTH),
+            $s2kType,
+            $hash,
+            Config::getS2kItCount()
+        );
         $cipher = $symmetric->cipherEngine();
         $key = $s2k->produceKey(
             $password,

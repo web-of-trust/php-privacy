@@ -106,12 +106,12 @@ class EdDSASecretParameters extends ECSecretParameters implements SignableParame
         $signature = $this->getPrivateKey()->sign(
             hash(strtolower($hash->name), $message, true)
         );
-        $lenth = intval(self::SIGNATURE_LENGTH / 2);
+        $length = intval(self::SIGNATURE_LENGTH / 2);
         return implode([
-            pack('n', $lenth * 8), // r bit length
-            substr($signature, 0, $lenth), // r
-            pack('n', $lenth * 8), // s bit length
-            substr($signature, $lenth, $lenth), // s
+            pack('n', $length * 8), // r bit length
+            substr($signature, 0, $length), // r
+            pack('n', $length * 8), // s bit length
+            substr($signature, $length, $length), // s
         ]);
     }
 }

@@ -106,12 +106,11 @@ class Signature implements ArmorableInterface, PacketContainerInterface, Signatu
     ): array
     {
         $verificationKeys = array_filter(
-            $verificationKeys, static fn ($key) => $key instanceof KeyInterface
+            $verificationKeys,
+            static fn ($key) => $key instanceof KeyInterface
         );
         if (empty($verificationKeys)) {
-            throw new \InvalidArgumentException(
-                'No verification keys provided'
-            );
+            Config::getLogger()->debug('No verification keys provided!');
         }
         $verifications = [];
         foreach ($this->signaturePackets as $packet) {

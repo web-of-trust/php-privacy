@@ -243,7 +243,7 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
                     if (!$subkey->isSigningKey()) {
                         continue;
                     }
-                    $signature = $subkey->getLatestBindingSignature()->getEmbeddedSignature();
+                    $signature = $subkey->getLatestBindingSignature()?->getEmbeddedSignature();
                     if (empty($signature)) {
                         throw new \UnexpectedValueException('Missing embedded signature');
                     }
