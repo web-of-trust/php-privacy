@@ -24,14 +24,14 @@ enum AeadAlgorithm: int
 
     case Ocb = 2;
 
-    case ExperimentalGCM = 100;
+    case Gcm = 100;
 
     public function blockLength(): int
     {
         return match($this) {
             self::Eax => 16,
             self::Ocb => 16,
-            self::ExperimentalGCM => 16,
+            self::Gcm => 16,
         };
     }
 
@@ -40,7 +40,7 @@ enum AeadAlgorithm: int
         return match($this) {
             self::Eax => 16,
             self::Ocb => 15,
-            self::ExperimentalGCM => 12,
+            self::Gcm => 12,
         };
     }
 
@@ -49,7 +49,7 @@ enum AeadAlgorithm: int
         return match($this) {
             self::Eax => 16,
             self::Ocb => 16,
-            self::ExperimentalGCM => 16,
+            self::Gcm => 16,
         };
     }
 }
