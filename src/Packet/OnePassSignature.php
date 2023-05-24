@@ -76,7 +76,7 @@ class OnePassSignature extends AbstractPacket
         $hashAlgorithm = HashAlgorithm::from(ord($bytes[$offset++]));
         $keyAlgorithm = KeyAlgorithm::from(ord($bytes[$offset++]));
         $issuerKeyID = substr($bytes, $offset, 8);
-        return self(
+        return new self(
             $signatureType,
             $hashAlgorithm,
             $keyAlgorithm,
