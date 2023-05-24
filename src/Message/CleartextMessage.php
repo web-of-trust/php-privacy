@@ -88,7 +88,7 @@ class CleartextMessage implements MessageInterface
             throw new \InvalidArgumentException('No signing keys provided');
         }
         $packets = array_map(
-            static fn ($key) => SignaturePacket::createLiteralData(
+            fn ($key) => SignaturePacket::createLiteralData(
                 $key->getSigningKeyPacket(),
                 LiteralData::fromText($this->getText()),
                 $time
