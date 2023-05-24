@@ -35,7 +35,15 @@ interface PacketListInterface extends \IteratorAggregate, \Countable
      * @param PacketTag $tag
      * @return self
      */
-    function filterByTag(PacketTag $tag): self;
+    function whereTag(PacketTag $tag): self;
+
+    /**
+     * Filter packets by type (class)
+     * 
+     * @param string $type
+     * @return self
+     */
+    function whereType(string $type): self;
 
     /**
      * Get array packets

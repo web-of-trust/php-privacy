@@ -10,9 +10,13 @@
 
 namespace OpenPGP\Message;
 
+use DateTime;
 use OpenPGP\Common\Armor;
 use OpenPGP\Enum\ArmorType;
-use OpenPGP\Packet\LiteralData;
+use OpenPGP\Packet\{
+    LiteralData,
+    PacketList,
+};
 use OpenPGP\Type\{
     ArmorableInterface,
     SignatureInterface,
@@ -67,9 +71,7 @@ class SignedMessage extends CleartextMessage implements ArmorableInterface, Sign
     }
 
     /**
-     * Gets signature 
-     *
-     * @return SignatureInterface
+     * {@inheritdoc}
      */
     public function getSignature(): SignatureInterface
     {

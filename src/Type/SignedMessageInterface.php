@@ -23,6 +23,13 @@ use DateTime;
 interface SignedMessageInterface extends MessageInterface
 {
     /**
+     * Gets signature 
+     *
+     * @return SignatureInterface
+     */
+    function getSignature(): SignatureInterface;
+
+    /**
      * Verify signatures of signed message
      * Return verification array
      *

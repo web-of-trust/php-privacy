@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Message;
 
+use DateTime;
 use OpenPGP\Common\Armor;
 use OpenPGP\Enum\ArmorType;
 use OpenPGP\Packet\{

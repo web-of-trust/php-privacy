@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Message;
 
-use \DateTime;
+use DateTime;
 use OpenPGP\Key\PrivateKey;
 use OpenPGP\Packet\LiteralData;
 use OpenPGP\Packet\Signature as SignaturePacket;
@@ -69,6 +69,18 @@ class CleartextMessage implements MessageInterface
         array $signingKeys, ?DateTime $time = null
     ): SignedMessageInterface
     {
+        return new SignedMessage(
+            $this->getText(), $this->signDetached($signingKeys, $time)
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function signDetached(
+        array $signingKeys, ?DateTime $time = null
+    ): SignatureInterface
+    {
         $signingKeys = array_filter(
             $signingKeys, static fn ($key) => $key instanceof PrivateKey
         );
@@ -83,16 +95,6 @@ class CleartextMessage implements MessageInterface
             ),
             $signingKeys
         );
-        return new SignedMessage($this->getText(), new Signature($packets));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function signDetached(
-        array $signingKeys, ?DateTime $time = null
-    ): SignatureInterface
-    {
-        return $this->sign($signingKeys, $time)->getSignature();
+        return new Signature($packets);
     }
 }

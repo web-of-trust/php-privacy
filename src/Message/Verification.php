@@ -44,9 +44,9 @@ class Verification implements VerificationInterface
     /**
      * {@inheritdoc}
      */
-    public function getKeyID(): string
+    public function getKeyID(bool $toHex = false): string
     {
-        return $this->keyID;
+        return $toHex ? bin2hex($this->keyID) : $this->keyID;
     }
 
     /**

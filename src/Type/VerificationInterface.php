@@ -23,9 +23,10 @@ interface VerificationInterface
     /**
      * Returns verification key ID
      *
+     * @param bool $toHex
      * @return string
      */
-	function getKeyID(): string;
+	function getKeyID(bool $toHex = false): string;
 
     /**
      * Returns signature packet

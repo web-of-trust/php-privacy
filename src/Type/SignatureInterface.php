@@ -10,6 +10,8 @@
 
 namespace OpenPGP\Type;
 
+use DateTime;
+
 /**
  * Signature interface
  * 

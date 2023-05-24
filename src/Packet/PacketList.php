@@ -182,11 +182,23 @@ class PacketList implements PacketListInterface
     /**
      * {@inheritdoc}
      */
-    public function filterByTag(PacketTag $tag): self
+    public function whereTag(PacketTag $tag): self
     {
         $packets = array_filter(
             $this->packets->getArrayCopy(),
             static fn ($packet) => $packet->getTag() === $tag
+        );
+        return new self($packets);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function whereType(string $type): self
+    {
+        $packets = array_filter(
+            $this->packets->getArrayCopy(),
+            static fn ($packet) => get_class($packet) === $type
         );
         return new self($packets);
     }
