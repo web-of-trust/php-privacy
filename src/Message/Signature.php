@@ -11,7 +11,7 @@
 namespace OpenPGP\Message;
 
 use DateTime;
-use OpenPGP\Common\Armor;
+use OpenPGP\Common\{Armor, Helper};
 use OpenPGP\Enum\ArmorType;
 use OpenPGP\Packet\{
     LiteralData,
@@ -88,10 +88,10 @@ class Signature implements ArmorableInterface, PacketContainerInterface, Signatu
     /**
      * {@inheritdoc}
      */
-    public function getSigningKeyIDs(): array
+    public function getSigningKeyIDs(bool $toHex = false): array
     {
         return array_map(
-            static fn ($packet) => $packet->getIssuerKeyID()->getKeyID(),
+            static fn ($packet) => $packet->getIssuerKeyID()->getKeyID($toHex),
             $this->signaturePackets
         );
     }

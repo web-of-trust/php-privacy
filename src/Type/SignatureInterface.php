@@ -32,9 +32,10 @@ interface SignatureInterface
     /**
      * Returns signing key IDs
      *
+     * @param bool $toHex
      * @return array
      */
-    function getSigningKeyIDs(): array;
+    function getSigningKeyIDs(bool $toHex = false): array;
 
     /**
      * Verify signature with literal data

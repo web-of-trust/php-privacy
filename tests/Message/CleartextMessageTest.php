@@ -3,7 +3,7 @@
 namespace OpenPGP\Tests\Message;
 
 use OpenPGP\Key\{PrivateKey, PublicKey};
-use OpenPGP\Message\CleartextMessage;
+use OpenPGP\Message\{CleartextMessage, Signature, SignedMessage};
 use OpenPGP\Packet\LiteralData;
 use OpenPGP\Tests\OpenPGPTestCase;
 
@@ -30,10 +30,17 @@ class CleartextMessageTest extends OpenPGPTestCase
         $this->assertSame('184d0dc4f5c532b2', $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
 
+        $signedMessage = SignedMessage::fromArmored($signedMessage->armor());
+        $this->assertSame(self::LITERAL_TEXT, $signedMessage->getText());
+        $this->assertTrue($signedMessage->getSignature() instanceof Signature);
+
         $signature = $message->signDetached([$privateKey]);
         $verification = $signature->verify([$publicKey], LiteralData::fromText(self::LITERAL_TEXT))[0];
         $this->assertSame('184d0dc4f5c532b2', $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
+
+        $signature = Signature::fromArmored($signature->armor());
+        $this->assertSame('184d0dc4f5c532b2', $signature->getSigningKeyIDs(true)[0]);
     }
 
     public function testSignDsaCleartextMessage()
@@ -51,10 +58,17 @@ class CleartextMessageTest extends OpenPGPTestCase
         $this->assertSame('e3b11d642248a092', $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
 
+        $signedMessage = SignedMessage::fromArmored($signedMessage->armor());
+        $this->assertSame(self::LITERAL_TEXT, $signedMessage->getText());
+        $this->assertTrue($signedMessage->getSignature() instanceof Signature);
+
         $signature = $message->signDetached([$privateKey]);
         $verification = $signature->verify([$publicKey], LiteralData::fromText(self::LITERAL_TEXT))[0];
         $this->assertSame('e3b11d642248a092', $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
+
+        $signature = Signature::fromArmored($signature->armor());
+        $this->assertSame('e3b11d642248a092', $signature->getSigningKeyIDs(true)[0]);
     }
 
     public function testSignEcP384CleartextMessage()
@@ -72,10 +86,17 @@ class CleartextMessageTest extends OpenPGPTestCase
         $this->assertSame('b202d9e2eada440c', $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
 
+        $signedMessage = SignedMessage::fromArmored($signedMessage->armor());
+        $this->assertSame(self::LITERAL_TEXT, $signedMessage->getText());
+        $this->assertTrue($signedMessage->getSignature() instanceof Signature);
+
         $signature = $message->signDetached([$privateKey]);
         $verification = $signature->verify([$publicKey], LiteralData::fromText(self::LITERAL_TEXT))[0];
         $this->assertSame('b202d9e2eada440c', $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
+
+        $signature = Signature::fromArmored($signature->armor());
+        $this->assertSame('b202d9e2eada440c', $signature->getSigningKeyIDs(true)[0]);
     }
 
     public function testSignEcBrainpoolCleartextMessage()
@@ -93,10 +114,17 @@ class CleartextMessageTest extends OpenPGPTestCase
         $this->assertSame('1cbcd043db44c5d6', $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
 
+        $signedMessage = SignedMessage::fromArmored($signedMessage->armor());
+        $this->assertSame(self::LITERAL_TEXT, $signedMessage->getText());
+        $this->assertTrue($signedMessage->getSignature() instanceof Signature);
+
         $signature = $message->signDetached([$privateKey]);
         $verification = $signature->verify([$publicKey], LiteralData::fromText(self::LITERAL_TEXT))[0];
         $this->assertSame('1cbcd043db44c5d6', $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
+
+        $signature = Signature::fromArmored($signature->armor());
+        $this->assertSame('1cbcd043db44c5d6', $signature->getSigningKeyIDs(true)[0]);
     }
 
     public function testSignEcCurve25519CleartextMessage()
@@ -114,9 +142,16 @@ class CleartextMessageTest extends OpenPGPTestCase
         $this->assertSame('bdff135160c56a0b', $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
 
+        $signedMessage = SignedMessage::fromArmored($signedMessage->armor());
+        $this->assertSame(self::LITERAL_TEXT, $signedMessage->getText());
+        $this->assertTrue($signedMessage->getSignature() instanceof Signature);
+
         $signature = $message->signDetached([$privateKey]);
         $verification = $signature->verify([$publicKey], LiteralData::fromText(self::LITERAL_TEXT))[0];
         $this->assertSame('bdff135160c56a0b', $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
+
+        $signature = Signature::fromArmored($signature->armor());
+        $this->assertSame('bdff135160c56a0b', $signature->getSigningKeyIDs(true)[0]);
     }
 }
