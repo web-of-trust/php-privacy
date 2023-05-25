@@ -10,7 +10,10 @@
 
 namespace OpenPGP\Type;
 
-use OpenPGP\Enum\SymmetricAlgorithm;
+use OpenPGP\Enum\{
+    CompressionAlgorithm,
+    SymmetricAlgorithm,
+};
 
 /**
  * Literal message interface
@@ -45,4 +48,15 @@ interface LiteralMessageInterface extends MessageInterface
         SymmetricAlgorithm $sessionKeySymmetric = SymmetricAlgorithm::Aes128,
         SymmetricAlgorithm $encryptionKeySymmetric = SymmetricAlgorithm::Aes128
     ): EncryptedMessageInterface;
+
+    /**
+     * Compress the message (the literal and -if signed- signature data packets of the message)
+     * Return new message with compressed content.
+     *
+     * @param CompressionAlgorithm $algorithm
+     * @return self
+     */
+    function compress(
+        CompressionAlgorithm $algorithm = CompressionAlgorithm::Uncompressed
+    ): self
 }

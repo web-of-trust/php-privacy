@@ -86,6 +86,21 @@ class CompressedData extends AbstractPacket
     }
 
     /**
+     * Build compressed data packet from packet array
+     *
+     * @param array $packets
+     * @param Algorithm $algorithm
+     * @return self
+     */
+    public static function fromPackets(
+        array $packets,
+        Algorithm $algorithm = Algorithm::Uncompressed
+    )
+    {
+        return self::fromPacketList(new PacketList($packets), $algorithm);
+    }
+
+    /**
      * Gets compressed data
      *
      * @return string

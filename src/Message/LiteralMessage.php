@@ -10,17 +10,26 @@
 
 namespace OpenPGP\Message;
 
-use OpenPGP\Enum\SymmetricAlgorithm;
+use DateTime;
+use OpenPGP\Common\{Armor, Config};
+use OpenPGP\Enum\{
+    ArmorType,
+    CompressionAlgorithm,
+    SymmetricAlgorithm,
+};
 use OpenPGP\Packet\Signature as SignaturePacket;
 use OpenPGP\Packet\{
     CompressedData,
-    OnePassSignature
+    OnePassSignature,
+    PacketList,
 };
 use OpenPGP\Type\{
     EncryptedMessageInterface,
-    LiteralDataPacketInterface,,
+    LiteralDataPacketInterface,
     LiteralMessageInterface,
+    KeyInterface,
     PacketInterface,
+    PacketListInterface,
     SignatureInterface,
     SignaturePacketInterface,
     SignedMessageInterface,
@@ -34,11 +43,9 @@ use OpenPGP\Type\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterface, SignedMessageInterface
+class LiteralMessage implements ArmorableInterface, EncryptedMessageInterface, LiteralMessageInterface, PacketContainerInterface, SignedMessageInterface
 {
     private readonly array $packets;
-
-    private readonly LiteralDataPacketInterface $literalDataPacket;
 
     /**
      * Constructor
@@ -54,13 +61,44 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
             $packets,
             static fn ($packet) => $packet instanceof PacketInterface
         );
-        $this->literalDataPacket = array_pop(array_filter(
-            $packets,
-            static fn ($packet) => $packet instanceof LiteralDataPacketInterface
-        ));
-        if (empty($this->literalDataPacket)) {
-            throw new \UnexpectedValueException('No literal data in packet list.');
+    }
+
+    /**
+     * Reads message from armored string
+     *
+     * @param string $armored
+     * @return self
+     */
+    public static function fromArmored(string $armored): self
+    {
+        $armor = Armor::decode($armored);
+        if ($armor->getType() !== ArmorType::Message) {
+            throw new \UnexpectedValueException(
+                'Armored text not of message type'
+            );
         }
+        return new self(
+            PacketList::decode($armor->getData())->toArray()
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function armor(): string
+    {
+        return Armor::encode(
+            ArmorType::Signature,
+            $this->toPacketList()->encode()
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toPacketList(): PacketListInterface
+    {
+        return new PacketList($this->packets);
     }
 
     /**
@@ -68,7 +106,7 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
      */
     public function getPackets(): array
     {
-        return $this->packets;
+        return self::unwrapCompressed($this->packets);
     }
 
     /**
@@ -76,7 +114,14 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
      */
     public function getLiteralDataPacket(): LiteralDataPacketInterface
     {
-        return $this->literalDataPacket;
+        $literalDataPackets = array_filter(
+            $this->getPackets(),
+            static fn ($packet) => $packet instanceof LiteralDataPacketInterface
+        );
+        if (empty($this->literalDataPacket)) {
+            throw new \UnexpectedValueException('No literal data in packet list.');
+        }
+        return array_pop($literalDataPackets);
     }
 
     /**
@@ -85,7 +130,7 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
     public function getSignature(): SignatureInterface
     {
         return new Signature(array_filter(
-            $this->packets,
+            $this->getPackets(),
             static fn ($packet) => $packet instanceof SignaturePacketInterface
         ));
     }
@@ -99,7 +144,7 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
     {
         $signaturePackets = [
             ...array_filter(
-                $this->packets,
+                $this->getPackets(),
                 static fn ($packet) => $packet instanceof SignaturePacketInterface
             ),
             ...$this->signDetached()->getSignaturePackets(),
@@ -109,14 +154,14 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
                 $packet->getSignatureType(),
                 $packet->getHashAlgorithm(),
                 $packet->getKeyAlgorithm(),
-                $packet->getIssuerKeyID()0
+                $packet->getIssuerKeyID()
             ),
             $signaturePackets
         );
 
         return self([
             ...$onePassSignaturePackets,
-            $this->literalDataPacket,
+            $this->getLiteralDataPacket(),
             ...$signaturePackets,
         ]);
     }
@@ -134,15 +179,26 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
         if (empty($signingKeys)) {
             throw new \InvalidArgumentException('No signing keys provided');
         }
-        $packets = array_map(
+        return new Signature(array_map(
             fn ($key) => SignaturePacket::createLiteralData(
                 $key->getSigningKeyPacket(),
-                $this->literalDataPacket,
+                $this->getLiteralDataPacket(),
                 $time
             ),
             $signingKeys
+        ));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function verify(
+        array $verificationKeys, ?DateTime $time = null
+    ): array
+    {
+        return $this->getSignature()->verify(
+            $verificationKeys, $this->getLiteralDataPacket(), $time
         );
-        return new Signature($packets);
     }
 
     /**
@@ -155,6 +211,44 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
         SymmetricAlgorithm $encryptionKeySymmetric = SymmetricAlgorithm::Aes128
     ): EncryptedMessageInterface
     {
+        $encryptionKeys = array_filter(
+            $encryptionKeys, static fn ($key) => $key instanceof KeyInterface
+        );
+        if (empty($encryptionKeys) && empty($passwords)) {
+            throw new \InvalidArgumentException(
+                'No encryption keys or passwords provided'
+            );
+        }
+
+        $skeskPackets = [];
+
+        return self([]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    function decrypt(
+        array $decryptionKeys,
+        array $passwords = [],
+        bool $allowUnauthenticatedMessages = false
+    ): self
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function compress(
+        CompressionAlgorithm $algorithm = CompressionAlgorithm::Uncompressed
+    ): self
+    {
+        if ($algorithm !== CompressionAlgorithm::Uncompressed) {
+            return new self([
+                CompressedData::fromPackets($this->getPackets(), $algorithm)
+            ]);
+        }
+        return $this;
     }
 
     private static function unwrapCompressed(array $packets): array
