@@ -263,7 +263,7 @@ final class Armor
     {
         preg_match(self::BEGIN_PATTERN, $armoredText, $matches);
         if (empty($matches)) {
-            throw new \InvalidArgumentException('Unknown ASCII armor type');
+            throw new \UnexpectedValueException('Unknown ASCII armor type');
         }
         $type = match (1) {
             preg_match('/MESSAGE, PART \d+\/\d+/', $matches[0]) => ArmorType::MultipartSection,

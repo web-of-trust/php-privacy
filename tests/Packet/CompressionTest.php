@@ -23,11 +23,11 @@ class CompressionTest extends OpenPGPTestCase
         $compressed = CompressedData::fromPacketList(
             $packets, CompressionAlgorithm::Zip
         );
-        $this->assertSame($packets, $compressed->getPackets());
+        $this->assertSame($packets, $compressed->getPacketList());
 
         $decompressed = CompressedData::fromBytes($compressed->toBytes());
         $this->assertSame(CompressionAlgorithm::Zip, $decompressed->getAlgorithm());
-        $this->assertEquals($packets, $decompressed->getPackets());
+        $this->assertEquals($packets, $decompressed->getPacketList());
     }
 
     public function testZlib()
@@ -37,11 +37,11 @@ class CompressionTest extends OpenPGPTestCase
         $compressed = CompressedData::fromPacketList(
             $packets, CompressionAlgorithm::Zlib
         );
-        $this->assertSame($packets, $compressed->getPackets());
+        $this->assertSame($packets, $compressed->getPacketList());
 
         $decompressed = CompressedData::fromBytes($compressed->toBytes());
         $this->assertSame(CompressionAlgorithm::Zlib, $decompressed->getAlgorithm());
-        $this->assertEquals($packets, $decompressed->getPackets());
+        $this->assertEquals($packets, $decompressed->getPacketList());
     }
 
     public function testBZip2()
@@ -51,11 +51,11 @@ class CompressionTest extends OpenPGPTestCase
         $compressed = CompressedData::fromPacketList(
             $packets, CompressionAlgorithm::BZip2
         );
-        $this->assertSame($packets, $compressed->getPackets());
+        $this->assertSame($packets, $compressed->getPacketList());
 
         $decompressed = CompressedData::fromBytes($compressed->toBytes());
         $this->assertSame(CompressionAlgorithm::BZip2, $decompressed->getAlgorithm());
-        $this->assertEquals($packets, $decompressed->getPackets());
+        $this->assertEquals($packets, $decompressed->getPacketList());
     }
 
     public function testZipDecompress()
@@ -73,9 +73,9 @@ EOT;
             $sessionKey->getSymmetric(),
         );
 
-        $compressed = $seip->getPackets()->offsetGet(0);
+        $compressed = $seip->getPacketList()->offsetGet(0);
         $this->assertSame(CompressionAlgorithm::Zip, $compressed->getAlgorithm());
-        $literalData = $compressed->getPackets()->offsetGet(0);
+        $literalData = $compressed->getPacketList()->offsetGet(0);
         $this->assertSame('Hello PHP PG', trim($literalData->getData()));
     }
 
@@ -94,9 +94,9 @@ EOT;
             $sessionKey->getSymmetric(),
         );
 
-        $compressed = $seip->getPackets()->offsetGet(0);
+        $compressed = $seip->getPacketList()->offsetGet(0);
         $this->assertSame(CompressionAlgorithm::Zlib, $compressed->getAlgorithm());
-        $literalData = $compressed->getPackets()->offsetGet(0);
+        $literalData = $compressed->getPacketList()->offsetGet(0);
         $this->assertSame('Hello PHP PG', trim($literalData->getData()));
     }
 
@@ -116,9 +116,9 @@ EOT;
             $sessionKey->getSymmetric(),
         );
 
-        $compressed = $seip->getPackets()->offsetGet(0);
+        $compressed = $seip->getPacketList()->offsetGet(0);
         $this->assertSame(CompressionAlgorithm::BZip2, $compressed->getAlgorithm());
-        $literalData = $compressed->getPackets()->offsetGet(0);
+        $literalData = $compressed->getPacketList()->offsetGet(0);
         $this->assertSame('Hello PHP PG', trim($literalData->getData()));
     }
 }

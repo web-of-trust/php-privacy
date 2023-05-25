@@ -11,10 +11,19 @@
 namespace OpenPGP\Message;
 
 use OpenPGP\Enum\SymmetricAlgorithm;
+use OpenPGP\Packet\Signature as SignaturePacket;
+use OpenPGP\Packet\{
+    CompressedData,
+    OnePassSignature
+};
 use OpenPGP\Type\{
     EncryptedMessageInterface,
+    LiteralDataPacketInterface,,
     LiteralMessageInterface,
-    LiteralDataPacketInterface,
+    PacketInterface,
+    SignatureInterface,
+    SignaturePacketInterface,
+    SignedMessageInterface,
 };
 
 /**
@@ -25,18 +34,41 @@ use OpenPGP\Type\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class LiteralMessage implements LiteralMessageInterface
+class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterface, SignedMessageInterface
 {
+    private readonly array $packets;
+
+    private readonly LiteralDataPacketInterface $literalDataPacket;
+
     /**
      * Constructor
      *
-     * @param LiteralDataPacketInterface $literalDataPacket
+     * @param array $packets
      * @return self
      */
     public function __construct(
-        private readonly LiteralDataPacketInterface $literalDataPacket
+        array $packets
     )
     {
+        $this->packets = array_filter(
+            $packets,
+            static fn ($packet) => $packet instanceof PacketInterface
+        );
+        $this->literalDataPacket = array_pop(array_filter(
+            $packets,
+            static fn ($packet) => $packet instanceof LiteralDataPacketInterface
+        ));
+        if (empty($this->literalDataPacket)) {
+            throw new \UnexpectedValueException('No literal data in packet list.');
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPackets(): array
+    {
+        return $this->packets;
     }
 
     /**
@@ -44,7 +76,18 @@ class LiteralMessage implements LiteralMessageInterface
      */
     public function getLiteralDataPacket(): LiteralDataPacketInterface
     {
-        return this->literalDataPacket;
+        return $this->literalDataPacket;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSignature(): SignatureInterface
+    {
+        return new Signature(array_filter(
+            $this->packets,
+            static fn ($packet) => $packet instanceof SignaturePacketInterface
+        ));
     }
 
     /**
@@ -54,6 +97,28 @@ class LiteralMessage implements LiteralMessageInterface
         array $signingKeys, ?DateTime $time = null
     ): SignedMessageInterface
     {
+        $signaturePackets = [
+            ...array_filter(
+                $this->packets,
+                static fn ($packet) => $packet instanceof SignaturePacketInterface
+            ),
+            ...$this->signDetached()->getSignaturePackets(),
+        ];
+        $onePassSignaturePackets = array_map(
+            static fn ($packet) => OnePassSignature(
+                $packet->getSignatureType(),
+                $packet->getHashAlgorithm(),
+                $packet->getKeyAlgorithm(),
+                $packet->getIssuerKeyID()0
+            ),
+            $signaturePackets
+        );
+
+        return self([
+            ...$onePassSignaturePackets,
+            $this->literalDataPacket,
+            ...$signaturePackets,
+        ]);
     }
 
     /**
@@ -90,5 +155,14 @@ class LiteralMessage implements LiteralMessageInterface
         SymmetricAlgorithm $encryptionKeySymmetric = SymmetricAlgorithm::Aes128
     ): EncryptedMessageInterface
     {
+    }
+
+    private static function unwrapCompressed(array $packets): array
+    {
+        $compressedPackets = array_filter(
+            $packets,
+            static fn ($packet) => $packet instanceof CompressedData
+        );
+        return array_pop($compressedPackets)?->getPacketList()->toArray() ?? $packets;
     }
 }

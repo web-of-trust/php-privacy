@@ -40,12 +40,12 @@ class SymEncryptedData extends AbstractPacket
      * Constructor
      *
      * @param string $encrypted
-     * @param PacketList $packets
+     * @param PacketList $packetList
      * @return self
      */
     public function __construct(
         private readonly string $encrypted,
-        private readonly ?PacketList $packets = null
+        private readonly ?PacketList $packetList = null
     )
     {
         parent::__construct(PacketTag::SymEncryptedData);
@@ -66,13 +66,13 @@ class SymEncryptedData extends AbstractPacket
      * Encrypts packet list
      *
      * @param string $key
-     * @param PacketList $packets
+     * @param PacketList $packetList
      * @param SymmetricAlgorithm $symmetric
      * @return self
      */
     public static function encryptPackets(
         string $key,
-        PacketList $packets,
+        PacketList $packetList,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self
     {
@@ -83,7 +83,7 @@ class SymEncryptedData extends AbstractPacket
         $cipher->setIV(substr($prefix, 2));
 
         return new self(
-            $prefix . $cipher->encrypt($packets->encode()), $packets
+            $prefix . $cipher->encrypt($packetList->encode()), $packetList
         );
     }
 
@@ -100,9 +100,9 @@ class SymEncryptedData extends AbstractPacket
      *
      * @return PacketList
      */
-    public function getPackets(): ?PacketList
+    public function getPacketList(): ?PacketList
     {
-        return $this->packets;
+        return $this->packetList;
     }
 
     /**
@@ -117,8 +117,8 @@ class SymEncryptedData extends AbstractPacket
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self
     {
-        if ($this->packets instanceof PacketList) {
-            return self::encryptPackets($key, $this->packets, $symmetric);
+        if ($this->packetList instanceof PacketList) {
+            return self::encryptPackets($key, $this->packetList, $symmetric);
         }
         return $this;
     }
@@ -142,7 +142,7 @@ class SymEncryptedData extends AbstractPacket
                 'Message is not authenticated.'
             );
         }
-        if ($this->packets instanceof PacketList) {
+        if ($this->packetList instanceof PacketList) {
             return $this;
         }
         else {

@@ -34,7 +34,7 @@ class SKESKTest extends OpenPGPTestCase
         $seip = $packets->offsetGet(1)->decryptWithSessionKey(
             $skesk->getSessionKey(),
         );
-        $literalData = $seip->getPackets()->offsetGet(0);
+        $literalData = $seip->getPacketList()->offsetGet(0);
         $this->assertSame(self::LITERAL_TEXT, trim($literalData->getData()));
     }
 
@@ -55,7 +55,7 @@ class SKESKTest extends OpenPGPTestCase
         $seip = $packets->offsetGet(1)->decryptWithSessionKey(
             $skesk->getSessionKey(),
         );
-        $literalData = $seip->getPackets()->offsetGet(0);
+        $literalData = $seip->getPacketList()->offsetGet(0);
         $this->assertSame(self::LITERAL_TEXT, trim($literalData->getData()));
         $this->assertEquals($sessionKey, $skesk->getSessionKey());
     }

@@ -36,13 +36,13 @@ class CompressedData extends AbstractPacket
      * Constructor
      *
      * @param string $compressed
-     * @param PacketList $packets
+     * @param PacketList $packetList
      * @param Algorithm $algorithm
      * @return self
      */
     public function __construct(
         private readonly string $compressed,
-        private readonly PacketList $packets,
+        private readonly PacketList $packetList,
         private readonly Algorithm $algorithm = Algorithm::Uncompressed
     )
     {
@@ -69,18 +69,18 @@ class CompressedData extends AbstractPacket
     /**
      * Build compressed data packet from packet list
      *
-     * @param PacketList $function
+     * @param PacketList $packetList
      * @param Algorithm $algorithm
      * @return self
      */
     public static function fromPacketList(
-        PacketList $packets,
+        PacketList $packetList,
         Algorithm $algorithm = Algorithm::Uncompressed
     ): self
     {
         return new self(
-            self::compress($packets, $algorithm),
-            $packets,
+            self::compress($packetList, $algorithm),
+            $packetList,
             $algorithm
         );
     }
@@ -100,9 +100,9 @@ class CompressedData extends AbstractPacket
      *
      * @return PacketList
      */
-    public function getPackets(): PacketList
+    public function getPacketList(): PacketList
     {
-        return $this->packets;
+        return $this->packetList;
     }
 
     /**
@@ -127,14 +127,14 @@ class CompressedData extends AbstractPacket
     }
 
     private static function compress(
-        PacketList $packets, Algorithm $algorithm
+        PacketList $packetList, Algorithm $algorithm
     ): string
     {
         return match($algorithm) {
-            Algorithm::Uncompressed => $packets->encode(),
-            Algorithm::Zip => \gzdeflate($packets->encode(), self::DEFLATE_LEVEL),
-            Algorithm::Zlib => \gzcompress($packets->encode(), self::DEFLATE_LEVEL),
-            Algorithm::BZip2 => \bzcompress($packets->encode()),
+            Algorithm::Uncompressed => $packetList->encode(),
+            Algorithm::Zip => \gzdeflate($packetList->encode(), self::DEFLATE_LEVEL),
+            Algorithm::Zlib => \gzcompress($packetList->encode(), self::DEFLATE_LEVEL),
+            Algorithm::BZip2 => \bzcompress($packetList->encode()),
         };
     }
 

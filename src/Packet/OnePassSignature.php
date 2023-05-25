@@ -50,7 +50,7 @@ class OnePassSignature extends AbstractPacket
         private readonly HashAlgorithm $hashAlgorithm,
         private readonly KeyAlgorithm $keyAlgorithm,
         private readonly string $issuerKeyID,
-        private readonly int $nested
+        private readonly int $nested = 0
     )
     {
         parent::__construct(PacketTag::OnePassSignature);

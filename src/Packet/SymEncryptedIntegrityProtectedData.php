@@ -40,12 +40,12 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
      * Constructor
      *
      * @param string $encrypted
-     * @param PacketList $packets
+     * @param PacketList $packetList
      * @return self
      */
     public function __construct(
         private readonly string $encrypted,
-        private readonly ?PacketList $packets = null
+        private readonly ?PacketList $packetList = null
     )
     {
         parent::__construct(PacketTag::SymEncryptedIntegrityProtectedData);
@@ -75,19 +75,19 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
      * Encrypts packet list
      *
      * @param string $key
-     * @param PacketList $packets
+     * @param PacketList $packetList
      * @param SymmetricAlgorithm $symmetric
      * @return self
      */
     public static function encryptPackets(
         string $key,
-        PacketList $packets,
+        PacketList $packetList,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self
     {
         $toHash = implode([
             Helper::generatePrefix($symmetric),
-            $packets->encode(),
+            $packetList->encode(),
             "\xd3\x14",
         ]);
         $plainText = $toHash . hash('sha1', $toHash, true);
@@ -97,7 +97,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
         $cipher->setIV(str_repeat("\x00", $symmetric->blockSize()));
 
         return new self(
-            $cipher->encrypt($plainText), $packets
+            $cipher->encrypt($plainText), $packetList
         );
     }
 
@@ -105,16 +105,16 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
      * Encrypts packet list with session key
      *
      * @param Key\SessionKey $sessionKey
-     * @param PacketList $packets
+     * @param PacketList $packetList
      * @return self
      */
     public static function encryptPacketsWithSessionKey(
-        Key\SessionKey $sessionKey, PacketList $packets
+        Key\SessionKey $sessionKey, PacketList $packetList
     ): self
     {
         return self::encryptPackets(
             $sessionKey->getEncryptionKey(),
-            $packets,
+            $packetList,
             $sessionKey->getSymmetric()
         );
     }
@@ -142,9 +142,9 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
      *
      * @return PacketList
      */
-    public function getPackets(): ?PacketList
+    public function getPacketList(): ?PacketList
     {
-        return $this->packets;
+        return $this->packetList;
     }
 
     /**
@@ -159,8 +159,8 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self
     {
-        if ($this->packets instanceof PacketList) {
-            return self::encryptPackets($key, $this->packets, $symmetric);
+        if ($this->packetList instanceof PacketList) {
+            return self::encryptPackets($key, $this->packetList, $symmetric);
         }
         return $this;
     }
@@ -193,7 +193,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self
     {
-        if ($this->packets instanceof PacketList) {
+        if ($this->packetList instanceof PacketList) {
             return $this;
         }
         else {
