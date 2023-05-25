@@ -23,7 +23,7 @@ use OpenPGP\Enum\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface LiteralMessageInterface extends MessageInterface
+interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInterface, MessageInterface
 {
     /**
      * Gets contained packets
@@ -45,15 +45,13 @@ interface LiteralMessageInterface extends MessageInterface
      *
      * @param array $encryptionKeys
      * @param array $passwords
-     * @param SymmetricAlgorithm $sessionKeySymmetric
-     * @param SymmetricAlgorithm $encryptionKeySymmetric
+     * @param SymmetricAlgorithm $symmetric
      * @return EncryptedMessageInterface
      */
     function encrypt(
         array $encryptionKeys,
         array $passwords = [],
-        SymmetricAlgorithm $sessionKeySymmetric = SymmetricAlgorithm::Aes128,
-        SymmetricAlgorithm $encryptionKeySymmetric = SymmetricAlgorithm::Aes128
+        ?SymmetricAlgorithm $symmetric = null
     ): EncryptedMessageInterface;
 
     /**

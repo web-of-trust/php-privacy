@@ -159,4 +159,22 @@ class SymEncryptedData extends AbstractPacket
             );
         }
     }
+
+    /**
+     * Decrypts the encrypted data contained in the packet with session key.
+     *
+     * @param Key\SessionKey $sessionKey
+     * @param bool $allowUnauthenticated
+     * @return self
+     */
+    public function decryptWithSessionKey(
+        Key\SessionKey $sessionKey, bool $allowUnauthenticated = false
+    ): self
+    {
+        return $this->decrypt(
+            $sessionKey->getEncryptionKey(),
+            $sessionKey->getSymmetric(),
+            $allowUnauthenticated
+        );
+    }
 }

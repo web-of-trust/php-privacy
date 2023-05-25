@@ -15,6 +15,7 @@ use OpenPGP\Common\{Armor, Config};
 use OpenPGP\Enum\{
     ArmorType,
     CompressionAlgorithm,
+    PacketTag,
     SymmetricAlgorithm,
 };
 use OpenPGP\Packet\Signature as SignaturePacket;
@@ -22,7 +23,11 @@ use OpenPGP\Packet\{
     CompressedData,
     OnePassSignature,
     PacketList,
+    PublicKeyEncryptedSessionKey,
+    SymEncryptedIntegrityProtectedData,
+    SymEncryptedSessionKey,
 };
+use OpenPGP\Packet\Key\SessionKey;
 use OpenPGP\Type\{
     EncryptedMessageInterface,
     LiteralDataPacketInterface,
@@ -44,7 +49,7 @@ use OpenPGP\Type\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class LiteralMessage implements ArmorableInterface, EncryptedMessageInterface, LiteralMessageInterface, PacketContainerInterface, SignedMessageInterface
+class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterface, SignedMessageInterface
 {
     private readonly array $packets;
 
@@ -164,7 +169,7 @@ class LiteralMessage implements ArmorableInterface, EncryptedMessageInterface, L
             $signaturePackets
         );
 
-        return self([
+        return new self([
             ...$onePassSignaturePackets,
             $this->getLiteralDataPacket(),
             ...$signaturePackets,
@@ -226,8 +231,7 @@ class LiteralMessage implements ArmorableInterface, EncryptedMessageInterface, L
     public function encrypt(
         array $encryptionKeys,
         array $passwords = [],
-        SymmetricAlgorithm $sessionKeySymmetric = SymmetricAlgorithm::Aes128,
-        SymmetricAlgorithm $encryptionKeySymmetric = SymmetricAlgorithm::Aes128
+        ?SymmetricAlgorithm $symmetric = null
     ): EncryptedMessageInterface
     {
         $encryptionKeys = array_filter(
@@ -239,9 +243,31 @@ class LiteralMessage implements ArmorableInterface, EncryptedMessageInterface, L
             );
         }
 
-        $skeskPackets = [];
+        $sessionKey = SessionKey::produceKey(
+            $symmetric ?? Config::getPreferredSymmetric()
+        );
+        $pkeskPackets = array_map(
+            static fn ($key) => PublicKeyEncryptedSessionKey::encryptSessionKey(
+                $key->toPublic()->getEncryptionKeyPacket(),
+                $sessionKey
+            ),
+            $encryptionKeys
+        );
+        $skeskPackets = array_map(
+            static fn ($password) => SymEncryptedSessionKey::encryptSessionKey(
+                $password, $sessionKey, $symmetric ?? Config::getPreferredSymmetric()
+            ),
+            $passwords
+        );
+        $seipPacket = SymEncryptedIntegrityProtectedData::encryptPacketsWithSessionKey(
+            $sessionKey, $this->toPacketList()
+        );
 
-        return self([]);
+        return new self([
+            ...$pkeskPackets,
+            ...$skeskPackets,
+            $seipPacket,
+        ]);
     }
 
     /**
@@ -261,6 +287,30 @@ class LiteralMessage implements ArmorableInterface, EncryptedMessageInterface, L
                 'No decryption keys or passwords provided'
             );
         }
+
+        $packets = $this->getPackets();
+        $encryptedPackets = array_filter(
+            $packets,
+            static fn ($packet) => $packet->getTag() === PacketTag::SymEncryptedIntegrityProtectedData
+        );
+        if (empty($encryptedPackets) && $allowUnauthenticatedMessages) {
+            $encryptedPackets = array_filter(
+                $packets,
+                static fn ($packet) => $packet->getTag() === PacketTag::SymEncryptedData
+            );
+        }
+        if (empty($encryptedPackets)) {
+            throw new \UnexpectedValueException('No encrypted data found.');
+        }
+
+        $encryptedPacket = array_pop($encryptedPackets);
+        $sessionKey = $this->decryptSessionKey($decryptionKeys, $passwords);
+
+        return new self([
+            $encryptedPacket->decryptWithSessionKey(
+                $sessionKey, $allowUnauthenticatedMessages
+            )
+        ]);
     }
 
     /**
@@ -276,6 +326,56 @@ class LiteralMessage implements ArmorableInterface, EncryptedMessageInterface, L
             ]);
         }
         return $this;
+    }
+
+    private function decryptSessionKey(
+        array $decryptionKeys, array $passwords
+    ): SessionKey
+    {
+        $packets = $this->getPackets();
+        $sessionKeys = [];
+        if (!empty($passwords)) {
+            Config::getLogger()->debug('Decrypt session keys by passwords.');
+            $skeskPackets = array_filter(
+                $packets,
+                static fn ($packet) => $packet->getTag() === PacketTag::SymEncryptedSessionKey
+            );
+            foreach ($skeskPackets as $skesk) {
+                foreach ($passwords as $password) {
+                    try {
+                        $sessionKeys[] = $skesk->decrypt($password)->getSessionKey();
+                        break;
+                    }
+                    catch (\Throwable $e) {
+                        Config::getLogger()->error($e->toString());
+                    }
+                }
+            }
+        }
+        if (empty($sessionKeys) && !empty($decryptionKeys)) {
+            Config::getLogger()->debug('Decrypt session keys by public keys.');
+            $pkeskPackets = array_filter(
+                $packets,
+                static fn ($packet) => $packet->getTag() === PacketTag::SymEncryptedSessionKey
+            );
+            foreach ($pkeskPackets as $pkesk) {
+                foreach ($decryptionKeys as $key) {
+                    try {
+                        $sessionKeys[] = $pkesk->decrypt($key->getEncryptionKeyPacket())->getSessionKey();
+                        break;
+                    }
+                    catch (\Throwable $e) {
+                        Config::getLogger()->error($e->toString());
+                    }
+                }
+            }
+        }
+
+        if (empty($sessionKeys)) {
+            throw new \UnexpectedValueException('Session key decryption failed.');
+        }
+
+        return array_pop($sessionKeys);
     }
 
     private static function unwrapCompressed(array $packets): array
