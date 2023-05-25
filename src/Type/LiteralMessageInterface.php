@@ -63,5 +63,5 @@ interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInt
      */
     function compress(
         CompressionAlgorithm $algorithm = CompressionAlgorithm::Uncompressed
-    ): self
+    ): self;
 }
