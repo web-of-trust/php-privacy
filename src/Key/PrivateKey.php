@@ -31,6 +31,7 @@ use OpenPGP\Packet\{
 use OpenPGP\Type\{
     KeyInterface,
     PacketListInterface,
+    PrivateKeyInterface,
     SecretKeyPacketInterface,
 };
 
@@ -42,7 +43,7 @@ use OpenPGP\Type\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class PrivateKey extends AbstractKey
+class PrivateKey extends AbstractKey implements PrivateKeyInterface
 {
     /**
      * Reads private key from armored string
@@ -136,7 +137,7 @@ class PrivateKey extends AbstractKey
     {
         if (empty($userIDs) || empty($passphrase)) {
             throw new \InvalidArgumentException(
-                'UserIDs and passphrase are required for key generation',
+                'UserIDs and passphrase are required for key generation.',
             );
         }
         $keyAlgorithm = KeyAlgorithm::RsaEncryptSign;
@@ -231,9 +232,7 @@ class PrivateKey extends AbstractKey
     }
 
     /**
-     * Returns true if the key packet is encrypted.
-     * 
-     * @return bool
+     * {@inheritdoc}
      */
     public function isEncrypted(): bool
     {
@@ -241,9 +240,7 @@ class PrivateKey extends AbstractKey
     }
 
     /**
-     * Returns true if the key packet is decrypted.
-     * 
-     * @return bool
+     * {@inheritdoc}
      */
     public function isDecrypted(): bool
     {
@@ -251,10 +248,7 @@ class PrivateKey extends AbstractKey
     }
 
     /**
-     * Returns array of key packets that is available for decryption
-     * 
-     * @param DateTime $time
-     * @return array
+     * {@inheritdoc}
      */
     public function getDecryptionKeyPackets(?DateTime $time = null): array
     {
@@ -290,12 +284,7 @@ class PrivateKey extends AbstractKey
     }
 
     /**
-     * Lock a private key with the given passphrase.
-     * This method does not change the original key.
-     * 
-     * @param string $passphrase
-     * @param array $subkeyPassphrases
-     * @return self
+     * {@inheritdoc}
      */
     public function encrypt(
         string $passphrase,
@@ -304,7 +293,7 @@ class PrivateKey extends AbstractKey
     {
         if (empty($passphrase)) {
             throw new \InvalidArgumentException(
-                'passphrase are required for key encryption'
+                'passphrase are required for key encryption.'
             );
         }
         $privateKey = new self(
@@ -342,12 +331,7 @@ class PrivateKey extends AbstractKey
     }
 
     /**
-     * Unlock a private key with the given passphrase.
-     * This method does not change the original key.
-     * 
-     * @param string $passphrase
-     * @param array $subkeyPassphrases
-     * @return self
+     * {@inheritdoc}
      */
     public function decrypt(
         string $passphrase, array $subkeyPassphrases = []
@@ -355,13 +339,13 @@ class PrivateKey extends AbstractKey
     {
         if (empty($passphrase)) {
             throw new \InvalidArgumentException(
-                'passphrase are required for key decryption'
+                'passphrase are required for key decryption.'
             );
         }
         $secretKey = $this->getKeyPacket()->decrypt($passphrase);
         if (!$secretKey->getKeyParameters()->isValid()) {
             throw new \UnexpectedValueException(
-                'The key parameters are not consistent'
+                'The key parameters are not consistent.'
             );
         }
         $privateKey = new self(
@@ -399,18 +383,54 @@ class PrivateKey extends AbstractKey
     }
 
     /**
-     * Generates a new OpenPGP subkey,
-     * and returns a clone of the Key object with the new subkey added.
-     * 
-     * @param string $passphrase
-     * @param KeyAlgorithm $keyAlgorithm
-     * @param RSAKeySize $rsaKeySize
-     * @param DHKeySize $dhKeySize
-     * @param CurveOid $curve
-     * @param int $keyExpiry
-     * @param bool $subkeySign
-     * @param DateTime $time
-     * @return self
+     * {@inheritdoc}
+     */
+    public function addUsers(array $userIDs): self
+    {
+        if (empty($userIDs)) {
+            throw new \InvalidArgumentException(
+                'UserIDs are required.',
+            );
+        }
+        $packets = [
+            $this->getKeyPacket(),
+            ...$this->getRevocationSignatures(),
+            ...$this->getDirectSignatures(),
+        ];
+        $userPackets = [];
+        foreach ($this->getUsers() as $user) {
+            $userPackets = array_merge(
+                $userPackets, $user->toPacketList()->toArray()
+            );
+        }
+        // Wrap user id with certificate signature
+        foreach ($userIDs as $userID) {
+            $packet = new UserID($userID);
+            $userPackets[] = $packet;
+            $userPackets[] = Signature::createSelfCertificate(
+                $secretKey,
+                $packet,
+                false,
+                $keyExpiry,
+                $time
+            );
+        }
+        $subkeyPackets = [];
+        foreach ($this->getSubkeys() as $subkey) {
+            $subkeyPackets = array_merge(
+                $subkeyPackets, $subkey->toPacketList()->toArray()
+            );
+        }
+
+        return self::fromPacketList((new PacketList([
+            ...$packets,
+            ...$userPackets,
+            ...$subkeyPackets,
+        ])));
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function addSubkey(
         string $passphrase,
@@ -425,7 +445,7 @@ class PrivateKey extends AbstractKey
     {
         if (empty($passphrase)) {
             throw new \InvalidArgumentException(
-                'passphrase are required for key generation',
+                'passphrase are required for key generation.',
             );
         }
 

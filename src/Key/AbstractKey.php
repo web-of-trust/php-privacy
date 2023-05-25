@@ -111,16 +111,16 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
      */
     public function toPacketList(): PacketListInterface
     {
-        $userPacketList = [];
+        $userPackets = [];
         foreach ($this->users as $user) {
-            $userPacketList = array_merge(
-                $userPacketList, $user->toPacketList()->toArray()
+            $userPackets = array_merge(
+                $userPackets, $user->toPacketList()->toArray()
             );
         }
-        $subkeyPacketList = [];
+        $subkeyPackets = [];
         foreach ($this->subkeys as $subkey) {
-            $subkeyPacketList = array_merge(
-                $subkeyPacketList, $subkey->toPacketList()->toArray()
+            $subkeyPackets = array_merge(
+                $subkeyPackets, $subkey->toPacketList()->toArray()
             );
         }
 
@@ -128,8 +128,8 @@ abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAw
             $this->keyPacket,
             ...$this->revocationSignatures,
             ...$this->directSignatures,
-            ...$userPacketList,
-            ...$subkeyPacketList,
+            ...$userPackets,
+            ...$subkeyPackets,
         ]);
     }
 

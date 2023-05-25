@@ -11,12 +11,12 @@
 namespace OpenPGP\Message;
 
 use DateTime;
-use OpenPGP\Key\PrivateKey;
 use OpenPGP\Packet\LiteralData;
 use OpenPGP\Packet\Signature as SignaturePacket;
 use OpenPGP\Type\{
     CleartextMessagenterface,
     MessageInterface,
+    PrivateKeyInterface,
     SignatureInterface,
     SignedMessageInterface,
 };
@@ -79,7 +79,7 @@ class CleartextMessage implements CleartextMessagenterface
     ): SignatureInterface
     {
         $signingKeys = array_filter(
-            $signingKeys, static fn ($key) => $key instanceof PrivateKey
+            $signingKeys, static fn ($key) => $key instanceof PrivateKeyInterface
         );
         if (empty($signingKeys)) {
             throw new \InvalidArgumentException('No signing keys provided');

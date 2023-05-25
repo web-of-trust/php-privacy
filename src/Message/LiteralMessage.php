@@ -30,6 +30,7 @@ use OpenPGP\Type\{
     KeyInterface,
     PacketInterface,
     PacketListInterface,
+    PrivateKeyInterface,
     SignatureInterface,
     SignaturePacketInterface,
     SignedMessageInterface,
@@ -178,7 +179,7 @@ class LiteralMessage implements ArmorableInterface, EncryptedMessageInterface, L
     ): SignatureInterface
     {
         $signingKeys = array_filter(
-            $signingKeys, static fn ($key) => $key instanceof PrivateKey
+            $signingKeys, static fn ($key) => $key instanceof PrivateKeyInterface
         );
         if (empty($signingKeys)) {
             throw new \InvalidArgumentException('No signing keys provided');
@@ -252,6 +253,14 @@ class LiteralMessage implements ArmorableInterface, EncryptedMessageInterface, L
         bool $allowUnauthenticatedMessages = false
     ): self
     {
+        $decryptionKeys = array_filter(
+            $decryptionKeys, static fn ($key) => $key instanceof PrivateKeyInterface
+        );
+        if (empty($decryptionKeys) && empty($passwords)) {
+            throw new \InvalidArgumentException(
+                'No decryption keys or passwords provided'
+            );
+        }
     }
 
     /**
