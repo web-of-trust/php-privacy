@@ -21,7 +21,7 @@ use OpenPGP\Type\{
     ArmorableInterface,
     CleartextMessagenterface,
     KeyInterface,
-    LiteralDataPacketInterface,
+    LiteralDataInterface,
     PacketContainerInterface,
     PacketListInterface,
     SignatureInterface,
@@ -101,7 +101,7 @@ class Signature implements ArmorableInterface, PacketContainerInterface, Signatu
      */
     public function verify(
         array $verificationKeys,
-        LiteralDataPacketInterface $literalData,
+        LiteralDataInterface $literalData,
         ?DateTime $time = null
     ): array
     {

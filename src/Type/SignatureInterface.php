@@ -42,13 +42,13 @@ interface SignatureInterface
      * Return verification array
      *
      * @param array $verificationKeys
-     * @param LiteralDataPacketInterface $literalData
+     * @param LiteralDataInterface $literalData
      * @param DateTime $time
      * @return array
      */
     function verify(
         array $verificationKeys,
-        LiteralDataPacketInterface $literalData,
+        LiteralDataInterface $literalData,
         ?DateTime $time = null
     ): array;
 

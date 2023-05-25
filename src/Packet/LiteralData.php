@@ -16,7 +16,7 @@ use OpenPGP\Enum\LiteralFormat as Format;
 use OpenPGP\Enum\PacketTag;
 use OpenPGP\Type\{
     ForSigningInterface,
-    LiteralDataPacketInterface,
+    LiteralDataInterface,
 };
 
 /**
@@ -30,7 +30,7 @@ use OpenPGP\Type\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class LiteralData extends AbstractPacket implements ForSigningInterface, LiteralDataPacketInterface
+class LiteralData extends AbstractPacket implements ForSigningInterface, LiteralDataInterface
 {
     private readonly DateTime $time;
 

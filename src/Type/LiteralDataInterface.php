@@ -14,14 +14,14 @@ use DateTime;
 use OpenPGP\Enum\LiteralFormat;
 
 /**
- * Literal data packet interface
+ * Literal data interface
  * 
  * @package   OpenPGP
  * @category  Type
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface LiteralDataPacketInterface extends PacketInterface
+interface LiteralDataInterface
 {
     /**
      * Gets literal format

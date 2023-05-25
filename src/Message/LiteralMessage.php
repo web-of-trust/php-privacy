@@ -30,7 +30,7 @@ use OpenPGP\Packet\{
 use OpenPGP\Packet\Key\SessionKey;
 use OpenPGP\Type\{
     EncryptedMessageInterface,
-    LiteralDataPacketInterface,
+    LiteralDataInterface,
     LiteralMessageInterface,
     KeyInterface,
     PacketInterface,
@@ -118,11 +118,11 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
     /**
      * {@inheritdoc}
      */
-    public function getLiteralDataPacket(): LiteralDataPacketInterface
+    public function getLiteralData(): LiteralDataInterface
     {
         $literalDataPackets = array_filter(
             $this->getPackets(),
-            static fn ($packet) => $packet instanceof LiteralDataPacketInterface
+            static fn ($packet) => $packet instanceof LiteralDataInterface
         );
         if (empty($this->literalDataPacket)) {
             throw new \UnexpectedValueException('No literal data in packet list.');

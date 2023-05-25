@@ -33,11 +33,11 @@ interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInt
     function getPackets(): array;
 
     /**
-     * Gets literal data packet
+     * Gets literal data
      *
-     * @return LiteralDataPacketInterface
+     * @return LiteralDataInterface
      */
-    function getLiteralDataPacket(): LiteralDataPacketInterface;
+    function getLiteralData(): LiteralDataInterface;
 
     /**
      * Encrypt the message either with public keys, passwords, or both at once.
