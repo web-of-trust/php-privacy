@@ -617,6 +617,17 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function isExpired(?DateTime $time = null): bool
+    {
+        $timestamp = $time?->getTimestamp() ?? time();
+        $creationTime = $this->getSignatureCreationTime()?->getTimestamp() ?? 0;
+        $expirationTime = $this->getSignatureExpirationTime()?->getTimestamp() ?? time();
+        return !($creationTime < $timestamp && $timestamp < $expirationTime);
+    }
+
+    /**
      * Gets signature creation time
      *
      * @return DateTime

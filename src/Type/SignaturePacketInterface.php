@@ -77,6 +77,15 @@ interface SignaturePacketInterface
     function getSignedHashValue(): string;
 
     /**
+     * Verifies signature expiration date
+     * Use the given date for verification instead of the current time
+     *
+     * @param DateTime $time
+     * @return bool
+     */
+    function isExpired(?DateTime $time = null): bool;
+
+    /**
      * Gets signature data
      *
      * @return string
