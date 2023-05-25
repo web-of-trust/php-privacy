@@ -94,4 +94,16 @@ class CleartextMessage implements CleartextMessagenterface
         );
         return new Signature($packets);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function verifyDetached(
+        array $verificationKeys, SignatureInterface $signature, ?DateTime $time = null
+    ): array
+    {
+        return $signature->verifyCleartext(
+            $verificationKeys, $this, $time
+        );
+    }
 }

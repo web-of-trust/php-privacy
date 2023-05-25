@@ -65,6 +65,7 @@ class OnePassSignature extends AbstractPacket
     public static function fromBytes(string $bytes): self
     {
         $offset = 0;
+        // A one-octet version number. The current version is 3.
         $version = ord($bytes[$offset++]);
         if ($version != self::VERSION) {
             throw new \RuntimeException(
@@ -72,16 +73,31 @@ class OnePassSignature extends AbstractPacket
             );
         }
 
+        // A one-octet signature type.
         $signatureType = SignatureType::from(ord($bytes[$offset++]));
+
+        // A one-octet number describing the hash algorithm used.
         $hashAlgorithm = HashAlgorithm::from(ord($bytes[$offset++]));
+
+        // A one-octet number describing the public-key algorithm used.
         $keyAlgorithm = KeyAlgorithm::from(ord($bytes[$offset++]));
+
+        // An eight-octet number holding the Key ID of the signing key.
         $issuerKeyID = substr($bytes, $offset, 8);
+
+        /**
+         * A one-octet number holding a flag showing whether the signature is nested.
+         * A zero value indicates that the next packet is another One-Pass Signature packet
+         * that describes another signature to be applied to the same message data.
+         */
+        $nested = ord($bytes[$offset + 8]);
+
         return new self(
             $signatureType,
             $hashAlgorithm,
             $keyAlgorithm,
             $issuerKeyID,
-            ord($bytes[$offset + 8])
+            $nested
         );
     }
 

@@ -149,12 +149,16 @@ class LiteralMessage implements ArmorableInterface, EncryptedMessageInterface, L
             ),
             ...$this->signDetached()->getSignaturePackets(),
         ];
+
+        $index = 0;
+        $length = count($signaturePackets);
         $onePassSignaturePackets = array_map(
             static fn ($packet) => OnePassSignature(
                 $packet->getSignatureType(),
                 $packet->getHashAlgorithm(),
                 $packet->getKeyAlgorithm(),
-                $packet->getIssuerKeyID()
+                $packet->getIssuerKeyID(),
+                ((++$index) === $length) ? 1 : 0
             ),
             $signaturePackets
         );
@@ -197,6 +201,20 @@ class LiteralMessage implements ArmorableInterface, EncryptedMessageInterface, L
     ): array
     {
         return $this->getSignature()->verify(
+            $verificationKeys, $this->getLiteralDataPacket(), $time
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function verifyDetached(
+        array $verificationKeys,
+        SignatureInterface $signature,
+        ?DateTime $time = null
+    ): array
+    {
+        return $signature->verify(
             $verificationKeys, $this->getLiteralDataPacket(), $time
         );
     }

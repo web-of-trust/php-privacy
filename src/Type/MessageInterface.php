@@ -29,7 +29,9 @@ interface MessageInterface
      * @param int $time
      * @return SignedMessageInterface
      */
-    function sign(array $signingKeys, ?DateTime $time = null): SignedMessageInterface;
+    function sign(
+        array $signingKeys, ?DateTime $time = null
+    ): SignedMessageInterface;
 
     /**
      * Create a detached signature for the message
@@ -38,5 +40,22 @@ interface MessageInterface
      * @param int $time
      * @return MessageInterface
      */
-    function signDetached(array $signingKeys, ?DateTime $time = null): SignatureInterface;
+    function signDetached(
+        array $signingKeys, ?DateTime $time = null
+    ): SignatureInterface;
+
+    /**
+     * Verify detached signature
+     * Return verification array
+     *
+     * @param array $verificationKeys
+     * @param SignatureInterface $signature
+     * @param DateTime $time
+     * @return array
+     */
+    function verifyDetached(
+        array $verificationKeys,
+        SignatureInterface $signature,
+        ?DateTime $time = null
+    ): array;
 }
