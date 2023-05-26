@@ -17,10 +17,6 @@ class SignedMessageTest extends OpenPGPTestCase
 
     public function testVerifyRsaCleartextSignedMessage()
     {
-        $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/RsaPublicKey.asc')
-        );
-
         $signedMessageData = <<<EOT
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA256
@@ -39,6 +35,9 @@ S24+wSO6Xx66VDS05uBQu811U5Bk2w==
 -----END PGP SIGNATURE-----
 EOT;
 
+        $publicKey = PublicKey::fromArmored(
+            file_get_contents('tests/Data/RsaPublicKey.asc')
+        );
         $signedMessage = SignedMessage::fromArmored($signedMessageData);
         $this->assertSame(self::LITERAL_TEXT, $signedMessage->getText());
         $this->assertTrue($signedMessage->getSignature() instanceof Signature);
@@ -50,10 +49,6 @@ EOT;
 
     public function testVerifyDsaCleartextSignedMessage()
     {
-        $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/DsaPublicKey.asc')
-        );
-
         $signedMessageData = <<<EOT
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA256
@@ -68,6 +63,9 @@ zbJZjjdJXXhZunt1ntsp4MZeozbu5AM=
 -----END PGP SIGNATURE-----
 EOT;
 
+        $publicKey = PublicKey::fromArmored(
+            file_get_contents('tests/Data/DsaPublicKey.asc')
+        );
         $signedMessage = SignedMessage::fromArmored($signedMessageData);
         $this->assertSame(self::LITERAL_TEXT, $signedMessage->getText());
         $this->assertTrue($signedMessage->getSignature() instanceof Signature);
@@ -79,10 +77,6 @@ EOT;
 
     public function testVerifyEcP384CleartextSignedMessage()
     {
-        $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcP384PublicKey.asc')
-        );
-
         $signedMessageData = <<<EOT
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA384
@@ -98,6 +92,9 @@ GZs1GNJDIQ==
 -----END PGP SIGNATURE-----
 EOT;
 
+        $publicKey = PublicKey::fromArmored(
+            file_get_contents('tests/Data/EcP384PublicKey.asc')
+        );
         $signedMessage = SignedMessage::fromArmored($signedMessageData);
         $this->assertSame(self::LITERAL_TEXT, $signedMessage->getText());
         $this->assertTrue($signedMessage->getSignature() instanceof Signature);
@@ -109,10 +106,6 @@ EOT;
 
     public function testVerifyEcBrainpoolCleartextSignedMessage()
     {
-        $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcBrainpoolPublicKey.asc')
-        );
-
         $signedMessageData = <<<EOT
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA256
@@ -127,6 +120,9 @@ QB/txJeN666mOiOXxJyyrNTOBoq+JUo=
 -----END PGP SIGNATURE-----
 EOT;
 
+        $publicKey = PublicKey::fromArmored(
+            file_get_contents('tests/Data/EcBrainpoolPublicKey.asc')
+        );
         $signedMessage = SignedMessage::fromArmored($signedMessageData);
         $this->assertSame(self::LITERAL_TEXT, $signedMessage->getText());
         $this->assertTrue($signedMessage->getSignature() instanceof Signature);
@@ -138,10 +134,6 @@ EOT;
 
     public function testVerifyEcCurve25519CleartextSignedMessage()
     {
-        $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcCurve25519PublicKey.asc')
-        );
-
         $signedMessageData = <<<EOT
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA512
@@ -156,6 +148,9 @@ C2zZAQC61SUhiU0zqHIz+s+tIWgZ+778TctqowYuKAcwbbab2AEAixR9ANSI7CVV
 -----END PGP SIGNATURE-----
 EOT;
 
+        $publicKey = PublicKey::fromArmored(
+            file_get_contents('tests/Data/EcCurve25519PublicKey.asc')
+        );
         $signedMessage = SignedMessage::fromArmored($signedMessageData);
         $this->assertSame(self::LITERAL_TEXT, $signedMessage->getText());
         $this->assertTrue($signedMessage->getSignature() instanceof Signature);

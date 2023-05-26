@@ -123,14 +123,14 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
      */
     public function getLiteralData(): LiteralDataInterface
     {
-        $literalDataPackets = array_filter(
+        $packets = array_filter(
             $this->getPackets(),
             static fn ($packet) => $packet instanceof LiteralDataInterface
         );
-        if (empty($this->literalDataPacket)) {
+        if (empty($packets)) {
             throw new \UnexpectedValueException('No literal data in packet list.');
         }
-        return array_pop($literalDataPackets);
+        return array_pop($packets);
     }
 
     /**
@@ -174,7 +174,7 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
 
         return new self([
             ...$onePassSignaturePackets,
-            $this->getLiteralDataPacket(),
+            $this->getLiteralData(),
             ...$signaturePackets,
         ]);
     }
@@ -195,7 +195,7 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
         return new Signature(array_map(
             fn ($key) => SignaturePacket::createLiteralData(
                 $key->getSigningKeyPacket(),
-                $this->getLiteralDataPacket(),
+                $this->getLiteralData(),
                 $time
             ),
             $signingKeys
@@ -210,7 +210,7 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
     ): array
     {
         return $this->getSignature()->verify(
-            $verificationKeys, $this->getLiteralDataPacket(), $time
+            $verificationKeys, $this->getLiteralData(), $time
         );
     }
 
@@ -224,7 +224,7 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
     ): array
     {
         return $signature->verify(
-            $verificationKeys, $this->getLiteralDataPacket(), $time
+            $verificationKeys, $this->getLiteralData(), $time
         );
     }
 
