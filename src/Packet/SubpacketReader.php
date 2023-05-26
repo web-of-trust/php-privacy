@@ -220,8 +220,8 @@ class SubpacketReader
                             $data, $critical, $reader->isLong()
                         );
                         break;
-                    case SignatureSubpacketType::PreferredAEADAlgorithms:
-                        $subpackets[] = new Signature\PreferredAEADAlgorithms(
+                    case SignatureSubpacketType::PreferredAeadAlgorithms:
+                        $subpackets[] = new Signature\PreferredAeadAlgorithms(
                             $data, $critical, $reader->isLong()
                         );
                         break;

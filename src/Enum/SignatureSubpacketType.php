@@ -70,7 +70,7 @@ enum SignatureSubpacketType: int
 
     case IssuerFingerprint = 33;
 
-    case PreferredAEADAlgorithms = 34;
+    case PreferredAeadAlgorithms = 34;
 
     case IntendedRecipientFingerprint = 35;
 

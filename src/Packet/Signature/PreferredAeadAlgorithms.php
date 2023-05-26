@@ -17,14 +17,14 @@ use OpenPGP\Enum\{
 use OpenPGP\Packet\SignatureSubpacket;
 
 /**
- * PreferredAEADAlgorithms sub-packet class
+ * PreferredAeadAlgorithms sub-packet class
  * 
  * @package   OpenPGP
  * @category  Packet
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class PreferredAEADAlgorithms extends SignatureSubpacket
+class PreferredAeadAlgorithms extends SignatureSubpacket
 {
     /**
      * Constructor
@@ -41,7 +41,7 @@ class PreferredAEADAlgorithms extends SignatureSubpacket
     )
     {
         parent::__construct(
-            SignatureSubpacketType::PreferredAEADAlgorithms->value,
+            SignatureSubpacketType::PreferredAeadAlgorithms->value,
             $data,
             $critical,
             $isLong
