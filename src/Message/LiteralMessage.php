@@ -97,7 +97,7 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
     public function armor(): string
     {
         return Armor::encode(
-            ArmorType::Signature,
+            ArmorType::Message,
             $this->toPacketList()->encode()
         );
     }
@@ -156,17 +156,17 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
                 $this->getPackets(),
                 static fn ($packet) => $packet instanceof SignaturePacketInterface
             ),
-            ...$this->signDetached()->getSignaturePackets(),
+            ...$this->signDetached($signingKeys, $time)->getSignaturePackets(),
         ];
 
         $index = 0;
         $length = count($signaturePackets);
         $onePassSignaturePackets = array_map(
-            static fn ($packet) => OnePassSignature(
+            static fn ($packet) => new OnePassSignature(
                 $packet->getSignatureType(),
                 $packet->getHashAlgorithm(),
                 $packet->getKeyAlgorithm(),
-                $packet->getIssuerKeyID(),
+                $packet->getIssuerKeyID()->getKeyID(),
                 ((++$index) === $length) ? 1 : 0
             ),
             $signaturePackets
