@@ -49,7 +49,7 @@ interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInt
      * @return EncryptedMessageInterface
      */
     function encrypt(
-        array $encryptionKeys,
+        array $encryptionKeys = [],
         array $passwords = [],
         ?SymmetricAlgorithm $symmetric = null
     ): EncryptedMessageInterface;

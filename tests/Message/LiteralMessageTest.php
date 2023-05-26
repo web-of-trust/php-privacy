@@ -410,4 +410,20 @@ EOT;
         $this->assertSame('bdff135160c56a0b', $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
+
+    public function testDecryptSkesk()
+    {
+        $messageData = <<<EOT
+-----BEGIN PGP MESSAGE-----
+
+jA0EBwMCavkWFxYlavn/0kIBxM6xF0NJnXqAEPcsRCyoNoFhHeNbaRlAFa0wcz20
+EMqYgNufYSxcQZtrWKOhTXAY7yh5PYwDwcKX9yCux0ZR6iM=
+=97CA
+-----END PGP MESSAGE-----
+EOT;
+
+        $message = LiteralMessage::fromArmored($messageData);
+        $decryptedMessage = $message->decrypt(passwords: [self::PASSPHRASE]);
+        $this->assertSame(self::LITERAL_DATA, $decryptedMessage->getLiteralData()->getData());
+    }
 }

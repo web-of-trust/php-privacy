@@ -32,7 +32,7 @@ interface EncryptedMessageInterface extends MessageInterface
      * @return self
      */
     function decrypt(
-        array $decryptionKeys,
+        array $decryptionKeys = [],
         array $passwords = [],
         bool $allowUnauthenticatedMessages = false
     ): self;

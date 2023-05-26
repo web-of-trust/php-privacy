@@ -232,7 +232,7 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
      * {@inheritdoc}
      */
     public function encrypt(
-        array $encryptionKeys,
+        array $encryptionKeys = [],
         array $passwords = [],
         ?SymmetricAlgorithm $symmetric = null
     ): EncryptedMessageInterface
@@ -277,7 +277,7 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
      * {@inheritdoc}
      */
     function decrypt(
-        array $decryptionKeys,
+        array $decryptionKeys = [],
         array $passwords = [],
         bool $allowUnauthenticatedMessages = false
     ): self
@@ -308,12 +308,11 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
 
         $encryptedPacket = array_pop($encryptedPackets);
         $sessionKey = $this->decryptSessionKey($decryptionKeys, $passwords);
+        $decryptedPacket = $encryptedPacket->decryptWithSessionKey(
+            $sessionKey, $allowUnauthenticatedMessages
+        );
 
-        return new self([
-            $encryptedPacket->decryptWithSessionKey(
-                $sessionKey, $allowUnauthenticatedMessages
-            )
-        ]);
+        return new self($decryptedPacket->getPacketList()->toArray());
     }
 
     /**
