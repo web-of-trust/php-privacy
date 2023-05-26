@@ -18,6 +18,7 @@ use OpenPGP\Common\{
 use OpenPGP\Enum\{
     ArmorType,
     CompressionAlgorithm,
+    LiteralFormat,
     PacketTag,
     SymmetricAlgorithm,
 };
@@ -25,6 +26,7 @@ use OpenPGP\Packet\Signature as SignaturePacket;
 use OpenPGP\Packet\{
     CompressedData,
     OnePassSignature,
+    LiteralData,
     PacketList,
     PublicKeyEncryptedSessionKey,
     SymEncryptedIntegrityProtectedData,
@@ -89,6 +91,27 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
         return new self(
             PacketList::decode($armor->getData())->toArray()
         );
+    }
+
+    /**
+     * Create new literal message object from literal data.
+     *
+     * @param string $literalData
+     * @param string $filename
+     * @param DateTime $time
+     * @return self
+     */
+    public static function fromLiteralData(
+        string $literalData,
+        string $filename = '',
+        ?DateTime $time = null
+    ): self
+    {
+        return new self([
+            new LiteralData(
+                $literalData, LiteralFormat::Binary, $filename, $time
+            )
+        ]);
     }
 
     /**
@@ -362,7 +385,7 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
             );
             foreach ($pkeskPackets as $pkesk) {
                 foreach ($decryptionKeys as $key) {
-                    $keyPacket = $key->getEncryptionKeyPacket();    
+                    $keyPacket = $key->getEncryptionKeyPacket();
                     if ($pkesk->getPublicKeyAlgorithm() === $keyPacket->getKeyAlgorithm()) {
                         try {
                             $sessionKeys[] = $pkesk->decrypt($keyPacket)->getSessionKey();

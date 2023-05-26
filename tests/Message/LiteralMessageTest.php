@@ -73,7 +73,6 @@ EOT;
             file_get_contents('tests/Data/RsaPublicKey.asc')
         );
         $message = LiteralMessage::fromArmored($messageData);
-        // var_dump($message->getLiteralData()->getData());exit;
         $this->assertSame(self::LITERAL_DATA, $message->getLiteralData()->getData());
         $this->assertTrue($message->getSignature() instanceof Signature);
 
