@@ -2,6 +2,7 @@
 
 namespace OpenPGP\Tests\Message;
 
+use OpenPGP\Enum\LiteralFormat;
 use OpenPGP\Key\PublicKey;
 use OpenPGP\Message\LiteralMessage;
 use OpenPGP\Message\Signature;
@@ -13,7 +14,8 @@ use OpenPGP\Tests\OpenPGPTestCase;
  */
 class LiteralMessageTest extends OpenPGPTestCase
 {
-    const LITERAL_TEXT = 'Hello PHP PG';
+    const LITERAL_DATA = "Hello PHP PG\n";
+    const PASSPHRASE   = 'password'; 
 
     public function testVerifyRsaSignedMessage()
     {
@@ -36,7 +38,8 @@ EOT;
             file_get_contents('tests/Data/RsaPublicKey.asc')
         );
         $message = LiteralMessage::fromArmored($messageData);
-        $this->assertSame(self::LITERAL_TEXT, trim($message->getLiteralData()->getData()));
+        // var_dump($message->getLiteralData()->getData());exit;
+        $this->assertSame(self::LITERAL_DATA, $message->getLiteralData()->getData());
         $this->assertTrue($message->getSignature() instanceof Signature);
 
         $verification = $message->verify([$publicKey])[0];
@@ -61,7 +64,7 @@ EOT;
             file_get_contents('tests/Data/DsaPublicKey.asc')
         );
         $message = LiteralMessage::fromArmored($messageData);
-        $this->assertSame(self::LITERAL_TEXT, trim($message->getLiteralData()->getData()));
+        $this->assertSame(self::LITERAL_DATA, $message->getLiteralData()->getData());
         $this->assertTrue($message->getSignature() instanceof Signature);
 
         $verification = $message->verify([$publicKey])[0];
@@ -86,7 +89,7 @@ EOT;
             file_get_contents('tests/Data/EcP384PublicKey.asc')
         );
         $message = LiteralMessage::fromArmored($messageData);
-        $this->assertSame(self::LITERAL_TEXT, trim($message->getLiteralData()->getData()));
+        $this->assertSame(self::LITERAL_DATA, $message->getLiteralData()->getData());
         $this->assertTrue($message->getSignature() instanceof Signature);
 
         $verification = $message->verify([$publicKey])[0];
@@ -111,7 +114,7 @@ EOT;
             file_get_contents('tests/Data/EcBrainpoolPublicKey.asc')
         );
         $message = LiteralMessage::fromArmored($messageData);
-        $this->assertSame(self::LITERAL_TEXT, trim($message->getLiteralData()->getData()));
+        $this->assertSame(self::LITERAL_DATA, $message->getLiteralData()->getData());
         $this->assertTrue($message->getSignature() instanceof Signature);
 
         $verification = $message->verify([$publicKey])[0];
@@ -119,7 +122,7 @@ EOT;
         $this->assertTrue($verification->isVerified());
     }
 
-    public function testVerifyEcCurve25519CleartextSignedMessage()
+    public function testVerifyEcCurve25519SignedMessage()
     {
         $messageData = <<<EOT
 -----BEGIN PGP MESSAGE-----
@@ -136,10 +139,140 @@ EOT;
             file_get_contents('tests/Data/EcCurve25519PublicKey.asc')
         );
         $message = LiteralMessage::fromArmored($messageData);
-        $this->assertSame(self::LITERAL_TEXT, trim($message->getLiteralData()->getData()));
+        $this->assertSame(self::LITERAL_DATA, $message->getLiteralData()->getData());
         $this->assertTrue($message->getSignature() instanceof Signature);
 
         $verification = $message->verify([$publicKey])[0];
+        $this->assertSame('bdff135160c56a0b', $verification->getKeyID(true));
+        $this->assertTrue($verification->isVerified());
+    }
+
+    public function testVerifyRsaDetachedSignature()
+    {
+        $signatureData = <<<EOT
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEE/FAE35RzJ3EH6qYFGE0NxPXFMrIFAmRwD3oACgkQGE0NxPXF
+MrJwRggAgdak9P9sLQE5rS0hfB9s5qp0jucZSbUy3W48KIsWjEqZ4PA3DE4Bqg4/
+FojKz5S/H4SkEfyh8k8GzRvlGByXU3ZG8ZFxeYBRsNvWvw7bqgkPL5fZri+JcI7k
+C8wA5bEJ0EWcYe3AeL6giyuRlujnJmgILApmspDwywtmNUT3Fo5jZVAbjgHbkkYj
+DNjsF/5qkhXwQ2GJ2xaeSc6yDMM2kZW4OyvTJ9l94V7KtZYRBgZmEuJ7aRINhBuw
+U8m/lGFVBm0Gw2fIizyjOwt83EGmotNQijtiZvRMrFUSq03WbYQMXnvkJt4YlvGh
+Mz4sU7yMAc9UOEiLw0lCVD21um9QaA==
+=ZI2O
+-----END PGP SIGNATURE-----
+EOT;
+
+        $publicKey = PublicKey::fromArmored(
+            file_get_contents('tests/Data/RsaPublicKey.asc')
+        );
+        $message = new LiteralMessage([
+            new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary)
+        ]);
+        $signature = Signature::fromArmored($signatureData);
+
+        $verification = $message->verifyDetached([$publicKey], $signature)[0];
+        $this->assertSame('184d0dc4f5c532b2', $verification->getKeyID(true));
+        $this->assertTrue($verification->isVerified());
+    }
+
+    public function testVerifyDsaDetachedSignature()
+    {
+        $signatureData = <<<EOT
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABEIAB0WIQQ+V5E9X2zL25Ai997jsR1kIkigkgUCZHARcQAKCRDjsR1kIkig
+krwrAQCktk6T037drM8kKirZ01AzMvmyhoklbeIHLaTmfVnoswEAje8ylMXGxRna
+p4iTK8BfckODOHP9MPV3+gOunYR+sYs=
+=OxoL
+-----END PGP SIGNATURE-----
+EOT;
+
+        $publicKey = PublicKey::fromArmored(
+            file_get_contents('tests/Data/DsaPublicKey.asc')
+        );
+        $message = new LiteralMessage([
+            new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary)
+        ]);
+        $signature = Signature::fromArmored($signatureData);
+
+        $verification = $message->verifyDetached([$publicKey], $signature)[0];
+        $this->assertSame('e3b11d642248a092', $verification->getKeyID(true));
+        $this->assertTrue($verification->isVerified());
+    }
+
+    public function testVerifyEcP384DetachedSignature()
+    {
+        $signatureData = <<<EOT
+-----BEGIN PGP SIGNATURE-----
+
+iJUEABMJAB0WIQQFwIVJLRT5CXbnwrayAtni6tpEDAUCZHARvQAKCRCyAtni6tpE
+DHosAYDKonlUioxmVItC51xlZpVzwCRiRKj72RG7xFM5wx7BbbkUSDPpLcelLhPJ
+58nQtpkBgIwAdcF3Q71GpLbwXCuK/JZyRJa53t6GkM/w99cYIk219A/Gi/CYApq6
+yvVtUIpkjw==
+=BjK9
+-----END PGP SIGNATURE-----
+EOT;
+
+        $publicKey = PublicKey::fromArmored(
+            file_get_contents('tests/Data/EcP384PublicKey.asc')
+        );
+        $message = new LiteralMessage([
+            new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary)
+        ]);
+        $signature = Signature::fromArmored($signatureData);
+
+        $verification = $message->verifyDetached([$publicKey], $signature)[0];
+        $this->assertSame('b202d9e2eada440c', $verification->getKeyID(true));
+        $this->assertTrue($verification->isVerified());
+    }
+
+    public function testVerifyEcBrainpoolDetachedSignature()
+    {
+        $signatureData = <<<EOT
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABMIAB0WIQQG/uMIXUbcAHwOwvAcvNBD20TF1gUCZHAR7wAKCRAcvNBD20TF
+1idKAQCikHK8U4JRZKYL4CbRkZy7vBmXHGtTAWC46ZjLG6kK1wEAiedU9TPTApaz
+K1rxwEcNf7raFJ8qt0SLehSchqD5YGQ=
+=ldQS
+-----END PGP SIGNATURE-----
+EOT;
+
+        $publicKey = PublicKey::fromArmored(
+            file_get_contents('tests/Data/EcBrainpoolPublicKey.asc')
+        );
+        $message = new LiteralMessage([
+            new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary)
+        ]);
+        $signature = Signature::fromArmored($signatureData);
+
+        $verification = $message->verifyDetached([$publicKey], $signature)[0];
+        $this->assertSame('1cbcd043db44c5d6', $verification->getKeyID(true));
+        $this->assertTrue($verification->isVerified());
+    }
+
+    public function testVerifyEcCurve25519DetachedSignature()
+    {
+        $signatureData = <<<EOT
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQQcQRbrK1jPoZbFfdu9/xNRYMVqCwUCZHASHgAKCRC9/xNRYMVq
+C6/9AQD7q67ElnunMqe82hsOIjSeZdx/k4XgvF5jnIdOt9FndgD/aR4CwGCM0mY2
+G5C7hirK1TGRFNn21JYEMGe8v1WCBwg=
+=E9Gy
+-----END PGP SIGNATURE-----
+EOT;
+
+        $publicKey = PublicKey::fromArmored(
+            file_get_contents('tests/Data/EcCurve25519PublicKey.asc')
+        );
+        $message = new LiteralMessage([
+            new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary)
+        ]);
+        $signature = Signature::fromArmored($signatureData);
+
+        $verification = $message->verifyDetached([$publicKey], $signature)[0];
         $this->assertSame('bdff135160c56a0b', $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }

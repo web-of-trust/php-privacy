@@ -13,7 +13,7 @@ use OpenPGP\Tests\OpenPGPTestCase;
 class CleartextMessageTest extends OpenPGPTestCase
 {
     const LITERAL_TEXT = 'Hello PHP PG';
-    const PASSPHRASE = 'password'; 
+    const PASSPHRASE   = 'password'; 
 
     public function testSignRsaCleartextMessage()
     {
