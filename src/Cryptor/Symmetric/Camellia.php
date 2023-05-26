@@ -12,7 +12,6 @@ namespace OpenPGP\Cryptor\Symmetric;
 
 use phpseclib3\Crypt\Common\BlockCipher;
 use phpseclib3\Exception\BadModeException;
-
 use OpenPGP\Common\Helper;
 
 /**
