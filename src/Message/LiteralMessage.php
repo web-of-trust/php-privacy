@@ -349,7 +349,7 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
                         break;
                     }
                     catch (\Throwable $e) {
-                        Config::getLogger()->error($e->toString());
+                        Config::getLogger()->error($e);
                     }
                 }
             }
@@ -358,16 +358,19 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
             Config::getLogger()->debug('Decrypt session keys by public keys.');
             $pkeskPackets = array_filter(
                 $packets,
-                static fn ($packet) => $packet->getTag() === PacketTag::SymEncryptedSessionKey
+                static fn ($packet) => $packet->getTag() === PacketTag::PublicKeyEncryptedSessionKey
             );
             foreach ($pkeskPackets as $pkesk) {
                 foreach ($decryptionKeys as $key) {
-                    try {
-                        $sessionKeys[] = $pkesk->decrypt($key->getEncryptionKeyPacket())->getSessionKey();
-                        break;
-                    }
-                    catch (\Throwable $e) {
-                        Config::getLogger()->error($e->toString());
+                    $keyPacket = $key->getEncryptionKeyPacket();    
+                    if ($pkesk->getPublicKeyAlgorithm() === $keyPacket->getKeyAlgorithm()) {
+                        try {
+                            $sessionKeys[] = $pkesk->decrypt($keyPacket)->getSessionKey();
+                            break;
+                        }
+                        catch (\Throwable $e) {
+                            Config::getLogger()->error($e);
+                        }
                     }
                 }
             }
