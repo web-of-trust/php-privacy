@@ -447,53 +447,40 @@ EOT;
         $this->assertTrue($verification->isVerified());
     }
 
-    public function testDecryptSkesk()
+    public function testDecryptEncryptedMessage()
     {
         $message = LiteralMessage::fromArmored(self::$encryptedMessageData);
+
         $decryptedMessage = $message->decrypt(passwords: [self::PASSPHRASE]);
         $this->assertSame(self::LITERAL_DATA, $decryptedMessage->getLiteralData()->getData());
-    }
 
-    public function testDecryptRsaPkesk()
-    {
         $privateKey = PrivateKey::fromArmored(
             file_get_contents('tests/Data/RsaPrivateKey.asc')
         )->decrypt(self::PASSPHRASE);
-        $message = LiteralMessage::fromArmored(self::$encryptedMessageData);
         $decryptedMessage = $message->decrypt([$privateKey]);
         $this->assertSame(self::LITERAL_DATA, $decryptedMessage->getLiteralData()->getData());
-    }
 
-    public function testDecryptElGamalPkesk()
-    {
         $privateKey = PrivateKey::fromArmored(
             file_get_contents('tests/Data/DsaPrivateKey.asc')
         )->decrypt(self::PASSPHRASE);
-        $message = LiteralMessage::fromArmored(self::$encryptedMessageData);
         $decryptedMessage = $message->decrypt([$privateKey]);
         $this->assertSame(self::LITERAL_DATA, $decryptedMessage->getLiteralData()->getData());
-    }
 
-    public function testDecryptEcdhPkesk()
-    {
         $privateKey = PrivateKey::fromArmored(
             file_get_contents('tests/Data/EcP384PrivateKey.asc')
         )->decrypt(self::PASSPHRASE);
-        $message = LiteralMessage::fromArmored(self::$encryptedMessageData);
         $decryptedMessage = $message->decrypt([$privateKey]);
         $this->assertSame(self::LITERAL_DATA, $decryptedMessage->getLiteralData()->getData());
 
         $privateKey = PrivateKey::fromArmored(
             file_get_contents('tests/Data/EcBrainpoolPrivateKey.asc')
         )->decrypt(self::PASSPHRASE);
-        $message = LiteralMessage::fromArmored(self::$encryptedMessageData);
         $decryptedMessage = $message->decrypt([$privateKey]);
         $this->assertSame(self::LITERAL_DATA, $decryptedMessage->getLiteralData()->getData());
 
         $privateKey = PrivateKey::fromArmored(
             file_get_contents('tests/Data/EcCurve25519PrivateKey.asc')
         )->decrypt(self::PASSPHRASE);
-        $message = LiteralMessage::fromArmored(self::$encryptedMessageData);
         $decryptedMessage = $message->decrypt([$privateKey]);
         $this->assertSame(self::LITERAL_DATA, $decryptedMessage->getLiteralData()->getData());
     }
