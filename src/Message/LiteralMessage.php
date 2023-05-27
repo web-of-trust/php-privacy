@@ -342,9 +342,10 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
      * {@inheritdoc}
      */
     public function compress(
-        CompressionAlgorithm $algorithm = CompressionAlgorithm::Uncompressed
+        ?CompressionAlgorithm $algorithm = null
     ): self
     {
+        $algorithm = $algorithm ?? Config::getPreferredCompression();
         if ($algorithm !== CompressionAlgorithm::Uncompressed) {
             return new self([
                 CompressedData::fromPackets($this->getPackets(), $algorithm)

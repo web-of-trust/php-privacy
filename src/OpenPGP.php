@@ -16,6 +16,7 @@ use OpenPGP\Enum\{
     DHKeySize,
     KeyType,
     RSAKeySize,
+    SymmetricAlgorithm,
 };
 use OpenPGP\Key\{
     PrivateKey,
@@ -26,6 +27,13 @@ use OpenPGP\Message\{
     Signature,
     LiteralMessage,
     SignedMessage,
+};
+use OpenPGP\Type\{
+    EncryptedMessageInterface,
+    LiteralMessageInterface,
+    MessageInterface,
+    SignatureInterface,
+    SignedMessageInterface,
 };
 
 /**
@@ -227,6 +235,101 @@ final class OpenPGP
     {
         return self::createCleartextMessage($text)->signDetached(
             $signingKeys, $time
+        );
+    }
+
+    /**
+     * Sign a message & return signed message
+     *
+     * @param MessageInterface $message
+     * @param array $signingKeys
+     * @param DateTime $time
+     * @return SignedMessageInterface
+     */
+    public static function sign(
+        MessageInterface $message,
+        array $signingKeys,
+        ?DateTime $time = null
+    ): SignedMessageInterface
+    {
+        return $message->sign(
+            $signingKeys, $time
+        );
+    }
+
+    /**
+     * Sign a message & return detached signature
+     *
+     * @param MessageInterface $message
+     * @param array $signingKeys
+     * @param DateTime $time
+     * @return SignatureInterface
+     */
+    public static function signDetached(
+        MessageInterface $message,
+        array $signingKeys,
+        ?DateTime $time = null
+    ): SignatureInterface
+    {
+        return $message->signDetached(
+            $signingKeys, $time
+        );
+    }
+
+    /**
+     * Encrypt a message using public keys, passwords or both at once.
+     * At least one of `encryptionKeys`, `passwords`must be specified.
+     * If signing keys are specified, those will be used to sign the message.
+     *
+     * @param LiteralMessageInterface $message
+     * @param array $encryptionKeys
+     * @param array $passwords
+     * @param array $signingKeys
+     * @param SymmetricAlgorithm $symmetric
+     * @param CompressionAlgorithm $compression
+     * @param DateTime $time
+     * @return EncryptedMessageInterface
+     */
+    public static function encrypt(
+        LiteralMessageInterface $message,
+        array $encryptionKeys = [],
+        array $passwords = [],
+        array $signingKeys = [],
+        SymmetricAlgorithm $symmetric = null,
+        CompressionAlgorithm $compression = null,
+        ?DateTime $time = null
+    ): EncryptedMessageInterface
+    {
+        if (!empty($signingKeys)) {
+            return $message->sign($signingKeys, $time)
+                ->compress($compression)
+                ->encrypt($encryptionKeys, $passwords, $symmetric);
+        }
+        else {
+            return $message->compress($compression)
+                ->encrypt($encryptionKeys, $passwords, $symmetric);
+        }
+    }
+
+    /**
+     * Decrypt a message with the user's private key, or a password.
+     * One of `decryptionKeys` or `passwords` must be specified
+     *
+     * @param EncryptedMessageInterface $message
+     * @param array $decryptionKeys
+     * @param array $passwords
+     * @param bool $allowUnauthenticatedMessages
+     * @return LiteralMessageInterface
+     */
+    public static function decrypt(
+        EncryptedMessageInterface $message,
+        array $decryptionKeys = [],
+        array $passwords = [],
+        bool $allowUnauthenticatedMessages = false,
+    ): LiteralMessageInterface
+    {
+        return $message->decrypt(
+            $decryptionKeys, $passwords, $allowUnauthenticatedMessages
         );
     }
 }
