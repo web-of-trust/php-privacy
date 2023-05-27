@@ -20,10 +20,8 @@ use OpenPGP\Enum\{
 };
 use OpenPGP\Packet\PacketList;
 use OpenPGP\Type\{
-    ArmorableInterface,
     KeyInterface,
     KeyPacketInterface,
-    PacketContainerInterface,
     PacketListInterface,
     SignaturePacketInterface,
     SubkeyPacketInterface,
@@ -43,7 +41,7 @@ use Psr\Log\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-abstract class AbstractKey implements ArmorableInterface, KeyInterface, LoggerAwareInterface, PacketContainerInterface
+abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 

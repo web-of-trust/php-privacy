@@ -21,7 +21,7 @@ use OpenPGP\Enum\KeyAlgorithm;
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface KeyInterface
+interface KeyInterface extends ArmorableInterface, PacketContainerInterface
 {
     /**
      * Returns key packet
