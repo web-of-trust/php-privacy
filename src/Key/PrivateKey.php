@@ -109,7 +109,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     }
 
     /**
-     * Generates a new OpenPGP key pair. Supports RSA and ECC keys.
+     * Generates a new OpenPGP key pair. Supports RSA, DSA and ECC key types.
      * By default, primary and subkeys will be of same type.
      * The generated primary key will have signing capabilities.
      * By default, one subkey with encryption capabilities is also generated.
