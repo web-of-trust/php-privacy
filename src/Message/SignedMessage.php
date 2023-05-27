@@ -15,7 +15,6 @@ use OpenPGP\Common\Armor;
 use OpenPGP\Enum\ArmorType;
 use OpenPGP\Packet\PacketList;
 use OpenPGP\Type\{
-    ArmorableInterface,
     SignatureInterface,
     SignedMessageInterface,
 };
@@ -28,7 +27,7 @@ use OpenPGP\Type\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class SignedMessage extends CleartextMessage implements ArmorableInterface, SignedMessageInterface
+class SignedMessage extends CleartextMessage implements SignedMessageInterface
 {
     /**
      * Constructor

@@ -18,15 +18,12 @@ use OpenPGP\Packet\{
     PacketList,
 };
 use OpenPGP\Type\{
-    ArmorableInterface,
     CleartextMessagenterface,
     KeyInterface,
     LiteralDataInterface,
-    PacketContainerInterface,
     PacketListInterface,
     SignatureInterface,
     SignaturePacketInterface,
-    VerificationInterface,
 };
 
 /**
@@ -38,7 +35,7 @@ use OpenPGP\Type\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class Signature implements ArmorableInterface, PacketContainerInterface, SignatureInterface
+class Signature implements SignatureInterface
 {
     private readonly array $signaturePackets;
 
