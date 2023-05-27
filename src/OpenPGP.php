@@ -277,6 +277,47 @@ final class OpenPGP
     }
 
     /**
+     * Verify signatures of cleartext signed message
+     * Return verification array
+     *
+     * @param string $armoredSignedMessage
+     * @param array $verificationKeys
+     * @param DateTime $time
+     * @return array
+     */
+    public static function verify(
+        string $armoredSignedMessage,
+        array $verificationKeys,
+        ?DateTime $time = null
+    ): array
+    {
+        return self::readSignedMessage($armoredSignedMessage)
+            ->verify($verificationKeys, $time);
+    }
+
+    /**
+     * Verify detached signatures of cleartext message
+     * Return verification array
+     *
+     * @param string $text
+     * @param string $armoredSignature
+     * @param array $verificationKeys
+     * @param DateTime $time
+     * @return array
+     */
+    public static function verifyDetached(
+        string $text,
+        string $armoredSignature,
+        array $verificationKeys,
+        ?DateTime $time = null
+    ): array
+    {
+        self::createCleartextMessage($text)->verifyDetached(
+            $verificationKeys, self::readSignature($armoredSignature), $time
+        );
+    }
+
+    /**
      * Encrypt a message using public keys, passwords or both at once.
      * At least one of `encryptionKeys`, `passwords`must be specified.
      * If signing keys are specified, those will be used to sign the message.
