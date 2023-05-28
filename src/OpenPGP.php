@@ -51,7 +51,7 @@ final class OpenPGP
      * The generated primary key will have signing capabilities.
      * By default, one subkey with encryption capabilities is also generated.
      *
-     * @param array $userIDs
+     * @param array<string> $userIDs
      * @param string $passphrase
      * @param KeyType $type
      * @param RSAKeySize $rsaKeySize
@@ -89,7 +89,7 @@ final class OpenPGP
      *
      * @param string $armoredPrivateKey
      * @param string $passphrase
-     * @param array $subkeyPassphrases
+     * @param array<string> $subkeyPassphrases
      * @return PrivateKey
      */
     public static function decryptPrivateKey(
@@ -204,7 +204,7 @@ final class OpenPGP
      * Sign a cleartext message.
      *
      * @param string $text
-     * @param array $signingKeys
+     * @param array<Key\PrivateKey> $signingKeys
      * @param DateTime $time
      * @return SignedMessage
      */
@@ -242,7 +242,7 @@ final class OpenPGP
      * Sign a message & return signed message
      *
      * @param MessageInterface $message
-     * @param array $signingKeys
+     * @param array<Key\PrivateKey> $signingKeys
      * @param DateTime $time
      * @return SignedMessageInterface
      */
@@ -261,7 +261,7 @@ final class OpenPGP
      * Sign a message & return detached signature
      *
      * @param MessageInterface $message
-     * @param array $signingKeys
+     * @param array<Key\PrivateKey> $signingKeys
      * @param DateTime $time
      * @return SignatureInterface
      */
@@ -281,7 +281,7 @@ final class OpenPGP
      * Return verification array
      *
      * @param string $armoredSignedMessage
-     * @param array $verificationKeys
+     * @param array<Key\PublicKey> $verificationKeys
      * @param DateTime $time
      * @return array
      */
@@ -301,7 +301,7 @@ final class OpenPGP
      *
      * @param string $text
      * @param string $armoredSignature
-     * @param array $verificationKeys
+     * @param array<Key\PublicKey> $verificationKeys
      * @param DateTime $time
      * @return array
      */
@@ -323,9 +323,9 @@ final class OpenPGP
      * If signing keys are specified, those will be used to sign the message.
      *
      * @param LiteralMessageInterface $message
-     * @param array $encryptionKeys
-     * @param array $passwords
-     * @param array $signingKeys
+     * @param array<Key\PublicKey> $encryptionKeys
+     * @param array<string> $passwords
+     * @param array<Key\PrivateKey> $signingKeys
      * @param SymmetricAlgorithm $symmetric
      * @param CompressionAlgorithm $compression
      * @param DateTime $time
@@ -357,8 +357,8 @@ final class OpenPGP
      * One of `decryptionKeys` or `passwords` must be specified
      *
      * @param EncryptedMessageInterface $message
-     * @param array $decryptionKeys
-     * @param array $passwords
+     * @param array<Key\PrivateKey> $decryptionKeys
+     * @param array<string> $passwords
      * @param bool $allowUnauthenticatedMessages
      * @return LiteralMessageInterface
      */
