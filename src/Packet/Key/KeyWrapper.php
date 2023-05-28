@@ -113,7 +113,7 @@ abstract class KeyWrapper
         return $r;
     }
 
-    private function validateKeySize(string $kek, string $key)
+    private function validateKeySize(string $kek, string $key): void
     {
         if (strlen($kek) != $this->kekSize->value) {
             $size = $this->kekSize->value;

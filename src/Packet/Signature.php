@@ -970,6 +970,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
                self::getSubpacket($this->unhashedSubpackets, $type);
     }
 
+    /**
+     * @return array<SignatureSubpacket>
+     */
     private static function readSubpackets(string $bytes): array
     {
         return SubpacketReader::readSignatureSubpackets($bytes);
@@ -1010,6 +1013,10 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         return chr($version) . "\xff" . pack('N', $dataLength);
     }
 
+    /**
+     * @param array<SignatureSubpacket> $subpackets
+     * @return string
+     */
     private static function subpacketsToBytes(array $subpackets): string
     {
         $bytes = implode(array_map(
@@ -1019,6 +1026,11 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         return pack('n', strlen($bytes)) . $bytes;
     }
 
+    /**
+     * @param array<SignatureSubpacket> $subpackets
+     * @param SignatureSubpacketType $type
+     * @return SignatureSubpacket
+     */
     private static function getSubpacket(
         array $subpackets, SignatureSubpacketType $type
     ): ?SignatureSubpacket

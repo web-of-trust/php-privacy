@@ -14,7 +14,7 @@ use OpenPGP\Tests\OpenPGPTestCase;
 /**
  * PKESKTest class for Public-Key Encrypted Session Key packet.
  */
-class SKESKTest extends OpenPGPTestCase
+class PKESKTest extends OpenPGPTestCase
 {
     const PASSPHRASE = 'password';
     const LITERAL_TEXT = 'Hello PHP PG';
