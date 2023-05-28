@@ -51,7 +51,7 @@ class PreferredAeadAlgorithms extends SignatureSubpacket
     /**
      * Gets preferences
      *
-     * @return array
+     * @return array<AeadAlgorithm>
      */
     public function getPreferences(): array
     {

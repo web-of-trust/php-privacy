@@ -46,7 +46,7 @@ interface PrivateKeyInterface extends KeyInterface
      * Returns array of key packets that is available for decryption
      * 
      * @param DateTime $time
-     * @return array
+     * @return array<SecretKeyPacketInterface>
      */
     function getDecryptionKeyPackets(?DateTime $time = null): array;
 
@@ -55,7 +55,7 @@ interface PrivateKeyInterface extends KeyInterface
      * This method does not change the original key.
      * 
      * @param string $passphrase
-     * @param array $subkeyPassphrases
+     * @param array<string> $subkeyPassphrases
      * @return self
      */
     function encrypt(
@@ -68,7 +68,7 @@ interface PrivateKeyInterface extends KeyInterface
      * This method does not change the original key.
      * 
      * @param string $passphrase
-     * @param array $subkeyPassphrases
+     * @param array<string> $subkeyPassphrases
      * @return self
      */
     function decrypt(
@@ -79,7 +79,7 @@ interface PrivateKeyInterface extends KeyInterface
      * Add userIDs to the key,
      * and returns a clone of the key object with the new userIDs added.
      * 
-     * @param array $userIDs
+     * @param array<string> $userIDs
      * @return self
      */
     function addUsers(array $userIDs): self;

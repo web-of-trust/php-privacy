@@ -107,7 +107,7 @@ class RevocationKey extends SignatureSubpacket
         RevocationKeyTag $signatureClass,
         KeyAlgorithm $keyAlgorithm,
         string $fingerprint
-    )
+    ): string
     {
         return implode([
             chr($signatureClass->value),

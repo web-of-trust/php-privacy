@@ -28,7 +28,7 @@ interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInt
     /**
      * Gets contained packets
      *
-     * @return array
+     * @return array<PacketInterface>
      */
     function getPackets(): array;
 
@@ -43,8 +43,8 @@ interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInt
      * Encrypt the message either with public keys, passwords, or both at once.
      * Return new message with encrypted content.
      *
-     * @param array $encryptionKeys
-     * @param array $passwords
+     * @param array<KeyInterface> $encryptionKeys
+     * @param array<string> $passwords
      * @param SymmetricAlgorithm $symmetric
      * @return EncryptedMessageInterface
      */

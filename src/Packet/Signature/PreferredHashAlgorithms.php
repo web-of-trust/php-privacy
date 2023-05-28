@@ -51,7 +51,7 @@ class PreferredHashAlgorithms extends SignatureSubpacket
     /**
      * Gets preferences
      *
-     * @return array
+     * @return array<HashAlgorithm>
      */
     public function getPreferences(): array
     {

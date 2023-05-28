@@ -53,8 +53,14 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 
     private string $signatureData;
 
+    /**
+     * @var array<SignatureSubpacket>
+     */
     private readonly array $hashedSubpackets;
 
+    /**
+     * @var array<SignatureSubpacket>
+     */
     private readonly array $unhashedSubpackets;
 
     /**
@@ -66,8 +72,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @param HashAlgorithm $hashAlgorithm
      * @param string $signedHashValue
      * @param string $signature
-     * @param array $hashedSubpackets
-     * @param array $unhashedSubpackets
+     * @param array<SignatureSubpacket> $hashedSubpackets
+     * @param array<SignatureSubpacket> $unhashedSubpackets
      * @return self
      */
     public function __construct(
@@ -165,7 +171,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @param SignatureType $signatureType
      * @param string $dataToSign
      * @param HashAlgorithm $hashAlgorithm
-     * @param array $subpackets
+     * @param array<SignatureSubpacket> $subpackets
      * @param DateTime $time
      * @return self
      */

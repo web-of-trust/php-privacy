@@ -51,7 +51,7 @@ class PreferredCompressionAlgorithms extends SignatureSubpacket
     /**
      * Gets preferences
      *
-     * @return array
+     * @return array<CompressionAlgorithm>
      */
     public function getPreferences(): array
     {

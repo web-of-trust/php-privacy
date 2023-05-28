@@ -51,7 +51,7 @@ class PreferredSymmetricAlgorithms extends SignatureSubpacket
     /**
      * Gets preferences
      *
-     * @return array
+     * @return array<SymmetricAlgorithm>
      */
     public function getPreferences(): array
     {

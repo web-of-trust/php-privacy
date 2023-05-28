@@ -58,14 +58,14 @@ interface SignaturePacketInterface extends PacketInterface
     /**
      * Gets hashed subpackets
      *
-     * @return array
+     * @return array<SubpacketInterface>
      */
     function getHashedSubpackets(): array;
 
     /**
      * Gets unhashed subpackets
      *
-     * @return array
+     * @return array<SubpacketInterface>
      */
     function getUnhashedSubpackets(): array;
 

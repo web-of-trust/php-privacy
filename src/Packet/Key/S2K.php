@@ -168,7 +168,7 @@ class S2K
      */
     public function produceKey(
         string $passphrase, int $keyLen
-    ): ?string
+    ): string
     {
         return match($this->type) {
             S2kType::Simple => $this->hash($passphrase, $keyLen),

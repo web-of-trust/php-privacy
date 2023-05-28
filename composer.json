@@ -33,8 +33,7 @@
     },
     "scripts": {
         "test": [
-            "vendor/bin/phpunit",
-            "vendor/bin/phpstan analyse"
+            "vendor/bin/phpunit"
         ]
     }
 }

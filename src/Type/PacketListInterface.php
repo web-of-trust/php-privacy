@@ -48,7 +48,7 @@ interface PacketListInterface extends \IteratorAggregate, \Countable
     /**
      * Get array packets
      * 
-     * @return array
+     * @return array<PacketInterface>
      */
     function toArray(): array;
 
@@ -62,6 +62,7 @@ interface PacketListInterface extends \IteratorAggregate, \Countable
     /**
      * Gets packet for an offset
      * 
+     * @param int $key
      * @return PacketInterface
      */
     function offsetGet($key): PacketInterface;

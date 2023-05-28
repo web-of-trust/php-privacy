@@ -85,7 +85,7 @@ class SubpacketReader
      * Read signature sub packet from byte string
      *
      * @param string $bytes
-     * @return array
+     * @return array<SignatureSubpacket>
      */
     public static function readSignatureSubpackets(string $bytes): array
     {
@@ -240,7 +240,7 @@ class SubpacketReader
      * Read user attribute sub packet from byte string
      *
      * @param string $bytes
-     * @return array
+     * @return array<UserAttributeSubpacket>
      */
     public static function readUserAttributes(string $bytes): array
     {

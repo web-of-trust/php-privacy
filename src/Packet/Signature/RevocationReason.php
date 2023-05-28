@@ -92,7 +92,7 @@ class RevocationReason extends SignatureSubpacket
     private static function revocationToBytes(
         RevocationReasonTag $reason,
         string $description
-    )
+    ): string
     {
         return implode([
             chr($reason->value),

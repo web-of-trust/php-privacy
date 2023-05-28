@@ -106,7 +106,7 @@ class SignatureTarget extends SignatureSubpacket
         KeyAlgorithm $keyAlgorithm,
         HashAlgorithm $hashAlgorithm,
         string $hashData
-    )
+    ): string
     {
         return implode([
             chr($keyAlgorithm->value),
