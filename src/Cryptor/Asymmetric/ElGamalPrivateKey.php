@@ -55,7 +55,7 @@ class ElGamalPrivateKey extends ElGamal
     /**
      * {@inheritdoc}
      */
-    public function getPublicKey()
+    public function getPublicKey(): ElGamalPublicKey
     {
         return new ElGamalPublicKey(
             $this->getY(), $this->getPrime(), $this->getGenerator()
@@ -87,10 +87,10 @@ class ElGamalPrivateKey extends ElGamal
      * Returns the private key
      *
      * @param string $type
-     * @param array $options optional
+     * @param array<string> $options optional
      * @return string
      */
-    public function toString($type, array $options = [])
+    public function toString($type, array $options = []): string
     {
         return json_encode([
             'p' => $this->getPrime(),
