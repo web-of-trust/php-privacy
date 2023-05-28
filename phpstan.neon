@@ -1,6 +1,4 @@
 parameters:
-    level: 5
-    excludePaths:
-        - src/OpenPGP.php
+    level: max
     paths:
         - src

@@ -87,11 +87,11 @@ interface KeyInterface extends ArmorableInterface, PacketContainerInterface
      * 
      * @param string $keyID
      * @param DateTime $time
-     * @return SecretKeyPacketInterface
+     * @return KeyPacketInterface
      */
     function getSigningKeyPacket(
         string $keyID = '', ?DateTime $time = null
-    ): SecretKeyPacketInterface;
+    ): KeyPacketInterface;
 
     /**
      * Returns last created key packet or key packet by given keyID

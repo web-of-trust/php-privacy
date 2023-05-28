@@ -24,7 +24,6 @@ use OpenPGP\Type\{
     KeyPacketInterface,
     PacketListInterface,
     SignaturePacketInterface,
-    SecretKeyPacketInterface,
     SubkeyPacketInterface,
     UserIDPacketInterface,
 };
@@ -223,7 +222,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
      */
     public function getSigningKeyPacket(
         string $keyID = '', ?DateTime $time = null
-    ): SecretKeyPacketInterface
+    ): KeyPacketInterface
     {
         if (!$this->verify(time: $time)) {
             throw new \UnexpectedValueException(
