@@ -54,7 +54,6 @@ interface SecretKeyPacketInterface extends KeyPacketInterface
      * @param string $passphrase
      * @param S2kUsage $s2kUsage
      * @param SymmetricAlgorithm $symmetric
-     * @param HashAlgorithm $symmetric
      * @param HashAlgorithm $hash
      * @param S2kType $s2kType
      * @return self
@@ -70,8 +69,8 @@ interface SecretKeyPacketInterface extends KeyPacketInterface
     /**
      * Decrypts secret key with passphrase
      *
-     * @param string $self
-     * @return SecretKeyPacketInterface
+     * @param string $passphrase
+     * @return self
      */
     function decrypt(string $passphrase): self;
 }

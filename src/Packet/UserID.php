@@ -11,10 +11,7 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\PacketTag;
-use OpenPGP\Type\{
-    ForSigningInterface,
-    UserIDPacketInterface,
-};
+use OpenPGP\Type\UserIDPacketInterface;
 
 /**
  * UserID packet class
@@ -31,13 +28,13 @@ use OpenPGP\Type\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class UserID extends AbstractPacket implements ForSigningInterface, UserIDPacketInterface
+class UserID extends AbstractPacket implements UserIDPacketInterface
 {
-    private readonly string $name;
+    private string $name;
 
-    private readonly string $email;
+    private string $email;
 
-    private readonly string $comment;
+    private string $comment;
 
     /**
      * Constructor
@@ -49,26 +46,26 @@ class UserID extends AbstractPacket implements ForSigningInterface, UserIDPacket
     {
         parent::__construct(PacketTag::UserID);
 
-        // User IDs of the form: "name (comment) <email>"
         if (preg_match('/^([^\(]+)\(([^\)]+)\)\s+<([^>]+)>$/', $userID, $matches)) {
+            // User IDs of the form: "name (comment) <email>"
             $this->name    = trim($matches[1]);
             $this->email   = trim($matches[3]);
             $this->comment = trim($matches[2]);
         }
-        // User IDs of the form: "name <email>"
         elseif (preg_match('/^([^<]+)\s+<([^>]+)>$/', $this->userID, $matches)) {
+            // User IDs of the form: "name <email>"
             $this->name  = trim($matches[1]);
             $this->email = trim($matches[2]);
             $this->comment = '';
         }
-        // User IDs of the form: "name"
         elseif (preg_match('/^([^<]+)$/', $this->userID, $matches)) {
+            // User IDs of the form: "name"
             $this->name = trim($matches[1]);
             $this->email = '';
             $this->comment = '';
         }
-        // User IDs of the form: "<email>"
         elseif (preg_match('/^<([^>]+)>$/', $this->userID, $matches)) {
+            // User IDs of the form: "<email>"
             $this->name = '';
             $this->email = trim($matches[2]);
             $this->comment = '';

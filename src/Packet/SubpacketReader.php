@@ -284,6 +284,7 @@ class SubpacketReader
     {
         $isLong = false;
         $header = ord($bytes[$offset++]);
+        $length = strlen($bytes) - $offset;
         if ($header < 192) {
             $length = $header;
         }
@@ -295,9 +296,7 @@ class SubpacketReader
             $length = Helper::bytesToLong($bytes, $offset);
             $offset += 4;
         }
-        else {
-            $length = strlen($bytes) - $offset;
-        }
+
         return new self(
             ord($bytes[$offset]),
             substr($bytes, $offset + 1, $length - 1),

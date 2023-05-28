@@ -22,7 +22,6 @@ use OpenPGP\Enum\{
     PacketTag,
 };
 use OpenPGP\Type\{
-    ForSigningInterface,
     KeyPacketInterface,
     KeyParametersInterface,
     SubkeyPacketInterface,
@@ -39,7 +38,7 @@ use OpenPGP\Type\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigningInterface
+class PublicKey extends AbstractPacket implements KeyPacketInterface
 {
 	const KEY_VERSION = 4;
 
@@ -194,7 +193,7 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface, ForSigning
      */
     public function isSubkey(): bool
     {
-        $this instanceof SubkeyPacketInterface;
+        return $this instanceof SubkeyPacketInterface;
     }
 
     /**

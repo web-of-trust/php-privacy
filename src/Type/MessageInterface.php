@@ -26,7 +26,7 @@ interface MessageInterface
      * Sign the message
      *
      * @param array $signingKeys
-     * @param int $time
+     * @param DateTime $time
      * @return SignedMessageInterface
      */
     function sign(
@@ -37,8 +37,8 @@ interface MessageInterface
      * Create a detached signature for the message
      *
      * @param array $signingKeys
-     * @param int $time
-     * @return MessageInterface
+     * @param DateTime $time
+     * @return SignatureInterface
      */
     function signDetached(
         array $signingKeys, ?DateTime $time = null

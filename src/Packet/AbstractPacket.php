@@ -93,11 +93,4 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, 
     {
         return $this->encode();
     }
-
-    /**
-     * Serializes packet data to bytes
-     * 
-     * @return string
-     */
-    abstract function toBytes(): string;
 }

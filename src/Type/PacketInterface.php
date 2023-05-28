@@ -35,4 +35,11 @@ interface PacketInterface
      * @return string
      */
     function encode(): string;
+
+    /**
+     * Serializes packet data to bytes
+     * 
+     * @return string
+     */
+    function toBytes(): string;
 }

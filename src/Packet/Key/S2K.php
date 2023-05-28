@@ -97,7 +97,7 @@ class S2K
     /**
      * Gets iteration count
      *
-     * @return string
+     * @return int
      */
     public function getItCount(): int
     {
@@ -176,6 +176,7 @@ class S2K
             S2kType::Iterated => $this->hash(
                 $this->iterate($this->salt . $passphrase), $keyLen
             ),
+            S2kType::GNU => $this->hash($passphrase, $keyLen),
         };
     }
 

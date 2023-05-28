@@ -57,7 +57,7 @@ class PreferredSymmetricAlgorithms extends SignatureSubpacket
     {
         return array_map(
             fn ($pref) => SymmetricAlgorithm::from(ord($pref)),
-            explode('', $this->getData())
+            str_split($this->getData())
         );
     }
 }

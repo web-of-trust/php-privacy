@@ -111,10 +111,10 @@ class PacketReader
             if (ord($bytes[$offset]) < 192) {
                 $packetLength = ord($bytes[$offset++]);
             }
-            elseif (ord($bytes[$offset]) > 191 && ord($bytes[$offset]) < 224) {
+            elseif (191 < ord($bytes[$offset]) && ord($bytes[$offset]) < 224) {
                 $packetLength = ((ord($bytes[$offset++]) - 192) << 8) + (ord($bytes[$offset++])) + 192;
             }
-            elseif (ord($bytes[$offset]) > 223 && ord($bytes[$offset]) < 255) {
+            elseif (223 < ord($bytes[$offset]) && ord($bytes[$offset]) < 255) {
                 $pos = $offset + 1 << (ord($bytes[$offset++]) & 0x1f);
                 while (true) {
                   if (ord($bytes[$offset]) < 192) {
@@ -122,12 +122,12 @@ class PacketReader
                     $pos += $partialLen;
                     break;
                   }
-                  elseif (ord($bytes[$pos]) > 191 && ord($bytes[$pos]) < 224) {
+                  elseif (191 < ord($bytes[$pos]) && ord($bytes[$pos]) < 224) {
                     $partialLen = ((ord($bytes[$pos++]) - 192) << 8) + (ord($bytes[$pos++])) + 192;
                     $pos += $partialLen;
                     break;
                   }
-                  elseif (ord($bytes[$pos]) > 223 && ord($bytes[$pos]) < 255) {
+                  elseif (223 < ord($bytes[$pos]) && ord($bytes[$pos]) < 255) {
                     $partialLen = 1 << (ord($bytes[$pos++]) & 0x1f);
                     $pos += $partialLen;
                     break;

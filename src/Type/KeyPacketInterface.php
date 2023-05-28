@@ -24,7 +24,7 @@ use OpenPGP\Enum\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface KeyPacketInterface
+interface KeyPacketInterface extends ForSigningInterface, PacketInterface
 {
     /**
      * Gets key version
@@ -80,7 +80,7 @@ interface KeyPacketInterface
     /**
      * Return key packete is subkey
      * 
-     * @return string
+     * @return bool
      */
     function isSubkey(): bool;
 

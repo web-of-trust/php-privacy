@@ -67,7 +67,7 @@ class NotationData extends SignatureSubpacket
     ): self
     {
         return new self(
-            $this->notationToBytes(
+            self::notationToBytes(
                 $humanReadable, $notationName, $notationValue
             ),
             $critical
@@ -117,7 +117,7 @@ class NotationData extends SignatureSubpacket
         return substr($data, $valueOffset, $valueLength);
     }
 
-    private function notationToBytes(
+    private static function notationToBytes(
         bool $humanReadable,
         string $notationName,
         string $notationValue

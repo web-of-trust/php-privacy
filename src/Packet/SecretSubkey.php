@@ -84,7 +84,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
     /**
      * Generate secret subkey packet
      *
-     * @param KeyAlgorithm $algorithm
+     * @param KeyAlgorithm $keyAlgorithm
      * @param RSAKeySize $rsaKeySize
      * @param DHKeySize $dhKeySize
      * @param CurveOid $curveOid

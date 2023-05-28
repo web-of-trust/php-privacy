@@ -48,9 +48,9 @@ class Revocable extends SignatureSubpacket
     /**
      * Is revocable
      *
-     * @return string
+     * @return bool
      */
-    public function isRevocable(): string
+    public function isRevocable(): bool
     {
         return ord($this->getData()) != 0;
     }

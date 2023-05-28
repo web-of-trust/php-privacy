@@ -67,7 +67,7 @@ class SignatureTarget extends SignatureSubpacket
     ): self
     {
         return new self(
-            $this->hashDataToBytes($keyAlgorithm, $hashAlgorithm, $hashData),
+            self::hashDataToBytes($keyAlgorithm, $hashAlgorithm, $hashData),
             $critical
         );
     }
@@ -102,7 +102,7 @@ class SignatureTarget extends SignatureSubpacket
         return substr($this->getData(), 2);
     }
 
-    private function hashDataToBytes(
+    private static function hashDataToBytes(
         KeyAlgorithm $keyAlgorithm,
         HashAlgorithm $hashAlgorithm,
         string $hashData

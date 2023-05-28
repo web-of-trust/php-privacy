@@ -25,7 +25,6 @@ use OpenPGP\Enum\{
     SymmetricAlgorithm,
 };
 use OpenPGP\Type\{
-    ForSigningInterface,
     KeyPacketInterface,
     KeyParametersInterface,
     SecretKeyPacketInterface,
@@ -43,7 +42,7 @@ use OpenPGP\Type\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForSigningInterface
+class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 {
     /**
      * Constructor
@@ -55,7 +54,6 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
      * @param SymmetricAlgorithm $symmetric
      * @param Key\S2K $s2k
      * @param string $iv
-     * @param bool $isSubkey
      * @return self
      */
     public function __construct(
@@ -125,7 +123,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface, ForS
     /**
      * Generate secret key packet
      *
-     * @param KeyAlgorithm $algorithm
+     * @param KeyAlgorithm $keyAlgorithm
      * @param RSAKeySize $rsaKeySize
      * @param DHKeySize $dhKeySize
      * @param CurveOid $curveOid

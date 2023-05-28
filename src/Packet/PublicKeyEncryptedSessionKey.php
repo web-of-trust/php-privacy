@@ -225,7 +225,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
                 $sessionKey, $publicKey->getKeyParameters(), $publicKey->getFingerprint()
             ),
             default => throw new \UnexpectedValueException(
-                "Public key algorithm $keyAlgorithm->name of the PKESK packet is unsupported."
+                "Public key algorithm {$publicKey->getKeyAlgorithm()->name} of the PKESK packet is unsupported."
             ),
         };
     }

@@ -66,7 +66,7 @@ class RevocationKey extends SignatureSubpacket
     ): self
     {
         return new self(
-            $this->revocationToBytes(
+            self::revocationToBytes(
                 $signatureClass, $keyAlgorithm, $fingerprint
             ),
             $critical
@@ -103,7 +103,7 @@ class RevocationKey extends SignatureSubpacket
         return substr($this->getData(), 2);
     }
 
-    private function revocationToBytes(
+    private static function revocationToBytes(
         RevocationKeyTag $signatureClass,
         KeyAlgorithm $keyAlgorithm,
         string $fingerprint

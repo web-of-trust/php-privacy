@@ -70,7 +70,7 @@ interface SubkeyInterface
     /**
      * Gets key strength
      * 
-     * @return string
+     * @return int
      */
     function getKeyStrength(): int;
 
