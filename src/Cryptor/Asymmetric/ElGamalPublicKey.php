@@ -55,7 +55,7 @@ class ElGamalPublicKey extends ElGamal
      * Returns the public key
      *
      * @param string $type
-     * @param array<string> $options optional
+     * @param array<string> $options
      * @return string
      */
     public function toString($type, array $options = []): string

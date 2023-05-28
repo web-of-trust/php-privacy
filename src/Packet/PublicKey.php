@@ -116,7 +116,7 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
             chr(self::KEY_VERSION),
             pack('N', $this->creationTime->getTimestamp()),
             chr($this->keyAlgorithm->value),
-            $this->keyParameters->toBytes(),
+            $this->keyParameters?->toBytes() ?? '',
         ]);
     }
 

@@ -528,6 +528,8 @@ class Camellia extends BlockCipher
 
     /**
      * Compute KA
+     * 
+     * @param array<int> $k
      * @return array<int>
      */
     private static function computeKA(array $k): array
@@ -545,6 +547,9 @@ class Camellia extends BlockCipher
 
     /**
      * Compute KB
+     * 
+     * @param array<int> $k
+     * @param array<int> $ka
      * @return array<int>
      */
     private static function computeKB(array $k, array $ka): array

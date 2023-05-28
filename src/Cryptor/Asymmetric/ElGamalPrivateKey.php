@@ -87,7 +87,7 @@ class ElGamalPrivateKey extends ElGamal
      * Returns the private key
      *
      * @param string $type
-     * @param array<string> $options optional
+     * @param array<string> $options
      * @return string
      */
     public function toString($type, array $options = []): string

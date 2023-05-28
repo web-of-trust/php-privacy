@@ -707,6 +707,9 @@ class CAST5 extends BlockCipher
     }
 
     /**
+     * @param int $input
+     * @param array<int> $bytes
+     * @param int $offset
      * @return array<int>
      */
     private static function bits32ToInts(int $input, array $bytes, int $offset): array
@@ -718,6 +721,11 @@ class CAST5 extends BlockCipher
         return $bytes;
     }
 
+    /**
+     * @param array<int> $bytes
+     * @param int $offset
+     * @return int
+     */
     private static function intsTo32bits(array $bytes, int $offset): int
     {
         return ((($bytes[$offset] & Helper::MASK_8BITS) << 24) |
