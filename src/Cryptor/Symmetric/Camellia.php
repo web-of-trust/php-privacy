@@ -433,7 +433,7 @@ class Camellia extends BlockCipher
     /**
      * {@inheritdoc}
      */
-    protected function setupKey()
+    protected function setupKey(): void
     {
         $this->reset();
         $keyLength = strlen($this->key);
@@ -450,7 +450,7 @@ class Camellia extends BlockCipher
         }
     }
 
-    private function reset()
+    private function reset(): void
     {
         $this->subkey = array_fill(0, 24 * 4, 0);
         $this->kw = array_fill(0, 4 * 2, 0);
@@ -460,6 +460,7 @@ class Camellia extends BlockCipher
 
     /**
      * Compute K
+     * @return array<int>
      */
     private function computeK(): array
     {
@@ -497,6 +498,7 @@ class Camellia extends BlockCipher
 
     /**
      * Compute KA
+     * @return array<int>
      */
     private static function computeKA(array $k): array
     {
@@ -513,6 +515,7 @@ class Camellia extends BlockCipher
 
     /**
      * Compute KB
+     * @return array<int>
      */
     private static function computeKB(array $k, array $ka): array
     {

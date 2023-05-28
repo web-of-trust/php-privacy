@@ -37,7 +37,7 @@ class PublicSubkey extends PublicKey implements SubkeyPacketInterface
      */
     public function __construct(
         DateTime $creationTime,
-        KeyParametersInterface $keyParameters,
+        ?KeyParametersInterface $keyParameters = null,
         KeyAlgorithm $algorithm = KeyAlgorithm::RsaEncryptSign
     )
     {

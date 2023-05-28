@@ -26,7 +26,12 @@ use OpenPGP\Type\{
  */
 class PacketList implements PacketListInterface
 {
-    private readonly \ArrayIterator $packets;
+    /**
+     * Packet list
+     *
+     * @var array<PacketInterface> $packets
+     */
+    private readonly array $packets;
 
     /**
      * Constructor
@@ -36,10 +41,10 @@ class PacketList implements PacketListInterface
      */
     public function __construct(array $packets = [])
     {
-        $this->packets = new \ArrayIterator(array_filter(
+        $this->packets = array_filter(
             $packets,
             static fn ($packet) => $packet instanceof PacketInterface
-        ));
+        );
     }
 
     /**
@@ -158,7 +163,7 @@ class PacketList implements PacketListInterface
      */
     public function getIterator(): \Iterator
     {
-        return $this->packets;
+        return new \ArrayIterator($this->packets);
     }
 
     /**
@@ -166,7 +171,7 @@ class PacketList implements PacketListInterface
      */
     public function count(): int
     {
-        return $this->packets->count();
+        return count($this->packets);
     }
 
     /**
@@ -175,7 +180,7 @@ class PacketList implements PacketListInterface
     public function encode(): string
     {
         return implode(
-            array_map(static fn ($packet) => $packet->encode(), $this->packets->getArrayCopy())
+            array_map(static fn ($packet) => $packet->encode(), $this->packets)
         );
     }
 
@@ -185,7 +190,7 @@ class PacketList implements PacketListInterface
     public function whereTag(PacketTag $tag): self
     {
         $packets = array_filter(
-            $this->packets->getArrayCopy(),
+            $this->packets,
             static fn ($packet) => $packet->getTag() === $tag
         );
         return new self($packets);
@@ -197,7 +202,7 @@ class PacketList implements PacketListInterface
     public function whereType(string $type): self
     {
         $packets = array_filter(
-            $this->packets->getArrayCopy(),
+            $this->packets,
             static fn ($packet) => get_class($packet) === $type
         );
         return new self($packets);
@@ -208,7 +213,7 @@ class PacketList implements PacketListInterface
      */
     public function toArray(): array
     {
-        return $this->packets->getArrayCopy();
+        return $this->packets;
     }
 
     /**
@@ -216,7 +221,7 @@ class PacketList implements PacketListInterface
      */
     public function current(): PacketInterface
     {
-        return $this->packets->current();
+        return current($this->packets);
     }
 
     /**
@@ -224,6 +229,6 @@ class PacketList implements PacketListInterface
      */
     public function offsetGet($key): PacketInterface
     {
-        return $this->packets->offsetGet($key);
+        return $this->packets[$key];
     }
 }

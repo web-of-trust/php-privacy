@@ -56,7 +56,7 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
      */
     public function __construct(
         private readonly DateTime $creationTime,
-        private readonly KeyParametersInterface $keyParameters,
+        private readonly ?KeyParametersInterface $keyParameters = null,
         private readonly KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
     )
     {
