@@ -92,9 +92,11 @@ final class Helper
         string $bytes, int $offset = 0, bool $be = true
     ): int
     {
-        return array_values(
-            unpack($be ? 'N' : 'V', substr($bytes, $offset, 4))
-        )[0];
+        $unpacked = unpack($be ? 'N' : 'V', substr($bytes, $offset, 4));
+        if (!empty($unpacked)) {
+            return array_values($unpacked)[0];
+        }
+        return 0;
     }
 
     /**
@@ -109,9 +111,11 @@ final class Helper
         string $bytes, int $offset = 0, bool $be = true
     ): int
     {
-        return array_values(
-            unpack($be ? 'n' : 'v', substr($bytes, $offset, 2))
-        )[0];
+        $unpacked = unpack($be ? 'n' : 'v', substr($bytes, $offset, 2));
+        if (!empty($unpacked)) {
+            return array_values($unpacked)[0];
+        }
+        return 0;
     }
 
     public static function rightRotate32(int $x, int $s): int
@@ -144,12 +148,12 @@ final class Helper
         return self::rightShift($x & self::MASK_32BITS, $s);
     }
 
-    public static function leftShift(int $x, int $s)
+    public static function leftShift(int $x, int $s): int
     {
         return $x << $s;
     }
 
-    public static function rightShift(int $x, int $s)
+    public static function rightShift(int $x, int $s): int
     {
         return $x >> $s;
     }

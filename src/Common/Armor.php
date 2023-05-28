@@ -55,7 +55,7 @@ final class Armor
      * Constructor
      *
      * @param ArmorType $type
-     * @param array $headers
+     * @param array<string> $headers
      * @param string $data
      * @param string $text
      * @return self
@@ -82,7 +82,7 @@ final class Armor
     /**
      * Gets armor headers
      *
-     * @return array
+     * @return array<string>
      */
     public function getHeaders(): array
     {
@@ -130,31 +130,33 @@ final class Armor
         $dataLines = [];
 
         $lines = preg_split(self::LIME_SPLIT_PATTERN, $armoredText);
-        foreach ($lines as $line) {
-            if ($type === null && preg_match(self::SPLIT_PATTERN, $line)) {
-                $type = self::parseType($line);
-            }
-            else {
-                if (preg_match(self::HEADER_PATTERN, $line)) {
-                    $headers[] = $line;
+        if (!empty($lines)) {
+            foreach ($lines as $line) {
+                if ($type === null && preg_match(self::SPLIT_PATTERN, $line)) {
+                    $type = self::parseType($line);
                 }
-                elseif (!$textDone && $type == ArmorType::SignedMessage) {
-                    if (!preg_match(self::SPLIT_PATTERN, $line)) {
-                        $textLines[] = preg_replace('/^- /', '', $line);
+                else {
+                    if (preg_match(self::HEADER_PATTERN, $line)) {
+                        $headers[] = $line;
                     }
-                    else {
-                        $textDone = true;
+                    elseif (!$textDone && $type == ArmorType::SignedMessage) {
+                        if (!preg_match(self::SPLIT_PATTERN, $line)) {
+                            $textLines[] = preg_replace('/^- /', '', $line);
+                        }
+                        else {
+                            $textDone = true;
+                        }
                     }
-                }
-                elseif (!preg_match(self::SPLIT_PATTERN, $line)) {
-                    if (preg_match(self::EMPTY_LINE_PATTERN, $line)) {
-                        continue;
-                    }
-                    if (strpos($line, '=') === 0) {
-                        $checksum = substr($line, 1);
-                    }
-                    else {
-                        $dataLines[] = $line;
+                    elseif (!preg_match(self::SPLIT_PATTERN, $line)) {
+                        if (preg_match(self::EMPTY_LINE_PATTERN, $line)) {
+                            continue;
+                        }
+                        if (strpos($line, '=') === 0) {
+                            $checksum = substr($line, 1);
+                        }
+                        else {
+                            $dataLines[] = $line;
+                        }
                     }
                 }
             }
@@ -170,7 +172,10 @@ final class Armor
         }
 
         return new self(
-            $type, $headers, $data, trim(implode(self::CRLF, $textLines))
+            $type ?? ArmorType::Message,
+            $headers,
+            $data,
+            trim(implode(self::CRLF, $textLines))
         );
     }
 
