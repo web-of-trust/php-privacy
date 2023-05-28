@@ -61,7 +61,7 @@ class SignedMessage extends CleartextMessage implements SignedMessageInterface
         return new self(
             $armor->getText(),
             new Signature(
-                PacketList::decode($armor->getData())->toArray()
+                PacketList::decode($armor->getData())->getPackets()
             )
         );
     }

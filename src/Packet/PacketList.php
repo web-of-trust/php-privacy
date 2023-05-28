@@ -161,6 +161,14 @@ class PacketList implements PacketListInterface
     /**
      * {@inheritdoc}
      */
+    public function getPackets(): array
+    {
+        return $this->packets;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getIterator(): \Iterator
     {
         return new \ArrayIterator($this->packets);
@@ -206,22 +214,6 @@ class PacketList implements PacketListInterface
             static fn ($packet) => get_class($packet) === $type
         );
         return new self($packets);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function toArray(): array
-    {
-        return $this->packets;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function current(): PacketInterface
-    {
-        return current($this->packets);
     }
 
     /**

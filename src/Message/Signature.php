@@ -73,7 +73,7 @@ class Signature implements SignatureInterface
             );
         }
         return new self(
-            PacketList::decode($armor->getData())->toArray()
+            PacketList::decode($armor->getData())->getPackets()
         );
     }
 

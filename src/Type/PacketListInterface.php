@@ -23,6 +23,13 @@ use OpenPGP\Enum\PacketTag;
 interface PacketListInterface extends \IteratorAggregate, \Countable
 {
     /**
+     * Get array packets
+     * 
+     * @return array<PacketInterface>
+     */
+    function getPackets(): array;
+
+    /**
      * Serializes packets to bytes
      * 
      * @return string
@@ -44,20 +51,6 @@ interface PacketListInterface extends \IteratorAggregate, \Countable
      * @return self
      */
     function whereType(string $type): self;
-
-    /**
-     * Get array packets
-     * 
-     * @return array<PacketInterface>
-     */
-    function toArray(): array;
-
-    /**
-     * Return current array packet
-     * 
-     * @return PacketInterface
-     */
-    function current(): PacketInterface;
 
     /**
      * Gets packet for an offset

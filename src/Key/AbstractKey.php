@@ -112,13 +112,13 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
         $userPackets = [];
         foreach ($this->users as $user) {
             $userPackets = array_merge(
-                $userPackets, $user->toPacketList()->toArray()
+                $userPackets, $user->toPacketList()->getPackets()
             );
         }
         $subkeyPackets = [];
         foreach ($this->subkeys as $subkey) {
             $subkeyPackets = array_merge(
-                $subkeyPackets, $subkey->toPacketList()->toArray()
+                $subkeyPackets, $subkey->toPacketList()->getPackets()
             );
         }
 
@@ -558,7 +558,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
         $revocationSignatures = $directSignatures = $users = $subkeys = [];
         $keyPacket = $primaryKeyID = null;
 
-        foreach ($packetList->toArray() as $packet) {
+        foreach ($packetList->getPackets() as $packet) {
             switch ($packet->getTag()) {
                 case PacketTag::PublicKey:
                 case PacketTag::SecretKey:

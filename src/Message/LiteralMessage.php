@@ -89,7 +89,7 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
             );
         }
         return new self(
-            PacketList::decode($armor->getData())->toArray()
+            PacketList::decode($armor->getData())->getPackets()
         );
     }
 
@@ -335,7 +335,7 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
             $sessionKey, $allowUnauthenticatedMessages
         );
 
-        return new self($decryptedPacket->getPacketList()->toArray());
+        return new self($decryptedPacket->getPacketList()->getPackets());
     }
 
     /**
@@ -413,6 +413,6 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
             $packets,
             static fn ($packet) => $packet instanceof CompressedData
         );
-        return array_pop($compressedPackets)?->getPacketList()->toArray() ?? $packets;
+        return array_pop($compressedPackets)?->getPacketList()->getPackets() ?? $packets;
     }
 }

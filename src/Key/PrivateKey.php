@@ -217,7 +217,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     public function toPublic(): KeyInterface
     {
         $packets = [];
-        foreach ($this->toPacketList()->toArray() as $packet) {
+        foreach ($this->toPacketList()->getPackets() as $packet) {
             switch ($packet->getTag()) {
                 case PacketTag::SecretKey:
                 case PacketTag::SecretSubkey:
@@ -400,7 +400,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         $userPackets = [];
         foreach ($this->getUsers() as $user) {
             $userPackets = array_merge(
-                $userPackets, $user->toPacketList()->toArray()
+                $userPackets, $user->toPacketList()->getPackets()
             );
         }
         // Wrap user id with certificate signature
@@ -416,7 +416,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         $subkeyPackets = [];
         foreach ($this->getSubkeys() as $subkey) {
             $subkeyPackets = array_merge(
-                $subkeyPackets, $subkey->toPacketList()->toArray()
+                $subkeyPackets, $subkey->toPacketList()->getPackets()
             );
         }
 
@@ -456,7 +456,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         )->encrypt($passphrase);
 
         // Wrap secret subkey with binding signature
-        $packets = $this->toPacketList()->toArray();
+        $packets = $this->toPacketList()->getPackets();
         $packets[] = $secretSubkey;
         $packets[] = Signature::createSubkeyBinding(
             $this->getSigningKeyPacket(),
