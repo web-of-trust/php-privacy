@@ -224,7 +224,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * Creates self signature
      *
-     * @param SecretKey $signKey
+     * @param SecretKeyPacketInterface $signKey
      * @param UserIDPacketInterface $userID
      * @param bool $isPrimaryUser
      * @param int $keyExpiry
@@ -232,7 +232,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @return self
      */
     public static function createSelfCertificate(
-        SecretKey $signKey,
+        SecretKeyPacketInterface $signKey,
         UserIDPacketInterface $userID,
         bool $isPrimaryUser = false,
         int $keyExpiry = 0,

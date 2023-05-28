@@ -408,11 +408,9 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $packet = new UserID($userID);
             $userPackets[] = $packet;
             $userPackets[] = Signature::createSelfCertificate(
-                $secretKey,
+                $this->getKeyPacket(),
                 $packet,
                 false,
-                $keyExpiry,
-                $time
             );
         }
         $subkeyPackets = [];
