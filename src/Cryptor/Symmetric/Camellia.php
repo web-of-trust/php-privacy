@@ -27,11 +27,17 @@ class Camellia extends BlockCipher
 {
     const BLOCK_SIZE = 16;
 
+    /**
+     * @var array<int>
+     */
     private static array $sigma = [
         0xa09e667f, 0x3bcc908b, 0xb67ae858, 0x4caa73b2, 0xc6ef372f, 0xe94f82be,
         0x54ff53a5, 0xf1d36f1c, 0x10e527fa, 0xde682d1d, 0xb05688c2, 0xb3e6c1fd,
     ];
 
+    /**
+     * @var array<int>
+     */
     private static array $sbox1_1110 = [
         0x70707000, 0x82828200, 0x2c2c2c00, 0xececec00, 0xb3b3b300, 0x27272700,
         0xc0c0c000, 0xe5e5e500, 0xe4e4e400, 0x85858500, 0x57575700, 0x35353500,
@@ -78,6 +84,9 @@ class Camellia extends BlockCipher
         0x77777700, 0xc7c7c700, 0x80808000, 0x9e9e9e00,
     ];
 
+    /**
+     * @var array<int>
+     */
     private static array $sbox4_4404 = [
         0x70700070, 0x2c2c002c, 0xb3b300b3, 0xc0c000c0, 0xe4e400e4, 0x57570057,
         0xeaea00ea, 0xaeae00ae, 0x23230023, 0x6b6b006b, 0x45450045, 0xa5a500a5,
@@ -124,6 +133,9 @@ class Camellia extends BlockCipher
         0xe3e300e3, 0xf4f400f4, 0xc7c700c7, 0x9e9e009e,
     ];
 
+    /**
+     * @var array<int>
+     */
     private static array $sbox2_0222 = [
         0x00e0e0e0, 0x00050505, 0x00585858, 0x00d9d9d9, 0x00676767, 0x004e4e4e,
         0x00818181, 0x00cbcbcb, 0x00c9c9c9, 0x000b0b0b, 0x00aeaeae, 0x006a6a6a,
@@ -170,6 +182,9 @@ class Camellia extends BlockCipher
         0x00eeeeee, 0x008f8f8f, 0x00010101, 0x003d3d3d,
     ];
 
+    /**
+     * @var array<int>
+     */
     private static array $sbox3_3033 = [
         0x38003838, 0x41004141, 0x16001616, 0x76007676, 0xd900d9d9, 0x93009393,
         0x60006060, 0xf200f2f2, 0x72007272, 0xc200c2c2, 0xab00abab, 0x9a009a9a,
@@ -216,15 +231,30 @@ class Camellia extends BlockCipher
         0xbb00bbbb, 0xe300e3e3, 0x40004040, 0x4f004f4f,
     ];
 
+    /**
+     * @var array<int>
+     */
     private array $subkey;
 
-    // for whitening
+    /**
+     * for whitening
+     * 
+     * @var array<int>
+     */
     private array $kw;
 
-    // for FL and FL^(-1)
+    /**
+     * for FL and FL^(-1)
+     * 
+     * @var array<int>
+     */
     private array $ke;
 
-    // for encryption and decryption
+    /**
+     * for encryption and decryption
+     * 
+     * @var array<int>
+     */
     private array $state;
 
     private bool  $keyIs128 = false;

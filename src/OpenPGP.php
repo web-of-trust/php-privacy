@@ -12,6 +12,7 @@ namespace OpenPGP;
 
 use DateTime;
 use OpenPGP\Enum\{
+    CompressionAlgorithm,
     CurveOid,
     DHKeySize,
     KeyType,
@@ -204,15 +205,15 @@ final class OpenPGP
      * Sign a cleartext message.
      *
      * @param string $text
-     * @param array<Key\PrivateKey> $signingKeys
+     * @param array<PrivateKey> $signingKeys
      * @param DateTime $time
-     * @return SignedMessage
+     * @return SignedMessageInterface
      */
     public static function signCleartext(
         string $text,
         array $signingKeys,
         ?DateTime $time = null
-    ): SignedMessage
+    ): SignedMessageInterface
     {
         return self::createCleartextMessage($text)->sign(
             $signingKeys, $time
@@ -223,15 +224,15 @@ final class OpenPGP
      * Sign a cleartext message & return detached signature
      *
      * @param string $text
-     * @param array $signingKeys
+     * @param array<PrivateKey> $signingKeys
      * @param DateTime $time
-     * @return Signature
+     * @return Type\SignatureInterface
      */
     public static function signDetachedCleartext(
         string $text,
         array $signingKeys,
         ?DateTime $time = null
-    ): Signature
+    ): Type\SignatureInterface
     {
         return self::createCleartextMessage($text)->signDetached(
             $signingKeys, $time
@@ -281,9 +282,9 @@ final class OpenPGP
      * Return verification array
      *
      * @param string $armoredSignedMessage
-     * @param array<Key\PublicKey> $verificationKeys
+     * @param array<PublicKey> $verificationKeys
      * @param DateTime $time
-     * @return array
+     * @return array<Message\Verification>
      */
     public static function verify(
         string $armoredSignedMessage,
@@ -303,7 +304,7 @@ final class OpenPGP
      * @param string $armoredSignature
      * @param array<Key\PublicKey> $verificationKeys
      * @param DateTime $time
-     * @return array
+     * @return array<Message\Verification>
      */
     public static function verifyDetached(
         string $text,
