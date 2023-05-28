@@ -11,7 +11,10 @@
 namespace OpenPGP\Message;
 
 use DateTime;
-use OpenPGP\Common\{Armor, Config};
+use OpenPGP\Common\{
+    Armor,
+    Config,
+};
 use OpenPGP\Enum\ArmorType;
 use OpenPGP\Packet\{
     LiteralData,
