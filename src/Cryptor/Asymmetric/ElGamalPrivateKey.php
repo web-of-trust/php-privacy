@@ -70,6 +70,7 @@ class ElGamalPrivateKey extends ElGamal
      */
     public function decrypt(string $cipherText): string
     {
+        $one = new BigInteger(1);
         $outputSize = (int) (($this->getBitSize() - 1) / 8);
         $length = strlen($cipherText);
 
@@ -77,7 +78,7 @@ class ElGamalPrivateKey extends ElGamal
         $gamma = Helper::bin2BigInt(substr($cipherText, 0, (int) ($length / 2)));
         $phi = Helper::bin2BigInt(substr($cipherText, (int) ($length / 2)));
         list(, $m) = $gamma->modPow(
-            $prime->subtract(self::$one->add($this->getX())), $prime
+            $prime->subtract($one->add($this->getX())), $prime
         )->multiply($phi)->divide($prime);
         return $m->toBytes();
     }

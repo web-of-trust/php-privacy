@@ -31,6 +31,7 @@ class ElGamalPublicKey extends ElGamal
      */
     public function encrypt(string $plainText): string
     {
+        $one = new BigInteger(1);
         $prime = $this->getPrime();
         $input = Helper::bin2BigInt($plainText);
         if ($input->compare($prime) > 0) {
@@ -39,7 +40,7 @@ class ElGamalPublicKey extends ElGamal
 
         $byteLength = ($this->getBitSize() + 7) >> 3;
         do {
-            $k = BigInteger::randomRange(self::$one, $prime->subtract(self::$one));
+            $k = BigInteger::randomRange($one, $prime->subtract($one));
             $gamma = $this->getGenerator()->modPow($k, $prime);
             list(, $phi) = $input->multiply($this->getY()->modPow($k, $prime))->divide($prime);
         } while ($gamma->getLengthInBytes() < $byteLength || $phi->getLengthInBytes() < $byteLength);
