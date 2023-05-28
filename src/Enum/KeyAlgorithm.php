@@ -11,7 +11,7 @@
 namespace OpenPGP\Enum;
 
 /**
- * KeyAlgorithm enum
+ * Key algorithm enum
  * Public-Key Algorithms
  * See https://tools.ietf.org/html/draft-ietf-openpgp-rfc4880bis-04#section-9.1
  *

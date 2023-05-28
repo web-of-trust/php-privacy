@@ -11,7 +11,7 @@
 namespace OpenPGP\Enum;
 
 /**
- * HashAlgorithm enum
+ * Hash algorithm enum
  *
  * @package    OpenPGP
  * @category   Enum

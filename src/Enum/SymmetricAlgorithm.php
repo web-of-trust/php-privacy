@@ -13,7 +13,7 @@ namespace OpenPGP\Enum;
 use phpseclib3\Crypt\Common\BlockCipher;
 
 /**
- * SymmetricAlgorithm enum
+ * Symmetric algorithm enum
  * See https://tools.ietf.org/html/rfc4880#section-9.2
  *
  * @package    OpenPGP

@@ -11,7 +11,7 @@
 namespace OpenPGP\Enum;
 
 /**
- * AeadAlgorithm enum
+ * Aead algorithm enum
  *
  * @package    OpenPGP
  * @category   Enum

@@ -11,7 +11,7 @@
 namespace OpenPGP\Enum;
 
 /**
- * CompressionAlgorithm enum
+ * Compression algorithm enum
  *
  * @package    OpenPGP
  * @category   Enum
