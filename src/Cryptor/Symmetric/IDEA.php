@@ -77,7 +77,7 @@ class IDEA extends BlockCipher
     /**
      * {@inheritdoc}
      */
-    protected function setupKey()
+    protected function setupKey(): void
     {
     }
 
@@ -87,7 +87,7 @@ class IDEA extends BlockCipher
         return substr_replace($bytes, $replace, $offset, strlen($replace));
     }
 
-    private static function mul(int $x, int $y)
+    private static function mul(int $x, int $y): int
     {
         if ($x == 0) {
             $x = (self::BASE - $y);
@@ -153,7 +153,7 @@ class IDEA extends BlockCipher
      * and so on until the subkey is completed.
      *
      * @param string $inKey
-     * @return array
+     * @return array<int>
      */
     private static function expandKey(string $inKey): array
     {
@@ -228,7 +228,7 @@ class IDEA extends BlockCipher
      * It also involves the multiplicative inverse and the additive inverse functions.
      *
      * @param array $inKey
-     * @return array
+     * @return array<int>
      */
     private static function invertKey(array $inKey): array
     {
