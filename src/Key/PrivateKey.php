@@ -408,7 +408,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $packet = new UserID($userID);
             $userPackets[] = $packet;
             $userPackets[] = Signature::createSelfCertificate(
-                $this->getKeyPacket(),
+                $this->getSigningKeyPacket(),
                 $packet,
                 false,
             );
@@ -459,7 +459,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         $packets = $this->toPacketList()->toArray();
         $packets[] = $secretSubkey;
         $packets[] = Signature::createSubkeyBinding(
-            $this->getKeyPacket(),
+            $this->getSigningKeyPacket(),
             $secretSubkey,
             $keyExpiry,
             $subkeySign,
