@@ -31,7 +31,7 @@ class PacketList implements PacketListInterface
     /**
      * Constructor
      *
-     * @param array $packets
+     * @param array<PacketInterface> $packets
      * @return self
      */
     public function __construct(array $packets = [])

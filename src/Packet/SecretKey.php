@@ -337,7 +337,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $symmetric->keySizeInByte()
             ));
 
-            $clearText = $this->keyParameters->toBytes();
+            $clearText = $this->keyParameters?->toBytes() ?? '';
             $encrypted = $cipher->encrypt(implode([
                 $clearText,
                 hash('sha1', $clearText, true),
@@ -371,10 +371,11 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             );
             $cipher = $this->symmetric->cipherEngine();
             $cipher->setIV($this->iv);
-            $cipher->setKey($this->s2k->produceKey(
+            $key = $this->s2k?->produceKey(
                 $passphrase,
                 $this->symmetric->keySizeInByte()
-            ));
+            ) ?? str_repeat("\x00", $this->symmetric->keySizeInByte());
+            $cipher->setKey($key);
             $decrypted = $cipher->decrypt($this->keyData);
 
             $length = strlen($decrypted) - HashAlgorithm::Sha1->digestSize();
