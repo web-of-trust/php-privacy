@@ -71,7 +71,7 @@ class EdDSASecretParameters extends ECSecretParameters implements SignableParame
     /**
      * Generates parameters by using EC create key
      *
-     * @param CurveOid $curve
+     * @param CurveOid $curveOid
      * @return self
      */
     public static function generate(CurveOid $curveOid): self

@@ -21,7 +21,7 @@ use OpenPGP\Enum\LiteralFormat;
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface LiteralDataInterface
+interface LiteralDataInterface extends ForSigningInterface
 {
     /**
      * Gets literal format

@@ -47,7 +47,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
      * @param string $publicKeyID
      * @param KeyAlgorithm $publicKeyAlgorithm
      * @param SessionKeyParametersInterface $sessionKeyParameters
-     * @param SessionKey $sessionKey
+     * @param Key\SessionKey $sessionKey
      * @return self
      */
     public function __construct(
@@ -93,7 +93,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
      * Encrypt session key
      *
      * @param PublicKey $publicKey
-     * @param SessionKey $sessionKey
+     * @param Key\SessionKey $sessionKey
      * @return self
      */
     public static function encryptSessionKey(
@@ -145,7 +145,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     /**
      * Gets session key parameters
      *
-     * @return Key\SessionKeyParametersInterface
+     * @return SessionKeyParametersInterface
      */
     public function getSessionKeyParameters(): SessionKeyParametersInterface
     {
@@ -202,7 +202,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
                 $secretKey->getKeyParameters(), $secretKey->getFingerprint()
             ),
             default => throw new \UnexpectedValueException(
-                "Public key algorithm $keyAlgorithm->name of the PKESK packet is unsupported."
+                "Public key algorithm {$this->publicKeyAlgorithm->name} of the PKESK packet is unsupported."
             ),
         };
     }

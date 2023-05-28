@@ -71,7 +71,7 @@ final class Helper
      * @return string
      */
     public static function generatePrefix(
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::aes256
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
     ): string
     {
         $size = $symmetric->blockSize();

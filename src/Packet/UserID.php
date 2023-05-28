@@ -30,11 +30,11 @@ use OpenPGP\Type\UserIDPacketInterface;
  */
 class UserID extends AbstractPacket implements UserIDPacketInterface
 {
-    private string $name;
+    private readonly string $name;
 
-    private string $email;
+    private readonly string $email;
 
-    private string $comment;
+    private readonly string $comment;
 
     /**
      * Constructor
@@ -45,36 +45,9 @@ class UserID extends AbstractPacket implements UserIDPacketInterface
     public function __construct(private readonly string $userID)
     {
         parent::__construct(PacketTag::UserID);
-
-        if (preg_match('/^([^\(]+)\(([^\)]+)\)\s+<([^>]+)>$/', $userID, $matches)) {
-            // User IDs of the form: "name (comment) <email>"
-            $this->name    = trim($matches[1]);
-            $this->email   = trim($matches[3]);
-            $this->comment = trim($matches[2]);
-        }
-        elseif (preg_match('/^([^<]+)\s+<([^>]+)>$/', $this->userID, $matches)) {
-            // User IDs of the form: "name <email>"
-            $this->name  = trim($matches[1]);
-            $this->email = trim($matches[2]);
-            $this->comment = '';
-        }
-        elseif (preg_match('/^([^<]+)$/', $this->userID, $matches)) {
-            // User IDs of the form: "name"
-            $this->name = trim($matches[1]);
-            $this->email = '';
-            $this->comment = '';
-        }
-        elseif (preg_match('/^<([^>]+)>$/', $this->userID, $matches)) {
-            // User IDs of the form: "<email>"
-            $this->name = '';
-            $this->email = trim($matches[2]);
-            $this->comment = '';
-        }
-        else {
-            $this->name = '';
-            $this->email = '';
-            $this->comment = '';
-        }
+        $this->name    = $this->extractName();
+        $this->email   = $this->extractEmail();
+        $this->comment = $this->extractComment();
     }
 
     /**
@@ -146,5 +119,40 @@ class UserID extends AbstractPacket implements UserIDPacketInterface
     public function getComment(): string
     {
         return $this->comment;
+    }
+
+    private function extractName(): string
+    {
+        $nameChars = [];
+        $chars = str_split($this->userID);
+        foreach ($chars as $char) {
+            if ($char === '(' || $char === '<') {
+                break;
+            }
+            $nameChars[] = $char;
+        }
+        return trim(implode($nameChars));
+    }
+
+    private function extractEmail(): string
+    {
+        if (preg_match('/[\w\.-]+@[\w\.-]+\.\w{2,4}/', $this->userID, $matches)) {
+            return $matches[0];
+        };
+        return '';
+    }
+
+    private function extractComment(): string
+    {
+        if (str_contains($this->userID, '(') && str_contains($this->userID, ')')) {
+            $start = strpos($this->userID, '(') + 1;
+            $end = strpos($this->userID, ')');;
+            return substr(
+                $this->userID,
+                $start,
+                $end - $start,
+            );
+        }
+        return '';
     }
 }

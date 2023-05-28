@@ -34,7 +34,7 @@ class ElGamalPublicParameters implements KeyParametersInterface
      * Constructor
      *
      * @param BigInteger $prime
-     * @param BigInteger $order
+     * @param BigInteger $generator
      * @param BigInteger $exponent
      * @return self
      */

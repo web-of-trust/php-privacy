@@ -39,6 +39,7 @@ enum HashAlgorithm: int
     public function digestSize(): int
     {
         return match($this) {
+            self::Unknown => 0,
             self::Md5 => 16,
             self::Sha1 => 20,
             self::Ripemd160 => 20,

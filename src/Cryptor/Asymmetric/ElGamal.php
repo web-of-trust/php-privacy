@@ -45,7 +45,7 @@ abstract class ElGamal extends AsymmetricKey
     )
     {
         $this->bitSize = $prime->getLength();
-        if (!isset(self::$zero)) {
+        if (empty(self::$zero)) {
             self::$zero = new BigInteger(0);
             self::$one = new BigInteger(1);
         }
@@ -62,7 +62,7 @@ abstract class ElGamal extends AsymmetricKey
      */
     public static function createKey(int $lSize = 2048, int $nSize = 224): ElGamalPrivateKey
     {
-        if (!isset(self::$zero)) {
+        if (empty(self::$zero)) {
             self::$zero = new BigInteger(0);
             self::$one = new BigInteger(1);
         }

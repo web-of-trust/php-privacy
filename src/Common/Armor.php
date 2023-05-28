@@ -274,7 +274,7 @@ final class Armor
             preg_match('/PRIVATE KEY BLOCK/', $matches[0]) => ArmorType::PrivateKey,
             preg_match('/SIGNATURE/', $matches[0]) => ArmorType::Signature,
         };
-        return $type ?? ArmorType::MultipartSection;
+        return $type;
     }
 
     /**

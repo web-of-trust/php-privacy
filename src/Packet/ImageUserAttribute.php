@@ -55,7 +55,7 @@ class ImageUserAttribute extends UserAttributeSubpacket
     /**
      * Gets header length
      *
-     * @return self
+     * @return int
      */
     public function getHeaderLength(): int
     {
@@ -66,7 +66,7 @@ class ImageUserAttribute extends UserAttributeSubpacket
     /**
      * Gets version
      *
-     * @return self
+     * @return int
      */
     public function getVersion(): int
     {
@@ -77,7 +77,7 @@ class ImageUserAttribute extends UserAttributeSubpacket
     /**
      * Gets encoding
      *
-     * @return self
+     * @return int
      */
     public function getEncoding(): int
     {
@@ -85,6 +85,11 @@ class ImageUserAttribute extends UserAttributeSubpacket
         return ord($data[3]);
     }
 
+    /**
+     * Gets image data
+     *
+     * @return string
+     */
     public function getImageData(): string
     {
         $length = $this->getHeaderLength();

@@ -65,7 +65,7 @@ class ElGamalPrivateKey extends ElGamal
     /**
      * Decryption
      *
-     * @param string $ciphertext
+     * @param string $cipherText
      * @return string
      */
     public function decrypt(string $cipherText): string

@@ -197,7 +197,7 @@ class RSASecretParameters implements SignableParametersInterface
             return false;
         }
 
-        $nSizeOver3 = floor($this->publicParams->getModulus()->getLength() / 3);
+        $nSizeOver3 = (int) floor($this->publicParams->getModulus()->getLength() / 3);
         $r = BigInteger::randomRange($one, $two->bitwise_leftShift($nSizeOver3));
         $rde = $r->multiply($this->exponent)->multiply($this->publicParams->getExponent());
 

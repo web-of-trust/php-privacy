@@ -201,7 +201,7 @@ class IDEA extends BlockCipher
             $q = intval($x / $y);
             $x = intval($x % $y);
             $t0 = ($t0 + ($t1 * $q)) & self::MASK;
-            if ($x == 1) {
+            if ($x === 1) {
                 return $t0;
             }
             $q = intval($y / $x);

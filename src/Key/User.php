@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Key;
 
+use DateTime;
 use OpenPGP\Common\Config;
 use OpenPGP\Enum\{
     HashAlgorithm,

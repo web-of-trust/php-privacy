@@ -271,8 +271,8 @@ class Camellia extends BlockCipher
                 if ($this->block_size != self::BLOCK_SIZE) {
                     return false;
                 }
-                $this->cipher_name_openssl_ecb = 'camellia-' . ($this->key_length << 3) . '-ecb';
-                $this->cipher_name_openssl = 'camellia-' . ($this->key_length << 3) . '-' . $this->openssl_translate_mode();
+                $this->cipher_name_openssl_ecb = 'camellia-' . $this->getKeyLength() . '-ecb';
+                $this->cipher_name_openssl = 'camellia-' . $this->getKeyLength() . '-' . $this->openssl_translate_mode();
                 break;
         }
         return parent::isValidEngineHelper($engine);        
@@ -581,16 +581,6 @@ class Camellia extends BlockCipher
         $ki[2 + $ioff] = $ko[0 + $ooff];
         $ki[3 + $ioff] = $ko[1 + $ooff];
         return [$ki, $ko];
-    }
-
-    private static function bytes2Int(array $src, int $offset): int
-    {
-        $word = 0;
-
-        for ($i = 0; $i < 4; $i++) {
-            $word = ($word << 8) + ($src[$i + $offset] & Helper::MASK_8BITS);
-        }
-        return $word;
     }
 
     private static function int2Bytes(int $word, array $dst, int $offset): array
