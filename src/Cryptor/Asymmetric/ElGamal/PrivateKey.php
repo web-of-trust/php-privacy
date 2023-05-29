@@ -93,7 +93,7 @@ class PrivateKey extends ElGamal
      */
     public function toString($type, array $options = []): string
     {
-        return json_encode([
+        return (string) json_encode([
             'p' => $this->getPrime(),
             'g' => $this->getGenerator(),
             'x' => $this->getX(),
