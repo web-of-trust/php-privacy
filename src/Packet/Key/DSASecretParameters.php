@@ -88,14 +88,14 @@ class DSASecretParameters implements SignableParametersInterface
     public static function generate(DHKeySize $keySize): self
     {
         $privateKey = DSA::createKey($keySize->lSize(), $keySize->nSize());
-        $rawKey = PKCS8::load($privateKey->toString('PKCS8'));
+        $key = PKCS8::load($privateKey->toString('PKCS8'));
         return new self(
-            $rawKey['x'],
+            $key['x'],
             new DSAPublicParameters(
-                $rawKey['p'],
-                $rawKey['q'],
-                $rawKey['g'],
-                $rawKey['g']->powMod($rawKey['x'], $rawKey['p']),
+                $key['p'],
+                $key['q'],
+                $key['g'],
+                $key['g']->powMod($key['x'], $key['p']),
                 $privateKey->getPublicKey(),
             ),
             $privateKey

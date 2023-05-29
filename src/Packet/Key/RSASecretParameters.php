@@ -104,17 +104,17 @@ class RSASecretParameters implements SignableParametersInterface
     public static function generate(RSAKeySize $keySize): self
     {
         $privateKey = RSA::createKey($keySize->value);
-        $rawKey = PKCS8::load($privateKey->toString('PKCS8'));
-        $primeP = $rawKey['primes'][1];
-        $primeQ = $rawKey['primes'][2];
+        $key = PKCS8::load($privateKey->toString('PKCS8'));
+        $primeP = $key['primes'][1];
+        $primeQ = $key['primes'][2];
         return new self(
-            $rawKey['privateExponent'],
+            $key['privateExponent'],
             $primeP,
             $primeQ,
             $primeP->modInverse($primeQ),
             new RSAPublicParameters(
-                $rawKey['modulus'],
-                $rawKey['publicExponent'],
+                $key['modulus'],
+                $key['publicExponent'],
                 $privateKey->getPublicKey()
             ),
             $privateKey
