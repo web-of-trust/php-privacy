@@ -1,5 +1,5 @@
 PHP Privacy - The OpenPGP library in PHP language
-================================================================
+=================================================
 PHP Privacy is an implementation of the OpenPGP standard in PHP language.
 It implements [RFC4880](https://www.rfc-editor.org/rfc/rfc4880), [RFC6637](https://www.rfc-editor.org/rfc/rfc6637),
 parts of [RFC4880bis](https://datatracker.ietf.org/doc/html/draft-ietf-openpgp-rfc4880bis).
@@ -18,7 +18,7 @@ parts of [RFC4880bis](https://datatracker.ietf.org/doc/html/draft-ietf-openpgp-r
   [ECDSA](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm),
   [EdDSA](https://en.wikipedia.org/wiki/EdDSA)
   and [ECDH](https://en.wikipedia.org/wiki/Elliptic-curve_Diffie%E2%80%93Hellman).
-* Support symmetric ciphers: 3DES, IDEA (for backward compatibility), CAST5, Blowfish, Twofish,
+* Support symmetric ciphers: 3DES, IDEA, CAST5, Blowfish, Twofish,
   [AES-128, AES-192, AES-256](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard),
   [Camellia-128, Camellia-192, Camellia-256](https://en.wikipedia.org/wiki/Camellia_(cipher)).
 * Support hash algorithms: MD5, SHA-1, RIPEMD-160, SHA-256, SHA-384, SHA-512, SHA-224.
@@ -28,4 +28,23 @@ parts of [RFC4880bis](https://datatracker.ietf.org/doc/html/draft-ietf-openpgp-r
   [brainpoolP256r1, brainpoolP384r1, brainpoolP512r1](https://www.rfc-editor.org/rfc/rfc5639),
   [curve25519](https://www.rfc-editor.org/rfc/rfc7748), [ed25519](https://www.rfc-editor.org/rfc/rfc8032),
   [prime256v1](https://www.secg.org/sec2-v2.pdf).
-  
+
+## Installation
+Via [Composer](https://getcomposer.org)
+```bash
+$ composer require php-privacy/openpgp
+```
+or just add it to your `composer.json` file directly.
+```javascript
+{
+    "require": {
+        "php-privacy/openpgp": "*"
+    }
+}
+```
+
+## Licensing
+[BSD 3-Clause](LICENSE)
+
+    For the full copyright and license information, please view the LICENSE
+    file that was distributed with this source code.

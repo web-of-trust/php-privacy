@@ -337,8 +337,8 @@ final class OpenPGP
         array $encryptionKeys = [],
         array $passwords = [],
         array $signingKeys = [],
-        SymmetricAlgorithm $symmetric = null,
-        CompressionAlgorithm $compression = null,
+        ?SymmetricAlgorithm $symmetric = null,
+        ?CompressionAlgorithm $compression = null,
         ?DateTime $time = null
     ): EncryptedMessageInterface
     {
