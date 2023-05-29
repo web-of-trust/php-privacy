@@ -671,7 +671,7 @@ class Camellia extends BlockCipher
     /**
      * @param array<int> $s
      * @param array<int> $skey
-     * @param int $keyoff
+     * @param int $offset
      * @return array<int>
      */
     private static function camelliaF2(array $s, array $skey, int $offset): array
