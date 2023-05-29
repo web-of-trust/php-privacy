@@ -2,7 +2,7 @@
     "name": "php-privacy/openpgp",
     "type": "library",
     "description": " PHP Privacy - The OpenPGP library in PHP language",
-    "keywords": ["library", "OpenPGP", "end to end encryption", "PHP Privacy Guard"],
+    "keywords": ["library", "openpgp", "end to end encryption", "privacy guard"],
     "license": "BSD-3-Clause",
     "authors": [
         {
