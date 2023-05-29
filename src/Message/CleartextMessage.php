@@ -14,7 +14,7 @@ use DateTime;
 use OpenPGP\Packet\LiteralData;
 use OpenPGP\Packet\Signature as SignaturePacket;
 use OpenPGP\Type\{
-    CleartextMessagenterface,
+    CleartextMessageInterface,
     MessageInterface,
     PrivateKeyInterface,
     SignatureInterface,
@@ -29,7 +29,7 @@ use OpenPGP\Type\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class CleartextMessage implements CleartextMessagenterface
+class CleartextMessage implements CleartextMessageInterface
 {
     /**
      * Constructor

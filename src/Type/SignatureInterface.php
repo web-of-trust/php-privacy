@@ -57,13 +57,13 @@ interface SignatureInterface extends ArmorableInterface, PacketContainerInterfac
      * Return verification array
      *
      * @param array<KeyInterface> $verificationKeys
-     * @param CleartextMessagenterface $cleartext
+     * @param CleartextMessageInterface $cleartext
      * @param DateTime $time
      * @return array<VerificationInterface>
      */
     function verifyCleartext(
         array $verificationKeys,
-        CleartextMessagenterface $cleartext,
+        CleartextMessageInterface $cleartext,
         ?DateTime $time = null
     ): array;
 }

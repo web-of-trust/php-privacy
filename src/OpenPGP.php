@@ -30,6 +30,7 @@ use OpenPGP\Message\{
     SignedMessage,
 };
 use OpenPGP\Type\{
+    CleartextMessageInterface,
     EncryptedMessageInterface,
     LiteralMessageInterface,
     MessageInterface,
@@ -160,11 +161,11 @@ final class OpenPGP
      * Read an armored OpenPGP message and returns a LiteralMessage object
      *
      * @param string $armoredMessage
-     * @return LiteralMessage
+     * @return LiteralMessageInterface
      */
     public static function readLiteralMessage(
         string $armoredMessage
-    ): LiteralMessage
+    ): LiteralMessageInterface
     {
         return LiteralMessage::fromArmored($armoredMessage);
     }
@@ -173,11 +174,11 @@ final class OpenPGP
      * Create new cleartext message object from text
      *
      * @param string $text
-     * @return CleartextMessage
+     * @return CleartextMessageInterface
      */
     public static function createCleartextMessage(
         string $text
-    ): CleartextMessage
+    ): CleartextMessageInterface
     {
         return new CleartextMessage($text);
     }
@@ -226,13 +227,13 @@ final class OpenPGP
      * @param string $text
      * @param array<PrivateKey> $signingKeys
      * @param DateTime $time
-     * @return Type\SignatureInterface
+     * @return SignatureInterface
      */
     public static function signDetachedCleartext(
         string $text,
         array $signingKeys,
         ?DateTime $time = null
-    ): Type\SignatureInterface
+    ): SignatureInterface
     {
         return self::createCleartextMessage($text)->signDetached(
             $signingKeys, $time

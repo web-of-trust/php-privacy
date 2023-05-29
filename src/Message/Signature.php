@@ -21,7 +21,7 @@ use OpenPGP\Packet\{
     PacketList,
 };
 use OpenPGP\Type\{
-    CleartextMessagenterface,
+    CleartextMessageInterface,
     KeyInterface,
     LiteralDataInterface,
     PacketListInterface,
@@ -145,7 +145,7 @@ class Signature implements SignatureInterface
      */
     public function verifyCleartext(
         array $verificationKeys,
-        CleartextMessagenterface $cleartext,
+        CleartextMessageInterface $cleartext,
         ?DateTime $time = null
     ): array
     {
