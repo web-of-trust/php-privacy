@@ -10,7 +10,6 @@
 
 namespace OpenPGP\Key;
 
-use DateInterval;
 use DateTime;
 use OpenPGP\Common\Config;
 use OpenPGP\Enum\KeyAlgorithm;

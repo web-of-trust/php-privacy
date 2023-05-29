@@ -10,7 +10,6 @@
 
 namespace OpenPGP\Key;
 
-use DateInterval;
 use DateTime;
 use OpenPGP\Common\Config;
 use OpenPGP\Enum\{
@@ -48,28 +47,28 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * Revocation signature packets
      * 
-     * @var array
+     * @var array<SignaturePacketInterface>
      */
-    private array $revocationSignatures;
+    private readonly array $revocationSignatures;
 
     /**
      * Direct signature packets
      * 
-     * @var array
+     * @var array<SignaturePacketInterface>
      */
-    private array $directSignatures;
+    private readonly array $directSignatures;
 
     /**
      * Users of the key
      * 
-     * @var array
+     * @var array<User>
      */
     private array $users;
 
     /**
      * Subkeys of the key
      * 
-     * @var array
+     * @var array<Subkey>
      */
     private array $subkeys;
 
@@ -77,10 +76,10 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
      * Constructor
      *
      * @param KeyPacketInterface $keyPacket
-     * @param array $revocationSignatures
-     * @param array $directSignatures
-     * @param array $users
-     * @param array $subkeys
+     * @param array<SignaturePacketInterface> $revocationSignatures
+     * @param array<SignaturePacketInterface> $directSignatures
+     * @param array<User> $users
+     * @param array<Subkey> $subkeys
      * @return self
      */
     public function __construct(
@@ -150,7 +149,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * Gets revocation signatures
      * 
-     * @return array
+     * @return array<SignaturePacketInterface>
      */
     public function getRevocationSignatures(): array
     {
@@ -160,7 +159,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * Get direct signatures
      * 
-     * @return array
+     * @return array<SignaturePacketInterface>
      */
     public function getDirectSignatures(): array
     {
@@ -170,7 +169,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * Gets users
      * 
-     * @return array
+     * @return array<User>
      */
     public function getUsers(): array
     {
@@ -180,7 +179,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * Gets subkeys
      * 
-     * @return array
+     * @return array<Subkey>
      */
     public function getSubkeys(): array
     {
@@ -190,7 +189,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * Sets users
      * 
-     * @param array $users
+     * @param array<User> $users
      * @return self
      */
     protected function setUsers(array $users): self
@@ -205,7 +204,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * Sets subkeys
      * 
-     * @param array $subkeys
+     * @param array<Subkey> $subkeys
      * @return self
      */
     protected function setSubkeys(array $subkeys): self
@@ -517,7 +516,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * Gets key expiration from signatures.
      *
-     * @param array $signatures
+     * @param array<SignaturePacketInterface> $signatures
      * @return DateTime
      */
     public static function getKeyExpiration(array $signatures): ?DateTime
@@ -535,8 +534,8 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
             if (!empty($keyExpirationTime)) {
                 $expirationTime = $keyExpirationTime->getExpirationTime();
                 $creationTime = $signature->getSignatureCreationTime() ?? new DateTime();
-                $keyExpiry = $creationTime->add(
-                    DateInterval::createFromDateString($expirationTime . ' seconds')
+                $keyExpiry = $creationTime->setTimestamp(
+                    $creationTime->getTimestamp() + $expirationTime
                 );
                 $signatureExpiry = $signature->getSignatureExpirationTime();
                 if (empty($signatureExpiry)) {
@@ -553,6 +552,12 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
         return null;
     }
 
+    /**
+     * Reads packet list.
+     *
+     * @param PacketListInterface $packetList
+     * @return array<string, mixed>
+     */
     protected static function readPacketList(PacketListInterface $packetList): array
     {
         $revocationSignatures = $directSignatures = $users = $subkeys = [];

@@ -218,14 +218,11 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     {
         $packets = [];
         foreach ($this->toPacketList()->getPackets() as $packet) {
-            switch ($packet->getTag()) {
-                case PacketTag::SecretKey:
-                case PacketTag::SecretSubkey:
-                    $packets[] = $packet->getPublicKey();
-                    break;
-                default:
-                    $packets[] = $packet;
-                    break;
+            if ($packet instanceof SecretKeyPacketInterface) {
+                $packets[] = $packet->getPublicKey();
+            }
+            else {
+                $packets[] = $packet;
             }
         }
         return PublicKey::fromPacketList((new PacketList($packets)));
