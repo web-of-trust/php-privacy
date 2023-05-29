@@ -387,9 +387,9 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
         ?DateTime $time = null
     ): bool
     {
-        $keyID = ($certificate != null) ? $certificate->getIssuerKeyID()->getKeyID() : '';
+        $keyID = ($certificate != null) ? $certificate->getIssuerKeyID() : '';
         foreach ($this->revocationSignatures as $signature) {
-            if (empty($keyID) || $keyID === $signature->getIssuerKeyID()->getKeyID()) {
+            if (empty($keyID) || $keyID === $signature->getIssuerKeyID()) {
                 if ($signature->verify(
                     $this->toPublic()->getKeyPacket(),
                     $this->keyPacket->getSignBytes(),
@@ -602,7 +602,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
                             case SignatureType::CertPositive:
                                 $user = array_pop($users);
                                 if (!empty($user)) {
-                                    if ($packet->getIssuerKeyID()->getKeyID() === $primaryKeyID) {
+                                    if ($packet->getIssuerKeyID() === $primaryKeyID) {
                                         $user['selfCertifications'][] = $packet;
                                     }
                                     else {

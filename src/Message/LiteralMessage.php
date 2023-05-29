@@ -189,7 +189,7 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
                 $packet->getSignatureType(),
                 $packet->getHashAlgorithm(),
                 $packet->getKeyAlgorithm(),
-                $packet->getIssuerKeyID()->getKeyID(),
+                $packet->getIssuerKeyID(),
                 ((++$index) === $length) ? 1 : 0
             ),
             $signaturePackets

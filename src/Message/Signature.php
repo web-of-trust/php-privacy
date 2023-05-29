@@ -91,7 +91,7 @@ class Signature implements SignatureInterface
     public function getSigningKeyIDs(bool $toHex = false): array
     {
         return array_map(
-            static fn ($packet) => $packet->getIssuerKeyID()->getKeyID($toHex),
+            static fn ($packet) => $packet->getIssuerKeyID($toHex),
             $this->signaturePackets
         );
     }
@@ -117,7 +117,7 @@ class Signature implements SignatureInterface
             foreach ($verificationKeys as $key) {
                 try {
                     $keyPacket = $key->toPublic()->getSigningKeyPacket(
-                        $packet->getIssuerKeyID()->getKeyID()
+                        $packet->getIssuerKeyID()
                     );
                     $verifications[] = new Verification(
                         $keyPacket->getKeyID(),

@@ -200,14 +200,14 @@ class User implements PacketContainerInterface
         ?DateTime $time = null
     ): bool
     {
-        $keyID = $certificate?->getIssuerKeyID()->getKeyID() ?? '';
+        $keyID = $certificate?->getIssuerKeyID() ?? '';
         $keyPacket = $keyPacket ?? $this->mainKey->toPublic()->getKeyPacket();
         $dataToVerify = implode([
             $keyPacket->getSignBytes(),
             $this->userIDPacket->getSignBytes(),
         ]);
         foreach ($this->revocationSignatures as $signature) {
-            if (empty($keyID) || $keyID === $signature->getIssuerKeyID()->getKeyID()) {
+            if (empty($keyID) || $keyID === $signature->getIssuerKeyID()) {
                 if ($signature->verify(
                     $keyPacket,
                     $dataToVerify,

@@ -499,7 +499,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         ?DateTime $time = null
     ): bool
     {
-        if ($this->getIssuerKeyID()->getKeyID() !== $verifyKey->getKeyID()) {
+        if ($this->getIssuerKeyID() !== $verifyKey->getKeyID()) {
             $this->getLogger()->debug(
                 'Signature was not issued by the given public key.'
             );
@@ -745,25 +745,23 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * {@inheritdoc}
      */
-    public function getIssuerKeyID(): SubpacketInterface
+    public function getIssuerKeyID(bool $toHex = false): string
     {
         $type = SignatureSubpacketType::IssuerKeyID;
         $issuerKeyID = self::getSubpacket($this->hashedSubpackets, $type) ??
                        self::getSubpacket($this->unhashedSubpackets, $type);
-        if ($issuerKeyID instanceof Signature\IssuerKeyID) {
-            return $issuerKeyID;
-        }
-        else {
+        if (!($issuerKeyID instanceof Signature\IssuerKeyID)) {
             $issuerFingerprint = $this->getIssuerFingerprint();
             if ($issuerFingerprint instanceof Signature\IssuerFingerprint) {
-                return new Signature\IssuerKeyID(
+                $issuerKeyID = new Signature\IssuerKeyID(
                     substr($issuerFingerprint->getKeyFingerprint(), 12, 20)
                 );
             }
             else {
-                return Signature\IssuerKeyID::wildcard();
+                $issuerKeyID = Signature\IssuerKeyID::wildcard();
             }
         }
+        return $issuerKeyID->getKeyID($toHex);
     }
 
     /**

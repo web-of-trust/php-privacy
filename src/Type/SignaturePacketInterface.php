@@ -172,9 +172,10 @@ interface SignaturePacketInterface extends PacketInterface
     /**
      * Gets issuer key ID sub packet
      *
-     * @return SubpacketInterface
+     * @param bool $toHex
+     * @return string
      */
-    function getIssuerKeyID(): SubpacketInterface;
+    function getIssuerKeyID(bool $toHex = false): string;
 
     /**
      * Gets notation data sub packet
