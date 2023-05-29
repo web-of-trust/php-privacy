@@ -561,6 +561,14 @@ class Camellia extends BlockCipher
         return self::camelliaF2($kb, self::$sigma, 8);
     }
 
+    /**
+     * @param int $rot
+     * @param array<int> $ki
+     * @param int $ioff
+     * @param array<int> $ko
+     * @param int $ooff
+     * @return array
+     */
     private static function roldq(
         int $rot, array $ki, int $ioff, array $ko, int $ooff
     ): array
@@ -576,6 +584,14 @@ class Camellia extends BlockCipher
         return [$ki, $ko];
     }
 
+    /**
+     * @param int $rot
+     * @param array<int> $ki
+     * @param int $ioff
+     * @param array<int> $ko
+     * @param int $ooff
+     * @return array
+     */
     private static function decroldq(
         int $rot, array $ki, int $ioff, array $ko, int $ooff)
     : array
@@ -591,6 +607,14 @@ class Camellia extends BlockCipher
         return [$ki, $ko];
     }
 
+    /**
+     * @param int $rot
+     * @param array<int> $ki
+     * @param int $ioff
+     * @param array<int> $ko
+     * @param int $ooff
+     * @return array
+     */
     private static function roldqo32(
         int $rot, array $ki, int $ioff, array $ko, int $ooff
     ): array
@@ -606,6 +630,14 @@ class Camellia extends BlockCipher
         return [$ki, $ko];
     }
 
+    /**
+     * @param int $rot
+     * @param array<int> $ki
+     * @param int $ioff
+     * @param array<int> $ko
+     * @param int $ooff
+     * @return array
+     */
     private static function decroldqo32(
         int $rot, array $ki, int $ioff, array $ko, int $ooff
     ): array
@@ -621,6 +653,12 @@ class Camellia extends BlockCipher
         return [$ki, $ko];
     }
 
+    /**
+     * @param int $word
+     * @param array<int> $dst
+     * @param int $offset
+     * @return array<int>
+     */
     private static function int2Bytes(int $word, array $dst, int $offset): array
     {
         for ($i = 0; $i < 4; $i++) {
@@ -630,14 +668,20 @@ class Camellia extends BlockCipher
         return $dst;
     }
 
-    private static function camelliaF2(array $s, array $skey, int $keyoff): array
+    /**
+     * @param array<int> $s
+     * @param array<int> $skey
+     * @param int $keyoff
+     * @return array<int>
+     */
+    private static function camelliaF2(array $s, array $skey, int $offset): array
     {
-        $t1 = $s[0] ^ $skey[0 + $keyoff];
+        $t1 = $s[0] ^ $skey[0 + $offset];
         $u = self::$sbox4_4404[$t1 & Helper::MASK_8BITS];
         $u ^= self::$sbox3_3033[($t1 >> 8) & Helper::MASK_8BITS];
         $u ^= self::$sbox2_0222[($t1 >> 16) & Helper::MASK_8BITS];
         $u ^= self::$sbox1_1110[($t1 >> 24) & Helper::MASK_8BITS];
-        $t2 = $s[1] ^ $skey[1 + $keyoff];
+        $t2 = $s[1] ^ $skey[1 + $offset];
         $v = self::$sbox1_1110[$t2 & Helper::MASK_8BITS];
         $v ^= self::$sbox4_4404[($t2 >> 8) & Helper::MASK_8BITS];
         $v ^= self::$sbox3_3033[($t2 >> 16) & Helper::MASK_8BITS];
@@ -646,12 +690,12 @@ class Camellia extends BlockCipher
         $s[2] ^= $u ^ $v;
         $s[3] ^= $u ^ $v ^ Helper::rightRotate32($u, 8);
 
-        $t1 = $s[2] ^ $skey[2 + $keyoff];
+        $t1 = $s[2] ^ $skey[2 + $offset];
         $u = self::$sbox4_4404[$t1 & Helper::MASK_8BITS];
         $u ^= self::$sbox3_3033[($t1 >> 8) & Helper::MASK_8BITS];
         $u ^= self::$sbox2_0222[($t1 >> 16) & Helper::MASK_8BITS];
         $u ^= self::$sbox1_1110[($t1 >> 24) & Helper::MASK_8BITS];
-        $t2 = $s[3] ^ $skey[3 + $keyoff];
+        $t2 = $s[3] ^ $skey[3 + $offset];
         $v = self::$sbox1_1110[$t2 & Helper::MASK_8BITS];
         $v ^= self::$sbox4_4404[($t2 >> 8) & Helper::MASK_8BITS];
         $v ^= self::$sbox3_3033[($t2 >> 16) & Helper::MASK_8BITS];
@@ -663,13 +707,19 @@ class Camellia extends BlockCipher
         return $s;
     }
 
-    private static function camelliaFLs(array $s, array $fkey, int $keyoff): array
+    /**
+     * @param array<int> $s
+     * @param array<int> $fkey
+     * @param int $offset
+     * @return array<int>
+     */
+    private static function camelliaFLs(array $s, array $fkey, int $offset): array
     {
-        $s[1] ^= Helper::leftRotate32($s[0] & $fkey[0 + $keyoff], 1);
-        $s[0] ^= $fkey[1 + $keyoff] | $s[1];
+        $s[1] ^= Helper::leftRotate32($s[0] & $fkey[0 + $offset], 1);
+        $s[0] ^= $fkey[1 + $offset] | $s[1];
 
-        $s[2] ^= $fkey[3 + $keyoff] | $s[3];
-        $s[3] ^= Helper::leftRotate32($fkey[2 + $keyoff] & $s[2], 1);
+        $s[2] ^= $fkey[3 + $offset] | $s[3];
+        $s[3] ^= Helper::leftRotate32($fkey[2 + $offset] & $s[2], 1);
 
         return $s;
     }
