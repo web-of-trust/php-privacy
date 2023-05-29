@@ -105,4 +105,172 @@ interface SignaturePacketInterface extends PacketInterface
         string $dataToVerify,
         ?DateTime $time = null
     ): bool;
+
+    /**
+     * Gets signature creation time
+     *
+     * @return DateTime
+     */
+    function getSignatureCreationTime(): ?DateTime;
+
+    /**
+     * Gets signature expiration time
+     *
+     * @return DateTime
+     */
+    function getSignatureExpirationTime(): ?DateTime;
+
+    /**
+     * Gets exportable certification sub packet
+     *
+     * @return SubpacketInterface
+     */
+    function getExportableCertification(): ?SubpacketInterface;
+
+    /**
+     * Gets trust signature sub packet
+     *
+     * @return SubpacketInterface
+     */
+    function getTrustSignature(): ?SubpacketInterface;
+
+    /**
+     * Gets regular expression sub packet
+     *
+     * @return SubpacketInterface
+     */
+    function getRegularExpression(): ?SubpacketInterface;
+
+    /**
+     * Gets revocable sub packet
+     *
+     * @return SubpacketInterface
+     */
+    function getRevocable(): ?SubpacketInterface;
+
+    /**
+     * Gets key expiration time sub packet
+     *
+     * @return SubpacketInterface
+     */
+    function getKeyExpirationTime(): ?SubpacketInterface;
+
+    /**
+     * Gets preferred symmetric algorithms sub packet
+     *
+     * @return SubpacketInterface
+     */
+    function getPreferredSymmetricAlgorithms(): ?SubpacketInterface;
+
+    /**
+     * Gets revocation key sub packet
+     *
+     * @return SubpacketInterface
+     */
+    function getRevocationKey(): ?SubpacketInterface;
+
+    /**
+     * Gets issuer key ID sub packet
+     *
+     * @return SubpacketInterface
+     */
+    function getIssuerKeyID(): SubpacketInterface;
+
+    /**
+     * Gets notation data sub packet
+     *
+     * @return SubpacketInterface
+     */
+    function getNotationData(): ?SubpacketInterface;
+
+    /**
+     * Gets preferred hash algorithms sub packet
+     *
+     * @return SubpacketInterface
+     */
+    function getPreferredHashAlgorithms(): ?SubpacketInterface;
+
+    /**
+     * Gets preferred compression algorithms sub packet
+     *
+     * @return SubpacketInterface
+     */
+    function getPreferredCompressionAlgorithms(): ?SubpacketInterface;
+
+    /**
+     * Gets key server preferences sub packet
+     *
+     * @return SubpacketInterface
+     */
+    function getKeyServerPreferences(): ?SubpacketInterface;
+
+    /**
+     * Gets preferred key server sub packet
+     *
+     * @return SubpacketInterface
+     */
+    function getPreferredKeyServer(): ?SubpacketInterface;
+
+    /**
+     * Return is primary user ID
+     *
+     * @return bool
+     */
+    function isPrimaryUserID(): bool;
+
+    /**
+     * Gets policy URI sub packet
+     *
+     * @return SubpacketInterface
+     */
+    function getPolicyURI(): ?SubpacketInterface;
+
+    /**
+     * Gets key flags sub packet
+     *
+     * @return SubpacketInterface
+     */
+    function getKeyFlags(): ?SubpacketInterface;
+
+    /**
+     * Gets signer user ID sub packet
+     *
+     * @return SubpacketInterface
+     */
+    function getSignerUserID(): ?SubpacketInterface;
+
+    /**
+     * Gets revocation reason sub packet
+     *
+     * @return SubpacketInterface
+     */
+    function getRevocationReason(): ?SubpacketInterface;
+
+    /**
+     * Gets features sub packet
+     *
+     * @return SubpacketInterface
+     */
+    function getFeatures(): ?SubpacketInterface;
+
+    /**
+     * Gets signature target packet
+     *
+     * @return SubpacketInterface
+     */
+    function getSignatureTarget(): ?SubpacketInterface;
+
+    /**
+     * Gets embedded signature packet
+     *
+     * @return SubpacketInterface
+     */
+    function getEmbeddedSignature(): ?SubpacketInterface;
+
+    /**
+     * Gets issuer fingerprint sub packet
+     *
+     * @return SubpacketInterface
+     */
+    function getIssuerFingerprint(): ?SubpacketInterface;
 }

@@ -284,7 +284,7 @@ final class OpenPGP
      * @param string $armoredSignedMessage
      * @param array<PublicKey> $verificationKeys
      * @param DateTime $time
-     * @return array<Message\Verification>
+     * @return array<Type\VerificationInterface>
      */
     public static function verify(
         string $armoredSignedMessage,
@@ -304,7 +304,7 @@ final class OpenPGP
      * @param string $armoredSignature
      * @param array<Key\PublicKey> $verificationKeys
      * @param DateTime $time
-     * @return array<Message\Verification>
+     * @return array<Type\VerificationInterface>
      */
     public static function verifyDetached(
         string $text,
@@ -313,7 +313,7 @@ final class OpenPGP
         ?DateTime $time = null
     ): array
     {
-        self::createCleartextMessage($text)->verifyDetached(
+        return self::createCleartextMessage($text)->verifyDetached(
             $verificationKeys, self::readSignature($armoredSignature), $time
         );
     }
