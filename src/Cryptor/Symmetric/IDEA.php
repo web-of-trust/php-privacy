@@ -104,6 +104,11 @@ class IDEA extends BlockCipher
         return $x & self::MASK;
     }
 
+    /**
+     * @param array<int> $workingKey
+     * @param string $input
+     * @return string
+     */
     private static function ideaFunc(
         array $workingKey, string $input
     ): string
@@ -227,7 +232,7 @@ class IDEA extends BlockCipher
      * The function to invert the encryption subkey to the decryption subkey.
      * It also involves the multiplicative inverse and the additive inverse functions.
      *
-     * @param array $inKey
+     * @param array<int> $inKey
      * @return array<int>
      */
     private static function invertKey(array $inKey): array
@@ -277,6 +282,13 @@ class IDEA extends BlockCipher
         return $key;
     }
 
+    /**
+     * Generate working key.
+     *
+     * @param bool $forEncryption
+     * @param string $key
+     * @return array<int>
+     */
     private static function generateWorkingKey(bool $forEncryption, string $key): array
     {
         if ($forEncryption) {
