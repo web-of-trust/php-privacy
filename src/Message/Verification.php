@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Message;
 
+use phpseclib3\Common\Functions\Strings;
 use OpenPGP\Type\{
     SignaturePacketInterface,
     VerificationInterface,
@@ -46,7 +47,7 @@ class Verification implements VerificationInterface
      */
     public function getKeyID(bool $toHex = false): string
     {
-        return $toHex ? bin2hex($this->keyID) : $this->keyID;
+        return $toHex ? Strings::bin2hex($this->keyID) : $this->keyID;
     }
 
     /**

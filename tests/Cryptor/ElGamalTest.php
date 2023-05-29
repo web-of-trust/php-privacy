@@ -5,8 +5,8 @@ namespace OpenPGP\Tests\Cryptor;
 use phpseclib3\Crypt\Random;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Cryptor\Asymmetric\ElGamal;
-use OpenPGP\Cryptor\Asymmetric\ElGamalPrivateKey;
-use OpenPGP\Cryptor\Asymmetric\ElGamalPublicKey;
+use OpenPGP\Cryptor\Asymmetric\ElGamal\PrivateKey;
+use OpenPGP\Cryptor\Asymmetric\ElGamal\PublicKey;
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
@@ -73,8 +73,8 @@ class ElGamalTest extends OpenPGPTestCase
             '1446296390097566101617671091884237397227201126182287254457502825594360365391017793839243843109598388819'
         );
 
-        $publicKey = new ElGamalPublicKey($publicExponent, $prime, $generator);
-        $privateKey = new ElGamalPrivateKey($secretExponent, $publicExponent, $prime, $generator);
+        $publicKey = new PublicKey($publicExponent, $prime, $generator);
+        $privateKey = new PrivateKey($secretExponent, $publicExponent, $prime, $generator);
 
         $plainText = Random::string($prime->getLengthInBytes() - 1);
         $encrypted = $publicKey->encrypt($plainText);

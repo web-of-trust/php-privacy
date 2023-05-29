@@ -54,9 +54,9 @@ abstract class ElGamal extends AsymmetricKey
      *
      * @param int $lSize
      * @param int $nSize
-     * @return ElGamalPrivateKey
+     * @return ElGamal\PrivateKey
      */
-    public static function createKey(int $lSize = 2048, int $nSize = 224): ElGamalPrivateKey
+    public static function createKey(int $lSize = 2048, int $nSize = 224): ElGamal\PrivateKey
     {
         $one = new BigInteger(1);
         $two = new BigInteger(2);
@@ -82,7 +82,7 @@ abstract class ElGamal extends AsymmetricKey
 
         $x = BigInteger::randomRange($one, $q->subtract($one));
         $y = $g->powMod($x, $p);
-        return new ElGamalPrivateKey($x, $y, $p, $g);
+        return new ElGamal\PrivateKey($x, $y, $p, $g);
     }
 
     /**

@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Packet\Signature;
 
+use phpseclib3\Common\Functions\Strings;
 use OpenPGP\Enum\SignatureSubpacketType;
 use OpenPGP\Packet\SignatureSubpacket;
 
@@ -81,6 +82,6 @@ class IssuerKeyID extends SignatureSubpacket
      */
     public function getKeyID(bool $toHex = false): string
     {
-        return $toHex ? bin2hex($this->getData()) : $this->getData();
+        return $toHex ? Strings::bin2hex($this->getData()) : $this->getData();
     }
 }

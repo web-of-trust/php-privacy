@@ -13,14 +13,14 @@ namespace OpenPGP\Packet\Key;
 use phpseclib3\Crypt\Random;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
-use OpenPGP\Cryptor\Asymmetric\{
-    ElGamalPrivateKey,
-    ElGamalPublicKey,
+use OpenPGP\Cryptor\Asymmetric\ElGamal\{
+    PrivateKey,
+    PublicKey,
 };
 use OpenPGP\Type\SessionKeyParametersInterface;
 
 /**
- * ElGamalSessionKeyParameters class.
+ * ElGamal session key parameters class.
  * 
  * @package   OpenPGP
  * @category  Packet
@@ -62,11 +62,11 @@ class ElGamalSessionKeyParameters implements SessionKeyParametersInterface
      * Produces parameters by encrypting session key
      *
      * @param SessionKey $sessionKey
-     * @param ElGamalPublicKey $publicKey
+     * @param PublicKey $publicKey
      * @return self
      */
     public static function produceParameters(
-        SessionKey $sessionKey, ElGamalPublicKey $publicKey
+        SessionKey $sessionKey, PublicKey $publicKey
     ): self
     {
         $size = ($publicKey->getBitSize() + 7) >> 3;
@@ -117,10 +117,10 @@ class ElGamalSessionKeyParameters implements SessionKeyParametersInterface
     /**
      * Decrypts session key by using private key
      *
-     * @param ElGamalPrivateKey $privateKey
+     * @param PrivateKey $privateKey
      * @return SessionKey
      */
-    public function decrypt(ElGamalPrivateKey $privateKey): SessionKey
+    public function decrypt(PrivateKey $privateKey): SessionKey
     {
         return SessionKey::fromBytes(self::pkcs1Decode(
             $privateKey->decrypt(implode([

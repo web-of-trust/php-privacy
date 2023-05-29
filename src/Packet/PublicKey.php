@@ -11,6 +11,7 @@
 namespace OpenPGP\Packet;
 
 use DateTime;
+use phpseclib3\Common\Functions\Strings;
 use OpenPGP\Common\{
     Config,
     Helper,
@@ -157,7 +158,7 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
      */
     public function getFingerprint(bool $toHex = false): string
     {
-        return $toHex ? bin2hex($this->fingerprint) : $this->fingerprint;
+        return $toHex ? Strings::bin2hex($this->fingerprint) : $this->fingerprint;
     }
 
     /**
@@ -165,7 +166,7 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
      */
     public function getKeyID(bool $toHex = false): string
     {
-        return $toHex ? bin2hex($this->keyID) : $this->keyID;
+        return $toHex ? Strings::bin2hex($this->keyID) : $this->keyID;
     }
 
     /**

@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Packet\Signature;
 
+use phpseclib3\Common\Functions\Strings;
 use OpenPGP\Enum\SignatureSubpacketType;
 use OpenPGP\Packet\SignatureSubpacket;
 use OpenPGP\Type\KeyPacketInterface;
@@ -81,6 +82,6 @@ class IssuerFingerprint extends SignatureSubpacket
      */
     public function getKeyFingerprint(bool $toHex = false): string
     {
-        return $toHex ? bin2hex(substr($this->getData(), 1)) : substr($this->getData(), 1);
+        return $toHex ? Strings::bin2hex(substr($this->getData(), 1)) : substr($this->getData(), 1);
     }
 }

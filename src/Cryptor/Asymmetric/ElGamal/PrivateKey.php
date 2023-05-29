@@ -8,10 +8,11 @@
  * file that was distributed with this source code.
  */
 
-namespace OpenPGP\Cryptor\Asymmetric;
+namespace OpenPGP\Cryptor\Asymmetric\ElGamal;
 
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
+use OpenPGP\Cryptor\Asymmetric\ElGamal;
 
 /**
  * ElGamal private key class
@@ -21,7 +22,7 @@ use OpenPGP\Common\Helper;
  * @author     Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright  Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class ElGamalPrivateKey extends ElGamal
+class PrivateKey extends ElGamal
 {
     /**
      * Constructor
@@ -55,9 +56,9 @@ class ElGamalPrivateKey extends ElGamal
     /**
      * {@inheritdoc}
      */
-    public function getPublicKey(): ElGamalPublicKey
+    public function getPublicKey(): PublicKey
     {
-        return new ElGamalPublicKey(
+        return new PublicKey(
             $this->getY(), $this->getPrime(), $this->getGenerator()
         );
     }

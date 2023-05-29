@@ -12,7 +12,7 @@ namespace OpenPGP\Packet\Key;
 
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
-use OpenPGP\Cryptor\Asymmetric\ElGamalPublicKey;
+use OpenPGP\Cryptor\Asymmetric\ElGamal\PublicKey;
 use OpenPGP\Type\KeyParametersInterface;
 
 /**
@@ -28,7 +28,7 @@ class ElGamalPublicParameters implements KeyParametersInterface
     /**
      * ElGamal public key
      */
-    private readonly ElGamalPublicKey $publicKey;
+    private readonly PublicKey $publicKey;
 
     /**
      * Constructor
@@ -42,10 +42,10 @@ class ElGamalPublicParameters implements KeyParametersInterface
         private readonly BigInteger $prime,
         private readonly BigInteger $generator,
         private readonly BigInteger $exponent,
-        ?ElGamalPublicKey $publicKey = null
+        ?PublicKey $publicKey = null
     )
     {
-        $this->publicKey = $publicKey ?? new ElGamalPublicKey(
+        $this->publicKey = $publicKey ?? new PublicKey(
             $exponent, $prime, $generator
         );
     }
@@ -76,9 +76,9 @@ class ElGamalPublicParameters implements KeyParametersInterface
     /**
      * Gets public key
      *
-     * @return ElGamalPublicKey
+     * @return PublicKey
      */
-    public function getPublicKey(): ElGamalPublicKey
+    public function getPublicKey(): PublicKey
     {
         return $this->publicKey;
     }

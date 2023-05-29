@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Common;
 
+use phpseclib3\Common\Functions\Strings;
 use OpenPGP\Enum\ArmorType;
 
 /**
@@ -162,7 +163,7 @@ final class Armor
             }
         }
 
-        $data = base64_decode(implode($dataLines));
+        $data = Strings::base64_decode(implode($dataLines));
         if (($checksum != self::crc24Checksum($data)) &&
            (!empty($checksum) || $checksumRequired))
         {
@@ -205,14 +206,14 @@ final class Armor
             ArmorType::MultipartSection => [
                 sprintf(self::MULTIPART_SECTION_MESSAGE_BEGIN, $partIndex, $partTotal),
                 self::addHeader($customComment) . self::EOL,
-                chunk_split(base64_encode($data), self::TRUNK, self::EOL) . self::EOL,
+                chunk_split(Strings::base64_encode($data), self::TRUNK, self::EOL) . self::EOL,
                 '=' . self::crc24Checksum($data) . self::EOL,
                 sprintf(self::MULTIPART_SECTION_MESSAGE_END, $partIndex, $partTotal),
             ],
             ArmorType::MultipartLast => [
                 sprintf(self::MULTIPART_LAST_MESSAGE_BEGIN, $partIndex),
                 self::addHeader($customComment) . self::EOL,
-                chunk_split(base64_encode($data), self::TRUNK, self::EOL) . self::EOL,
+                chunk_split(Strings::base64_encode($data), self::TRUNK, self::EOL) . self::EOL,
                 '=' . self::crc24Checksum($data) . self::EOL,
                 sprintf(self::MULTIPART_LAST_MESSAGE_END, $partIndex),
             ],
@@ -222,35 +223,35 @@ final class Armor
                 str_replace('-', '- -', $text) . self::EOL,
                 self::SIGNATURE_BEGIN,
                 self::addHeader($customComment) . self::EOL,
-                chunk_split(base64_encode($data), self::TRUNK, self::EOL) . self::EOL,
+                chunk_split(Strings::base64_encode($data), self::TRUNK, self::EOL) . self::EOL,
                 '=' . self::crc24Checksum($data) . self::EOL,
                 self::SIGNATURE_END,
             ],
             ArmorType::Message => [
                 self::MESSAGE_BEGIN,
                 self::addHeader($customComment) . self::EOL,
-                chunk_split(base64_encode($data), self::TRUNK, self::EOL) . self::EOL,
+                chunk_split(Strings::base64_encode($data), self::TRUNK, self::EOL) . self::EOL,
                 '=' . self::crc24Checksum($data) . self::EOL,
                 self::MESSAGE_END,
             ],
             ArmorType::PublicKey => [
                 self::PUBLIC_KEY_BLOCK_BEGIN,
                 self::addHeader($customComment) . self::EOL,
-                chunk_split(base64_encode($data), self::TRUNK, self::EOL) . self::EOL,
+                chunk_split(Strings::base64_encode($data), self::TRUNK, self::EOL) . self::EOL,
                 '=' . self::crc24Checksum($data) . self::EOL,
                 self::PUBLIC_KEY_BLOCK_END,
             ],
             ArmorType::PrivateKey => [
                 self::PRIVATE_KEY_BLOCK_BEGIN,
                 self::addHeader($customComment) . self::EOL,
-                chunk_split(base64_encode($data), self::TRUNK, self::EOL) . self::EOL,
+                chunk_split(Strings::base64_encode($data), self::TRUNK, self::EOL) . self::EOL,
                 '=' . self::crc24Checksum($data) . self::EOL,
                 self::PRIVATE_KEY_BLOCK_END,
             ],
             ArmorType::Signature => [
                 self::SIGNATURE_BEGIN,
                 self::addHeader($customComment) . self::EOL,
-                chunk_split(base64_encode($data), self::TRUNK, self::EOL) . self::EOL,
+                chunk_split(Strings::base64_encode($data), self::TRUNK, self::EOL) . self::EOL,
                 '=' . self::crc24Checksum($data) . self::EOL,
                 self::SIGNATURE_END,
             ],
@@ -318,6 +319,6 @@ final class Armor
                 }
             }
         }
-        return base64_encode(substr(pack('N', $crc & 0xffffff), 1));
+        return Strings::base64_encode(substr(pack('N', $crc & 0xffffff), 1));
     }
 }

@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Common;
 
+use phpseclib3\Common\Functions\Strings;
 use phpseclib3\Crypt\Random;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Enum\SymmetricAlgorithm;
@@ -50,7 +51,7 @@ final class Helper
      */
     public static function bin2BigInt(string $bytes): BigInteger
     {
-        return new BigInteger(bin2hex($bytes), 16);
+        return new BigInteger(Strings::bin2hex($bytes), 16);
     }
 
     /**
