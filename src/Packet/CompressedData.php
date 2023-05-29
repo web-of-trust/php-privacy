@@ -88,7 +88,7 @@ class CompressedData extends AbstractPacket
     /**
      * Build compressed data packet from packet array
      *
-     * @param array $packets
+     * @param array<OpenPGP\Type\PacketInterface> $packets
      * @param Algorithm $algorithm
      * @return self
      */

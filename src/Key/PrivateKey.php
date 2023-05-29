@@ -114,7 +114,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
      * The generated primary key will have signing capabilities.
      * By default, one subkey with encryption capabilities is also generated.
      *
-     * @param array $userIDs
+     * @param array<string> $userIDs
      * @param string $passphrase
      * @param KeyType $type
      * @param RSAKeySize $rsaKeySize

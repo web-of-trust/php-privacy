@@ -43,32 +43,32 @@ class User implements PacketContainerInterface
     /**
      * Revocation signature packets
      * 
-     * @var array
+     * @var array<SignaturePacketInterface>
      */
-    private array $revocationSignatures;
+    private readonly array $revocationSignatures;
 
     /**
      * Self certification signature packets
      * 
-     * @var array
+     * @var array<SignaturePacketInterface>
      */
-    private array $selfCertifications;
+    private readonly array $selfCertifications;
 
     /**
      * Other certification signature packets
      * 
-     * @var array
+     * @var array<SignaturePacketInterface>
      */
-    private array $otherCertifications;
+    private readonly array $otherCertifications;
 
     /**
      * Constructor
      *
      * @param KeyInterface $mainKey
      * @param UserIDPacketInterface $userIDPacket
-     * @param array $revocationSignatures
-     * @param array $selfCertifications
-     * @param array $otherCertifications
+     * @param array<SignaturePacketInterface> $revocationSignatures
+     * @param array<SignaturePacketInterface> $selfCertifications
+     * @param array<SignaturePacketInterface> $otherCertifications
      * @return self
      */
     public function __construct(
@@ -116,7 +116,7 @@ class User implements PacketContainerInterface
     /**
      * Gets revocation signatures
      * 
-     * @return array
+     * @return array<SignaturePacketInterface>
      */
     public function getRevocationCertifications(): array
     {
@@ -126,7 +126,7 @@ class User implements PacketContainerInterface
     /**
      * Gets self signatures
      * 
-     * @return array
+     * @return array<SignaturePacketInterface>
      */
     public function getSelfCertifications(): array
     {
@@ -158,7 +158,7 @@ class User implements PacketContainerInterface
     /**
      * Gets other signatures
      * 
-     * @return array
+     * @return array<SignaturePacketInterface>
      */
     public function getOtherCertifications(): array
     {

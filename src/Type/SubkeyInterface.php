@@ -75,6 +75,20 @@ interface SubkeyInterface
     function getKeyStrength(): int;
 
     /**
+     * Return subkey is signing or verification key
+     * 
+     * @return bool
+     */
+    function isSigningKey(): bool;
+
+    /**
+     * Return subkey is encryption or decryption key
+     * 
+     * @return bool
+     */
+    function isEncryptionKey(): bool;
+
+    /**
      * Checks if a binding signature of a subkey is revoked
      * 
      * @param KeyPacketInterface $keyPacket

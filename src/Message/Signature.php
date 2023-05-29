@@ -40,12 +40,15 @@ use OpenPGP\Type\{
  */
 class Signature implements SignatureInterface
 {
+    /**
+     * @var array<SignaturePacketInterface>
+     */
     private readonly array $signaturePackets;
 
     /**
      * Constructor
      *
-     * @param array $signaturePackets
+     * @param array<SignaturePacketInterface> $signaturePackets
      * @return self
      */
     public function __construct(

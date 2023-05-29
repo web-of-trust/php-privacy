@@ -17,6 +17,7 @@ use OpenPGP\Packet\{
     PacketList,
     Signature,
 };
+use OpenPGP\Packet\Signature\KeyFlags;
 use OpenPGP\Type\{
     KeyInterface,
     KeyPacketInterface,
@@ -40,14 +41,14 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
     /**
      * Revocation signature packets
      * 
-     * @var array
+     * @var array<SignaturePacketInterface>
      */
     private array $revocationSignatures;
 
     /**
      * Binding signature packets
      * 
-     * @var array
+     * @var array<SignaturePacketInterface>
      */
     private array $bindingSignatures;
 
@@ -56,8 +57,8 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
      *
      * @param KeyInterface $mainKey
      * @param SubkeyPacketInterface $keyPacket
-     * @param array $revocationSignatures
-     * @param array $bindingSignatures
+     * @param array<SignaturePacketInterface> $revocationSignatures
+     * @param array<SignaturePacketInterface> $bindingSignatures
      * @return self
      */
     public function __construct(
@@ -90,7 +91,7 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
     /**
      * Gets revocation signatures
      * 
-     * @return array
+     * @return array<SignaturePacketInterface>
      */
     public function getRevocationSignatures(): array
     {
@@ -100,7 +101,7 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
     /**
      * Gets binding signatures
      * 
-     * @return array
+     * @return array<SignaturePacketInterface>
      */
     public function getBindingSignatures(): array
     {
@@ -188,6 +189,38 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
     /**
      * {@inheritdoc}
      */
+    public function isSigningKey(): bool
+    {
+        if (!$this->keyPacket->isSigningKey()) {
+            return false;
+        }
+        $keyFlags = $this->getLatestBindingSignature()?->getKeyFlags();
+        if (($keyFlags instanceof KeyFlags) && !$keyFlags->isSignData()) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isEncryptionKey(): bool
+    {
+        if (!$this->keyPacket->isEncryptionKey()) {
+            return false;
+        }
+        $keyFlags = $this->getLatestBindingSignature()?->getKeyFlags();
+        if (($keyFlags instanceof KeyFlags) &&
+           !($keyFlags->isEncryptCommunication() || $keyFlags->isEncryptStorage()))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isRevoked(
         ?KeyPacketInterface $keyPacket = null,
         ?SignaturePacketInterface $certificate = null,
@@ -238,42 +271,6 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
             )) {
                 return false;
             }
-        }
-        return true;
-    }
-
-    /**
-     * Return subkey is signing or verification key
-     * 
-     * @return bool
-     */
-    public function isSigningKey(): bool
-    {
-        if (!$this->keyPacket->isSigningKey()) {
-            return false;
-        }
-        $keyFlags = $this->getLatestBindingSignature()?->getKeyFlags();
-        if (!empty($keyFlags) && !$keyFlags->isSignData()) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Return subkey is encryption or decryption key
-     * 
-     * @return bool
-     */
-    public function isEncryptionKey(): bool
-    {
-        if (!$this->keyPacket->isEncryptionKey()) {
-            return false;
-        }
-        $keyFlags = $this->getLatestBindingSignature()?->getKeyFlags();
-        if (!empty($keyFlags) &&
-           !($keyFlags->isEncryptCommunication() || $keyFlags->isEncryptStorage()))
-        {
-            return false;
         }
         return true;
     }

@@ -18,6 +18,11 @@ use OpenPGP\Enum\{
     SignatureType,
 };
 use OpenPGP\Packet\PacketList;
+use OpenPGP\Packet\Signature\{
+    EmbeddedSignature,
+    KeyExpirationTime,
+    KeyFlags,
+};
 use OpenPGP\Type\{
     KeyInterface,
     KeyPacketInterface,
@@ -241,19 +246,21 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
                         continue;
                     }
                     $signature = $subkey->getLatestBindingSignature()?->getEmbeddedSignature();
-                    if (empty($signature)) {
-                        throw new \UnexpectedValueException('Missing embedded signature');
+                    if ($signature instanceof EmbeddedSignature) {
+                        // verify embedded signature
+                        if ($signature->getSignature()->verify(
+                            $subkey->getKeyPacket(),
+                            implode([
+                                $this->getKeyPacket()->getSignBytes(),
+                                $subkey->getKeyPacket()->getSignBytes(),
+                            ]),
+                            $time
+                        )) {
+                            return $subkey->getKeyPacket();
+                        }
                     }
-                    // verify embedded signature
-                    if ($signature->verify(
-                        $subkey->getKeyPacket(),
-                        implode([
-                            $this->getKeyPacket()->getSignBytes(),
-                            $subkey->getKeyPacket()->getSignBytes(),
-                        ]),
-                        $time
-                    )) {
-                        return $subkey->getKeyPacket();
+                    else {
+                        throw new \UnexpectedValueException('Missing embedded signature');
                     }
                 }
             }
@@ -487,7 +494,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
         }
         $primaryUser = $this->getPrimaryUser($time);
         $keyFlags = $primaryUser->getLatestSelfCertification()?->getKeyFlags();
-        if (!empty($keyFlags) && !$keyFlags->isSignData()) {
+        if (($keyFlags instanceof KeyFlags) && !$keyFlags->isSignData()) {
             return false;
         }
         return true;
@@ -505,7 +512,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
         }
         $primaryUser = $this->getPrimaryUser($time);
         $keyFlags = $primaryUser->getLatestSelfCertification()?->getKeyFlags();
-        if (!empty($keyFlags) &&
+        if (($keyFlags instanceof KeyFlags) &&
            !($keyFlags->isEncryptCommunication() || $keyFlags->isEncryptStorage()))
         {
             return false;
@@ -531,7 +538,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
         );
         foreach ($signatures as $signature) {
             $keyExpirationTime = $signature->getKeyExpirationTime();
-            if (!empty($keyExpirationTime)) {
+            if ($keyExpirationTime instanceof KeyExpirationTime) {
                 $expirationTime = $keyExpirationTime->getExpirationTime();
                 $creationTime = $signature->getSignatureCreationTime() ?? new DateTime();
                 $keyExpiry = $creationTime->setTimestamp(
