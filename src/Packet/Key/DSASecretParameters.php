@@ -12,6 +12,7 @@ namespace OpenPGP\Packet\Key;
 
 use phpseclib3\Crypt\DSA;
 use phpseclib3\Crypt\DSA\PrivateKey;
+use phpseclib3\Crypt\DSA\Formats\Keys\PKCS8;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{
@@ -87,14 +88,14 @@ class DSASecretParameters implements SignableParametersInterface
     public static function generate(DHKeySize $keySize): self
     {
         $privateKey = DSA::createKey($keySize->lSize(), $keySize->nSize());
-        $rawKey = $privateKey->toString('Raw');
+        $rawKey = PKCS8::load($privateKey->toString('PKCS8'));
         return new self(
             $rawKey['x'],
             new DSAPublicParameters(
                 $rawKey['p'],
                 $rawKey['q'],
                 $rawKey['g'],
-                $rawKey['y'],
+                $rawKey['g']->powMod($rawKey['x'], $rawKey['p']),
                 $privateKey->getPublicKey(),
             ),
             $privateKey

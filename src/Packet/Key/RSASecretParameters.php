@@ -12,6 +12,7 @@ namespace OpenPGP\Packet\Key;
 
 use phpseclib3\Crypt\RSA;
 use phpseclib3\Crypt\RSA\PrivateKey;
+use phpseclib3\Crypt\RSA\Formats\Keys\PKCS8;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{
@@ -103,17 +104,17 @@ class RSASecretParameters implements SignableParametersInterface
     public static function generate(RSAKeySize $keySize): self
     {
         $privateKey = RSA::createKey($keySize->value);
-        $rawKey = $privateKey->toString('Raw');
+        $rawKey = PKCS8::load($privateKey->toString('PKCS8'));
         $primeP = $rawKey['primes'][1];
         $primeQ = $rawKey['primes'][2];
         return new self(
-            $rawKey['d'],
+            $rawKey['privateExponent'],
             $primeP,
             $primeQ,
             $primeP->modInverse($primeQ),
             new RSAPublicParameters(
-                $rawKey['n'],
-                $rawKey['e'],
+                $rawKey['modulus'],
+                $rawKey['publicExponent'],
                 $privateKey->getPublicKey()
             ),
             $privateKey
