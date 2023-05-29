@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Packet;
 
+use phpseclib3\Common\Functions\Strings;
 use phpseclib3\Crypt\Random;
 use OpenPGP\Enum\{
     KeyAlgorithm,
@@ -125,11 +126,12 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     /**
      * Gets public key ID
      *
+     * @param bool $toHex
      * @return string
      */
-    public function getPublicKeyID(): string
+    public function getPublicKeyID(bool $toHex = false): string
     {
-        return $this->publicKeyID;
+        return $toHex ? Strings::bin2hex($this->publicKeyID) : $this->publicKeyID;
     }
 
     /**

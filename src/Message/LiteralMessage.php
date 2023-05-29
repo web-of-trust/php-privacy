@@ -397,7 +397,8 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
             foreach ($pkeskPackets as $pkesk) {
                 foreach ($decryptionKeys as $key) {
                     $keyPacket = $key->getEncryptionKeyPacket();
-                    if ($pkesk->getPublicKeyAlgorithm() === $keyPacket->getKeyAlgorithm()) {
+                    if ($pkesk->getPublicKeyAlgorithm() === $keyPacket->getKeyAlgorithm() &&
+                        $pkesk->getPublicKeyID() === $keyPacket->getKeyID()) {
                         try {
                             $sessionKeys[] = $pkesk->decrypt($keyPacket)->getSessionKey();
                             break;
