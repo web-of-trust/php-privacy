@@ -500,13 +500,13 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     ): bool
     {
         if ($this->getIssuerKeyID() !== $verifyKey->getKeyID()) {
-            $this->getLogger()->error(
+            $this->getLogger()->warning(
                 'Signature was not issued by the given public key.'
             );
             return false;
         }
         if ($this->keyAlgorithm !== $verifyKey->getKeyAlgorithm()) {
-            $this->getLogger()->error(
+            $this->getLogger()->warning(
                 'Public key algorithm used to sign signature does not match issuer key algorithm.'
             );
             return false;
@@ -516,7 +516,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         if ($expirationTime instanceof DateTime) {
             $time = $time ?? new DateTime();
             if ($expirationTime < $time) {
-                $this->getLogger()->error(
+                $this->getLogger()->warning(
                     'Signature is expired at {expirationTime}.',
                     [
                         'expirationTime' => $expirationTime->format(
@@ -540,7 +540,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             strtolower($this->hashAlgorithm->name), $message, true
         );
         if ($this->signedHashValue !== substr($hash, 0, 2)) {
-            $this->getLogger()->error(
+            $this->getLogger()->warning(
                 'Signed digest did not match.'
             );
             return false;
@@ -553,7 +553,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             );
         }
         else {
-            $this->getLogger()->error(
+            $this->getLogger()->warning(
                 'Verify key parameters is not verifiable.'
             );
             return false;

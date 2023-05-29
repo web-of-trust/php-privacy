@@ -19,7 +19,6 @@ use OpenPGP\Enum\{
     ArmorType,
     CompressionAlgorithm,
     LiteralFormat,
-    PacketTag,
     SymmetricAlgorithm,
 };
 use OpenPGP\Packet\Signature as SignaturePacket;
@@ -29,6 +28,7 @@ use OpenPGP\Packet\{
     LiteralData,
     PacketList,
     PublicKeyEncryptedSessionKey,
+    SymEncryptedData,
     SymEncryptedIntegrityProtectedData,
     SymEncryptedSessionKey,
 };
@@ -320,12 +320,12 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
         $packets = $this->getPackets();
         $encryptedPackets = array_filter(
             $packets,
-            static fn ($packet) => $packet->getTag() === PacketTag::SymEncryptedIntegrityProtectedData
+            static fn ($packet) => $packet instanceof SymEncryptedIntegrityProtectedData
         );
         if (empty($encryptedPackets) && $allowUnauthenticatedMessages) {
             $encryptedPackets = array_filter(
                 $packets,
-                static fn ($packet) => $packet->getTag() === PacketTag::SymEncryptedData
+                static fn ($packet) => $packet instanceof SymEncryptedData
             );
         }
         if (empty($encryptedPackets)) {
@@ -374,7 +374,7 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
             Config::getLogger()->debug('Decrypt session keys by passwords.');
             $skeskPackets = array_filter(
                 $packets,
-                static fn ($packet) => $packet->getTag() === PacketTag::SymEncryptedSessionKey
+                static fn ($packet) => $packet instanceof SymEncryptedSessionKey
             );
             foreach ($skeskPackets as $skesk) {
                 foreach ($passwords as $password) {
@@ -392,7 +392,7 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
             Config::getLogger()->debug('Decrypt session keys by public keys.');
             $pkeskPackets = array_filter(
                 $packets,
-                static fn ($packet) => $packet->getTag() === PacketTag::PublicKeyEncryptedSessionKey
+                static fn ($packet) => $packet instanceof PublicKeyEncryptedSessionKey
             );
             foreach ($pkeskPackets as $pkesk) {
                 foreach ($decryptionKeys as $key) {
