@@ -46,7 +46,7 @@ class RSASecretParameters implements SignableParametersInterface
      * @param BigInteger $primeP
      * @param BigInteger $primeQ
      * @param BigInteger $coefficient
-     * @param RSAPublicParameters $publicParams
+     * @param KeyParametersInterface $publicParams
      * @param PrivateKey $privateKey
      * @return self
      */
