@@ -61,10 +61,13 @@ class PublicKey extends ElGamal
      */
     public function toString($type, array $options = []): string
     {
-        return (string) json_encode([
-            'p' => $this->getPrime(),
-            'g' => $this->getGenerator(),
-            'y' => $this->getY(),
+        return implode([
+            pack('n', $this->getPrime()->getLength()),
+            $this->getPrime()->toBytes(),
+            pack('n', $this->getGenerator()->getLength()),
+            $this->getGenerator()->toBytes(),
+            pack('n', $this->getY()->getLength()),
+            $this->getY()->toBytes(),
         ]);
     }
 }
