@@ -17,6 +17,7 @@ use phpseclib3\File\ASN1;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\CurveOid;
+use OpenPGP\Type\KeyParametersInterface;
 
 /**
  * ECDH secret parameters class
@@ -29,30 +30,14 @@ use OpenPGP\Enum\CurveOid;
 class ECDHSecretParameters extends ECSecretParameters
 {
     /**
-     * Constructor
-     *
-     * @param BigInteger $d
-     * @param ECDHPublicParameters $publicParams
-     * @return self
-     */
-    public function __construct(
-        BigInteger $d,
-        ECDHPublicParameters $publicParams,
-        ?PrivateKey $privateKey = null
-    )
-    {
-        parent::__construct($d, $publicParams, $privateKey);
-    }
-
-    /**
      * Reads parameters from bytes
      *
      * @param string $bytes
-     * @param ECDHPublicParameters $publicParams
+     * @param KeyParametersInterface $publicParams
      * @return self
      */
     public static function fromBytes(
-        string $bytes, ECDHPublicParameters $publicParams
+        string $bytes, KeyParametersInterface $publicParams
     ): self
     {
         return new self(

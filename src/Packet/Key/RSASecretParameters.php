@@ -55,16 +55,16 @@ class RSASecretParameters implements SignableParametersInterface
         private readonly BigInteger $primeP,
         private readonly BigInteger $primeQ,
         private readonly BigInteger $coefficient,
-        private readonly RSAPublicParameters $publicParams,
+        private readonly KeyParametersInterface $publicParams,
         ?PrivateKey $privateKey = null
     )
     {
         $this->privateKey = $privateKey ?? RSA::load([
-            'e' => $publicParams->getExponent(),
-            'n' => $publicParams->getModulus(),
-            'd' => $exponent,
+            'privateExponent' => $exponent,
             'p' => $primeP,
             'q' => $primeQ,
+            'u' => $coefficient,
+            ...$publicParams->getParameters(),
         ]);
     }
 
@@ -72,11 +72,11 @@ class RSASecretParameters implements SignableParametersInterface
      * Reads parameters from bytes
      *
      * @param string $bytes
-     * @param RSAPublicParameters $publicParams
+     * @param KeyParametersInterface $publicParams
      * @return self
      */
     public static function fromBytes(
-        string $bytes, RSAPublicParameters $publicParams
+        string $bytes, KeyParametersInterface $publicParams
     ): self
     {
         $exponent = Helper::readMPI($bytes);
@@ -182,29 +182,40 @@ class RSASecretParameters implements SignableParametersInterface
     /**
      * {@inheritdoc}
      */
+    public function getParameters(): array
+    {
+        return PKCS8::load($this->privateKey->toString('PKCS8'));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isValid(): bool
     {
-        $one = new BigInteger(1);
-        $two = new BigInteger(2);
+        if ($this->publicParams instanceof RSAPublicParameters) {
+            $one = new BigInteger(1);
+            $two = new BigInteger(2);
 
-        // expect pq = n
-        if (!$this->primeP->multiply($this->primeQ)->equals($this->publicParams->getModulus())) {
-            return false;
+            // expect pq = n
+            if (!$this->primeP->multiply($this->primeQ)->equals($this->publicParams->getModulus())) {
+                return false;
+            }
+
+            // expect p*u = 1 mod q
+            list(, $c) = $this->primeP->multiply($this->coefficient)->divide($this->primeQ);
+            if (!$c->equals($one)) {
+                return false;
+            }
+
+            $nSizeOver3 = (int) floor($this->publicParams->getModulus()->getLength() / 3);
+            $r = BigInteger::randomRange($one, $two->bitwise_leftShift($nSizeOver3));
+            $rde = $r->multiply($this->exponent)->multiply($this->publicParams->getExponent());
+
+            list(, $p) = $rde->divide($this->primeP->subtract($one));
+            list(, $q) = $rde->divide($this->primeQ->subtract($one));
+            return $p->equals($r) && $q->equals($r);
         }
-
-        // expect p*u = 1 mod q
-        list(, $c) = $this->primeP->multiply($this->coefficient)->divide($this->primeQ);
-        if (!$c->equals($one)) {
-            return false;
-        }
-
-        $nSizeOver3 = (int) floor($this->publicParams->getModulus()->getLength() / 3);
-        $r = BigInteger::randomRange($one, $two->bitwise_leftShift($nSizeOver3));
-        $rde = $r->multiply($this->exponent)->multiply($this->publicParams->getExponent());
-
-        list(, $p) = $rde->divide($this->primeP->subtract($one));
-        list(, $q) = $rde->divide($this->primeQ->subtract($one));
-        return $p->equals($r) && $q->equals($r);
+        return false;
     }
 
     /**

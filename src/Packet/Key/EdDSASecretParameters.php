@@ -20,7 +20,10 @@ use OpenPGP\Enum\{
     CurveOid,
     HashAlgorithm,
 };
-use OpenPGP\Type\SignableParametersInterface;
+use OpenPGP\Type\{
+    KeyParametersInterface,
+    SignableParametersInterface,
+};
 
 /**
  * EdDSA secret parameters class
@@ -35,31 +38,14 @@ class EdDSASecretParameters extends ECSecretParameters implements SignableParame
     const SIGNATURE_LENGTH = 64;
 
     /**
-     * Constructor
-     *
-     * @param BigInteger $d
-     * @param EdDSAPublicParameters $publicParams
-     * @param PrivateKey $privateKey
-     * @return self
-     */
-    public function __construct(
-        BigInteger $d,
-        EdDSAPublicParameters $publicParams,
-        ?PrivateKey $privateKey = null
-    )
-    {
-        parent::__construct($d, $publicParams, $privateKey);
-    }
-
-    /**
      * Reads parameters from bytes
      *
      * @param string $bytes
-     * @param EdDSAPublicParameters $publicParams
+     * @param KeyParametersInterface $publicParams
      * @return self
      */
     public static function fromBytes(
-        string $bytes, EdDSAPublicParameters $publicParams
+        string $bytes, KeyParametersInterface $publicParams
     ): self
     {
         return new self(

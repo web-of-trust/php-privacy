@@ -124,6 +124,18 @@ class ElGamalPublicParameters implements KeyParametersInterface
     /**
      * {@inheritdoc}
      */
+    public function getParameters(): array
+    {
+        return [
+            'p' => $this->prime,
+            'g' => $this->generator,
+            'y' => $this->exponent,
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isValid(): bool
     {
         return true;

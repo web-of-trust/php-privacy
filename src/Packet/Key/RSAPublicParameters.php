@@ -12,6 +12,7 @@ namespace OpenPGP\Packet\Key;
 
 use phpseclib3\Crypt\RSA;
 use phpseclib3\Crypt\RSA\PublicKey;
+use phpseclib3\Crypt\RSA\Formats\Keys\PKCS8;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\HashAlgorithm;
@@ -49,8 +50,8 @@ class RSAPublicParameters implements VerifiableParametersInterface
     )
     {
         $this->publicKey = $publicKey ?? RSA::load([
-            'n' => $modulus,
-            'e' => $exponent,
+            'modulus' => $modulus,
+            'publicExponent' => $exponent,
         ]);
     }
 
@@ -105,6 +106,14 @@ class RSAPublicParameters implements VerifiableParametersInterface
     public function getPublicParams(): KeyParametersInterface
     {
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParameters(): array
+    {
+        return PKCS8::load($this->publicKey->toString('PKCS8'));
     }
 
     /**

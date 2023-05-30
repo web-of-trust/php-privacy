@@ -37,20 +37,21 @@ class ElGamalSecretParameters implements KeyParametersInterface
      * Constructor
      *
      * @param BigInteger $exponent
-     * @param ElGamalPublicParameters $publicParams
+     * @param KeyParametersInterface $publicParams
      * @return self
      */
     public function __construct(
         private readonly BigInteger $exponent,
-        private readonly ElGamalPublicParameters $publicParams,
+        private readonly KeyParametersInterface $publicParams,
         ?PrivateKey $privateKey = null
     )
     {
+        $parameters = $publicParams->getParameters();
         $this->privateKey = $privateKey ?? new PrivateKey(
             $exponent,
-            $publicParams->getExponent(),
-            $publicParams->getPrime(),
-            $publicParams->getGenerator()
+            $parameters['y'],
+            $parameters['p'],
+            $parameters['g']
         );
     }
 
@@ -58,11 +59,11 @@ class ElGamalSecretParameters implements KeyParametersInterface
      * Reads parameters from bytes
      *
      * @param string $bytes
-     * @param ElGamalPublicParameters $publicParams
+     * @param KeyParametersInterface $publicParams
      * @return self
      */
     public static function fromBytes(
-        string $bytes, ElGamalPublicParameters $publicParams
+        string $bytes, KeyParametersInterface $publicParams
     ): self
     {
         return new self(
@@ -122,41 +123,55 @@ class ElGamalSecretParameters implements KeyParametersInterface
     /**
      * {@inheritdoc}
      */
+    public function getParameters(): array
+    {
+        return [
+            'x' => $this->exponent,
+            ...$this->publicParams->getParameters(),
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isValid(): bool
     {
-        $one = new BigInteger(1);
-        $two = new BigInteger(2);
+        if ($this->publicParams instanceof ElGamalPublicParameters) {
+            $one = new BigInteger(1);
+            $two = new BigInteger(2);
 
-        $prime = $this->publicParams->getPrime();
-        $generator = $this->publicParams->getGenerator();
-        $exponent = $this->publicParams->getExponent();
+            $prime = $this->publicParams->getPrime();
+            $generator = $this->publicParams->getGenerator();
+            $exponent = $this->publicParams->getExponent();
 
-        // Check that 1 < g < p
-        if ($generator->compare($one) <= 0 || $generator->compare($prime) >= 0) {
-            return false;
+            // Check that 1 < g < p
+            if ($generator->compare($one) <= 0 || $generator->compare($prime) >= 0) {
+                return false;
+            }
+
+            // Expect p-1 to be large
+            $pSize = $prime->getLength();
+            if ($pSize < 1023) {
+                return false;
+            }
+
+            // g should have order p-1
+            // Check that g ** (p-1) = 1 mod p
+            if (!$generator->modPow($prime->subtract($one), $prime)->equals($one)) {
+                return false;
+            }
+
+            // Re-derive public key y' = g ** x mod p
+            // Expect y == y'
+            // Blinded exponentiation computes g**{r(p-1) + x} to compare to y
+            $r = BigInteger::randomRange(
+                $two->bitwise_leftShift($pSize - 1), $two->bitwise_leftShift($pSize)
+            );
+            $rqx = $prime->subtract($one)->multiply($r)->add($this->exponent);
+
+            return $exponent->equals($generator->modPow($rqx, $prime));
         }
-
-        // Expect p-1 to be large
-        $pSize = $prime->getLength();
-        if ($pSize < 1023) {
-            return false;
-        }
-
-        // g should have order p-1
-        // Check that g ** (p-1) = 1 mod p
-        if (!$generator->modPow($prime->subtract($one), $prime)->equals($one)) {
-            return false;
-        }
-
-        // Re-derive public key y' = g ** x mod p
-        // Expect y == y'
-        // Blinded exponentiation computes g**{r(p-1) + x} to compare to y
-        $r = BigInteger::randomRange(
-            $two->bitwise_leftShift($pSize - 1), $two->bitwise_leftShift($pSize)
-        );
-        $rqx = $prime->subtract($one)->multiply($r)->add($this->exponent);
-
-        return $exponent->equals($generator->modPow($rqx, $prime));
+        return false;
     }
 
     /**

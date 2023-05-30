@@ -21,11 +21,18 @@ namespace OpenPGP\Type;
 interface KeyParametersInterface
 {
     /**
-     * Returns public key parameters
+     * Gets public parameters
      * 
      * @return KeyParametersInterface
      */
     function getPublicParams(): KeyParametersInterface;
+
+    /**
+     * Gets key parameters
+     * 
+     * @return array
+     */
+    function getParameters(): array;
 
     /**
      * Returns key parameters is valid

@@ -17,7 +17,10 @@ use phpseclib3\File\ASN1;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\CurveOid;
-use OpenPGP\Type\SignableParametersInterface;
+use OpenPGP\Type\{
+    KeyParametersInterface,
+    SignableParametersInterface,
+};
 
 /**
  * ECDSA secret parameters class
@@ -32,31 +35,14 @@ class ECDSASecretParameters extends ECSecretParameters implements SignableParame
     use DSASigningTrait;
 
     /**
-     * Constructor
-     *
-     * @param BigInteger $d
-     * @param ECDSAPublicParameters $publicParams
-     * @param PrivateKey $privateKey
-     * @return self
-     */
-    public function __construct(
-        BigInteger $d,
-        ECDSAPublicParameters $publicParams,
-        ?PrivateKey $privateKey = null
-    )
-    {
-        parent::__construct($d, $publicParams, $privateKey);
-    }
-
-    /**
      * Reads parameters from bytes
      *
      * @param string $bytes
-     * @param ECDSAPublicParameters $publicParams
+     * @param KeyParametersInterface $publicParams
      * @return self
      */
     public static function fromBytes(
-        string $bytes, ECDSAPublicParameters $publicParams
+        string $bytes, KeyParametersInterface $publicParams
     ): self
     {
         return new self(
