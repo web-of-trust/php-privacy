@@ -73,7 +73,7 @@ abstract class ECPublicParameters implements KeyParametersInterface
                     break;
                 default:
                     $key = PKCS8::savePublicKey(
-                        $curve, PKCS8::extractPoint("\x0" . $q->toBytes(), $curve)
+                        $curve, PKCS8::extractPoint("\x00" . $q->toBytes(), $curve)
                     );
                     break;
             }
