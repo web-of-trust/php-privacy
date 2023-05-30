@@ -1,5 +1,5 @@
 parameters:
-    level: max
+    level: 5
     checkGenericClassInNonGenericObjectType: false
     treatPhpDocTypesAsCertain: false
     paths:
