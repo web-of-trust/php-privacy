@@ -51,7 +51,7 @@ class RSASessionKeyParameters implements SessionKeyParametersInterface
         string $bytes
     ): self
     {
-        return new RSASessionKeyParameters(Helper::readMPI($bytes));
+        return new self(Helper::readMPI($bytes));
     }
 
     /**
