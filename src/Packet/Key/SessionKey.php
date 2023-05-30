@@ -12,6 +12,7 @@ namespace OpenPGP\Packet\Key;
 
 use phpseclib3\Crypt\Random;
 use OpenPGP\Enum\SymmetricAlgorithm;
+use OpenPGP\Type\SessionKeyInterface;
 
 /**
  * Session key class
@@ -21,7 +22,7 @@ use OpenPGP\Enum\SymmetricAlgorithm;
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class SessionKey
+class SessionKey implements SessionKeyInterface
 {
     /**
      * Constructor
@@ -76,9 +77,7 @@ class SessionKey
     }
 
     /**
-     * Gets encryption key
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getEncryptionKey(): string
     {
@@ -86,9 +85,7 @@ class SessionKey
     }
 
     /**
-     * Get algorithm to encrypt the message with
-     *
-     * @return SymmetricAlgorithm
+     * {@inheritdoc}
      */
     public function getSymmetric(): SymmetricAlgorithm
     {
@@ -96,22 +93,7 @@ class SessionKey
     }
 
     /**
-     * Serializes session key to bytes
-     * 
-     * @return string
-     */
-    public function toBytes(): string
-    {
-        return implode([
-            chr($this->symmetric->value),
-            $this->encryptionKey,
-        ]);
-    }
-
-    /**
-     * Compute checksum
-     * 
-     * @return string
+     * {@inheritdoc}
      */
     public function computeChecksum(): string
     {
@@ -121,5 +103,16 @@ class SessionKey
           $sum = ($sum + ord($this->encryptionKey[$i])) & 0xffff;
         }
         return pack('n', $sum);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toBytes(): string
+    {
+        return implode([
+            chr($this->symmetric->value),
+            $this->encryptionKey,
+        ]);
     }
 }
