@@ -289,19 +289,13 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
         ?DateTime $time = null
     ): self
     {
-        $revocationSignatures = $this->revocationSignatures;
-        $revocationSignatures[] = Signature::createSubkeyRevocation(
+        $this->revocationSignatures[] = Signature::createSubkeyRevocation(
             $signKey->getSigningKeyPacket(),
             $this->keyPacket,
             $revocationReason,
             $time
         );
-        return new self(
-            $this->mainKey,
-            $this->keyPacket,
-            $revocationSignatures,
-            $this->bindingSignatures
-        );
+        return $this;
     }
 
     /**

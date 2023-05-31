@@ -106,6 +106,14 @@ interface KeyInterface extends ArmorableInterface, PacketContainerInterface
     ): KeyPacketInterface;
 
     /**
+     * Returns primary user
+     * 
+     * @param DateTime $time
+     * @return UserInterface
+     */
+    function getPrimaryUser(?DateTime $time = null): UserInterface;
+
+    /**
      * Return key is private
      * 
      * @return bool

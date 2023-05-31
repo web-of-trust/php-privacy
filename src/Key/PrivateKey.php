@@ -467,6 +467,32 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function certifyKey(
+        KeyInterface $key, ?DateTime $time = null
+    ): KeyInterface
+    {
+        $key->getPrimaryUser()->certify($this, $time);
+        return $key;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function revokeKey(
+        KeyInterface $key,
+        string $revocationReason = '',
+        ?DateTime $time = null
+    ): KeyInterface
+    {
+        $key->getPrimaryUser()->revoke(
+            $this, $revocationReason, $time
+        );
+        return $key;
+    }
+
+    /**
      * Revokes User,
      * and returns a clone of the key object with the new revoked user.
      * 

@@ -30,6 +30,7 @@ use OpenPGP\Type\{
     SignaturePacketInterface,
     SubkeyPacketInterface,
     UserIDPacketInterface,
+    UserInterface,
 };
 use Psr\Log\{
     LoggerAwareInterface,
@@ -54,14 +55,14 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
      * 
      * @var array<SignaturePacketInterface>
      */
-    private readonly array $revocationSignatures;
+    private array $revocationSignatures;
 
     /**
      * Direct signature packets
      * 
      * @var array<SignaturePacketInterface>
      */
-    private readonly array $directSignatures;
+    private array $directSignatures;
 
     /**
      * Users of the key
@@ -446,12 +447,9 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     }
 
     /**
-     * Returns primary user
-     * 
-     * @param DateTime $time
-     * @return User
+     * {@inheritdoc}
      */
-    public function getPrimaryUser(?DateTime $time = null): User
+    public function getPrimaryUser(?DateTime $time = null): UserInterface
     {
         $users = [];
         foreach ($this->users as $user) {

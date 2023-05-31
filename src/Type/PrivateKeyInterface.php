@@ -108,4 +108,29 @@ interface PrivateKeyInterface extends KeyInterface
         bool $subkeySign = false,
         ?DateTime $time = null
     ): self;
+
+    /**
+     * Certify a OpenPGP key,
+     * and returns key object with the new certification added.
+     * 
+     * @param KeyInterface $key
+     * @param DateTime $time
+     * @return KeyInterface
+     */
+    function certifyKey(KeyInterface $key, ?DateTime $time = null): KeyInterface;
+
+    /**
+     * Revokes a OpenPGP key,
+     * and returns key object with the new revocation signature added.
+     * 
+     * @param KeyInterface $key
+     * @param string $revocationReason
+     * @param DateTime $time
+     * @return KeyInterface
+     */
+    function revokeKey(
+        KeyInterface $key,
+        string $revocationReason = '',
+        ?DateTime $time = null
+    ): KeyInterface;
 }

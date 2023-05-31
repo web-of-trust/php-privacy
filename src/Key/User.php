@@ -24,42 +24,43 @@ use OpenPGP\Packet\{
 use OpenPGP\Type\{
     KeyInterface,
     KeyPacketInterface,
-    PacketContainerInterface,
     PacketListInterface,
+    PrivateKeyInterface,
     SignaturePacketInterface,
     UserIDPacketInterface,
+    UserInterface,
 };
 
 /**
- * OpenPGP User class
+ * OpenPGP user class.
  * 
  * @package   OpenPGP
  * @category  Key
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class User implements PacketContainerInterface
+class User implements UserInterface
 {
     /**
      * Revocation signature packets
      * 
      * @var array<SignaturePacketInterface>
      */
-    private readonly array $revocationSignatures;
+    private array $revocationSignatures;
 
     /**
      * Self certification signature packets
      * 
      * @var array<SignaturePacketInterface>
      */
-    private readonly array $selfCertifications;
+    private array $selfCertifications;
 
     /**
      * Other certification signature packets
      * 
      * @var array<SignaturePacketInterface>
      */
-    private readonly array $otherCertifications;
+    private array $otherCertifications;
 
     /**
      * Constructor
@@ -104,9 +105,7 @@ class User implements PacketContainerInterface
     }
 
     /**
-     * Gets user ID packet
-     * 
-     * @return UserIDPacketInterface
+     * {@inheritdoc}
      */
     public function getUserIDPacket(): UserIDPacketInterface
     {
@@ -114,9 +113,7 @@ class User implements PacketContainerInterface
     }
 
     /**
-     * Gets revocation signatures
-     * 
-     * @return array<SignaturePacketInterface>
+     * {@inheritdoc}
      */
     public function getRevocationCertifications(): array
     {
@@ -124,9 +121,7 @@ class User implements PacketContainerInterface
     }
 
     /**
-     * Gets self signatures
-     * 
-     * @return array<SignaturePacketInterface>
+     * {@inheritdoc}
      */
     public function getSelfCertifications(): array
     {
@@ -134,9 +129,15 @@ class User implements PacketContainerInterface
     }
 
     /**
-     * Gets latest self certification
-     * 
-     * @return SignaturePacketInterface
+     * {@inheritdoc}
+     */
+    public function getOtherCertifications(): array
+    {
+        return $this->otherCertifications;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function getLatestSelfCertification(): ?SignaturePacketInterface
     {
@@ -156,19 +157,7 @@ class User implements PacketContainerInterface
     }
 
     /**
-     * Gets other signatures
-     * 
-     * @return array<SignaturePacketInterface>
-     */
-    public function getOtherCertifications(): array
-    {
-        return $this->otherCertifications;
-    }
-
-    /**
-     * Gets user ID
-     * 
-     * @return string
+     * {@inheritdoc}
      */
     public function getUserID(): string
     {
@@ -176,9 +165,7 @@ class User implements PacketContainerInterface
     }
 
     /**
-     * Returns user is primary
-     * 
-     * @return bool
+     * {@inheritdoc}
      */
     public function isPrimary(): bool
     {
@@ -187,12 +174,7 @@ class User implements PacketContainerInterface
     }
 
     /**
-     * Checks if a given certificate of the user is revoked
-     * 
-     * @param KeyPacketInterface $keyPacket
-     * @param SignaturePacketInterface $certificate
-     * @param DateTime $time
-     * @return bool
+     * {@inheritdoc}
      */
     public function isRevoked(
         ?KeyPacketInterface $keyPacket = null,
@@ -221,12 +203,7 @@ class User implements PacketContainerInterface
     }
 
     /**
-     * Verify user.
-     * Checks for existence of self signatures, revocation signatures
-     * and validity of self signature.
-     * 
-     * @param DateTime $time
-     * @return bool
+     * {@inheritdoc}
      */
     public function verify(?DateTime $time = null): bool
     {
@@ -254,63 +231,41 @@ class User implements PacketContainerInterface
     }
 
     /**
-     * Generate third-party certification over this user and its primary key
-     * return new user with new certification.
-     * 
-     * @param PrivateKey $signKey
-     * @param DateTime $time
-     * @return self
+     * {@inheritdoc}
      */
-    public function certify(PrivateKey $signKey, ?DateTime $time = null): self
+    public function certify(
+        PrivateKeyInterface $signKey, ?DateTime $time = null
+    ): self
     {
         if ($signKey->getFingerprint() === $this->mainKey->getFingerprint()) {
             throw new \InvalidArgumentException(
                 'The user\'s own key can only be used for self-certifications'
             );
         }
-        $otherCertifications = $this->otherCertifications;
-        $otherCertifications[] = Signature::createCertGeneric(
+        $this->otherCertifications[] = Signature::createCertGeneric(
             $signKey->getSigningKeyPacket(),
             $this->userIDPacket,
             $time
         );
-        return new User(
-            $this->mainKey,
-            $this->userIDPacket,
-            $this->revocationSignatures,
-            $this->selfCertifications,
-            $otherCertifications
-        );
+        return $this;
     }
 
     /**
-     * Revokes the user
-     * 
-     * @param PrivateKey $signKey
-     * @param string $revocationReason
-     * @param DateTime $time
-     * @return self
+     * {@inheritdoc}
      */
     public function revoke(
-        PrivateKey $signKey,
+        PrivateKeyInterface $signKey,
         string $revocationReason = '',
         ?DateTime $time = null
     ): self
     {
-        $revocationSignatures = $this->revocationSignatures;
-        $revocationSignatures[] = Signature::createCertRevocation(
+        $this->revocationSignatures[] = Signature::createCertRevocation(
             $signKey->getSigningKeyPacket(),
             $this->userIDPacket,
             $revocationReason,
             $time
         );
-        return new self(
-            $this->mainKey,
-            $this->userIDPacket,
-            $revocationSignatures,
-            $this->selfCertifications,
-            $this->otherCertifications
-        );
+        return $this;
     }
 
     /**
