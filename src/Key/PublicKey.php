@@ -15,8 +15,8 @@ use OpenPGP\Enum\ArmorType;
 use OpenPGP\Packet\PacketList;
 use OpenPGP\Type\{
     KeyInterface,
-    KeyPacketInterface,
     PacketListInterface,
+    PublicKeyPacketInterface,
 };
 
 /**
@@ -59,9 +59,9 @@ class PublicKey extends AbstractKey
     ): self
     {
         $keyMap = self::readPacketList($packetList);
-        if (!($keyMap['keyPacket'] instanceof KeyPacketInterface)) {
+        if (!($keyMap['keyPacket'] instanceof PublicKeyPacketInterface)) {
             throw new \UnexpectedValueException(
-                'Key packet is not key type'
+                'Key packet is not public key type'
             );
         }
         $publicKey = new self(

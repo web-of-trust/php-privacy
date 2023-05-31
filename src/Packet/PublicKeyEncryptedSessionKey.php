@@ -18,7 +18,7 @@ use OpenPGP\Enum\{
     SymmetricAlgorithm,
 };
 use OpenPGP\Type\{
-    PublicKeyPacketInterface,
+    KeyPacketInterface,
     SecretKeyPacketInterface,
     SessionKeyInterface,
     SessionKeyCryptorInterface,
@@ -98,19 +98,19 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     /**
      * Encrypt session key
      *
-     * @param PublicKeyPacketInterface $publicKey
+     * @param KeyPacketInterface $keyPacket
      * @param SessionKeyInterface $sessionKey
      * @return self
      */
     public static function encryptSessionKey(
-        PublicKeyPacketInterface $publicKey,
+        KeyPacketInterface $keyPacket,
         SessionKeyInterface $sessionKey
     ): self
     {
         return new self(
-            $publicKey->getKeyID(),
-            $publicKey->getKeyAlgorithm(),
-            self::produceSessionKeyCryptor($sessionKey, $publicKey),
+            $keyPacket->getKeyID(),
+            $keyPacket->getKeyAlgorithm(),
+            self::produceSessionKeyCryptor($sessionKey, $keyPacket),
             $sessionKey
         );
     }
@@ -211,24 +211,24 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     }
 
     private static function produceSessionKeyCryptor(
-        SessionKeyInterface $sessionKey, PublicKeyPacketInterface $publicKey
+        SessionKeyInterface $sessionKey, KeyPacketInterface $keyPacket
     ): SessionKeyCryptorInterface
     {
-        return match($publicKey->getKeyAlgorithm()) {
+        return match($keyPacket->getKeyAlgorithm()) {
             KeyAlgorithm::RsaEncryptSign => Key\RSASessionKeyCryptor::encryptSessionKey(
-                $sessionKey, $publicKey->getKeyMaterial()->getAsymmetricKey()
+                $sessionKey, $keyPacket->getKeyMaterial()->getAsymmetricKey()
             ),
             KeyAlgorithm::RsaEncrypt => Key\RSASessionKeyCryptor::encryptSessionKey(
-                $sessionKey, $publicKey->getKeyMaterial()->getAsymmetricKey()
+                $sessionKey, $keyPacket->getKeyMaterial()->getAsymmetricKey()
             ),
             KeyAlgorithm::ElGamal => Key\ElGamalSessionKeyCryptor::encryptSessionKey(
-                $sessionKey, $publicKey->getKeyMaterial()->getAsymmetricKey()
+                $sessionKey, $keyPacket->getKeyMaterial()->getAsymmetricKey()
             ),
             KeyAlgorithm::Ecdh => Key\ECDHSessionKeyCryptor::encryptSessionKey(
-                $sessionKey, $publicKey->getKeyMaterial(), $publicKey->getFingerprint()
+                $sessionKey, $keyPacket->getKeyMaterial(), $keyPacket->getFingerprint()
             ),
             default => throw new \UnexpectedValueException(
-                "Public key algorithm {$publicKey->getKeyAlgorithm()->name} of the PKESK packet is unsupported."
+                "Public key algorithm {$keyPacket->getKeyAlgorithm()->name} of the PKESK packet is unsupported."
             ),
         };
     }

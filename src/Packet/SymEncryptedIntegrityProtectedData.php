@@ -16,6 +16,10 @@ use OpenPGP\Enum\{
     PacketTag,
     SymmetricAlgorithm,
 };
+use OpenPGP\Type\{
+    PacketListInterface,
+    SessionKeyInterface,
+};
 
 /**
  * Implementation of the Sym. Encrypted Integrity Protected Data Packet (Tag 18)
@@ -40,12 +44,12 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
      * Constructor
      *
      * @param string $encrypted
-     * @param PacketList $packetList
+     * @param PacketListInterface $packetList
      * @return self
      */
     public function __construct(
         private readonly string $encrypted,
-        private readonly ?PacketList $packetList = null
+        private readonly ?PacketListInterface $packetList = null
     )
     {
         parent::__construct(PacketTag::SymEncryptedIntegrityProtectedData);
@@ -75,13 +79,13 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
      * Encrypts packet list
      *
      * @param string $key
-     * @param PacketList $packetList
+     * @param PacketListInterface $packetList
      * @param SymmetricAlgorithm $symmetric
      * @return self
      */
     public static function encryptPackets(
         string $key,
-        PacketList $packetList,
+        PacketListInterface $packetList,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self
     {
@@ -104,12 +108,12 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
     /**
      * Encrypts packet list with session key
      *
-     * @param Key\SessionKey $sessionKey
-     * @param PacketList $packetList
+     * @param SessionKeyInterface $sessionKey
+     * @param PacketListInterface $packetList
      * @return self
      */
     public static function encryptPacketsWithSessionKey(
-        Key\SessionKey $sessionKey, PacketList $packetList
+        SessionKeyInterface $sessionKey, PacketListInterface $packetList
     ): self
     {
         return self::encryptPackets(
@@ -140,9 +144,9 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
     /**
      * Gets decrypted packets contained within.
      *
-     * @return PacketList
+     * @return PacketListInterface
      */
-    public function getPacketList(): ?PacketList
+    public function getPacketList(): ?PacketListInterface
     {
         return $this->packetList;
     }
@@ -168,11 +172,11 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
     /**
      * Encrypts the payload in the packet with session key.
      *
-     * @param Key\SessionKey $sessionKey
+     * @param SessionKeyInterface $sessionKey
      * @return self
      */
     public function encryptWithSessionKey(
-        Key\SessionKey $sessionKey
+        SessionKeyInterface $sessionKey
     ): self
     {
         return $this->encrypt(
@@ -225,11 +229,11 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket
     /**
      * Decrypts the encrypted data contained in the packet with session key.
      *
-     * @param Key\SessionKey $sessionKey
+     * @param SessionKeyInterface $sessionKey
      * @return self
      */
     public function decryptWithSessionKey(
-        Key\SessionKey $sessionKey
+        SessionKeyInterface $sessionKey
     ): self
     {
         return $this->decrypt(

@@ -41,6 +41,7 @@ use OpenPGP\Type\{
     PacketInterface,
     PacketListInterface,
     PrivateKeyInterface,
+    SessionKeyInterface,
     SignatureInterface,
     SignaturePacketInterface,
     SignedMessageInterface,
@@ -56,15 +57,12 @@ use OpenPGP\Type\{
  */
 class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterface, SignedMessageInterface
 {
-    /**
-     * @var array<PacketInterface>
-     */
     private readonly array $packets;
 
     /**
      * Constructor
      *
-     * @param array<PacketInterface> $packets
+     * @param array $packets
      * @return self
      */
     public function __construct(
@@ -360,13 +358,13 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
     /**
      * Decrypts session key.
      *
-     * @param array<PrivateKeyInterface> $decryptionKeys
-     * @param array<string> $passwords
-     * @return SessionKey
+     * @param array $decryptionKeys
+     * @param array $passwords
+     * @return SessionKeyInterface
      */
     private function decryptSessionKey(
         array $decryptionKeys, array $passwords
-    ): SessionKey
+    ): SessionKeyInterface
     {
         $packets = $this->getPackets();
         $sessionKeys = [];
@@ -421,8 +419,8 @@ class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterfa
     /**
      * Unwrap compressed packet list.
      *
-     * @param array<PacketInterface> $packets
-     * @return array<PacketInterface>
+     * @param array $packets
+     * @return array
      */
     private static function unwrapCompressed(array $packets): array
     {
