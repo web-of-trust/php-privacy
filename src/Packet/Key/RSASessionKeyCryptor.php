@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Packet\Key;
 
+use phpseclib3\Crypt\Common\AsymmetricKey;
 use phpseclib3\Crypt\RSA;
 use phpseclib3\Crypt\RSA\{
     PrivateKey,
@@ -17,17 +18,17 @@ use phpseclib3\Crypt\RSA\{
 };
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
-use OpenPGP\Type\SessionKeyParametersInterface;
+use OpenPGP\Type\SessionKeyInterface;
 
 /**
- * RSASessionKeyParameters class.
+ * RSA session key cryptor class.
  * 
  * @package   OpenPGP
  * @category  Packet
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class RSASessionKeyParameters implements SessionKeyParametersInterface
+class RSASessionKeyCryptor extends SessionKeyCryptor
 {
     /**
      * Constructor
@@ -55,23 +56,30 @@ class RSASessionKeyParameters implements SessionKeyParametersInterface
     }
 
     /**
-     * Produces parameters by encrypting session key
+     * Produces cryptor by encrypting session key
      *
-     * @param SessionKey $sessionKey
-     * @param PublicKey $publicKey
+     * @param SessionKeyInterface $sessionKey
+     * @param AsymmetricKey $publicKey
      * @return self
      */
-    public static function produceParameters(
-        SessionKey $sessionKey, PublicKey $publicKey
+    public static function encryptSessionKey(
+        SessionKeyInterface $sessionKey, AsymmetricKey $publicKey
     ): self
     {
-        $publicKey = $publicKey->withPadding(RSA::ENCRYPTION_PKCS1);
-        return new self(
-            Helper::bin2BigInt($publicKey->encrypt(implode([
-                $sessionKey->toBytes(),
-                $sessionKey->computeChecksum(),
-            ])))
-        );
+        if ($publicKey instanceof PublicKey) {
+            $publicKey = $publicKey->withPadding(RSA::ENCRYPTION_PKCS1);
+            return new self(
+                Helper::bin2BigInt($publicKey->encrypt(implode([
+                    $sessionKey->toBytes(),
+                    $sessionKey->computeChecksum(),
+                ])))
+            );
+        }
+        else {
+            throw new \InvalidArgumentException(
+                'Public key is not instance of RSA key'
+            );
+        }
     }
 
     /**
@@ -96,16 +104,20 @@ class RSASessionKeyParameters implements SessionKeyParametersInterface
     }
 
     /**
-     * Decrypts session key by using private key
-     *
-     * @param PrivateKey $privateKey
-     * @return SessionKey
+     * {@inheritdoc}
      */
-    public function decrypt(PrivateKey $privateKey): SessionKey
+    protected function decrypt(AsymmetricKey $privateKey): string
     {
-        $privateKey = $privateKey->withPadding(RSA::ENCRYPTION_PKCS1);
-        return SessionKey::fromBytes($privateKey->decrypt(
-            $this->encrypted->toBytes()
-        ));
+        if ($privateKey instanceof PrivateKey) {
+            $privateKey = $privateKey->withPadding(RSA::ENCRYPTION_PKCS1);
+            return $privateKey->decrypt(
+                $this->encrypted->toBytes()
+            );
+        }
+        else {
+            throw new \InvalidArgumentException(
+                'Private key is not instance of RSA key'
+            );
+        }
     }
 }

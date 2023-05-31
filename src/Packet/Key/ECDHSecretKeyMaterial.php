@@ -17,36 +17,36 @@ use phpseclib3\File\ASN1;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\CurveOid;
-use OpenPGP\Type\KeyParametersInterface;
+use OpenPGP\Type\KeyMaterialInterface;
 
 /**
- * ECDH secret parameters class
+ * ECDH secret key material class
  * 
  * @package   OpenPGP
  * @category  Packet
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class ECDHSecretParameters extends ECSecretParameters
+class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
 {
     /**
-     * Reads parameters from bytes
+     * Reads key material from bytes
      *
      * @param string $bytes
-     * @param KeyParametersInterface $publicParams
+     * @param KeyMaterialInterface $publicMaterial
      * @return self
      */
     public static function fromBytes(
-        string $bytes, KeyParametersInterface $publicParams
+        string $bytes, KeyMaterialInterface $publicMaterial
     ): self
     {
         return new self(
-            Helper::readMPI($bytes), $publicParams
+            Helper::readMPI($bytes), $publicMaterial
         );
     }
 
     /**
-     * Generates parameters by using EC create key
+     * Generates key material by using EC create key
      *
      * @param CurveOid $curveOid
      * @return self
@@ -70,12 +70,12 @@ class ECDHSecretParameters extends ECSecretParameters
             }
             return new self(
                 $d,
-                new ECDHPublicParameters(
+                new ECDHPublicKeyMaterial(
                     ASN1::encodeOID($curveOid->value),
                     $q,
                     $curveOid->hashAlgorithm(),
                     $curveOid->symmetricAlgorithm(),
-                    ECDHPublicParameters::DEFAULT_RESERVED,
+                    ECDHPublicKeyMaterial::DEFAULT_RESERVED,
                     $privateKey->getPublicKey()
                 ),
                 $privateKey,

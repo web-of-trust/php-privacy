@@ -30,9 +30,9 @@ interface SecretKeyPacketInterface extends KeyPacketInterface
     /**
      * Gets public key packet
      *
-     * @return KeyPacketInterface
+     * @return PublicKeyPacketInterface
      */
-    function getPublicKey(): KeyPacketInterface;
+    function getPublicKey(): PublicKeyPacketInterface;
 
     /**
      * Return secret key packed is encrypted

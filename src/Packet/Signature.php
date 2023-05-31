@@ -30,13 +30,14 @@ use OpenPGP\Enum\{
 };
 use OpenPGP\Type\{
     KeyPacketInterface,
+    PublicKeyPacketInterface,
     SignaturePacketInterface,
-    SignableParametersInterface,
+    SecretKeyMaterialInterface,
     SecretKeyPacketInterface,
     SubkeyPacketInterface,
     SubpacketInterface,
     UserIDPacketInterface,
-    VerifiableParametersInterface,
+    PublicKeyMaterialInterface,
 };
 
 /**
@@ -546,15 +547,15 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             return false;
         }
 
-        $keyParams = $verifyKey->getKeyParameters();
-        if ($keyParams instanceof VerifiableParametersInterface) {
-            return $keyParams->verify(
+        $keyMaterial = $verifyKey->getKeyMaterial();
+        if ($keyMaterial instanceof PublicKeyMaterialInterface) {
+            return $keyMaterial->verify(
                 $this->hashAlgorithm, $message, $this->signature
             );
         }
         else {
             $this->getLogger()->warning(
-                'Verify key parameters is not verifiable.'
+                'Verify key material is not verifiable.'
             );
             return false;
         }
@@ -930,7 +931,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     private static function signMessage(
-        KeyPacketInterface $signKey,
+        SecretKeyPacketInterface $signKey,
         HashAlgorithm $hash,
         string $message
     ): string
@@ -941,13 +942,13 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             case KeyAlgorithm::Dsa:
             case KeyAlgorithm::EcDsa:
             case KeyAlgorithm::EdDsa:
-                $keyParams = $signKey->getKeyParameters();
-                if ($keyParams instanceof SignableParametersInterface) {
-                    return $keyParams->sign($hash, $message);
+                $keyMaterial = $signKey->getKeyMaterial();
+                if ($keyMaterial instanceof SecretKeyMaterialInterface) {
+                    return $keyMaterial->sign($hash, $message);
                 }
                 else {
                     throw new \UnexpectedValueException(
-                        'Invalid key parameters for signing.',
+                        'Invalid key material for signing.',
                     );
                 }
             default:

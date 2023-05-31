@@ -25,7 +25,7 @@ interface MessageInterface
     /**
      * Sign the message
      *
-     * @param array<PrivateKeyInterface> $signingKeys
+     * @param array $signingKeys
      * @param DateTime $time
      * @return SignedMessageInterface
      */
@@ -36,7 +36,7 @@ interface MessageInterface
     /**
      * Create a detached signature for the message
      *
-     * @param array<PrivateKeyInterface> $signingKeys
+     * @param array $signingKeys
      * @param DateTime $time
      * @return SignatureInterface
      */
@@ -48,10 +48,10 @@ interface MessageInterface
      * Verify detached signature
      * Return verification array
      *
-     * @param array<KeyInterface> $verificationKeys
+     * @param array $verificationKeys
      * @param SignatureInterface $signature
      * @param DateTime $time
-     * @return array<VerificationInterface>
+     * @return array
      */
     function verifyDetached(
         array $verificationKeys,

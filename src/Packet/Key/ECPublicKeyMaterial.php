@@ -10,50 +10,52 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\EC;
-use phpseclib3\Crypt\EC\PublicKey;
-use phpseclib3\Crypt\EC\Formats\Keys\{
-    MontgomeryPublic,
-    PKCS8,
+use phpseclib3\Crypt\Common\{
+    AsymmetricKey,
+    PublicKey,
 };
+use phpseclib3\Crypt\EC;
+use phpseclib3\Crypt\EC\PublicKey as ECPublicKey;
+use phpseclib3\Crypt\EC\Formats\Keys\MontgomeryPublic;
+use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
 use phpseclib3\File\ASN1;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Enum\CurveOid;
-use OpenPGP\Type\KeyParametersInterface;
+use OpenPGP\Type\KeyMaterialInterface;
 
 /**
- * EC public parameters class
+ * EC public key material class
  * 
  * @package   OpenPGP
  * @category  Packet
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-abstract class ECPublicParameters implements KeyParametersInterface
+abstract class ECPublicKeyMaterial implements KeyMaterialInterface
 {
     private readonly CurveOid $curveOid;
 
     /**
      * phpseclib3 EC public key
      */
-    private readonly PublicKey $publicKey;
+    protected readonly ECPublicKey $publicKey;
 
     /**
      * Constructor
      *
      * @param string $oid
      * @param BigInteger $q
-     * @param PublicKey $publicKey
+     * @param ECPublicKey $publicKey
      * @return self
      */
     public function __construct(
         private readonly string $oid,
         private readonly BigInteger $q,
-        ?PublicKey $publicKey = null
+        ?ECPublicKey $publicKey = null
     )
     {
         $this->curveOid = CurveOid::from(ASN1::decodeOID($oid));
-        if ($publicKey instanceof PublicKey) {
+        if ($publicKey instanceof ECPublicKey) {
             $this->publicKey = $publicKey;
         }
         else {
@@ -73,7 +75,7 @@ abstract class ECPublicParameters implements KeyParametersInterface
                     break;
                 default:
                     $key = PKCS8::savePublicKey(
-                        $curve, PKCS8::extractPoint("\x00" . $q->toBytes(), $curve)
+                        $curve, PKCS8::extractPoint("\x0" . $q->toBytes(), $curve)
                     );
                     break;
             }
@@ -102,9 +104,27 @@ abstract class ECPublicParameters implements KeyParametersInterface
     }
 
     /**
-     * Gets public key
+     * Gets public key length
      *
-     * @return PublicKey
+     * @return int
+     */
+    public function getPublicKeyLength(): int
+    {
+        return $this->publicKey->getLength();
+    }
+
+    /**
+     * Gets EC public key
+     *
+     * @return ECPublicKey
+     */
+    public function getECPublicKey(): ECPublicKey
+    {
+        return $this->publicKey;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function getPublicKey(): PublicKey
     {
@@ -114,9 +134,17 @@ abstract class ECPublicParameters implements KeyParametersInterface
     /**
      * {@inheritdoc}
      */
-    public function getPublicParams(): KeyParametersInterface
+    public function getPublicMaterial(): KeyMaterialInterface
     {
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAsymmetricKey(): AsymmetricKey
+    {
+        return $this->publicKey;
     }
 
     /**

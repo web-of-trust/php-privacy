@@ -10,41 +10,37 @@
 
 namespace OpenPGP\Type;
 
+use phpseclib3\Crypt\Common\PublicKey;
+use OpenPGP\Enum\HashAlgorithm;
+
 /**
- * Key parameters interface
+ * Public key material interface
  * 
  * @package   OpenPGP
  * @category  Type
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface KeyParametersInterface
+interface PublicKeyMaterialInterface extends KeyMaterialInterface
 {
     /**
-     * Gets public parameters
+     * Returns phpseclib3 public key
      * 
-     * @return KeyParametersInterface
+     * @return PublicKey
      */
-    function getPublicParams(): KeyParametersInterface;
+    function getPublicKey(): PublicKey;
 
     /**
-     * Gets key parameters
+     * Verifies a signature with message
      * 
-     * @return array
-     */
-    function getParameters(): array;
-
-    /**
-     * Returns key parameters is valid
-     * 
+     * @param HashAlgorithm $hash
+     * @param string $message
+     * @param string $signature
      * @return bool
      */
-    function isValid(): bool;
-
-    /**
-     * Serializes key parameters to bytes
-     * 
-     * @return string
-     */
-    function toBytes(): string;
+    function verify(
+        HashAlgorithm $hash,
+        string $message,
+        string $signature
+    ): bool;
 }

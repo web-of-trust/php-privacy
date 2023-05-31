@@ -25,7 +25,7 @@ interface SignatureInterface extends ArmorableInterface, PacketContainerInterfac
     /**
      * Returns signature packets
      *
-     * @return array<SignaturePacketInterface>
+     * @return array
      */
     function getSignaturePackets(): array;
 
@@ -33,7 +33,7 @@ interface SignatureInterface extends ArmorableInterface, PacketContainerInterfac
      * Returns signing key IDs
      *
      * @param bool $toHex
-     * @return array<string>
+     * @return array
      */
     function getSigningKeyIDs(bool $toHex = false): array;
 
@@ -41,10 +41,10 @@ interface SignatureInterface extends ArmorableInterface, PacketContainerInterfac
      * Verify signature with literal data
      * Return verification array
      *
-     * @param array<KeyInterface> $verificationKeys
+     * @param array $verificationKeys
      * @param LiteralDataInterface $literalData
      * @param DateTime $time
-     * @return array<VerificationInterface>
+     * @return array
      */
     function verify(
         array $verificationKeys,
@@ -56,10 +56,10 @@ interface SignatureInterface extends ArmorableInterface, PacketContainerInterfac
      * Verify signature with cleartext
      * Return verification array
      *
-     * @param array<KeyInterface> $verificationKeys
+     * @param array $verificationKeys
      * @param CleartextMessageInterface $cleartext
      * @param DateTime $time
-     * @return array<VerificationInterface>
+     * @return array
      */
     function verifyCleartext(
         array $verificationKeys,

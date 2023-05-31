@@ -13,7 +13,7 @@ namespace OpenPGP\Packet;
 use DateTime;
 use OpenPGP\Enum\KeyAlgorithm;
 use OpenPGP\Type\{
-    KeyParametersInterface,
+    KeyMaterialInterface,
     SubkeyPacketInterface,
 };
 
@@ -31,19 +31,19 @@ class PublicSubkey extends PublicKey implements SubkeyPacketInterface
      * Constructor
      *
      * @param DateTime $creationTime
-     * @param KeyParametersInterface $keyParameters
+     * @param KeyMaterialInterface $keyMaterial
      * @param KeyAlgorithm $algorithm
      * @return self
      */
     public function __construct(
         DateTime $creationTime,
-        ?KeyParametersInterface $keyParameters = null,
+        KeyMaterialInterface $keyMaterial,
         KeyAlgorithm $algorithm = KeyAlgorithm::RsaEncryptSign
     )
     {
         parent::__construct(
             $creationTime,
-            $keyParameters,
+            $keyMaterial,
             $algorithm
         );
     }
@@ -59,7 +59,7 @@ class PublicSubkey extends PublicKey implements SubkeyPacketInterface
         $publicKey = PublicKey::fromBytes($bytes);
         return new self(
             $publicKey->getCreationTime(),
-            $publicKey->getKeyParameters(),
+            $publicKey->getKeyMaterial(),
             $publicKey->getKeyAlgorithm()
         );
     }

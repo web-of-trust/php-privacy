@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Packet\Key;
 
+use phpseclib3\Crypt\Common\AsymmetricKey;
 use phpseclib3\Crypt\Random;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
@@ -17,17 +18,17 @@ use OpenPGP\Cryptor\Asymmetric\ElGamal\{
     PrivateKey,
     PublicKey,
 };
-use OpenPGP\Type\SessionKeyParametersInterface;
+use OpenPGP\Type\SessionKeyInterface;
 
 /**
- * ElGamal session key parameters class.
+ * ElGamal session key cryptor class.
  * 
  * @package   OpenPGP
  * @category  Packet
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class ElGamalSessionKeyParameters implements SessionKeyParametersInterface
+class ElGamalSessionKeyCryptor extends SessionKeyCryptor
 {
     /**
      * Constructor
@@ -59,26 +60,33 @@ class ElGamalSessionKeyParameters implements SessionKeyParametersInterface
     }
 
     /**
-     * Produces parameters by encrypting session key
+     * Produces cryptor by encrypting session key
      *
-     * @param SessionKey $sessionKey
-     * @param PublicKey $publicKey
+     * @param SessionKeyInterface $sessionKey
+     * @param AsymmetricKey $publicKey
      * @return self
      */
-    public static function produceParameters(
-        SessionKey $sessionKey, PublicKey $publicKey
+    public static function encryptSessionKey(
+        SessionKeyInterface $sessionKey, AsymmetricKey $publicKey
     ): self
     {
-        $size = ($publicKey->getBitSize() + 7) >> 3;
-        $padded = self::pkcs1Encode(implode([
-            $sessionKey->toBytes(),
-            $sessionKey->computeChecksum(),
-        ]), $size);
-        $encrypted = $publicKey->encrypt($padded);
-        return new self(
-            Helper::bin2BigInt(substr($encrypted, 0, $size)),
-            Helper::bin2BigInt(substr($encrypted, $size, $size))
-        );
+        if ($publicKey instanceof PublicKey) {
+            $size = ($publicKey->getBitSize() + 7) >> 3;
+            $padded = self::pkcs1Encode(implode([
+                $sessionKey->toBytes(),
+                $sessionKey->computeChecksum(),
+            ]), $size);
+            $encrypted = $publicKey->encrypt($padded);
+            return new self(
+                Helper::bin2BigInt(substr($encrypted, 0, $size)),
+                Helper::bin2BigInt(substr($encrypted, $size, $size))
+            );
+        }
+        else {
+            throw new \InvalidArgumentException(
+                'Public key is not instance of ElGamal key'
+            );
+        }
     }
 
     /**
@@ -115,19 +123,23 @@ class ElGamalSessionKeyParameters implements SessionKeyParametersInterface
     }
 
     /**
-     * Decrypts session key by using private key
-     *
-     * @param PrivateKey $privateKey
-     * @return SessionKey
+     * {@inheritdoc}
      */
-    public function decrypt(PrivateKey $privateKey): SessionKey
+    protected function decrypt(AsymmetricKey $privateKey): string
     {
-        return SessionKey::fromBytes(self::pkcs1Decode(
-            $privateKey->decrypt(implode([
-                $this->gamma->toBytes(),
-                $this->phi->toBytes(),
-            ]))
-        ));
+        if ($privateKey instanceof PrivateKey) {
+            return self::pkcs1Decode(
+                $privateKey->decrypt(implode([
+                    $this->gamma->toBytes(),
+                    $this->phi->toBytes(),
+                ]))
+            );
+        }
+        else {
+            throw new \InvalidArgumentException(
+                'Private key is not instance of ElGamal key'
+            );
+        }
     }
 
     /**

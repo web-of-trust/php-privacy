@@ -26,8 +26,8 @@ interface EncryptedMessageInterface extends MessageInterface
      * Decrypt the message. One of `decryptionKeys` or `passwords` must be specified.
      * Return new message with decrypted content.
      *
-     * @param array<PrivateKeyInterface> $decryptionKeys
-     * @param array<string> $passwords
+     * @param array $decryptionKeys
+     * @param array $passwords
      * @param bool $allowUnauthenticatedMessages
      * @return self
      */

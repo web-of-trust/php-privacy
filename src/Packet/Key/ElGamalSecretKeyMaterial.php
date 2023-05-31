@@ -10,23 +10,26 @@
 
 namespace OpenPGP\Packet\Key;
 
+use phpseclib3\Crypt\Common\AsymmetricKey;
 use phpseclib3\Math\BigInteger;
-
 use OpenPGP\Common\Helper;
 use OpenPGP\Cryptor\Asymmetric\ElGamal;
-use OpenPGP\Cryptor\Asymmetric\ElGamal\PrivateKey;
+use OpenPGP\Cryptor\Asymmetric\ElGamal\{
+    PrivateKey,
+    PublicKey,
+};
 use OpenPGP\Enum\DHKeySize;
-use OpenPGP\Type\KeyParametersInterface;
+use OpenPGP\Type\KeyMaterialInterface;
 
 /**
- * ElGamal secret parameters class
+ * ElGamal secret key material class
  * 
  * @package   OpenPGP
  * @category  Packet
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class ElGamalSecretParameters implements KeyParametersInterface
+class ElGamalSecretKeyMaterial implements KeyMaterialInterface
 {
     /**
      * ElGamal private key
@@ -37,16 +40,16 @@ class ElGamalSecretParameters implements KeyParametersInterface
      * Constructor
      *
      * @param BigInteger $exponent
-     * @param KeyParametersInterface $publicParams
+     * @param KeyMaterialInterface $publicMaterial
      * @return self
      */
     public function __construct(
         private readonly BigInteger $exponent,
-        private readonly KeyParametersInterface $publicParams,
+        private readonly KeyMaterialInterface $publicMaterial,
         ?PrivateKey $privateKey = null
     )
     {
-        $parameters = $publicParams->getParameters();
+        $parameters = $publicMaterial->getParameters();
         $this->privateKey = $privateKey ?? new PrivateKey(
             $exponent,
             $parameters['y'],
@@ -56,23 +59,23 @@ class ElGamalSecretParameters implements KeyParametersInterface
     }
 
     /**
-     * Reads parameters from bytes
+     * Reads key material from bytes
      *
      * @param string $bytes
-     * @param KeyParametersInterface $publicParams
+     * @param KeyMaterialInterface $publicMaterial
      * @return self
      */
     public static function fromBytes(
-        string $bytes, KeyParametersInterface $publicParams
+        string $bytes, KeyMaterialInterface $publicMaterial
     ): self
     {
         return new self(
-            Helper::readMPI($bytes), $publicParams
+            Helper::readMPI($bytes), $publicMaterial
         );
     }
 
     /**
-     * Generates parameters by using ElGamal create key
+     * Generates key material by using ElGamal create key
      *
      * @param DHKeySize $keySize
      * @return self
@@ -82,7 +85,7 @@ class ElGamalSecretParameters implements KeyParametersInterface
         $privateKey = ElGamal::createKey($keySize->lSize(), $keySize->nSize());
         return new self(
             $privateKey->getX(),
-            new ElGamalPublicParameters(
+            new ElGamalPublicKeyMaterial(
                 $privateKey->getPrime(),
                 $privateKey->getGenerator(),
                 $privateKey->getY(),
@@ -90,16 +93,6 @@ class ElGamalSecretParameters implements KeyParametersInterface
             ),
             $privateKey
         );
-    }
-
-    /**
-     * Gets private key
-     *
-     * @return PrivateKey
-     */
-    public function getPrivateKey(): PrivateKey
-    {
-        return $this->privateKey;
     }
 
     /**
@@ -113,11 +106,39 @@ class ElGamalSecretParameters implements KeyParametersInterface
     }
 
     /**
+     * Gets private key
+     *
+     * @return PrivateKey
+     */
+    public function getPrivateKey(): PrivateKey
+    {
+        return $this->privateKey;
+    }
+
+    /**
+     * Gets public key
+     *
+     * @return PublicKey
+     */
+    public function getPublicKey(): PublicKey
+    {
+        return $this->privateKey->getPublicKey();
+    }
+
+    /**
      * {@inheritdoc}
      */
-    public function getPublicParams(): KeyParametersInterface
+    public function getPublicMaterial(): KeyMaterialInterface
     {
-        return $this->publicParams;
+        return $this->publicMaterial;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAsymmetricKey(): AsymmetricKey
+    {
+        return $this->privateKey;
     }
 
     /**
@@ -127,7 +148,6 @@ class ElGamalSecretParameters implements KeyParametersInterface
     {
         return [
             'x' => $this->exponent,
-            ...$this->publicParams->getParameters(),
         ];
     }
 
@@ -136,13 +156,13 @@ class ElGamalSecretParameters implements KeyParametersInterface
      */
     public function isValid(): bool
     {
-        if ($this->publicParams instanceof ElGamalPublicParameters) {
+        if ($this->publicMaterial instanceof ElGamalPublicKeyMaterial) {
             $one = new BigInteger(1);
             $two = new BigInteger(2);
 
-            $prime = $this->publicParams->getPrime();
-            $generator = $this->publicParams->getGenerator();
-            $exponent = $this->publicParams->getExponent();
+            $prime = $this->publicMaterial->getPrime();
+            $generator = $this->publicMaterial->getGenerator();
+            $exponent = $this->publicMaterial->getExponent();
 
             // Check that 1 < g < p
             if ($generator->compare($one) <= 0 || $generator->compare($prime) >= 0) {

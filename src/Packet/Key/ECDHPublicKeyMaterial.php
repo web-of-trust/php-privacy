@@ -19,14 +19,14 @@ use OpenPGP\Enum\{
 };
 
 /**
- * ECDH public parameters class
+ * ECDH public key material class
  * 
  * @package   OpenPGP
  * @category  Packet
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class ECDHPublicParameters extends ECPublicParameters
+class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
 {
     const DEFAULT_RESERVED = 0;
 
@@ -54,7 +54,7 @@ class ECDHPublicParameters extends ECPublicParameters
     }
 
     /**
-     * Reads parameters from bytes
+     * Reads key material from bytes
      *
      * @param string $bytes
      * @return self

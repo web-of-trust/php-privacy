@@ -23,8 +23,8 @@ use OpenPGP\Enum\{
     PacketTag,
 };
 use OpenPGP\Type\{
-    KeyPacketInterface,
-    KeyParametersInterface,
+    PublicKeyPacketInterface,
+    KeyMaterialInterface,
     SubkeyPacketInterface,
 };
 
@@ -39,7 +39,7 @@ use OpenPGP\Type\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class PublicKey extends AbstractPacket implements KeyPacketInterface
+class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
 {
 	const KEY_VERSION = 4;
 
@@ -51,13 +51,13 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
      * Constructor
      *
      * @param DateTime $creationTime
-     * @param KeyParametersInterface $keyParameters
+     * @param KeyMaterialInterface $keyMaterial
      * @param KeyAlgorithm $keyAlgorithm
      * @return self
      */
     public function __construct(
         private readonly DateTime $creationTime,
-        private readonly ?KeyParametersInterface $keyParameters = null,
+        private readonly KeyMaterialInterface $keyMaterial,
         private readonly KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
     )
     {
@@ -97,13 +97,13 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
 
         // A series of values comprising the key material.
         // This is algorithm-specific and described in section XXXX.
-        $keyParameters = self::readKeyParameters(
+        $keyMaterial = self::readKeyMaterial(
             substr($bytes, $offset), $keyAlgorithm
         );
 
         return new self(
             $creationTime,
-            $keyParameters,
+            $keyMaterial,
             $keyAlgorithm
         );
     }
@@ -117,7 +117,7 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
             chr(self::KEY_VERSION),
             pack('N', $this->creationTime->getTimestamp()),
             chr($this->keyAlgorithm->value),
-            $this->keyParameters?->toBytes() ?? '',
+            $this->keyMaterial->toBytes(),
         ]);
     }
 
@@ -148,9 +148,9 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
     /**
      * {@inheritdoc}
      */
-    public function getKeyParameters(): ?KeyParametersInterface
+    public function getKeyMaterial(): ?KeyMaterialInterface
     {
-        return $this->keyParameters;
+        return $this->keyMaterial;
     }
 
     /**
@@ -174,17 +174,17 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
      */
     public function getKeyStrength(): int
     {
-        if ($this->keyParameters instanceof Key\RSAPublicParameters) {
-            return $this->keyParameters->getModulus()->getLength();
+        if ($this->keyMaterial instanceof Key\RSAPublicKeyMaterial) {
+            return $this->keyMaterial->getModulus()->getLength();
         }
-        elseif ($this->keyParameters instanceof Key\DSAPublicParameters) {
-            return $this->keyParameters->getPrime()->getLength();
+        elseif ($this->keyMaterial instanceof Key\DSAPublicKeyMaterial) {
+            return $this->keyMaterial->getPrime()->getLength();
         }
-        elseif ($this->keyParameters instanceof Key\ElGamalPublicParameters) {
-            return $this->keyParameters->getPrime()->getLength();
+        elseif ($this->keyMaterial instanceof Key\ElGamalPublicKeyMaterial) {
+            return $this->keyMaterial->getPrime()->getLength();
         }
-        elseif ($this->keyParameters instanceof Key\ECPublicParameters) {
-            return $this->keyParameters->getPublicKey()->getLength();
+        elseif ($this->keyMaterial instanceof Key\ECPublicKeyMaterial) {
+            return $this->keyMaterial->getPublicKeyLength();
         };
         return 0;
     }
@@ -234,8 +234,8 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
         ?HashAlgorithm $preferredHash = null
     ): HashAlgorithm
     {
-        if ($this->keyParameters instanceof Key\ECPublicParameters) {
-            return $this->keyParameters->getCurveOid()->hashAlgorithm();
+        if ($this->keyMaterial instanceof Key\ECPublicKeyMaterial) {
+            return $this->keyMaterial->getCurveOid()->hashAlgorithm();
         }
         else {
             return $preferredHash ?? Config::getPreferredHash();
@@ -255,19 +255,19 @@ class PublicKey extends AbstractPacket implements KeyPacketInterface
         ]);
     }
 
-    private static function readKeyParameters(
+    private static function readKeyMaterial(
         string $bytes, KeyAlgorithm $keyAlgorithm
-    ): KeyParametersInterface
+    ): KeyMaterialInterface
     {
         return match($keyAlgorithm) {
-            KeyAlgorithm::RsaEncryptSign => Key\RSAPublicParameters::fromBytes($bytes),
-            KeyAlgorithm::RsaEncrypt => Key\RSAPublicParameters::fromBytes($bytes),
-            KeyAlgorithm::RsaSign => Key\RSAPublicParameters::fromBytes($bytes),
-            KeyAlgorithm::ElGamal => Key\ElGamalPublicParameters::fromBytes($bytes),
-            KeyAlgorithm::Dsa => Key\DSAPublicParameters::fromBytes($bytes),
-            KeyAlgorithm::Ecdh => Key\ECDHPublicParameters::fromBytes($bytes),
-            KeyAlgorithm::EcDsa => Key\ECDSAPublicParameters::fromBytes($bytes),
-            KeyAlgorithm::EdDsa => Key\EdDSAPublicParameters::fromBytes($bytes),
+            KeyAlgorithm::RsaEncryptSign => Key\RSAPublicKeyMaterial::fromBytes($bytes),
+            KeyAlgorithm::RsaEncrypt => Key\RSAPublicKeyMaterial::fromBytes($bytes),
+            KeyAlgorithm::RsaSign => Key\RSAPublicKeyMaterial::fromBytes($bytes),
+            KeyAlgorithm::ElGamal => Key\ElGamalPublicKeyMaterial::fromBytes($bytes),
+            KeyAlgorithm::Dsa => Key\DSAPublicKeyMaterial::fromBytes($bytes),
+            KeyAlgorithm::Ecdh => Key\ECDHPublicKeyMaterial::fromBytes($bytes),
+            KeyAlgorithm::EcDsa => Key\ECDSAPublicKeyMaterial::fromBytes($bytes),
+            KeyAlgorithm::EdDsa => Key\EdDSAPublicKeyMaterial::fromBytes($bytes),
             default => throw new \UnexpectedValueException(
                 "Unsupported PGP public key algorithm encountered",
             ),

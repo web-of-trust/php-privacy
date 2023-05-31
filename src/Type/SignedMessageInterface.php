@@ -33,9 +33,9 @@ interface SignedMessageInterface extends ArmorableInterface, MessageInterface
      * Verify signatures of signed message
      * Return verification array
      *
-     * @param array<KeyInterface> $verificationKeys
+     * @param array $verificationKeys
      * @param DateTime $time
-     * @return array<VerificationInterface>
+     * @return array
      */
     function verify(array $verificationKeys, ?DateTime $time = null): array;
 }

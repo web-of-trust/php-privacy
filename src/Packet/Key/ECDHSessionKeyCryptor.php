@@ -25,17 +25,22 @@ use OpenPGP\Enum\{
     KeyAlgorithm,
     SymmetricAlgorithm,
 };
-use OpenPGP\Type\SessionKeyParametersInterface;
+use OpenPGP\Type\{
+    KeyMaterialInterface,
+    SecretKeyPacketInterface,
+    SessionKeyCryptorInterface,
+    SessionKeyInterface,
+};
 
 /**
- * ECDHSessionKeyParameters class.
+ * ECDH session key cryptor class.
  * 
  * @package   OpenPGP
  * @category  Packet
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class ECDHSessionKeyParameters implements SessionKeyParametersInterface
+class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
 {
     const ANONYMOUS_SENDER = "\x41\x6e\x6f\x6e\x79\x6d\x6f\x75\x73\x20\x53\x65\x6e\x64\x65\x72\x20\x20\x20\x20";
     const KDF_HEADER = "\x00\x00\x00\x01";
@@ -72,54 +77,61 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
     }
 
     /**
-     * Produces parameters by encrypting session key
+     * Produces cryptor by encrypting session key
      *
-     * @param SessionKey $sessionKey
-     * @param ECDHPublicParameters $keyParameters
+     * @param SessionKeyInterface $sessionKey
+     * @param KeyMaterialInterface $keyMaterial
      * @param string $fingerprint
      * @return self
      */
-    public static function produceParameters(
-        SessionKey $sessionKey,
-        ECDHPublicParameters $keyParameters,
+    public static function encryptSessionKey(
+        SessionKeyInterface $sessionKey,
+        KeyMaterialInterface $keyMaterial,
         string $fingerprint
     ): self
     {
-        $privateKey = EC::createKey(
-            $keyParameters->getCurveOid()->name
-        );
-        $sharedKey = DH::computeSecret(
-            $privateKey, $keyParameters->getPublicKey()->getEncodedCoordinates()
-        );
+        if ($keyMaterial instanceof ECDHPublicKeyMaterial) {
+            $privateKey = EC::createKey(
+                $keyMaterial->getCurveOid()->name
+            );
+            $sharedKey = DH::computeSecret(
+                $privateKey, $keyMaterial->getECPublicKey()->getEncodedCoordinates()
+            );
 
-        $keyWrapper = self::selectKeyWrapper($keyParameters->getKdfSymmetric());
-        $kek = self::ecdhKdf(
-            $keyParameters->getKdfHash(),
-            $sharedKey,
-            self::ecdhParameter($keyParameters, $fingerprint),
-            $keyParameters->getKdfSymmetric()->keySizeInByte()
-        );
-        $wrappedKey = $keyWrapper->wrap(
-            $kek, self::pkcs5Encode(implode([
-                $sessionKey->toBytes(),
-                $sessionKey->computeChecksum(),
-            ]))
-        );
+            $keyWrapper = self::selectKeyWrapper($keyMaterial->getKdfSymmetric());
+            $kek = self::ecdhKdf(
+                $keyMaterial->getKdfHash(),
+                $sharedKey,
+                self::ecdhParameter($keyMaterial, $fingerprint),
+                $keyMaterial->getKdfSymmetric()->keySizeInByte()
+            );
+            $wrappedKey = $keyWrapper->wrap(
+                $kek, self::pkcs5Encode(implode([
+                    $sessionKey->toBytes(),
+                    $sessionKey->computeChecksum(),
+                ]))
+            );
 
-        if ($keyParameters->getCurveOid() === CurveOid::Curve25519) {
-            $ephemeralKey = Helper::bin2BigInt(
-                "\x40" . $privateKey->getPublicKey()->getEncodedCoordinates()
+            if ($keyMaterial->getCurveOid() === CurveOid::Curve25519) {
+                $ephemeralKey = Helper::bin2BigInt(
+                    "\x40" . $privateKey->getPublicKey()->getEncodedCoordinates()
+                );
+            }
+            else {
+                $ephemeralKey = Helper::bin2BigInt(
+                    $privateKey->getPublicKey()->getEncodedCoordinates()
+                );
+            }
+            return new self(
+                $ephemeralKey,
+                $wrappedKey
             );
         }
         else {
-            $ephemeralKey = Helper::bin2BigInt(
-                $privateKey->getPublicKey()->getEncodedCoordinates()
+            throw new \InvalidArgumentException(
+                'Key material is not instance of ECDH key material'
             );
         }
-        return new self(
-            $ephemeralKey,
-            $wrappedKey
-        );
     }
 
     /**
@@ -156,44 +168,64 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function decryptSessionKey(
+        SecretKeyPacketInterface $secretKey
+    ): SessionKeyInterface
+    {
+        return SessionKey::fromBytes($this->decrypt(
+            $secretKey->getKeyMaterial(), $secretKey->getFingerprint()
+        ));
+    }
+
+    /**
      * Decrypts session key by using secret key parameters
      *
-     * @param ECDHSecretParameters $keyParameters
+     * @param KeyMaterialInterface $keyMaterial
      * @param string $fingerprint
-     * @return SessionKey
+     * @return string
      */
     public function decrypt(
-        ECDHSecretParameters $keyParameters, string $fingerprint
-    ): SessionKey
+        KeyMaterialInterface $keyMaterial, string $fingerprint
+    ): string
     {
-        $publicParams = $keyParameters->getPublicParams();
-        if ($publicParams->getCurveOid() === CurveOid::Curve25519) {
-            $format = 'MontgomeryPublic';
-            $key = substr($this->ephemeralKey->toBytes(), 1);
+        $publicMaterial = $keyMaterial->getPublicMaterial();
+        if ($keyMaterial instanceof ECDHSecretKeyMaterial &&
+            $publicMaterial instanceof ECDHPublicKeyMaterial) {
+            if ($publicMaterial->getCurveOid() === CurveOid::Curve25519) {
+                $format = 'MontgomeryPublic';
+                $key = substr($this->ephemeralKey->toBytes(), 1);
+            }
+            else {
+                $format = 'PKCS8';
+                $curve = $publicMaterial->getCurveOid()->getCurve();
+                $key = PKCS8::savePublicKey(
+                    $curve, PKCS8::extractPoint(
+                        "\x00" . $this->ephemeralKey->toBytes(), $curve
+                    )
+                );
+            }
+            $publicKey = EC::loadFormat($format, $key);
+            $sharedKey = DH::computeSecret(
+                $keyMaterial->getECPrivateKey(), $publicKey->getEncodedCoordinates()
+            );
+
+            $keyWrapper = self::selectKeyWrapper($publicMaterial->getKdfSymmetric());
+            $kek = self::ecdhKdf(
+                $publicMaterial->getKdfHash(),
+                $sharedKey,
+                self::ecdhParameter($publicMaterial, $fingerprint),
+                $publicMaterial->getKdfSymmetric()->keySizeInByte()
+            );
+            $key = $keyWrapper->unwrap($kek, $this->wrappedKey);
+            return self::pkcs5Decode($key);
         }
         else {
-            $format = 'PKCS8';
-            $curve = $publicParams->getCurveOid()->getCurve();
-            $key = PKCS8::savePublicKey(
-                $curve, PKCS8::extractPoint(
-                    "\x00" . $this->ephemeralKey->toBytes(), $curve
-                )
+            throw new \InvalidArgumentException(
+                'Key material is not instance of ECDH key material'
             );
         }
-        $publicKey = EC::loadFormat($format, $key);
-        $sharedKey = DH::computeSecret(
-            $keyParameters->getPrivateKey(), $publicKey->getEncodedCoordinates()
-        );
-
-        $keyWrapper = self::selectKeyWrapper($publicParams->getKdfSymmetric());
-        $kek = self::ecdhKdf(
-            $publicParams->getKdfHash(),
-            $sharedKey,
-            self::ecdhParameter($publicParams, $fingerprint),
-            $publicParams->getKdfSymmetric()->keySizeInByte()
-        );
-        $key = $keyWrapper->unwrap($kek, $this->wrappedKey);
-        return SessionKey::fromBytes(self::pkcs5Decode($key));
     }
 
     /**
@@ -220,18 +252,18 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
      * @return string
      */
     private static function ecdhParameter(
-        ECDHPublicParameters $keyParameters, string $fingerprint
+        ECDHPublicKeyMaterial $keyMaterial, string $fingerprint
     ): string
     {
-        $oid = ASN1::encodeOID($keyParameters->getCurveOid()->value);
+        $oid = ASN1::encodeOID($keyMaterial->getCurveOid()->value);
         return implode([
             chr(strlen($oid)),
             $oid,
             chr(KeyAlgorithm::Ecdh->value),
             "\x03",
-            chr($keyParameters->getReserved()),
-            chr($keyParameters->getKdfHash()->value),
-            chr($keyParameters->getKdfSymmetric()->value),
+            chr($keyMaterial->getReserved()),
+            chr($keyMaterial->getKdfHash()->value),
+            chr($keyMaterial->getKdfSymmetric()->value),
             self::ANONYMOUS_SENDER,
             substr($fingerprint, 0, 20),
         ]);

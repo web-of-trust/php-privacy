@@ -10,48 +10,64 @@
 
 namespace OpenPGP\Packet\Key;
 
+use phpseclib3\Crypt\Common\{
+    AsymmetricKey,
+    PublicKey,
+};
+use phpseclib3\Crypt\DSA;
+use phpseclib3\Crypt\DSA\PublicKey as DSAPublicKey;
+use phpseclib3\Crypt\DSA\Formats\Keys\PKCS8;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
-use OpenPGP\Cryptor\Asymmetric\ElGamal\PublicKey;
-use OpenPGP\Type\KeyParametersInterface;
+use OpenPGP\Enum\HashAlgorithm;
+use OpenPGP\Type\{
+    KeyMaterialInterface,
+    PublicKeyMaterialInterface,
+};
 
 /**
- * ElGamal public parameters class
+ * DSA public key material class
  * 
  * @package   OpenPGP
  * @category  Packet
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class ElGamalPublicParameters implements KeyParametersInterface
+class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
 {
     /**
-     * ElGamal public key
+     * phpseclib3 DSA public key
      */
-    private readonly PublicKey $publicKey;
+    private readonly DSAPublicKey $publicKey;
 
     /**
      * Constructor
      *
      * @param BigInteger $prime
+     * @param BigInteger $order
      * @param BigInteger $generator
      * @param BigInteger $exponent
+     * @param DSAPublicKey $publicKey
      * @return self
      */
     public function __construct(
         private readonly BigInteger $prime,
+        private readonly BigInteger $order,
         private readonly BigInteger $generator,
         private readonly BigInteger $exponent,
-        ?PublicKey $publicKey = null
+        ?DSAPublicKey $publicKey = null
     )
     {
-        $this->publicKey = $publicKey ?? new PublicKey(
-            $exponent, $prime, $generator
-        );
+        $this->publicKey = $publicKey ?? DSA::load([
+            'y' => $exponent,
+            'p' => $prime,
+            'q' => $order,
+            'g' => $generator,
+        ]);
     }
 
     /**
-     * Reads parameters from bytes
+     * Reads key material from bytes
      *
      * @param string $bytes
      * @return self
@@ -61,6 +77,9 @@ class ElGamalPublicParameters implements KeyParametersInterface
         $prime = Helper::readMPI($bytes);
 
         $offset = $prime->getLengthInBytes() + 2;
+        $order = Helper::readMPI(substr($bytes, $offset));
+
+        $offset += $order->getLengthInBytes() + 2;
         $generator = Helper::readMPI(substr($bytes, $offset));
 
         $offset += $generator->getLengthInBytes() + 2;
@@ -68,19 +87,10 @@ class ElGamalPublicParameters implements KeyParametersInterface
 
         return new self(
             $prime,
+            $order,
             $generator,
             $exponent
         );
-    }
-
-    /**
-     * Gets public key
-     *
-     * @return PublicKey
-     */
-    public function getPublicKey(): PublicKey
-    {
-        return $this->publicKey;
     }
 
     /**
@@ -91,6 +101,16 @@ class ElGamalPublicParameters implements KeyParametersInterface
     public function getPrime(): BigInteger
     {
         return $this->prime;
+    }
+
+    /**
+     * Gets group order q (q is a prime divisor of p-1)
+     *
+     * @return BigInteger
+     */
+    public function getOrder(): BigInteger
+    {
+        return $this->order;
     }
 
     /**
@@ -116,7 +136,15 @@ class ElGamalPublicParameters implements KeyParametersInterface
     /**
      * {@inheritdoc}
      */
-    public function getPublicParams(): KeyParametersInterface
+    public function getPublicKey(): PublicKey
+    {
+        return $this->publicKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPublicMaterial(): KeyMaterialInterface
     {
         return $this;
     }
@@ -124,13 +152,17 @@ class ElGamalPublicParameters implements KeyParametersInterface
     /**
      * {@inheritdoc}
      */
+    public function getAsymmetricKey(): AsymmetricKey
+    {
+        return $this->publicKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getParameters(): array
     {
-        return [
-            'p' => $this->prime,
-            'g' => $this->generator,
-            'y' => $this->exponent,
-        ];
+        return PKCS8::load($this->publicKey->toString('PKCS8'));
     }
 
     /**
@@ -149,10 +181,29 @@ class ElGamalPublicParameters implements KeyParametersInterface
         return implode([
             pack('n', $this->prime->getLength()),
             $this->prime->toBytes(),
+            pack('n', $this->order->getLength()),
+            $this->order->toBytes(),
             pack('n', $this->generator->getLength()),
             $this->generator->toBytes(),
             pack('n', $this->exponent->getLength()),
             $this->exponent->toBytes(),
         ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function verify(
+        HashAlgorithm $hash,
+        string $message,
+        string $signature
+    ): bool
+    {
+        $r = Helper::readMPI($signature);
+        $s = Helper::readMPI(substr($signature, $r->getLengthInBytes() + 2));
+        return $this->publicKey
+            ->withSignatureFormat('Raw')
+            ->withHash(strtolower($hash->name))
+            ->verify($message, ['r' => $r, 's' => $s]);
     }
 }

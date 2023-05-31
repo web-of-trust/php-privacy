@@ -10,8 +10,13 @@
 
 namespace OpenPGP\Packet\Key;
 
+use phpseclib3\Crypt\Common\{
+    AsymmetricKey,
+    PrivateKey,
+    PublicKey,
+};
 use phpseclib3\Crypt\RSA;
-use phpseclib3\Crypt\RSA\PrivateKey;
+use phpseclib3\Crypt\RSA\PrivateKey as RSAPrivateKey;
 use phpseclib3\Crypt\RSA\Formats\Keys\PKCS8;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
@@ -20,24 +25,24 @@ use OpenPGP\Enum\{
     RSAKeySize,
 };
 use OpenPGP\Type\{
-    KeyParametersInterface,
-    SignableParametersInterface,
+    KeyMaterialInterface,
+    SecretKeyMaterialInterface,
 };
 
 /**
- * RSA secret parameters class
+ * RSA secret key material class
  * 
  * @package   OpenPGP
  * @category  Packet
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class RSASecretParameters implements SignableParametersInterface
+class RSASecretKeyMaterial implements SecretKeyMaterialInterface
 {
     /**
      * phpseclib3 RSA private key
      */
-    private readonly PrivateKey $privateKey;
+    private readonly RSAPrivateKey $privateKey;
 
     /**
      * Constructor
@@ -46,8 +51,8 @@ class RSASecretParameters implements SignableParametersInterface
      * @param BigInteger $primeP
      * @param BigInteger $primeQ
      * @param BigInteger $coefficient
-     * @param KeyParametersInterface $publicParams
-     * @param PrivateKey $privateKey
+     * @param KeyMaterialInterface $publicMaterial
+     * @param RSAPrivateKey $privateKey
      * @return self
      */
     public function __construct(
@@ -55,8 +60,8 @@ class RSASecretParameters implements SignableParametersInterface
         private readonly BigInteger $primeP,
         private readonly BigInteger $primeQ,
         private readonly BigInteger $coefficient,
-        private readonly KeyParametersInterface $publicParams,
-        ?PrivateKey $privateKey = null
+        private readonly KeyMaterialInterface $publicMaterial,
+        ?RSAPrivateKey $privateKey = null
     )
     {
         $this->privateKey = $privateKey ?? RSA::load([
@@ -64,19 +69,19 @@ class RSASecretParameters implements SignableParametersInterface
             'p' => $primeP,
             'q' => $primeQ,
             'u' => $coefficient,
-            ...$publicParams->getParameters(),
+            ...$publicMaterial->getParameters(),
         ]);
     }
 
     /**
-     * Reads parameters from bytes
+     * Reads key material from bytes
      *
      * @param string $bytes
-     * @param KeyParametersInterface $publicParams
+     * @param KeyMaterialInterface $publicMaterial
      * @return self
      */
     public static function fromBytes(
-        string $bytes, KeyParametersInterface $publicParams
+        string $bytes, KeyMaterialInterface $publicMaterial
     ): self
     {
         $exponent = Helper::readMPI($bytes);
@@ -91,12 +96,12 @@ class RSASecretParameters implements SignableParametersInterface
         $coefficient = Helper::readMPI(substr($bytes, $offset));
 
         return new self(
-            $exponent, $primeP, $primeQ, $coefficient, $publicParams
+            $exponent, $primeP, $primeQ, $coefficient, $publicMaterial
         );
     }
 
     /**
-     * Generates parameters by using RSA create key
+     * Generates key material by using RSA create key
      *
      * @param RSAKeySize $keySize
      * @return self
@@ -112,23 +117,13 @@ class RSASecretParameters implements SignableParametersInterface
             $primeP,
             $primeQ,
             $primeP->modInverse($primeQ),
-            new RSAPublicParameters(
+            new RSAPublicKeyMaterial(
                 $key['modulus'],
                 $key['publicExponent'],
                 $privateKey->getPublicKey()
             ),
             $privateKey
         );
-    }
-
-    /**
-     * Gets private key
-     *
-     * @return PrivateKey
-     */
-    public function getPrivateKey(): PrivateKey
-    {
-        return $this->privateKey;
     }
 
     /**
@@ -174,9 +169,33 @@ class RSASecretParameters implements SignableParametersInterface
     /**
      * {@inheritdoc}
      */
-    public function getPublicParams(): KeyParametersInterface
+    public function getPrivateKey(): PrivateKey
     {
-        return $this->publicParams;
+        return $this->privateKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPublicKey(): PublicKey
+    {
+        return $this->privateKey->getPublicKey();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPublicMaterial(): KeyMaterialInterface
+    {
+        return $this->publicMaterial;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAsymmetricKey(): AsymmetricKey
+    {
+        return $this->privateKey;
     }
 
     /**
@@ -192,12 +211,14 @@ class RSASecretParameters implements SignableParametersInterface
      */
     public function isValid(): bool
     {
-        if ($this->publicParams instanceof RSAPublicParameters) {
+        if ($this->publicMaterial instanceof RSAPublicKeyMaterial) {
             $one = new BigInteger(1);
             $two = new BigInteger(2);
 
             // expect pq = n
-            if (!$this->primeP->multiply($this->primeQ)->equals($this->publicParams->getModulus())) {
+            if (!$this->primeP->multiply($this->primeQ)->equals(
+                $this->publicMaterial->getModulus()
+            )) {
                 return false;
             }
 
@@ -207,9 +228,9 @@ class RSASecretParameters implements SignableParametersInterface
                 return false;
             }
 
-            $nSizeOver3 = (int) floor($this->publicParams->getModulus()->getLength() / 3);
+            $nSizeOver3 = (int) floor($this->publicMaterial->getModulus()->getLength() / 3);
             $r = BigInteger::randomRange($one, $two->bitwise_leftShift($nSizeOver3));
-            $rde = $r->multiply($this->exponent)->multiply($this->publicParams->getExponent());
+            $rde = $r->multiply($this->exponent)->multiply($this->publicMaterial->getExponent());
 
             list(, $p) = $rde->divide($this->primeP->subtract($one));
             list(, $q) = $rde->divide($this->primeQ->subtract($one));

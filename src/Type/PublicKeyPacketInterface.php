@@ -11,19 +11,13 @@
 namespace OpenPGP\Type;
 
 /**
- * Session key parameters interface
+ * Public key packet interface
  * 
  * @package   OpenPGP
  * @category  Type
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface SessionKeyParametersInterface
+interface PublicKeyPacketInterface extends KeyPacketInterface
 {
-    /**
-     * Serializes session key parameters to bytes
-     * 
-     * @return string
-     */
-    function toBytes(): string;
 }

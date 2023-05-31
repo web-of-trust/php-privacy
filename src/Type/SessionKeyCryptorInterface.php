@@ -10,29 +10,28 @@
 
 namespace OpenPGP\Type;
 
-use OpenPGP\Enum\HashAlgorithm;
-
 /**
- * Verifiable parameters interface
+ * Session key cryptor interface
  * 
  * @package   OpenPGP
  * @category  Type
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface VerifiableParametersInterface extends KeyParametersInterface
+interface SessionKeyCryptorInterface
 {
     /**
-     * Verifies a signature with message
-     * 
-     * @param HashAlgorithm $hash
-     * @param string $message
-     * @param string $signature
-     * @return bool
+     * Decrypts session key by using secret key packet
+     *
+     * @param SecretKeyPacketInterface $secretKey
+     * @return SessionKeyInterface
      */
-    function verify(
-        HashAlgorithm $hash,
-        string $message,
-        string $signature
-    ): bool;
+    function decryptSessionKey(SecretKeyPacketInterface $secretKey): SessionKeyInterface;
+
+    /**
+     * Serializes session key material to bytes
+     * 
+     * @return string
+     */
+    function toBytes(): string;
 }

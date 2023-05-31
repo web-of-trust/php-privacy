@@ -48,13 +48,6 @@ interface KeyPacketInterface extends ForSigningInterface, PacketInterface
     function getKeyAlgorithm(): KeyAlgorithm;
 
     /**
-     * Gets key parameters
-     * 
-     * @return KeyParametersInterface
-     */
-    function getKeyParameters(): ?KeyParametersInterface;
-
-    /**
      * Gets fingerprint
      * 
      * @param bool $toHex
@@ -97,6 +90,13 @@ interface KeyPacketInterface extends ForSigningInterface, PacketInterface
      * @return bool
      */
     function isEncryptionKey(): bool;
+
+    /**
+     * Gets key material
+     * 
+     * @return KeyMaterialInterface
+     */
+    function getKeyMaterial(): ?KeyMaterialInterface;
 
     /**
      * Gets preferred hash algorithm

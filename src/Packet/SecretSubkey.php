@@ -23,7 +23,7 @@ use OpenPGP\Enum\{
     SymmetricAlgorithm,
 };
 use OpenPGP\Type\{
-    KeyParametersInterface,
+    KeyMaterialInterface,
     SubkeyPacketInterface,
 };
 
@@ -42,7 +42,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
      *
      * @param PublicSubkey $publicKey
      * @param string $keyData
-     * @param KeyParametersInterface $keyParameters
+     * @param KeyMaterialInterface $keyMaterial
      * @param S2kUsage $s2kUsage
      * @param SymmetricAlgorithm $symmetric
      * @param Key\S2K $s2k
@@ -52,7 +52,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
     public function __construct(
         PublicSubkey $publicKey,
         string $keyData = '',
-        ?KeyParametersInterface $keyParameters = null,
+        ?KeyMaterialInterface $keyMaterial = null,
         S2kUsage $s2kUsage = S2kUsage::Sha1,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         ?Key\S2K $s2k = null,
@@ -62,7 +62,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         parent::__construct(
         	$publicKey,
             $keyData,
-            $keyParameters,
+            $keyMaterial,
             $s2kUsage,
             $symmetric,
             $s2k,
@@ -119,7 +119,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         S2kType $s2kType = S2kType::Iterated
     ): self
     {
-        if ($this->getKeyParameters() instanceof KeyParametersInterface) {
+        if ($this->getKeyMaterial() instanceof KeyMaterialInterface) {
             $secretKey = parent::encrypt(
                 $passphrase,
                 $s2kUsage,
@@ -139,7 +139,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
      */
     public function decrypt(string $passphrase): self
     {
-        if ($this->getKeyParameters() instanceof KeyParametersInterface) {
+        if ($this->getKeyMaterial() instanceof KeyMaterialInterface) {
             return $this;
         }
         else {
@@ -153,11 +153,11 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         return new self(
             new PublicSubkey(
                 $publicKey->getCreationTime(),
-                $publicKey->getKeyParameters(),
+                $publicKey->getKeyMaterial(),
                 $publicKey->getKeyAlgorithm()
             ),
             $secretKey->getKeyData(),
-            $secretKey->getKeyParameters(),
+            $secretKey->getKeyMaterial(),
             $secretKey->getS2kUsage(),
             $secretKey->getSymmetric(),
             $secretKey->getS2K(),

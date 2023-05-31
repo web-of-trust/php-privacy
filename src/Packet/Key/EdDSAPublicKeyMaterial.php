@@ -12,20 +12,20 @@ namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\HashAlgorithm;
-use OpenPGP\Type\VerifiableParametersInterface;
+use OpenPGP\Type\PublicKeyMaterialInterface;
 
 /**
- * EdDSA public parameters class
+ * EdDSA public key material class
  * 
  * @package   OpenPGP
  * @category  Packet
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class EdDSAPublicParameters extends ECPublicParameters implements VerifiableParametersInterface
+class EdDSAPublicKeyMaterial extends ECPublicKeyMaterial implements PublicKeyMaterialInterface
 {
     /**
-     * Reads parameters from bytes
+     * Reads key material from bytes
      *
      * @param string $bytes
      * @return self

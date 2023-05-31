@@ -21,41 +21,41 @@ use OpenPGP\Enum\{
     HashAlgorithm,
 };
 use OpenPGP\Type\{
-    KeyParametersInterface,
-    SignableParametersInterface,
+    KeyMaterialInterface,
+    SecretKeyMaterialInterface,
 };
 
 /**
- * EdDSA secret parameters class
+ * EdDSA secret key material class
  * 
  * @package   OpenPGP
  * @category  Packet
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class EdDSASecretParameters extends ECSecretParameters implements SignableParametersInterface
+class EdDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMaterialInterface
 {
     const SIGNATURE_LENGTH = 64;
 
     /**
-     * Reads parameters from bytes
+     * Reads key material from bytes
      *
      * @param string $bytes
-     * @param KeyParametersInterface $publicParams
+     * @param KeyMaterialInterface $publicMaterial
      * @return self
      */
     public static function fromBytes(
-        string $bytes, KeyParametersInterface $publicParams
+        string $bytes, KeyMaterialInterface $publicMaterial
     ): self
     {
         return new self(
             Helper::readMPI($bytes),
-            $publicParams
+            $publicMaterial
         );
     }
 
     /**
-     * Generates parameters by using EC create key
+     * Generates key material by using EC create key
      *
      * @param CurveOid $curveOid
      * @return self
@@ -67,7 +67,7 @@ class EdDSASecretParameters extends ECSecretParameters implements SignableParame
             $key = PKCS8::load($privateKey->toString('PKCS8'));
             return new self(
                 Helper::bin2BigInt($key['secret']),
-                new EdDSAPublicParameters(
+                new EdDSAPublicKeyMaterial(
                     ASN1::encodeOID($curveOid->value),
                     Helper::bin2BigInt(
                         "\x40" . $privateKey->getEncodedCoordinates()

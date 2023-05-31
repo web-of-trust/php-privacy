@@ -12,17 +12,33 @@ namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\HashAlgorithm;
+use OpenPGP\Type\PublicKeyMaterialInterface;
 
 /**
- * DSA verifying trait
+ * ECDSA public key material class
  * 
  * @package   OpenPGP
  * @category  Packet
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-trait DSAVerifyingTrait
+class ECDSAPublicKeyMaterial extends ECPublicKeyMaterial implements PublicKeyMaterialInterface
 {
+    /**
+     * Reads key material from bytes
+     *
+     * @param string $bytes
+     * @return self
+     */
+    public static function fromBytes(string $bytes): self
+    {
+        $length = ord($bytes[0]);
+        return new self(
+            substr($bytes, 1, $length),
+            Helper::readMPI(substr($bytes, $length + 1))
+        );
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -34,7 +50,7 @@ trait DSAVerifyingTrait
     {
         $r = Helper::readMPI($signature);
         $s = Helper::readMPI(substr($signature, $r->getLengthInBytes() + 2));
-        return $this->getPublicKey()
+        return $this->publicKey
             ->withSignatureFormat('Raw')
             ->withHash(strtolower($hash->name))
             ->verify($message, ['r' => $r, 's' => $s]);

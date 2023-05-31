@@ -10,8 +10,13 @@
 
 namespace OpenPGP\Packet\Key;
 
+use phpseclib3\Crypt\Common\{
+    AsymmetricKey,
+    PrivateKey,
+    PublicKey,
+};
 use phpseclib3\Crypt\DSA;
-use phpseclib3\Crypt\DSA\PrivateKey;
+use phpseclib3\Crypt\DSA\PrivateKey as DSAPrivateKey;
 use phpseclib3\Crypt\DSA\Formats\Keys\PKCS8;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
@@ -20,64 +25,63 @@ use OpenPGP\Enum\{
     HashAlgorithm,
 };
 use OpenPGP\Type\{
-    KeyParametersInterface,
-    SignableParametersInterface,
+    KeyMaterialInterface,
+    SecretKeyMaterialInterface,
 };
 
 /**
- * DSA secret parameters class
+ * DSA secret key material class
  * 
  * @package   OpenPGP
  * @category  Packet
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class DSASecretParameters implements SignableParametersInterface
+class DSASecretKeyMaterial implements SecretKeyMaterialInterface
 {
-    use DSASigningTrait;
-
     /**
      * phpseclib3 DSA private key
      */
-    private readonly PrivateKey $privateKey;
+    private readonly DSAPrivateKey $privateKey;
 
     /**
      * Constructor
      *
      * @param BigInteger $exponent
-     * @param KeyParametersInterface $publicParams
+     * @param KeyMaterialInterface $publicMaterial
+     * @param DSAPrivateKey $privateKey
      * @return self
      */
     public function __construct(
         private readonly BigInteger $exponent,
-        private readonly KeyParametersInterface $publicParams,
-        ?PrivateKey $privateKey = null
+        private readonly KeyMaterialInterface $publicMaterial,
+        ?DSAPrivateKey $privateKey = null
     )
     {
         $this->privateKey = $privateKey ?? DSA::load([
             'x' => $exponent,
-            ...$publicParams->getParameters(),
+            ...$publicMaterial->getParameters(),
         ]);
     }
 
     /**
-     * Reads parameters from bytes
+     * Reads key material from bytes
      *
      * @param string $bytes
-     * @param KeyParametersInterface $publicParams
+     * @param KeyMaterialInterface $publicMaterial
      * @return self
      */
     public static function fromBytes(
-        string $bytes, KeyParametersInterface $publicParams
+        string $bytes, KeyMaterialInterface $publicMaterial
     ): self
     {
         return new self(
-            Helper::readMPI($bytes), $publicParams
+            Helper::readMPI($bytes), $publicMaterial
         );
     }
 
     /**
-     * Generates parameters by using DSA create key
+     * Generates key material by using DSA create key
      *
      * @param DHKeySize $keySize
      * @return self
@@ -88,7 +92,7 @@ class DSASecretParameters implements SignableParametersInterface
         $key = PKCS8::load($privateKey->toString('PKCS8'));
         return new self(
             $key['x'],
-            new DSAPublicParameters(
+            new DSAPublicKeyMaterial(
                 $key['p'],
                 $key['q'],
                 $key['g'],
@@ -110,9 +114,7 @@ class DSASecretParameters implements SignableParametersInterface
     }
 
     /**
-     * Gets private key
-     *
-     * @return PrivateKey
+     * {@inheritdoc}
      */
     public function getPrivateKey(): PrivateKey
     {
@@ -122,9 +124,25 @@ class DSASecretParameters implements SignableParametersInterface
     /**
      * {@inheritdoc}
      */
-    public function getPublicParams(): KeyParametersInterface
+    public function getPublicKey(): PublicKey
     {
-        return $this->publicParams;
+        return $this->privateKey->getPublicKey();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPublicMaterial(): KeyMaterialInterface
+    {
+        return $this->publicMaterial;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAsymmetricKey(): AsymmetricKey
+    {
+        return $this->privateKey;
     }
 
     /**
@@ -140,15 +158,15 @@ class DSASecretParameters implements SignableParametersInterface
      */
     public function isValid(): bool
     {
-        if ($this->publicParams instanceof DSAPublicParameters) {
+        if ($this->publicMaterial instanceof DSAPublicKeyMaterial) {
             $zero = new BigInteger(0);
             $one = new BigInteger(1);
             $two = new BigInteger(2);
 
-            $prime = $this->publicParams->getPrime();
-            $order = $this->publicParams->getOrder();
-            $generator = $this->publicParams->getGenerator();
-            $exponent = $this->publicParams->getExponent();
+            $prime = $this->publicMaterial->getPrime();
+            $order = $this->publicMaterial->getOrder();
+            $generator = $this->publicMaterial->getGenerator();
+            $exponent = $this->publicMaterial->getExponent();
 
             // Check that 1 < g < p
             if ($generator->compare($one) <= 0 || $generator->compare($prime) >= 0) {
@@ -194,6 +212,23 @@ class DSASecretParameters implements SignableParametersInterface
         return implode([
             pack('n', $this->exponent->getLength()),
             $this->exponent->toBytes(),
+        ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function sign(HashAlgorithm $hash, string $message): string
+    {
+        $signature = $this->privateKey
+            ->withSignatureFormat('Raw')
+            ->withHash(strtolower($hash->name))
+            ->sign($message);
+        return implode([
+            pack('n', $signature['r']->getLength()),
+            $signature['r']->toBytes(),
+            pack('n', $signature['s']->getLength()),
+            $signature['s']->toBytes(),
         ]);
     }
 }

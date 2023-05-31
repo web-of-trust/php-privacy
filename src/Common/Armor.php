@@ -269,18 +269,30 @@ final class Armor
     {
         preg_match(self::BEGIN_PATTERN, $armoredText, $matches);
         if (empty($matches)) {
-            throw new \UnexpectedValueException('Unknown ASCII armor type');
+            throw new \UnexpectedValueException('Unknown armor type.');
         }
-        $type = match (1) {
-            preg_match('/MESSAGE, PART \d+\/\d+/', $matches[0]) => ArmorType::MultipartSection,
-            preg_match('/MESSAGE, PART \d+/', $matches[0]) => ArmorType::MultipartLast,
-            preg_match('/SIGNED MESSAGE/', $matches[0]) => ArmorType::SignedMessage,
-            preg_match('/MESSAGE/', $matches[0]) => ArmorType::Message,
-            preg_match('/PUBLIC KEY BLOCK/', $matches[0]) => ArmorType::PublicKey,
-            preg_match('/PRIVATE KEY BLOCK/', $matches[0]) => ArmorType::PrivateKey,
-            preg_match('/SIGNATURE/', $matches[0]) => ArmorType::Signature,
-        };
-        return $type;
+        if (preg_match('/MESSAGE, PART \d+\/\d+/', $matches[0])) {
+            return ArmorType::MultipartSection;
+        }
+        elseif (preg_match('/MESSAGE, PART \d+/', $matches[0])) {
+            return ArmorType::MultipartLast;
+        }
+        elseif (preg_match('/SIGNED MESSAGE/', $matches[0])) {
+            return ArmorType::SignedMessage;
+        }
+        elseif (preg_match('/MESSAGE/', $matches[0])) {
+            return ArmorType::Message;
+        }
+        elseif (preg_match('/PUBLIC KEY BLOCK/', $matches[0])) {
+            return ArmorType::PublicKey;
+        }
+        elseif (preg_match('/PRIVATE KEY BLOCK/', $matches[0])) {
+            return ArmorType::PrivateKey;
+        }
+        elseif (preg_match('/SIGNATURE/', $matches[0])) {
+            return ArmorType::Signature;
+        }
+        return ArmorType::MultipartSection;
     }
 
     /**

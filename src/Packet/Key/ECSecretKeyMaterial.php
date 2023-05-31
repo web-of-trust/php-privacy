@@ -10,12 +10,17 @@
 
 namespace OpenPGP\Packet\Key;
 
+use phpseclib3\Crypt\Common\{
+    AsymmetricKey,
+    PrivateKey,
+    PublicKey,
+};
 use phpseclib3\Crypt\EC;
 use phpseclib3\Crypt\EC\Curves\{
     Curve25519,
     Ed25519,
 };
-use phpseclib3\Crypt\EC\PrivateKey;
+use phpseclib3\Crypt\EC\PrivateKey as ECPrivateKey;
 use phpseclib3\Crypt\EC\Formats\Keys\{
     MontgomeryPrivate,
     PKCS8,
@@ -23,43 +28,43 @@ use phpseclib3\Crypt\EC\Formats\Keys\{
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\CurveOid;
-use OpenPGP\Type\KeyParametersInterface;
+use OpenPGP\Type\KeyMaterialInterface;
 
 /**
- * EC secret parameters class
+ * EC secret key material class
  * 
  * @package   OpenPGP
  * @category  Packet
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-abstract class ECSecretParameters implements KeyParametersInterface
+abstract class ECSecretKeyMaterial implements KeyMaterialInterface
 {
     /**
      * phpseclib3 EC private key
      */
-    private readonly PrivateKey $privateKey;
+    protected readonly ECPrivateKey $privateKey;
 
     /**
      * Constructor
      *
      * @param BigInteger $d
-     * @param KeyParametersInterface $publicParams
-     * @param PrivateKey $privateKey
+     * @param KeyMaterialInterface $publicMaterial
+     * @param ECPrivateKey $privateKey
      * @return self
      */
     public function __construct(
         private readonly BigInteger $d,
-        private readonly KeyParametersInterface $publicParams,
-        ?PrivateKey $privateKey = null
+        private readonly KeyMaterialInterface $publicMaterial,
+        ?ECPrivateKey $privateKey = null
     )
     {
-        if ($privateKey instanceof PrivateKey) {
+        if ($privateKey instanceof ECPrivateKey) {
             $this->privateKey = $privateKey;
         }
         else {
             $format = 'PKCS8';
-            $params = $publicParams->getParameters();
+            $params = $publicMaterial->getParameters();
             $curve = $params['curve'];
             if ($curve instanceof Ed25519) {
                 $arr = $curve->extractSecret($d->toBytes());
@@ -91,9 +96,17 @@ abstract class ECSecretParameters implements KeyParametersInterface
     }
 
     /**
-     * Gets private key
+     * Gets EC private key
      *
-     * @return PrivateKey
+     * @return ECPrivateKey
+     */
+    public function getECPrivateKey(): ECPrivateKey
+    {
+        return $this->privateKey;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function getPrivateKey(): PrivateKey
     {
@@ -103,9 +116,25 @@ abstract class ECSecretParameters implements KeyParametersInterface
     /**
      * {@inheritdoc}
      */
-    public function getPublicParams(): KeyParametersInterface
+    public function getPublicKey(): PublicKey
     {
-        return $this->publicParams;
+        return $this->privateKey->getPublicKey();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPublicMaterial(): KeyMaterialInterface
+    {
+        return $this->publicMaterial;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAsymmetricKey(): AsymmetricKey
+    {
+        return $this->privateKey;
     }
 
     /**
@@ -113,7 +142,7 @@ abstract class ECSecretParameters implements KeyParametersInterface
      */
     public function getParameters(): array
     {
-        $params = $this->publicParams->getParameters();
+        $params = $this->publicMaterial->getParameters();
         $curve = $params['curve'];
         if ($curve instanceof Curve25519) {
             return MontgomeryPrivate::load(
@@ -130,17 +159,17 @@ abstract class ECSecretParameters implements KeyParametersInterface
      */
     public function isValid(): bool
     {
-        if ($this->publicParams instanceof ECPublicParameters) {
-            $curveOid = $this->publicParams->getCurveOid();
+        if ($this->publicMaterial instanceof ECPublicKeyMaterial) {
+            $curveOid = $this->publicMaterial->getCurveOid();
             switch ($curveOid) {
                 case CurveOid::Ed25519:
                 case CurveOid::Curve25519:
                     $dG = Helper::bin2BigInt(
                         "\x40" . $this->privateKey->getEncodedCoordinates()
                     );
-                    return $this->publicParams->getQ()->equals($dG);
+                    return $this->publicMaterial->getQ()->equals($dG);
                 default:
-                    $params = $this->publicParams->getParameters();
+                    $params = $this->publicMaterial->getParameters();
                     $curve = $params['curve'];
                     $QA = $curve->multiplyPoint($curve->getBasePoint(), $this->d);
                     return $QA[0]->toBigInteger()->equals($params['QA'][0]->toBigInteger()) &&

@@ -10,18 +10,36 @@
 
 namespace OpenPGP\Type;
 
+use phpseclib3\Crypt\Common\{
+    PrivateKey,
+    PublicKey,
+};
 use OpenPGP\Enum\HashAlgorithm;
 
 /**
- * Signable parameters interface
+ * Secret key material interface
  * 
  * @package   OpenPGP
  * @category  Type
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface SignableParametersInterface extends KeyParametersInterface
+interface SecretKeyMaterialInterface extends KeyMaterialInterface
 {
+    /**
+     * Returns phpseclib3 private key
+     * 
+     * @return PrivateKey
+     */
+    function getPrivateKey(): PrivateKey;
+
+    /**
+     * Returns phpseclib3 public key
+     * 
+     * @return PublicKey
+     */
+    function getPublicKey(): PublicKey;
+
     /**
      * Signs a message and returns signature
      * 

@@ -25,7 +25,7 @@ interface PacketListInterface extends \IteratorAggregate, \Countable
     /**
      * Get array packets
      * 
-     * @return array<PacketInterface>
+     * @return array
      */
     function getPackets(): array;
 

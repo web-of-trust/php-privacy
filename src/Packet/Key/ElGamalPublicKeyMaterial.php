@@ -10,30 +10,24 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\DSA;
-use phpseclib3\Crypt\DSA\PublicKey;
-use phpseclib3\Crypt\DSA\Formats\Keys\PKCS8;
+use phpseclib3\Crypt\Common\AsymmetricKey;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
-use OpenPGP\Type\{
-    KeyParametersInterface,
-    VerifiableParametersInterface
-};
+use OpenPGP\Cryptor\Asymmetric\ElGamal\PublicKey;
+use OpenPGP\Type\KeyMaterialInterface;
 
 /**
- * DSA public parameters class
+ * ElGamal public key material class
  * 
  * @package   OpenPGP
  * @category  Packet
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class DSAPublicParameters implements VerifiableParametersInterface
+class ElGamalPublicKeyMaterial implements KeyMaterialInterface
 {
-    use DSAVerifyingTrait;
-
     /**
-     * phpseclib3 DSA public key
+     * ElGamal public key
      */
     private readonly PublicKey $publicKey;
 
@@ -41,7 +35,6 @@ class DSAPublicParameters implements VerifiableParametersInterface
      * Constructor
      *
      * @param BigInteger $prime
-     * @param BigInteger $order
      * @param BigInteger $generator
      * @param BigInteger $exponent
      * @param PublicKey $publicKey
@@ -49,22 +42,18 @@ class DSAPublicParameters implements VerifiableParametersInterface
      */
     public function __construct(
         private readonly BigInteger $prime,
-        private readonly BigInteger $order,
         private readonly BigInteger $generator,
         private readonly BigInteger $exponent,
         ?PublicKey $publicKey = null
     )
     {
-        $this->publicKey = $publicKey ?? DSA::load([
-            'p' => $prime,
-            'q' => $order,
-            'g' => $generator,
-            'y' => $exponent,
-        ]);
+        $this->publicKey = $publicKey ?? new PublicKey(
+            $exponent, $prime, $generator
+        );
     }
 
     /**
-     * Reads parameters from bytes
+     * Reads key material from bytes
      *
      * @param string $bytes
      * @return self
@@ -74,9 +63,6 @@ class DSAPublicParameters implements VerifiableParametersInterface
         $prime = Helper::readMPI($bytes);
 
         $offset = $prime->getLengthInBytes() + 2;
-        $order = Helper::readMPI(substr($bytes, $offset));
-
-        $offset += $order->getLengthInBytes() + 2;
         $generator = Helper::readMPI(substr($bytes, $offset));
 
         $offset += $generator->getLengthInBytes() + 2;
@@ -84,7 +70,6 @@ class DSAPublicParameters implements VerifiableParametersInterface
 
         return new self(
             $prime,
-            $order,
             $generator,
             $exponent
         );
@@ -98,16 +83,6 @@ class DSAPublicParameters implements VerifiableParametersInterface
     public function getPrime(): BigInteger
     {
         return $this->prime;
-    }
-
-    /**
-     * Gets group order q (q is a prime divisor of p-1)
-     *
-     * @return BigInteger
-     */
-    public function getOrder(): BigInteger
-    {
-        return $this->order;
     }
 
     /**
@@ -132,7 +107,7 @@ class DSAPublicParameters implements VerifiableParametersInterface
 
     /**
      * Gets public key
-     *
+     * 
      * @return PublicKey
      */
     public function getPublicKey(): PublicKey
@@ -143,7 +118,15 @@ class DSAPublicParameters implements VerifiableParametersInterface
     /**
      * {@inheritdoc}
      */
-    public function getPublicParams(): KeyParametersInterface
+    public function getAsymmetricKey(): AsymmetricKey
+    {
+        return $this->publicKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPublicMaterial(): KeyMaterialInterface
     {
         return $this;
     }
@@ -153,7 +136,11 @@ class DSAPublicParameters implements VerifiableParametersInterface
      */
     public function getParameters(): array
     {
-        return PKCS8::load($this->publicKey->toString('PKCS8'));
+        return [
+            'p' => $this->prime,
+            'g' => $this->generator,
+            'y' => $this->exponent,
+        ];
     }
 
     /**
@@ -172,8 +159,6 @@ class DSAPublicParameters implements VerifiableParametersInterface
         return implode([
             pack('n', $this->prime->getLength()),
             $this->prime->toBytes(),
-            pack('n', $this->order->getLength()),
-            $this->order->toBytes(),
             pack('n', $this->generator->getLength()),
             $this->generator->toBytes(),
             pack('n', $this->exponent->getLength()),

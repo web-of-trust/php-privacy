@@ -16,43 +16,44 @@ use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
 use phpseclib3\File\ASN1;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
-use OpenPGP\Enum\CurveOid;
+use OpenPGP\Enum\{
+    CurveOid,
+    HashAlgorithm,
+};
 use OpenPGP\Type\{
-    KeyParametersInterface,
-    SignableParametersInterface,
+    KeyMaterialInterface,
+    SecretKeyMaterialInterface,
 };
 
 /**
- * ECDSA secret parameters class
+ * ECDSA secret key material class
  * 
  * @package   OpenPGP
  * @category  Packet
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class ECDSASecretParameters extends ECSecretParameters implements SignableParametersInterface
+class ECDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMaterialInterface
 {
-    use DSASigningTrait;
-
     /**
-     * Reads parameters from bytes
+     * Reads key material from bytes
      *
      * @param string $bytes
-     * @param KeyParametersInterface $publicParams
+     * @param KeyMaterialInterface $publicMaterial
      * @return self
      */
     public static function fromBytes(
-        string $bytes, KeyParametersInterface $publicParams
+        string $bytes, KeyMaterialInterface $publicMaterial
     ): self
     {
         return new self(
             Helper::readMPI($bytes),
-            $publicParams
+            $publicMaterial
         );
     }
 
     /**
-     * Generates parameters by using EC create key
+     * Generates key material by using EC create key
      *
      * @param CurveOid $curveOid
      * @return self
@@ -70,7 +71,7 @@ class ECDSASecretParameters extends ECSecretParameters implements SignableParame
                 $key = PKCS8::load($privateKey->toString('PKCS8'));
                 return new self(
                     $key['dA'],
-                    new ECDSAPublicParameters(
+                    new ECDSAPublicKeyMaterial(
                         ASN1::encodeOID($curveOid->value),
                         Helper::bin2BigInt($privateKey->getEncodedCoordinates()),
                         $privateKey->getPublicKey()
@@ -78,5 +79,22 @@ class ECDSASecretParameters extends ECSecretParameters implements SignableParame
                     $privateKey,
                 );
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function sign(HashAlgorithm $hash, string $message): string
+    {
+        $signature = $this->privateKey
+            ->withSignatureFormat('Raw')
+            ->withHash(strtolower($hash->name))
+            ->sign($message);
+        return implode([
+            pack('n', $signature['r']->getLength()),
+            $signature['r']->toBytes(),
+            pack('n', $signature['s']->getLength()),
+            $signature['s']->toBytes(),
+        ]);
     }
 }

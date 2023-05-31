@@ -10,43 +10,48 @@
 
 namespace OpenPGP\Packet\Key;
 
+use phpseclib3\Crypt\Common\{
+    AsymmetricKey,
+    PublicKey,
+};
 use phpseclib3\Crypt\RSA;
-use phpseclib3\Crypt\RSA\PublicKey;
+use phpseclib3\Crypt\RSA\PublicKey as RSAPublicKey;
 use phpseclib3\Crypt\RSA\Formats\Keys\PKCS8;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\HashAlgorithm;
 use OpenPGP\Type\{
-    KeyParametersInterface,
-    VerifiableParametersInterface,
+    KeyMaterialInterface,
+    PublicKeyMaterialInterface,
 };
 
 /**
- * RSA public parameters class
+ * RSA public key material class
  * 
  * @package   OpenPGP
  * @category  Packet
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class RSAPublicParameters implements VerifiableParametersInterface
+class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
 {
     /**
      * phpseclib3 RSA public key
      */
-    private readonly PublicKey $publicKey;
+    private readonly RSAPublicKey $publicKey;
 
     /**
      * Constructor
      *
      * @param BigInteger $modulus
      * @param BigInteger $exponent
+     * @param RSAPublicKey $publicKey
      * @return self
      */
     public function __construct(
         private readonly BigInteger $modulus,
         private readonly BigInteger $exponent,
-        ?PublicKey $publicKey = null
+        ?RSAPublicKey $publicKey = null
     )
     {
         $this->publicKey = $publicKey ?? RSA::load([
@@ -68,16 +73,6 @@ class RSAPublicParameters implements VerifiableParametersInterface
             substr($bytes, $modulus->getLengthInBytes() + 2)
         );
         return new self($modulus, $exponent);
-    }
-
-    /**
-     * Gets public key
-     *
-     * @return PublicKey
-     */
-    public function getPublicKey(): PublicKey
-    {
-        return $this->publicKey;
     }
 
     /**
@@ -103,9 +98,25 @@ class RSAPublicParameters implements VerifiableParametersInterface
     /**
      * {@inheritdoc}
      */
-    public function getPublicParams(): KeyParametersInterface
+    public function getPublicMaterial(): KeyMaterialInterface
     {
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAsymmetricKey(): AsymmetricKey
+    {
+        return $this->publicKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPublicKey(): PublicKey
+    {
+        return $this->publicKey;
     }
 
     /**
