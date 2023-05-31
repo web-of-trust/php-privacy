@@ -89,7 +89,7 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
             $keyParameters->getCurveOid()->name
         );
         $sharedKey = DH::computeSecret(
-            $privateKey, $keyParameters->getPublicKey()
+            $privateKey, $keyParameters->getPublicKey()->getEncodedCoordinates()
         );
 
         $keyWrapper = self::selectKeyWrapper($keyParameters->getKdfSymmetric());
@@ -182,7 +182,7 @@ class ECDHSessionKeyParameters implements SessionKeyParametersInterface
         }
         $publicKey = EC::loadFormat($format, $key);
         $sharedKey = DH::computeSecret(
-            $keyParameters->getPrivateKey(), $publicKey
+            $keyParameters->getPrivateKey(), $publicKey->getEncodedCoordinates()
         );
 
         $keyWrapper = self::selectKeyWrapper($publicParams->getKdfSymmetric());
