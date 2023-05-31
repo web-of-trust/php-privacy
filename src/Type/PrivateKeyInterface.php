@@ -110,7 +110,7 @@ interface PrivateKeyInterface extends KeyInterface
     ): self;
 
     /**
-     * Certify a OpenPGP key,
+     * Certify an OpenPGP key,
      * and returns key object with the new certification added.
      * 
      * @param KeyInterface $key
@@ -120,7 +120,7 @@ interface PrivateKeyInterface extends KeyInterface
     function certifyKey(KeyInterface $key, ?DateTime $time = null): KeyInterface;
 
     /**
-     * Revokes a OpenPGP key,
+     * Revokes an OpenPGP key,
      * and returns key object with the new revocation signature added.
      * 
      * @param KeyInterface $key

@@ -389,39 +389,24 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 'UserIDs are required.',
             );
         }
-        $packets = [
-            $this->getKeyPacket(),
-            ...$this->getRevocationSignatures(),
-            ...$this->getDirectSignatures(),
-        ];
-        $userPackets = [];
-        foreach ($this->getUsers() as $user) {
-            $userPackets = array_merge(
-                $userPackets, $user->toPacketList()->getPackets()
-            );
-        }
-        // Wrap user id with certificate signature
+
+        $privateKey = clone $this;
+        $users = $privateKey->getUsers();
         foreach ($userIDs as $userID) {
             $packet = new UserID($userID);
-            $userPackets[] = $packet;
-            $userPackets[] = Signature::createSelfCertificate(
-                $this->getSigningKeyPacket(),
+            $selfCertificate = Signature::createSelfCertificate(
+                $privateKey->getSigningKeyPacket(),
                 $packet,
                 false,
             );
-        }
-        $subkeyPackets = [];
-        foreach ($this->getSubkeys() as $subkey) {
-            $subkeyPackets = array_merge(
-                $subkeyPackets, $subkey->toPacketList()->getPackets()
+            $users[] = new User(
+                $privateKey,
+                $packet,
+                selfCertifications: [$selfCertificate],
             );
         }
-
-        return self::fromPacketList((new PacketList([
-            ...$packets,
-            ...$userPackets,
-            ...$subkeyPackets,
-        ])));
+        $privateKey->setUsers($users);
+        return $privateKey;
     }
 
     /**
@@ -444,6 +429,8 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             );
         }
 
+        $privateKey = clone $this;
+        $subkeys = $privateKey->getSubkeys();
         $secretSubkey = SecretSubkey::generate(
             $keyAlgorithm,
             $rsaKeySize,
@@ -451,19 +438,20 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $curve,
             $time,
         )->encrypt($passphrase);
-
-        // Wrap secret subkey with binding signature
-        $packets = $this->toPacketList()->getPackets();
-        $packets[] = $secretSubkey;
-        $packets[] = Signature::createSubkeyBinding(
-            $this->getSigningKeyPacket(),
+        $bindingSignature = Signature::createSubkeyBinding(
+            $privateKey->getSigningKeyPacket(),
             $secretSubkey,
             $keyExpiry,
             $subkeySign,
             $time
         );
-
-        return self::fromPacketList((new PacketList($packets)));
+        $subkeys[] = new Subkey(
+            $privateKey,
+            $secretSubkey,
+            bindingSignatures: [$bindingSignature]
+        );
+        $privateKey->setSubkeys($subkeys);
+        return $privateKey;
     }
 
     /**

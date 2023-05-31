@@ -23,6 +23,7 @@ use OpenPGP\Type\{
     KeyPacketInterface,
     PacketContainerInterface,
     PacketListInterface,
+    PrivateKeyInterface,
     SignaturePacketInterface,
     SubkeyInterface,
     SubkeyPacketInterface,
@@ -278,24 +279,25 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
     /**
      * Revokes the subkey
      * 
-     * @param PrivateKey $signKey
+     * @param PrivateKeyInterface $signKey
      * @param string $revocationReason
      * @param DateTime $time
      * @return self
      */
     public function revoke(
-        PrivateKey $signKey,
+        PrivateKeyInterface $signKey,
         string $revocationReason = '',
         ?DateTime $time = null
     ): self
     {
-        $this->revocationSignatures[] = Signature::createSubkeyRevocation(
+        $subkey = clone $this;
+        $subkey->revocationSignatures[] = Signature::createSubkeyRevocation(
             $signKey->getSigningKeyPacket(),
-            $this->keyPacket,
+            $subkey->getKeyPacket(),
             $revocationReason,
             $time
         );
-        return $this;
+        return $subkey;
     }
 
     /**
