@@ -33,7 +33,6 @@ use OpenPGP\Type\{
     CleartextMessageInterface,
     EncryptedMessageInterface,
     LiteralMessageInterface,
-    MessageInterface,
     SignatureInterface,
     SignedMessageInterface,
 };
@@ -243,16 +242,16 @@ final class OpenPGP
     /**
      * Sign a message & return signed message
      *
-     * @param MessageInterface $message
+     * @param LiteralMessageInterface $message
      * @param array<Key\PrivateKey> $signingKeys
      * @param DateTime $time
-     * @return SignedMessageInterface
+     * @return LiteralMessageInterface
      */
     public static function sign(
-        MessageInterface $message,
+        LiteralMessageInterface $message,
         array $signingKeys,
         ?DateTime $time = null
-    ): SignedMessageInterface
+    ): LiteralMessageInterface
     {
         return $message->sign(
             $signingKeys, $time
@@ -262,13 +261,13 @@ final class OpenPGP
     /**
      * Sign a message & return detached signature
      *
-     * @param MessageInterface $message
+     * @param LiteralMessageInterface $message
      * @param array<Key\PrivateKey> $signingKeys
      * @param DateTime $time
      * @return SignatureInterface
      */
     public static function signDetached(
-        MessageInterface $message,
+        LiteralMessageInterface $message,
         array $signingKeys,
         ?DateTime $time = null
     ): SignatureInterface
