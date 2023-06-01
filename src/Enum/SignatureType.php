@@ -11,7 +11,7 @@
 namespace OpenPGP\Enum;
 
 /**
- * SignatureType enum
+ * Signature type enum
  *
  * @package    OpenPGP
  * @category   Enum

@@ -260,9 +260,8 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
     ): KeyMaterialInterface
     {
         return match($keyAlgorithm) {
-            KeyAlgorithm::RsaEncryptSign => Key\RSAPublicKeyMaterial::fromBytes($bytes),
-            KeyAlgorithm::RsaEncrypt => Key\RSAPublicKeyMaterial::fromBytes($bytes),
-            KeyAlgorithm::RsaSign => Key\RSAPublicKeyMaterial::fromBytes($bytes),
+            KeyAlgorithm::RsaEncryptSign, KeyAlgorithm::RsaEncrypt, KeyAlgorithm::RsaSign
+            => Key\RSAPublicKeyMaterial::fromBytes($bytes),
             KeyAlgorithm::ElGamal => Key\ElGamalPublicKeyMaterial::fromBytes($bytes),
             KeyAlgorithm::Dsa => Key\DSAPublicKeyMaterial::fromBytes($bytes),
             KeyAlgorithm::Ecdh => Key\ECDHPublicKeyMaterial::fromBytes($bytes),

@@ -11,7 +11,7 @@
 namespace OpenPGP\Enum;
 
 /**
- * PacketTag enum
+ * Packet tag enum
  * A list of packet types and numeric tags associated with them.
  *
  * @package    OpenPGP

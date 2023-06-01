@@ -11,7 +11,7 @@
 namespace OpenPGP\Enum;
 
 /**
- * SupportFeature enum
+ * Support feature enum
  * See https://tools.ietf.org/html/draft-ietf-openpgp-rfc4880bis-04#section-5.2.3.25
  *
  * @package    OpenPGP

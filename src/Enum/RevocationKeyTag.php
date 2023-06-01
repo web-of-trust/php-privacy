@@ -11,7 +11,7 @@
 namespace OpenPGP\Enum;
 
 /**
- * RevocationKeyTag enum
+ * Revocation key tag enum
  *
  * @package    OpenPGP
  * @category   Enum

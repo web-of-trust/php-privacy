@@ -11,7 +11,7 @@
 namespace OpenPGP\Enum;
 
 /**
- * LiteralFormat enum
+ * Literal format enum
  *
  * @package    OpenPGP
  * @category   Enum

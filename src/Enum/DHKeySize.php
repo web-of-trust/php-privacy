@@ -11,7 +11,7 @@
 namespace OpenPGP\Enum;
 
 /**
- * DHKeySize enum
+ * DH key size enum
  *
  * @package    OpenPGP
  * @category   Enum

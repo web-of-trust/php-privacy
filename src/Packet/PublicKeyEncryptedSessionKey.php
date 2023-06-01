@@ -190,7 +190,9 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
         }
     }
 
-    private function decryptSessionKey(SecretKeyPacketInterface $secretKey): SessionKeyInterface
+    private function decryptSessionKey(
+        SecretKeyPacketInterface $secretKey
+    ): SessionKeyInterface
     {
         $this->getLogger()->debug(
             'Decrypt public key encrypted session key.'
@@ -215,10 +217,8 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     ): SessionKeyCryptorInterface
     {
         return match($keyPacket->getKeyAlgorithm()) {
-            KeyAlgorithm::RsaEncryptSign => Key\RSASessionKeyCryptor::encryptSessionKey(
-                $sessionKey, $keyPacket->getKeyMaterial()->getAsymmetricKey()
-            ),
-            KeyAlgorithm::RsaEncrypt => Key\RSASessionKeyCryptor::encryptSessionKey(
+            KeyAlgorithm::RsaEncryptSign, KeyAlgorithm::RsaEncrypt
+            => Key\RSASessionKeyCryptor::encryptSessionKey(
                 $sessionKey, $keyPacket->getKeyMaterial()->getAsymmetricKey()
             ),
             KeyAlgorithm::ElGamal => Key\ElGamalSessionKeyCryptor::encryptSessionKey(
@@ -238,8 +238,8 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     ): SessionKeyCryptorInterface
     {
         return match($keyAlgorithm) {
-            KeyAlgorithm::RsaEncryptSign => Key\RSASessionKeyCryptor::fromBytes($bytes),
-            KeyAlgorithm::RsaEncrypt => Key\RSASessionKeyCryptor::fromBytes($bytes),
+            KeyAlgorithm::RsaEncryptSign, KeyAlgorithm::RsaEncrypt
+            => Key\RSASessionKeyCryptor::fromBytes($bytes),
             KeyAlgorithm::ElGamal => Key\ElGamalSessionKeyCryptor::fromBytes($bytes),
             KeyAlgorithm::Ecdh => Key\ECDHSessionKeyCryptor::fromBytes($bytes),
             default => throw new \UnexpectedValueException(

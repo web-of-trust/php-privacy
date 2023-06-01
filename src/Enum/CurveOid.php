@@ -24,7 +24,7 @@ use phpseclib3\Crypt\EC\Curves\{
 };
 
 /**
- * CurveOid enum
+ * Curve oid enum
  *
  * @package    OpenPGP
  * @category   Enum

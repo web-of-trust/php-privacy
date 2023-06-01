@@ -11,7 +11,7 @@
 namespace OpenPGP\Enum;
 
 /**
- * KekSize enum
+ * Key encryption key size enum
  *
  * @package    OpenPGP
  * @category   Enum

@@ -11,7 +11,7 @@
 namespace OpenPGP\Enum;
 
 /**
- * RSAKeySize enum
+ * RSA key size enum
  *
  * @package    OpenPGP
  * @category   Enum

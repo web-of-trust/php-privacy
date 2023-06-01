@@ -11,7 +11,7 @@
 namespace OpenPGP\Enum;
 
 /**
- * Reason for Revocation enum
+ * Reason for revocation enum
  * See https://tools.ietf.org/html/rfc4880#section-5.2.3.23
  *
  * @package    OpenPGP

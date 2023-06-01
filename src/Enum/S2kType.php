@@ -11,7 +11,7 @@
 namespace OpenPGP\Enum;
 
 /**
- * S2kType enum
+ * S2k type enum
  *
  * @package    OpenPGP
  * @category   Enum

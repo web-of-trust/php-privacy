@@ -11,7 +11,7 @@
 namespace OpenPGP\Enum;
 
 /**
- * ArmorType enum
+ * Armor type enum
  *
  * @package    OpenPGP
  * @category   Enum
