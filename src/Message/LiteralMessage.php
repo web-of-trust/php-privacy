@@ -28,7 +28,6 @@ use OpenPGP\Packet\{
     LiteralData,
     PacketList,
     PublicKeyEncryptedSessionKey,
-    SymEncryptedData,
     SymEncryptedIntegrityProtectedData,
     SymEncryptedSessionKey,
 };
@@ -38,10 +37,7 @@ use OpenPGP\Type\{
     LiteralDataInterface,
     LiteralMessageInterface,
     KeyInterface,
-    PacketInterface,
-    PacketListInterface,
     PrivateKeyInterface,
-    SessionKeyInterface,
     SignatureInterface,
     SignaturePacketInterface,
     SignedMessageInterface,
@@ -107,7 +103,9 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
             static fn ($packet) => $packet instanceof LiteralDataInterface
         );
         if (empty($packets)) {
-            throw new \UnexpectedValueException('No literal data in packet list.');
+            throw new \UnexpectedValueException(
+                'No literal data in packet list.'
+            );
         }
         return array_pop($packets);
     }
@@ -169,7 +167,9 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
             $signingKeys, static fn ($key) => $key instanceof PrivateKeyInterface
         );
         if (empty($signingKeys)) {
-            throw new \InvalidArgumentException('No signing keys provided');
+            throw new \InvalidArgumentException(
+                'No signing keys provided.'
+            );
         }
         return new Signature(array_map(
             fn ($key) => SignaturePacket::createLiteralData(
@@ -221,7 +221,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
         );
         if (empty($encryptionKeys) && empty($passwords)) {
             throw new \InvalidArgumentException(
-                'No encryption keys or passwords provided'
+                'No encryption keys or passwords provided.'
             );
         }
 
@@ -280,6 +280,8 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
             $packets,
             static fn ($packet) => $packet instanceof CompressedData
         );
-        return array_pop($compressedPackets)?->getPacketList()->getPackets() ?? $packets;
+        return array_pop(
+            $compressedPackets
+        )?->getPacketList()->getPackets() ?? $packets;
     }
 }
