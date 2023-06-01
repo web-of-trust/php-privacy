@@ -55,7 +55,7 @@ use OpenPGP\Type\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class LiteralMessage implements EncryptedMessageInterface, LiteralMessageInterface, SignedMessageInterface
+class LiteralMessage implements LiteralMessageInterface, SignedMessageInterface
 {
     private readonly array $packets;
 

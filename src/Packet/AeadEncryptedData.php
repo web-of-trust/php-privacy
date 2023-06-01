@@ -15,6 +15,11 @@ use OpenPGP\Enum\{
     PacketTag,
     SymmetricAlgorithm,
 };
+use OpenPGP\Type\{
+    EncryptedDataPacketInterface,
+    SessionKeyInterface,
+    PacketListInterface,
+};
 
 /**
  * AEAD Protected Data Packet class
@@ -28,8 +33,10 @@ use OpenPGP\Enum\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class AeadEncryptedData extends AbstractPacket
+class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInterface
 {
+    use EncryptedDataTrait;
+
     const VERSION = 1;
 
     /**
@@ -40,7 +47,7 @@ class AeadEncryptedData extends AbstractPacket
      * @param int $chunkSizeByte
      * @param string $iv
      * @param string $encrypted
-     * @param PacketList $packets
+     * @param PacketListInterface $packetList
      * @return self
      */
     public function __construct(
@@ -49,7 +56,7 @@ class AeadEncryptedData extends AbstractPacket
         private readonly int $chunkSizeByte,
         private readonly string $iv,
         private readonly string $encrypted,
-        private readonly ?PacketList $packets = null
+        private readonly ?PacketListInterface $packetList = null
     )
     {
         parent::__construct(PacketTag::AeadEncryptedData);
@@ -93,7 +100,7 @@ class AeadEncryptedData extends AbstractPacket
      * Encrypts packet list
      *
      * @param string $key
-     * @param PacketList $packets
+     * @param PacketListInterface $packetList
      * @param SymmetricAlgorithm $symmetric
      * @param AeadAlgorithm $aeadAlgorithm
      * @param int $chunkSizeByte
@@ -101,7 +108,7 @@ class AeadEncryptedData extends AbstractPacket
      */
     public static function encryptPackets(
         string $key,
-        PacketList $packets,
+        PacketListInterface $packetList,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         AeadAlgorithm $aeadAlgorithm = AeadAlgorithm::Eax,
         int $chunkSizeByte = 12
@@ -115,17 +122,17 @@ class AeadEncryptedData extends AbstractPacket
     /**
      * Encrypts packet list with session key
      *
-     * @param Key\SessionKey $sessionKey
-     * @param PacketList $packets
+     * @param SessionKeyInterface $sessionKey
+     * @param PacketListInterface $packetList
      * @return self
      */
     public static function encryptPacketsWithSessionKey(
-        Key\SessionKey $sessionKey, PacketList $packets
+        SessionKeyInterface $sessionKey, PacketListInterface $packetList
     ): self
     {
         return self::encryptPackets(
             $sessionKey->getEncryptionKey(),
-            $packets,
+            $packetList,
             $sessionKey->getSymmetric()
         );
     }
@@ -186,75 +193,31 @@ class AeadEncryptedData extends AbstractPacket
     }
 
     /**
-     * Gets encrypted data
-     *
-     * @return string
-     */
-    public function getEncrypted(): string
-    {
-        return $this->encrypted;
-    }
-
-    /**
-     * Gets decrypted packets contained within.
-     *
-     * @return PacketList
-     */
-    public function getPackets(): ?PacketList
-    {
-        return $this->packets;
-    }
-
-    /**
-     * Encrypts the payload in the packet.
-     *
-     * @param string $key
-     * @param SymmetricAlgorithm $symmetric
-     * @return self
+     * {@inheritdoc}
      */
     public function encrypt(
         string $key,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self
     {
-        if ($this->packets instanceof PacketList) {
+        if ($this->packetList instanceof PacketListInterface) {
             $this->getLogger()->debug(
                 'Encrypt the packets contained in AEAD packet.'
             );
-            return self::encryptPackets($key, $this->packets, $symmetric);
+            return self::encryptPackets($key, $this->packetList, $symmetric);
         }
         return $this;
     }
 
     /**
-     * Encrypts the payload in the packet with session key.
-     *
-     * @param Key\SessionKey $sessionKey
-     * @return self
-     */
-    public function encryptWithSessionKey(
-        Key\SessionKey $sessionKey
-    ): self
-    {
-        return $this->encrypt(
-            $sessionKey->getEncryptionKey(),
-            $sessionKey->getSymmetric()
-        );
-    }
-
-    /**
-     * Decrypts the encrypted data contained in the packet.
-     *
-     * @param string $key
-     * @param SymmetricAlgorithm $symmetric
-     * @return self
+     * {@inheritdoc}
      */
     public function decrypt(
         string $key,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self
     {
-        if ($this->packets instanceof PacketList) {
+        if ($this->packetList instanceof PacketListInterface) {
             return $this;
         }
         else {
@@ -265,21 +228,5 @@ class AeadEncryptedData extends AbstractPacket
                 'AEAD decryption is not supported.'
             );
         }
-    }
-
-    /**
-     * Decrypts the encrypted data contained in the packet with session key.
-     *
-     * @param Key\SessionKey $sessionKey
-     * @return self
-     */
-    public function decryptWithSessionKey(
-        Key\SessionKey $sessionKey
-    ): self
-    {
-        return $this->decrypt(
-            $sessionKey->getEncryptionKey(),
-            $sessionKey->getSymmetric()
-        );
     }
 }

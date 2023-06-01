@@ -43,6 +43,8 @@ final class Config
 
     private static int $s2kItCount = 224;
 
+    private static bool $allowUnauthenticated = false;
+
     /**
      * Gets preferred hash algorithm.
      *
@@ -148,5 +150,25 @@ final class Config
     public static function setS2kItCount(int $s2kItCount): void
     {
         self::$s2kItCount = $s2kItCount;
+    }
+
+    /**
+     * Gets allow decryption of messages without integrity protection.
+     *
+     * @return bool
+     */
+    public static function allowUnauthenticated(): bool
+    {
+        return self::$allowUnauthenticated;
+    }
+
+    /**
+     * Sets allow decryption of messages without integrity protection.
+     *
+     * @param bool $allow
+     */
+    public static function setAllowUnauthenticated(bool $allow): void
+    {
+        self::$allowUnauthenticated = $s2kItCount;
     }
 }

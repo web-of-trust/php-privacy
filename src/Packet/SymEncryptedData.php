@@ -10,11 +10,18 @@
 
 namespace OpenPGP\Packet;
 
-use phpseclib3\Crypt\Random;
-use OpenPGP\Common\Helper;
+use OpenPGP\Common\{
+    Config,
+    Helper,
+};
 use OpenPGP\Enum\{
     PacketTag,
     SymmetricAlgorithm,
+};
+use OpenPGP\Type\{
+    EncryptedDataPacketInterface,
+    PacketListInterface,
+    SessionKeyInterface,
 };
 
 /**
@@ -34,18 +41,20 @@ use OpenPGP\Enum\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class SymEncryptedData extends AbstractPacket
+class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInterface
 {
+    use EncryptedDataTrait;
+
     /**
      * Constructor
      *
      * @param string $encrypted
-     * @param PacketList $packetList
+     * @param PacketListInterface $packetList
      * @return self
      */
     public function __construct(
         private readonly string $encrypted,
-        private readonly ?PacketList $packetList = null
+        private readonly ?PacketListInterface $packetList = null
     )
     {
         parent::__construct(PacketTag::SymEncryptedData);
@@ -88,6 +97,24 @@ class SymEncryptedData extends AbstractPacket
     }
 
     /**
+     * Encrypts packet list with session key
+     *
+     * @param SessionKeyInterface $sessionKey
+     * @param PacketListInterface $packetList
+     * @return self
+     */
+    public static function encryptPacketsWithSessionKey(
+        SessionKeyInterface $sessionKey, PacketListInterface $packetList
+    ): self
+    {
+        return self::encryptPackets(
+            $sessionKey->getEncryptionKey(),
+            $packetList,
+            $sessionKey->getSymmetric()
+        );
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function toBytes(): string
@@ -96,48 +123,28 @@ class SymEncryptedData extends AbstractPacket
     }
 
     /**
-     * Gets decrypted packets contained within.
-     *
-     * @return PacketList
-     */
-    public function getPacketList(): ?PacketList
-    {
-        return $this->packetList;
-    }
-
-    /**
-     * Encrypts the payload in the packet.
-     *
-     * @param string $key
-     * @param SymmetricAlgorithm $symmetric
-     * @return self
+     * {@inheritdoc}
      */
     public function encrypt(
         string $key,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self
     {
-        if ($this->packetList instanceof PacketList) {
+        if ($this->packetList instanceof PacketListInterface) {
             return self::encryptPackets($key, $this->packetList, $symmetric);
         }
         return $this;
     }
 
     /**
-     * Decrypts the encrypted data contained in the packet.
-     *
-     * @param string $key
-     * @param SymmetricAlgorithm $symmetric
-     * @param bool $allowUnauthenticated
-     * @return self
+     * {@inheritdoc}
      */
     public function decrypt(
         string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        bool $allowUnauthenticated = false
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self
     {
-        if (!$allowUnauthenticated) {
+        if (!Config::allowUnauthenticated()) {
             throw new \UnexpectedValueException(
                 'Message is not authenticated.'
             );
@@ -158,23 +165,5 @@ class SymEncryptedData extends AbstractPacket
                 )
             );
         }
-    }
-
-    /**
-     * Decrypts the encrypted data contained in the packet with session key.
-     *
-     * @param Key\SessionKey $sessionKey
-     * @param bool $allowUnauthenticated
-     * @return self
-     */
-    public function decryptWithSessionKey(
-        Key\SessionKey $sessionKey, bool $allowUnauthenticated = false
-    ): self
-    {
-        return $this->decrypt(
-            $sessionKey->getEncryptionKey(),
-            $sessionKey->getSymmetric(),
-            $allowUnauthenticated
-        );
     }
 }

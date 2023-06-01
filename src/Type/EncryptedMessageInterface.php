@@ -20,7 +20,7 @@ use OpenPGP\Enum\SymmetricAlgorithm;
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface EncryptedMessageInterface extends MessageInterface
+interface EncryptedMessageInterface
 {
     /**
      * Decrypt the message. One of `decryptionKeys` or `passwords` must be specified.
@@ -28,12 +28,10 @@ interface EncryptedMessageInterface extends MessageInterface
      *
      * @param array $decryptionKeys
      * @param array $passwords
-     * @param bool $allowUnauthenticatedMessages
-     * @return self
+     * @return LiteralMessageInterface
      */
     function decrypt(
         array $decryptionKeys = [],
-        array $passwords = [],
-        bool $allowUnauthenticatedMessages = false
-    ): self;
+        array $passwords = []
+    ): LiteralMessageInterface;
 }
