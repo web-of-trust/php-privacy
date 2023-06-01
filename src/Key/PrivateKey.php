@@ -197,7 +197,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $secretKey, $secretSubkey, $keyExpiry, false, $time
         );
 
-        return self::fromPacketList((new PacketList($packets)));
+        return self::fromPacketList(new PacketList($packets));
     }
 
     /**
@@ -217,7 +217,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     public function toPublic(): KeyInterface
     {
         $packets = [];
-        foreach ($this->toPacketList()->getPackets() as $packet) {
+        foreach ($this->getPackets() as $packet) {
             if ($packet instanceof SecretKeyPacketInterface) {
                 $packets[] = $packet->getPublicKey();
             }
@@ -225,7 +225,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 $packets[] = $packet;
             }
         }
-        return PublicKey::fromPacketList((new PacketList($packets)));
+        return PublicKey::fromPacketList(new PacketList($packets));
     }
 
     /**
@@ -290,9 +290,15 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     {
         if (empty($passphrase)) {
             throw new \InvalidArgumentException(
-                'passphrase are required for key encryption.'
+                'Passphrase is required for key encryption.'
             );
         }
+        if (!$this->isDecrypted()) {
+            throw new \UnexpectedValueException(
+                'Private key must be decrypted.'
+            );
+        }
+
         $privateKey = new self(
             $this->getKeyPacket()->encrypt($passphrase),
             $this->getRevocationSignatures(),
