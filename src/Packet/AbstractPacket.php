@@ -37,7 +37,7 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, 
      * @param PacketTag $tag
      * @return self
      */
-    public function __construct(private readonly PacketTag $tag)
+    protected function __construct(private readonly PacketTag $tag)
     {
         $this->setLogger(Config::getLogger());
     }

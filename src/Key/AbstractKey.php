@@ -88,7 +88,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
      * @param array<Subkey> $subkeys
      * @return self
      */
-    public function __construct(
+    protected function __construct(
         private readonly KeyPacketInterface $keyPacket,
         array $revocationSignatures = [],
         array $directSignatures = [],

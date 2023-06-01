@@ -33,7 +33,7 @@ abstract class KeyWrapper
      * @param KekSize $kekSize
      * @return self
      */
-    public function __construct(
+    protected function __construct(
         private readonly BlockCipher $cipher,
         private readonly KekSize $kekSize
     )
