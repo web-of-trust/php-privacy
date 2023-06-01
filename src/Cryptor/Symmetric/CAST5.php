@@ -13,6 +13,7 @@ namespace OpenPGP\Cryptor\Symmetric;
 use phpseclib3\Crypt\Common\BlockCipher;
 use phpseclib3\Exception\BadModeException;
 use OpenPGP\Common\Helper;
+use OpenPGP\Cryptor\Math\Bitwise;
 
 /**
  * CAST5 class
@@ -418,7 +419,7 @@ class CAST5 extends BlockCipher
         $z = $x = array_fill(0, 16, 0);
         /* copy the key into x */
         for ($i = 0; $i < $keyLength; $i++) {
-            $x[$i] = ord($this->key[$i]) & Helper::MASK_8BITS;
+            $x[$i] = ord($this->key[$i]) & Bitwise::MASK_8BITS;
         }
 
         /**
@@ -573,8 +574,8 @@ class CAST5 extends BlockCipher
      */
     private static function f1(int $d, int $kmi, int $kri): int
     {
-        $i = Helper::leftRotate32($kmi + $d, $kri);
-        return ((self::$sBox1[($i >> 24) & Helper::MASK_8BITS] ^ self::$sBox2[($i >> 16) & Helper::MASK_8BITS]) - self::$sBox3[($i >> 8) & Helper::MASK_8BITS]) + self::$sBox4[$i & Helper::MASK_8BITS];
+        $i = Bitwise::leftRotate32($kmi + $d, $kri);
+        return ((self::$sBox1[($i >> 24) & Bitwise::MASK_8BITS] ^ self::$sBox2[($i >> 16) & Bitwise::MASK_8BITS]) - self::$sBox3[($i >> 8) & Bitwise::MASK_8BITS]) + self::$sBox4[$i & Bitwise::MASK_8BITS];
     }
 
     /**
@@ -587,8 +588,8 @@ class CAST5 extends BlockCipher
      */
     private static function f2(int $d, int $kmi, int $kri): int
     {
-        $i = Helper::leftRotate32($kmi ^ $d, $kri);
-        return ((self::$sBox1[($i >> 24) & Helper::MASK_8BITS] - self::$sBox2[($i >> 16) & Helper::MASK_8BITS]) + self::$sBox3[($i >> 8) & Helper::MASK_8BITS]) ^ self::$sBox4[$i & Helper::MASK_8BITS];
+        $i = Bitwise::leftRotate32($kmi ^ $d, $kri);
+        return ((self::$sBox1[($i >> 24) & Bitwise::MASK_8BITS] - self::$sBox2[($i >> 16) & Bitwise::MASK_8BITS]) + self::$sBox3[($i >> 8) & Bitwise::MASK_8BITS]) ^ self::$sBox4[$i & Bitwise::MASK_8BITS];
     }
 
     /**
@@ -601,8 +602,8 @@ class CAST5 extends BlockCipher
      */
     private static function f3(int $d, int $kmi, int $kri): int
     {
-        $i = Helper::leftRotate32($kmi - $d, $kri);
-        return ((self::$sBox1[($i >> 24) & Helper::MASK_8BITS] + self::$sBox2[($i >> 16) & Helper::MASK_8BITS]) ^ self::$sBox3[($i >> 8) & Helper::MASK_8BITS]) - self::$sBox4[$i & Helper::MASK_8BITS];
+        $i = Bitwise::leftRotate32($kmi - $d, $kri);
+        return ((self::$sBox1[($i >> 24) & Bitwise::MASK_8BITS] + self::$sBox2[($i >> 16) & Bitwise::MASK_8BITS]) ^ self::$sBox3[($i >> 8) & Bitwise::MASK_8BITS]) - self::$sBox4[$i & Bitwise::MASK_8BITS];
     }
 
     /**
@@ -714,10 +715,10 @@ class CAST5 extends BlockCipher
      */
     private static function bits32ToInts(int $input, array $bytes, int $offset): array
     {
-        $bytes[$offset + 3] = $input         & Helper::MASK_8BITS;
-        $bytes[$offset + 2] = ($input >> 8)  & Helper::MASK_8BITS;
-        $bytes[$offset + 1] = ($input >> 16) & Helper::MASK_8BITS;
-        $bytes[$offset]     = ($input >> 24) & Helper::MASK_8BITS;
+        $bytes[$offset + 3] = $input         & Bitwise::MASK_8BITS;
+        $bytes[$offset + 2] = ($input >> 8)  & Bitwise::MASK_8BITS;
+        $bytes[$offset + 1] = ($input >> 16) & Bitwise::MASK_8BITS;
+        $bytes[$offset]     = ($input >> 24) & Bitwise::MASK_8BITS;
         return $bytes;
     }
 
@@ -728,9 +729,9 @@ class CAST5 extends BlockCipher
      */
     private static function intsTo32bits(array $bytes, int $offset): int
     {
-        return ((($bytes[$offset] & Helper::MASK_8BITS) << 24) |
-            (($bytes[$offset + 1] & Helper::MASK_8BITS) << 16) |
-            (($bytes[$offset + 2] & Helper::MASK_8BITS) << 8)  |
-            (($bytes[$offset + 3] & Helper::MASK_8BITS)));
+        return ((($bytes[$offset] & Bitwise::MASK_8BITS) << 24) |
+            (($bytes[$offset + 1] & Bitwise::MASK_8BITS) << 16) |
+            (($bytes[$offset + 2] & Bitwise::MASK_8BITS) << 8)  |
+            (($bytes[$offset + 3] & Bitwise::MASK_8BITS)));
     }
 }

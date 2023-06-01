@@ -13,6 +13,7 @@ namespace OpenPGP\Cryptor\Symmetric;
 use phpseclib3\Crypt\Common\BlockCipher;
 use phpseclib3\Exception\BadModeException;
 use OpenPGP\Common\Helper;
+use OpenPGP\Cryptor\Math\Bitwise;
 
 /**
  * Camellia class
@@ -573,10 +574,10 @@ class Camellia extends BlockCipher
         int $rot, array $ki, int $ioff, array $ko, int $ooff
     ): array
     {
-        $ko[0 + $ooff] = Helper::leftShift32($ki[0 + $ioff], $rot) | Helper::rightShift32($ki[1 + $ioff], 32 - $rot);
-        $ko[1 + $ooff] = Helper::leftShift32($ki[1 + $ioff], $rot) | Helper::rightShift32($ki[2 + $ioff], 32 - $rot);
-        $ko[2 + $ooff] = Helper::leftShift32($ki[2 + $ioff], $rot) | Helper::rightShift32($ki[3 + $ioff], 32 - $rot);
-        $ko[3 + $ooff] = Helper::leftShift32($ki[3 + $ioff], $rot) | Helper::rightShift32($ki[0 + $ioff], 32 - $rot);
+        $ko[0 + $ooff] = Bitwise::leftShift32($ki[0 + $ioff], $rot) | Bitwise::rightShift32($ki[1 + $ioff], 32 - $rot);
+        $ko[1 + $ooff] = Bitwise::leftShift32($ki[1 + $ioff], $rot) | Bitwise::rightShift32($ki[2 + $ioff], 32 - $rot);
+        $ko[2 + $ooff] = Bitwise::leftShift32($ki[2 + $ioff], $rot) | Bitwise::rightShift32($ki[3 + $ioff], 32 - $rot);
+        $ko[3 + $ooff] = Bitwise::leftShift32($ki[3 + $ioff], $rot) | Bitwise::rightShift32($ki[0 + $ioff], 32 - $rot);
         $ki[0 + $ioff] = $ko[0 + $ooff];
         $ki[1 + $ioff] = $ko[1 + $ooff];
         $ki[2 + $ioff] = $ko[2 + $ooff];
@@ -596,10 +597,10 @@ class Camellia extends BlockCipher
         int $rot, array $ki, int $ioff, array $ko, int $ooff)
     : array
     {
-        $ko[2 + $ooff] = Helper::leftShift32($ki[0 + $ioff], $rot) | Helper::rightShift32($ki[1 + $ioff], 32 - $rot);
-        $ko[3 + $ooff] = Helper::leftShift32($ki[1 + $ioff], $rot) | Helper::rightShift32($ki[2 + $ioff], 32 - $rot);
-        $ko[0 + $ooff] = Helper::leftShift32($ki[2 + $ioff], $rot) | Helper::rightShift32($ki[3 + $ioff], 32 - $rot);
-        $ko[1 + $ooff] = Helper::leftShift32($ki[3 + $ioff], $rot) | Helper::rightShift32($ki[0 + $ioff], 32 - $rot);
+        $ko[2 + $ooff] = Bitwise::leftShift32($ki[0 + $ioff], $rot) | Bitwise::rightShift32($ki[1 + $ioff], 32 - $rot);
+        $ko[3 + $ooff] = Bitwise::leftShift32($ki[1 + $ioff], $rot) | Bitwise::rightShift32($ki[2 + $ioff], 32 - $rot);
+        $ko[0 + $ooff] = Bitwise::leftShift32($ki[2 + $ioff], $rot) | Bitwise::rightShift32($ki[3 + $ioff], 32 - $rot);
+        $ko[1 + $ooff] = Bitwise::leftShift32($ki[3 + $ioff], $rot) | Bitwise::rightShift32($ki[0 + $ioff], 32 - $rot);
         $ki[0 + $ioff] = $ko[2 + $ooff];
         $ki[1 + $ioff] = $ko[3 + $ooff];
         $ki[2 + $ioff] = $ko[0 + $ooff];
@@ -619,10 +620,10 @@ class Camellia extends BlockCipher
         int $rot, array $ki, int $ioff, array $ko, int $ooff
     ): array
     {
-        $ko[0 + $ooff] = Helper::leftShift32($ki[1 + $ioff], $rot - 32) | Helper::rightShift32($ki[2 + $ioff], 64 - $rot);
-        $ko[1 + $ooff] = Helper::leftShift32($ki[2 + $ioff], $rot - 32) | Helper::rightShift32($ki[3 + $ioff], 64 - $rot);
-        $ko[2 + $ooff] = Helper::leftShift32($ki[3 + $ioff], $rot - 32) | Helper::rightShift32($ki[0 + $ioff], 64 - $rot);
-        $ko[3 + $ooff] = Helper::leftShift32($ki[0 + $ioff], $rot - 32) | Helper::rightShift32($ki[1 + $ioff], 64 - $rot);
+        $ko[0 + $ooff] = Bitwise::leftShift32($ki[1 + $ioff], $rot - 32) | Bitwise::rightShift32($ki[2 + $ioff], 64 - $rot);
+        $ko[1 + $ooff] = Bitwise::leftShift32($ki[2 + $ioff], $rot - 32) | Bitwise::rightShift32($ki[3 + $ioff], 64 - $rot);
+        $ko[2 + $ooff] = Bitwise::leftShift32($ki[3 + $ioff], $rot - 32) | Bitwise::rightShift32($ki[0 + $ioff], 64 - $rot);
+        $ko[3 + $ooff] = Bitwise::leftShift32($ki[0 + $ioff], $rot - 32) | Bitwise::rightShift32($ki[1 + $ioff], 64 - $rot);
         $ki[0 + $ioff] = $ko[0 + $ooff];
         $ki[1 + $ioff] = $ko[1 + $ooff];
         $ki[2 + $ioff] = $ko[2 + $ooff];
@@ -642,10 +643,10 @@ class Camellia extends BlockCipher
         int $rot, array $ki, int $ioff, array $ko, int $ooff
     ): array
     {
-        $ko[2 + $ooff] = Helper::leftShift32($ki[1 + $ioff], $rot - 32) | Helper::rightShift32($ki[2 + $ioff], 64 - $rot);
-        $ko[3 + $ooff] = Helper::leftShift32($ki[2 + $ioff], $rot - 32) | Helper::rightShift32($ki[3 + $ioff], 64 - $rot);
-        $ko[0 + $ooff] = Helper::leftShift32($ki[3 + $ioff], $rot - 32) | Helper::rightShift32($ki[0 + $ioff], 64 - $rot);
-        $ko[1 + $ooff] = Helper::leftShift32($ki[0 + $ioff], $rot - 32) | Helper::rightShift32($ki[1 + $ioff], 64 - $rot);
+        $ko[2 + $ooff] = Bitwise::leftShift32($ki[1 + $ioff], $rot - 32) | Bitwise::rightShift32($ki[2 + $ioff], 64 - $rot);
+        $ko[3 + $ooff] = Bitwise::leftShift32($ki[2 + $ioff], $rot - 32) | Bitwise::rightShift32($ki[3 + $ioff], 64 - $rot);
+        $ko[0 + $ooff] = Bitwise::leftShift32($ki[3 + $ioff], $rot - 32) | Bitwise::rightShift32($ki[0 + $ioff], 64 - $rot);
+        $ko[1 + $ooff] = Bitwise::leftShift32($ki[0 + $ioff], $rot - 32) | Bitwise::rightShift32($ki[1 + $ioff], 64 - $rot);
         $ki[0 + $ioff] = $ko[2 + $ooff];
         $ki[1 + $ioff] = $ko[3 + $ooff];
         $ki[2 + $ioff] = $ko[0 + $ooff];
@@ -662,7 +663,7 @@ class Camellia extends BlockCipher
     private static function int2Bytes(int $word, array $dst, int $offset): array
     {
         for ($i = 0; $i < 4; $i++) {
-            $dst[(3 - $i) + $offset] = $word & Helper::MASK_8BITS;
+            $dst[(3 - $i) + $offset] = $word & Bitwise::MASK_8BITS;
             $word >>= 8;
         }
         return $dst;
@@ -677,32 +678,32 @@ class Camellia extends BlockCipher
     private static function camelliaF2(array $s, array $skey, int $offset): array
     {
         $t1 = $s[0] ^ $skey[0 + $offset];
-        $u = self::$sbox4_4404[$t1 & Helper::MASK_8BITS];
-        $u ^= self::$sbox3_3033[($t1 >> 8) & Helper::MASK_8BITS];
-        $u ^= self::$sbox2_0222[($t1 >> 16) & Helper::MASK_8BITS];
-        $u ^= self::$sbox1_1110[($t1 >> 24) & Helper::MASK_8BITS];
+        $u = self::$sbox4_4404[$t1 & Bitwise::MASK_8BITS];
+        $u ^= self::$sbox3_3033[($t1 >> 8) & Bitwise::MASK_8BITS];
+        $u ^= self::$sbox2_0222[($t1 >> 16) & Bitwise::MASK_8BITS];
+        $u ^= self::$sbox1_1110[($t1 >> 24) & Bitwise::MASK_8BITS];
         $t2 = $s[1] ^ $skey[1 + $offset];
-        $v = self::$sbox1_1110[$t2 & Helper::MASK_8BITS];
-        $v ^= self::$sbox4_4404[($t2 >> 8) & Helper::MASK_8BITS];
-        $v ^= self::$sbox3_3033[($t2 >> 16) & Helper::MASK_8BITS];
-        $v ^= self::$sbox2_0222[($t2 >> 24) & Helper::MASK_8BITS];
+        $v = self::$sbox1_1110[$t2 & Bitwise::MASK_8BITS];
+        $v ^= self::$sbox4_4404[($t2 >> 8) & Bitwise::MASK_8BITS];
+        $v ^= self::$sbox3_3033[($t2 >> 16) & Bitwise::MASK_8BITS];
+        $v ^= self::$sbox2_0222[($t2 >> 24) & Bitwise::MASK_8BITS];
 
         $s[2] ^= $u ^ $v;
-        $s[3] ^= $u ^ $v ^ Helper::rightRotate32($u, 8);
+        $s[3] ^= $u ^ $v ^ Bitwise::rightRotate32($u, 8);
 
         $t1 = $s[2] ^ $skey[2 + $offset];
-        $u = self::$sbox4_4404[$t1 & Helper::MASK_8BITS];
-        $u ^= self::$sbox3_3033[($t1 >> 8) & Helper::MASK_8BITS];
-        $u ^= self::$sbox2_0222[($t1 >> 16) & Helper::MASK_8BITS];
-        $u ^= self::$sbox1_1110[($t1 >> 24) & Helper::MASK_8BITS];
+        $u = self::$sbox4_4404[$t1 & Bitwise::MASK_8BITS];
+        $u ^= self::$sbox3_3033[($t1 >> 8) & Bitwise::MASK_8BITS];
+        $u ^= self::$sbox2_0222[($t1 >> 16) & Bitwise::MASK_8BITS];
+        $u ^= self::$sbox1_1110[($t1 >> 24) & Bitwise::MASK_8BITS];
         $t2 = $s[3] ^ $skey[3 + $offset];
-        $v = self::$sbox1_1110[$t2 & Helper::MASK_8BITS];
-        $v ^= self::$sbox4_4404[($t2 >> 8) & Helper::MASK_8BITS];
-        $v ^= self::$sbox3_3033[($t2 >> 16) & Helper::MASK_8BITS];
-        $v ^= self::$sbox2_0222[($t2 >> 24) & Helper::MASK_8BITS];
+        $v = self::$sbox1_1110[$t2 & Bitwise::MASK_8BITS];
+        $v ^= self::$sbox4_4404[($t2 >> 8) & Bitwise::MASK_8BITS];
+        $v ^= self::$sbox3_3033[($t2 >> 16) & Bitwise::MASK_8BITS];
+        $v ^= self::$sbox2_0222[($t2 >> 24) & Bitwise::MASK_8BITS];
 
         $s[0] ^= $u ^ $v;
-        $s[1] ^= $u ^ $v ^ Helper::rightRotate32($u, 8);
+        $s[1] ^= $u ^ $v ^ Bitwise::rightRotate32($u, 8);
 
         return $s;
     }
@@ -715,11 +716,11 @@ class Camellia extends BlockCipher
      */
     private static function camelliaFLs(array $s, array $fkey, int $offset): array
     {
-        $s[1] ^= Helper::leftRotate32($s[0] & $fkey[0 + $offset], 1);
+        $s[1] ^= Bitwise::leftRotate32($s[0] & $fkey[0 + $offset], 1);
         $s[0] ^= $fkey[1 + $offset] | $s[1];
 
         $s[2] ^= $fkey[3 + $offset] | $s[3];
-        $s[3] ^= Helper::leftRotate32($fkey[2 + $offset] & $s[2], 1);
+        $s[3] ^= Bitwise::leftRotate32($fkey[2 + $offset] & $s[2], 1);
 
         return $s;
     }

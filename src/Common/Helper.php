@@ -25,10 +25,6 @@ use OpenPGP\Enum\SymmetricAlgorithm;
  */
 final class Helper
 {
-    const MASK_8BITS  = 0xff;
-    const MASK_16BITS = 0xffff;
-    const MASK_32BITS = 0xffffffff;
-
     /**
      * Reads multiprecision integer (MPI) from binary data
      *
@@ -117,45 +113,5 @@ final class Helper
             return array_values($unpacked)[0];
         }
         return 0;
-    }
-
-    public static function rightRotate32(int $x, int $s): int
-    {
-        return self::rightRotate($x & self::MASK_32BITS, $s);
-    }
-
-    public static function leftRotate32(int $x, int $s): int
-    {
-        return self::leftRotate($x & self::MASK_32BITS, $s);
-    }
-
-    public static function rightRotate(int $x, int $s): int
-    {
-        return ($x >> $s) | ($x << (32 - $s));
-    }
-
-    public static function leftRotate(int $x, int $s): int
-    {
-        return ($x << $s) | ($x >> (32 - $s));
-    }
-
-    public static function leftShift32(int $x, int $s): int
-    {
-        return self::leftShift($x & self::MASK_32BITS, $s);
-    }
-
-    public static function rightShift32(int $x, int $s): int
-    {
-        return self::rightShift($x & self::MASK_32BITS, $s);
-    }
-
-    public static function leftShift(int $x, int $s): int
-    {
-        return $x << $s;
-    }
-
-    public static function rightShift(int $x, int $s): int
-    {
-        return $x >> $s;
     }
 }
