@@ -58,7 +58,7 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
         ?DSAPrivateKey $privateKey = null
     )
     {
-        $this->privateKey = $privateKey ?? DSA::load([
+        $this->privateKey = $privateKey ?? DSA::loadPrivateKey([
             'x' => $exponent,
             ...$publicMaterial->getParameters(),
         ]);

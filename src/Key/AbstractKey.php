@@ -27,6 +27,7 @@ use OpenPGP\Type\{
     KeyInterface,
     KeyPacketInterface,
     PacketListInterface,
+    PrivateKeyInterface,
     SignaturePacketInterface,
     SubkeyPacketInterface,
     UserIDPacketInterface,
@@ -82,10 +83,10 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
      * Constructor
      *
      * @param KeyPacketInterface $keyPacket
-     * @param array<SignaturePacketInterface> $revocationSignatures
-     * @param array<SignaturePacketInterface> $directSignatures
-     * @param array<User> $users
-     * @param array<Subkey> $subkeys
+     * @param array $revocationSignatures
+     * @param array $directSignatures
+     * @param array $users
+     * @param array $subkeys
      * @return self
      */
     protected function __construct(
@@ -563,6 +564,16 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
             }
         }
         return null;
+    }
+
+    public function certifyBy(PrivateKeyInterface $privateKey): self
+    {
+        return $this;
+    }
+
+    public function revokeBy(PrivateKeyInterface $privateKey): self
+    {
+        return $this;
     }
 
     /**

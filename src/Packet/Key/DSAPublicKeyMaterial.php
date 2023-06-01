@@ -58,7 +58,7 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
         ?DSAPublicKey $publicKey = null
     )
     {
-        $this->publicKey = $publicKey ?? DSA::load([
+        $this->publicKey = $publicKey ?? DSA::loadPublicKey([
             'y' => $exponent,
             'p' => $prime,
             'q' => $order,

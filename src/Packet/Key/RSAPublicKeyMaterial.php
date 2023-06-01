@@ -54,7 +54,7 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
         ?RSAPublicKey $publicKey = null
     )
     {
-        $this->publicKey = $publicKey ?? RSA::load([
+        $this->publicKey = $publicKey ?? RSA::loadPublicKey([
             'modulus' => $modulus,
             'publicExponent' => $exponent,
         ]);

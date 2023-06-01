@@ -49,10 +49,10 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
      * Constructor
      *
      * @param SecretKeyPacketInterface $keyPacket
-     * @param array<SignaturePacketInterface> $revocationSignatures
-     * @param array<SignaturePacketInterface> $directSignatures
-     * @param array<User> $users
-     * @param array<Subkey> $subkeys
+     * @param array $revocationSignatures
+     * @param array $directSignatures
+     * @param array $users
+     * @param array $subkeys
      * @return self
      */
     public function __construct(

@@ -64,7 +64,7 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
         ?RSAPrivateKey $privateKey = null
     )
     {
-        $this->privateKey = $privateKey ?? RSA::load([
+        $this->privateKey = $privateKey ?? RSA::loadPrivateKey([
             'privateExponent' => $exponent,
             'p' => $primeP,
             'q' => $primeQ,
