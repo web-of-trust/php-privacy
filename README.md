@@ -43,6 +43,26 @@ or just add it to your `composer.json` file directly.
 }
 ```
 
+## Basic usage of PHP Privacy
+Sign and verify cleartext message
+```php
+<?php declare(strict_types=1);
+
+require_once 'vendor/autoload.php';
+
+use OpenPGP\OpenPGP;
+
+$publicKeyArmored = '-----BEGIN PGP PUBLIC KEY BLOCK-----';
+$privateKeyArmored = '-----BEGIN PGP PRIVATE KEY BLOCK-----';
+$passphrase = 'yourPassphrase';
+
+$publicKey = OpenPGP::readPublicKey($publicKeyArmored);
+$privateKey = OpenPGP::decryptPrivateKey($privateKeyArmored, $passphrase);
+$cleartextMessage = OpenPGP::createCleartextMessage('Hello, PHP Privacy!');
+$signedMessage = $cleartextMessage->sign([$privateKey]);
+$verification = $signedMessage->verify([$publicKey]);
+```
+
 ## Licensing
 [BSD 3-Clause](LICENSE)
 
