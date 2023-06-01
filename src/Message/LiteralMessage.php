@@ -128,7 +128,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
      */
     public function sign(
         array $signingKeys, ?DateTime $time = null
-    ): SignedMessageInterface
+    ): self
     {
         $signaturePackets = [
             ...array_filter(

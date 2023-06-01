@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Type;
 
+use DateTime;
 use OpenPGP\Enum\{
     CompressionAlgorithm,
     SymmetricAlgorithm,
@@ -23,7 +24,7 @@ use OpenPGP\Enum\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInterface, MessageInterface
+interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInterface
 {
     /**
      * Gets literal data
@@ -31,6 +32,43 @@ interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInt
      * @return LiteralDataInterface
      */
     function getLiteralData(): LiteralDataInterface;
+
+    /**
+     * Sign the message
+     *
+     * @param array $signingKeys
+     * @param DateTime $time
+     * @return self
+     */
+    function sign(
+        array $signingKeys, ?DateTime $time = null
+    ): self;
+
+    /**
+     * Create a detached signature for the message
+     *
+     * @param array $signingKeys
+     * @param DateTime $time
+     * @return SignatureInterface
+     */
+    function signDetached(
+        array $signingKeys, ?DateTime $time = null
+    ): SignatureInterface;
+
+    /**
+     * Verify detached signature
+     * Return verification array
+     *
+     * @param array $verificationKeys
+     * @param SignatureInterface $signature
+     * @param DateTime $time
+     * @return array
+     */
+    function verifyDetached(
+        array $verificationKeys,
+        SignatureInterface $signature,
+        ?DateTime $time = null
+    ): array;
 
     /**
      * Encrypt the message either with public keys, passwords, or both at once.
