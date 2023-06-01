@@ -46,6 +46,29 @@ use OpenPGP\Type\{
 class PrivateKey extends AbstractKey implements PrivateKeyInterface
 {
     /**
+     * Constructor
+     *
+     * @param SecretKeyPacketInterface $keyPacket
+     * @param array<SignaturePacketInterface> $revocationSignatures
+     * @param array<SignaturePacketInterface> $directSignatures
+     * @param array<User> $users
+     * @param array<Subkey> $subkeys
+     * @return self
+     */
+    public function __construct(
+        SecretKeyPacketInterface $keyPacket,
+        array $revocationSignatures = [],
+        array $directSignatures = [],
+        array $users = [],
+        array $subkeys = []
+    )
+    {
+        parent::__construct(
+            $keyPacket, $revocationSignatures, $directSignatures, $users, $subkeys
+        );
+    }
+
+    /**
      * Reads private key from armored string
      *
      * @param string $armored

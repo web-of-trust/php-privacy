@@ -30,6 +30,29 @@ use OpenPGP\Type\{
 class PublicKey extends AbstractKey
 {
     /**
+     * Constructor
+     *
+     * @param PublicKeyPacketInterface $keyPacket
+     * @param array<SignaturePacketInterface> $revocationSignatures
+     * @param array<SignaturePacketInterface> $directSignatures
+     * @param array<User> $users
+     * @param array<Subkey> $subkeys
+     * @return self
+     */
+    public function __construct(
+        PublicKeyPacketInterface $keyPacket,
+        array $revocationSignatures = [],
+        array $directSignatures = [],
+        array $users = [],
+        array $subkeys = []
+    )
+    {
+        parent::__construct(
+            $keyPacket, $revocationSignatures, $directSignatures, $users, $subkeys
+        );
+    }
+
+    /**
      * Reads public key from armored string
      *
      * @param string $armored
