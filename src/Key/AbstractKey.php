@@ -566,12 +566,18 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
         return null;
     }
 
-    public function certifyBy(PrivateKeyInterface $privateKey): self
+    protected function certifyBy(
+        PrivateKeyInterface $privateKey, ?DateTime $time = null
+    ): self
     {
         return $this;
     }
 
-    public function revokeBy(PrivateKeyInterface $privateKey): self
+    protected function revokeBy(
+        PrivateKeyInterface $privateKey,
+        string $revocationReason = '',
+        ?DateTime $time = null
+    ): self
     {
         return $this;
     }

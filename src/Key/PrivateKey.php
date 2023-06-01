@@ -490,8 +490,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         KeyInterface $key, ?DateTime $time = null
     ): KeyInterface
     {
-        $key->getPrimaryUser()->certify($this, $time);
-        return $key;
+        return $key->certifyBy($this, $time);
     }
 
     /**
@@ -503,10 +502,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         ?DateTime $time = null
     ): KeyInterface
     {
-        $key->getPrimaryUser()->revoke(
-            $this, $revocationReason, $time
-        );
-        return $key;
+        return $key->revokeBy($this, $revocationReason, $time);
     }
 
     /**
