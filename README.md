@@ -52,15 +52,15 @@ require_once 'vendor/autoload.php';
 
 use OpenPGP\OpenPGP;
 
-$publicKeyArmored = '-----BEGIN PGP PUBLIC KEY BLOCK-----';
-$privateKeyArmored = '-----BEGIN PGP PRIVATE KEY BLOCK-----';
-$passphrase = 'yourPassphrase';
+$armoredPublicKey = '-----BEGIN PGP PUBLIC KEY BLOCK-----';
+$armoredPrivateKey = '-----BEGIN PGP PRIVATE KEY BLOCK-----';
+$passphrase = 'Your passphrase';
 
-$publicKey = OpenPGP::readPublicKey($publicKeyArmored);
-$privateKey = OpenPGP::decryptPrivateKey($privateKeyArmored, $passphrase);
+$publicKey = OpenPGP::readPublicKey($armoredPublicKey);
+$privateKey = OpenPGP::decryptPrivateKey($armoredPrivateKey, $passphrase);
 $cleartextMessage = OpenPGP::createCleartextMessage('Hello, PHP Privacy!');
 $signedMessage = $cleartextMessage->sign([$privateKey]);
-$verification = $signedMessage->verify([$publicKey]);
+$verifications = $signedMessage->verify([$publicKey]);
 ```
 
 ## Licensing
