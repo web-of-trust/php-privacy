@@ -142,7 +142,9 @@ class Signature implements SignatureInterface
     ): array
     {
         return $this->verify(
-            $verificationKeys, LiteralData::fromText($cleartext->getText()), $time
+            $verificationKeys,
+            LiteralData::fromText($cleartext->getText()),
+            $time
         );
     }
 

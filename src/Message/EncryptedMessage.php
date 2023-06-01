@@ -105,7 +105,9 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
         $packets = $this->getPackets();
         $sessionKeys = [];
         if (!empty($passwords)) {
-            $this->getLogger()->debug('Decrypt session keys by passwords.');
+            $this->getLogger()->debug(
+                'Decrypt session keys by passwords.', $passwords
+            );
             $skeskPackets = array_filter(
                 $packets,
                 static fn ($packet) => $packet instanceof SymEncryptedSessionKey
@@ -123,7 +125,9 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
             }
         }
         if (empty($sessionKeys) && !empty($decryptionKeys)) {
-            $this->getLogger()->debug('Decrypt session keys by public keys.');
+            $this->getLogger()->debug(
+                'Decrypt session keys by public keys.', $decryptionKeys
+            );
             $pkeskPackets = array_filter(
                 $packets,
                 static fn ($packet) => $packet instanceof PublicKeyEncryptedSessionKey
@@ -146,7 +150,9 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
         }
 
         if (empty($sessionKeys)) {
-            throw new \UnexpectedValueException('Session key decryption failed.');
+            throw new \UnexpectedValueException(
+                'Session key decryption failed.'
+            );
         }
 
         return array_pop($sessionKeys);

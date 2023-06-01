@@ -86,11 +86,9 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
         ?DateTime $time = null
     ): self
     {
-        return new self([
-            new LiteralData(
-                $literalData, LiteralFormat::Binary, $filename, $time
-            )
-        ]);
+        return new self([new LiteralData(
+            $literalData, LiteralFormat::Binary, $filename, $time
+        )]);
     }
 
     /**
