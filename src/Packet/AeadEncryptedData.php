@@ -114,6 +114,9 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
         int $chunkSizeByte = 12
     ): self
     {
+        $this->getLogger()->debug(
+            'Encrypts the packets contained in AEAD packet.'
+        );
         throw new \RuntimeException(
             'AEAD encryption is not supported.'
         );
@@ -195,23 +198,6 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
     /**
      * {@inheritdoc}
      */
-    public function encrypt(
-        string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
-    ): self
-    {
-        if ($this->packetList instanceof PacketListInterface) {
-            $this->getLogger()->debug(
-                'Encrypt the packets contained in AEAD packet.'
-            );
-            return self::encryptPackets($key, $this->packetList, $symmetric);
-        }
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function decrypt(
         string $key,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
@@ -222,7 +208,7 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
         }
         else {
             $this->getLogger()->debug(
-                'Decrypt the encrypted data contained in AEAD packet.'
+                'Decrypts the encrypted data contained in AEAD packet.'
             );
             throw new \RuntimeException(
                 'AEAD decryption is not supported.'

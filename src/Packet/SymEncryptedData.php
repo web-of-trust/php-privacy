@@ -125,20 +125,6 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
     /**
      * {@inheritdoc}
      */
-    public function encrypt(
-        string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
-    ): self
-    {
-        if ($this->packetList instanceof PacketListInterface) {
-            return self::encryptPackets($key, $this->packetList, $symmetric);
-        }
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function decrypt(
         string $key,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128

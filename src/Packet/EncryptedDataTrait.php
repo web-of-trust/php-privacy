@@ -10,6 +10,7 @@
 
 namespace OpenPGP\Packet;
 
+use OpenPGP\Enum\SymmetricAlgorithm;
 use OpenPGP\Type\{
     PacketListInterface,
     SessionKeyInterface,
@@ -39,6 +40,20 @@ trait EncryptedDataTrait
     public function getPacketList(): ?PacketListInterface
     {
         return $this->packetList;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function encrypt(
+        string $key,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+    ): self
+    {
+        if ($this->packetList instanceof PacketListInterface) {
+            return self::encryptPackets($key, $this->packetList, $symmetric);
+        }
+        return $this;
     }
 
     /**
