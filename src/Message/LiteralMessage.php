@@ -135,7 +135,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
                 self::unwrapCompressed($this->getPackets()),
                 static fn ($packet) => $packet instanceof SignaturePacketInterface
             ),
-            ...$this->signDetached($signingKeys, $time)->getSignaturePackets(),
+            ...$this->signDetached($signingKeys, $time)->getPackets(),
         ];
 
         $index = 0;

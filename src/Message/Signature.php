@@ -43,20 +43,20 @@ class Signature implements SignatureInterface
     /**
      * @var array<SignaturePacketInterface>
      */
-    private readonly array $signaturePackets;
+    private readonly array $packets;
 
     /**
      * Constructor
      *
-     * @param array<SignaturePacketInterface> $signaturePackets
+     * @param array<SignaturePacketInterface> $packets
      * @return self
      */
     public function __construct(
-        array $signaturePackets,
+        array $packets,
     )
     {
-        $this->signaturePackets = array_filter(
-            $signaturePackets,
+        $this->packets = array_filter(
+            $packets,
             static fn ($packet) => $packet instanceof SignaturePacketInterface
         );
     }
@@ -83,19 +83,11 @@ class Signature implements SignatureInterface
     /**
      * {@inheritdoc}
      */
-    public function getSignaturePackets(): array
-    {
-        return $this->signaturePackets;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getSigningKeyIDs(bool $toHex = false): array
     {
         return array_map(
             static fn ($packet) => $packet->getIssuerKeyID($toHex),
-            $this->signaturePackets
+            $this->packets
         );
     }
 
@@ -116,7 +108,7 @@ class Signature implements SignatureInterface
             Config::getLogger()->debug('No verification keys provided!');
         }
         $verifications = [];
-        foreach ($this->signaturePackets as $packet) {
+        foreach ($this->packets as $packet) {
             foreach ($verificationKeys as $key) {
                 try {
                     $keyPacket = $key->toPublic()->getSigningKeyPacket(
@@ -170,6 +162,14 @@ class Signature implements SignatureInterface
      */
     public function toPacketList(): PacketListInterface
     {
-        return new PacketList($this->signaturePackets);
+        return new PacketList($this->packets);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPackets(): array
+    {
+        return $this->packets;
     }
 }

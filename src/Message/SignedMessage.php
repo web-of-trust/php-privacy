@@ -83,7 +83,7 @@ class SignedMessage extends CleartextMessage implements SignedMessageInterface
             static fn ($packet) => strtoupper(
                 $packet->getHashAlgorithm()->name
             ),
-            $this->signature->getSignaturePackets()
+            $this->signature->getPackets()
         );
         return Armor::encode(
             ArmorType::SignedMessage,

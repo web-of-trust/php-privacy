@@ -26,13 +26,6 @@ use OpenPGP\Enum\{
 interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInterface, MessageInterface
 {
     /**
-     * Gets contained packets
-     *
-     * @return array
-     */
-    function getPackets(): array;
-
-    /**
      * Gets literal data
      *
      * @return LiteralDataInterface

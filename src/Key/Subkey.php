@@ -311,4 +311,12 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
             ...$this->bindingSignatures,
         ]);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPackets(): array
+    {
+        return $this->toPacketList()->getPackets();
+    }
 }

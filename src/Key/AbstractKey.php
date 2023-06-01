@@ -139,6 +139,14 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * {@inheritdoc}
      */
+    public function getPackets(): array
+    {
+        return $this->toPacketList()->getPackets();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getLogger(): LoggerInterface
     {
         return $this->logger ?? Config::getLogger();

@@ -282,4 +282,12 @@ class User implements UserInterface
             ...$this->otherCertifications,
         ]);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPackets(): array
+    {
+        return $this->toPacketList()->getPackets();
+    }
 }
