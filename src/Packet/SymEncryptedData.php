@@ -75,13 +75,13 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
      * Encrypts packet list
      *
      * @param string $key
-     * @param PacketList $packetList
+     * @param PacketListInterface $packetList
      * @param SymmetricAlgorithm $symmetric
      * @return self
      */
     public static function encryptPackets(
         string $key,
-        PacketList $packetList,
+        PacketListInterface $packetList,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self
     {
@@ -135,7 +135,7 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
                 'Message is not authenticated.'
             );
         }
-        if ($this->packetList instanceof PacketList) {
+        if ($this->packetList instanceof PacketListInterface) {
             return $this;
         }
         else {

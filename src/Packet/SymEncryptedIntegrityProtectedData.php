@@ -142,7 +142,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self
     {
-        if ($this->packetList instanceof PacketList) {
+        if ($this->packetList instanceof PacketListInterface) {
             return $this;
         }
         else {

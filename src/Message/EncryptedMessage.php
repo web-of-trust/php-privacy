@@ -10,24 +10,17 @@
 
 namespace OpenPGP\Message;
 
-use OpenPGP\Common\{
-    Armor,
-    Config,
-};
+use OpenPGP\Common\Armor;
 use OpenPGP\Enum\ArmorType;
 use OpenPGP\Packet\{
     PacketList,
     PublicKeyEncryptedSessionKey,
-    SymEncryptedData,
-    SymEncryptedIntegrityProtectedData,
     SymEncryptedSessionKey,
 };
-use OpenPGP\Packet\Key\SessionKey;
 use OpenPGP\Type\{
+    EncryptedDataPacketInterface,
     EncryptedMessageInterface,
     LiteralMessageInterface,
-    PacketInterface,
-    PacketListInterface,
     PrivateKeyInterface,
     SessionKeyInterface,
 };
@@ -81,14 +74,8 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
         $packets = $this->getPackets();
         $encryptedPackets = array_filter(
             $packets,
-            static fn ($packet) => $packet instanceof SymEncryptedIntegrityProtectedData
+            static fn ($packet) => $packet instanceof EncryptedDataPacketInterface
         );
-        if (empty($encryptedPackets)) {
-            $encryptedPackets = array_filter(
-                $packets,
-                static fn ($packet) => $packet instanceof SymEncryptedData
-            );
-        }
         if (empty($encryptedPackets)) {
             throw new \UnexpectedValueException('No encrypted data packets found.');
         }

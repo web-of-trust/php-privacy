@@ -361,18 +361,16 @@ final class OpenPGP
      * @param EncryptedMessageInterface $message
      * @param array<Key\PrivateKey> $decryptionKeys
      * @param array<string> $passwords
-     * @param bool $allowUnauthenticatedMessages
-     * @return EncryptedMessageInterface
+     * @return LiteralMessageInterface
      */
     public static function decrypt(
         EncryptedMessageInterface $message,
         array $decryptionKeys = [],
-        array $passwords = [],
-        bool $allowUnauthenticatedMessages = false,
-    ): EncryptedMessageInterface
+        array $passwords = []
+    ): LiteralMessageInterface
     {
         return $message->decrypt(
-            $decryptionKeys, $passwords, $allowUnauthenticatedMessages
+            $decryptionKeys, $passwords
         );
     }
 }

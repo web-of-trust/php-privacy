@@ -30,8 +30,8 @@ use Psr\Log\{
  */
 final class Config
 {
-    const VERSION = 'PHP PG v1.0.0';
-    const COMMENT = 'PHP Privacy Guard';
+    const VERSION = 'PHP Privacy v1.0.0';
+    const COMMENT = 'PHP OpenPGP';
 
     private static HashAlgorithm $preferredHash = HashAlgorithm::Sha256;
 
@@ -169,6 +169,6 @@ final class Config
      */
     public static function setAllowUnauthenticated(bool $allow): void
     {
-        self::$allowUnauthenticated = $s2kItCount;
+        self::$allowUnauthenticated = $allow;
     }
 }

@@ -55,26 +55,8 @@ use OpenPGP\Type\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class LiteralMessage implements LiteralMessageInterface, SignedMessageInterface
+class LiteralMessage extends AbstractMessage implements LiteralMessageInterface, SignedMessageInterface
 {
-    private readonly array $packets;
-
-    /**
-     * Constructor
-     *
-     * @param array $packets
-     * @return self
-     */
-    public function __construct(
-        array $packets
-    )
-    {
-        $this->packets = array_filter(
-            $packets,
-            static fn ($packet) => $packet instanceof PacketInterface
-        );
-    }
-
     /**
      * Reads message from armored string
      *
@@ -118,37 +100,10 @@ class LiteralMessage implements LiteralMessageInterface, SignedMessageInterface
     /**
      * {@inheritdoc}
      */
-    public function armor(): string
-    {
-        return Armor::encode(
-            ArmorType::Message,
-            $this->toPacketList()->encode()
-        );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function toPacketList(): PacketListInterface
-    {
-        return new PacketList($this->packets);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPackets(): array
-    {
-        return self::unwrapCompressed($this->packets);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getLiteralData(): LiteralDataInterface
     {
         $packets = array_filter(
-            $this->getPackets(),
+            self::unwrapCompressed($this->getPackets()),
             static fn ($packet) => $packet instanceof LiteralDataInterface
         );
         if (empty($packets)) {
@@ -163,7 +118,7 @@ class LiteralMessage implements LiteralMessageInterface, SignedMessageInterface
     public function getSignature(): SignatureInterface
     {
         return new Signature(array_filter(
-            $this->getPackets(),
+            self::unwrapCompressed($this->getPackets()),
             static fn ($packet) => $packet instanceof SignaturePacketInterface
         ));
     }
@@ -177,7 +132,7 @@ class LiteralMessage implements LiteralMessageInterface, SignedMessageInterface
     {
         $signaturePackets = [
             ...array_filter(
-                $this->getPackets(),
+                self::unwrapCompressed($this->getPackets()),
                 static fn ($packet) => $packet instanceof SignaturePacketInterface
             ),
             ...$this->signDetached($signingKeys, $time)->getSignaturePackets(),
@@ -290,53 +245,11 @@ class LiteralMessage implements LiteralMessageInterface, SignedMessageInterface
             $sessionKey, $this->toPacketList()
         );
 
-        return new self([
+        return new EncryptedMessage([
             ...$pkeskPackets,
             ...$skeskPackets,
             $seipPacket,
         ]);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    function decrypt(
-        array $decryptionKeys = [],
-        array $passwords = [],
-        bool $allowUnauthenticatedMessages = false
-    ): self
-    {
-        $decryptionKeys = array_filter(
-            $decryptionKeys, static fn ($key) => $key instanceof PrivateKeyInterface
-        );
-        if (empty($decryptionKeys) && empty($passwords)) {
-            throw new \InvalidArgumentException(
-                'No decryption keys or passwords provided'
-            );
-        }
-
-        $packets = $this->getPackets();
-        $encryptedPackets = array_filter(
-            $packets,
-            static fn ($packet) => $packet instanceof SymEncryptedIntegrityProtectedData
-        );
-        if (empty($encryptedPackets) && $allowUnauthenticatedMessages) {
-            $encryptedPackets = array_filter(
-                $packets,
-                static fn ($packet) => $packet instanceof SymEncryptedData
-            );
-        }
-        if (empty($encryptedPackets)) {
-            throw new \UnexpectedValueException('No encrypted data found.');
-        }
-
-        $encryptedPacket = array_pop($encryptedPackets);
-        $sessionKey = $this->decryptSessionKey($decryptionKeys, $passwords);
-        $decryptedPacket = $encryptedPacket->decryptWithSessionKey(
-            $sessionKey, $allowUnauthenticatedMessages
-        );
-
-        return new self($decryptedPacket->getPacketList()->getPackets());
     }
 
     /**
@@ -353,67 +266,6 @@ class LiteralMessage implements LiteralMessageInterface, SignedMessageInterface
             ]);
         }
         return $this;
-    }
-
-    /**
-     * Decrypts session key.
-     *
-     * @param array $decryptionKeys
-     * @param array $passwords
-     * @return SessionKeyInterface
-     */
-    private function decryptSessionKey(
-        array $decryptionKeys, array $passwords
-    ): SessionKeyInterface
-    {
-        $packets = $this->getPackets();
-        $sessionKeys = [];
-        if (!empty($passwords)) {
-            Config::getLogger()->debug('Decrypt session keys by passwords.');
-            $skeskPackets = array_filter(
-                $packets,
-                static fn ($packet) => $packet instanceof SymEncryptedSessionKey
-            );
-            foreach ($skeskPackets as $skesk) {
-                foreach ($passwords as $password) {
-                    try {
-                        $sessionKeys[] = $skesk->decrypt($password)->getSessionKey();
-                        break;
-                    }
-                    catch (\Throwable $e) {
-                        Config::getLogger()->error($e);
-                    }
-                }
-            }
-        }
-        if (empty($sessionKeys) && !empty($decryptionKeys)) {
-            Config::getLogger()->debug('Decrypt session keys by public keys.');
-            $pkeskPackets = array_filter(
-                $packets,
-                static fn ($packet) => $packet instanceof PublicKeyEncryptedSessionKey
-            );
-            foreach ($pkeskPackets as $pkesk) {
-                foreach ($decryptionKeys as $key) {
-                    $keyPacket = $key->getEncryptionKeyPacket();
-                    if ($pkesk->getPublicKeyAlgorithm() === $keyPacket->getKeyAlgorithm() &&
-                        $pkesk->getPublicKeyID() === $keyPacket->getKeyID()) {
-                        try {
-                            $sessionKeys[] = $pkesk->decrypt($keyPacket)->getSessionKey();
-                            break;
-                        }
-                        catch (\Throwable $e) {
-                            Config::getLogger()->error($e);
-                        }
-                    }
-                }
-            }
-        }
-
-        if (empty($sessionKeys)) {
-            throw new \UnexpectedValueException('Session key decryption failed.');
-        }
-
-        return array_pop($sessionKeys);
     }
 
     /**

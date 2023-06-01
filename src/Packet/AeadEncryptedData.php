@@ -114,9 +114,6 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
         int $chunkSizeByte = 12
     ): self
     {
-        $this->getLogger()->debug(
-            'Encrypts the packets contained in AEAD packet.'
-        );
         throw new \RuntimeException(
             'AEAD encryption is not supported.'
         );
@@ -207,9 +204,6 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
             return $this;
         }
         else {
-            $this->getLogger()->debug(
-                'Decrypts the encrypted data contained in AEAD packet.'
-            );
             throw new \RuntimeException(
                 'AEAD decryption is not supported.'
             );
