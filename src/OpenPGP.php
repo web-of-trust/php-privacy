@@ -32,7 +32,9 @@ use OpenPGP\Message\{
 use OpenPGP\Type\{
     CleartextMessageInterface,
     EncryptedMessageInterface,
+    KeyInterface,
     LiteralMessageInterface,
+    PrivateKeyInterface,
     SignatureInterface,
     SignedMessageInterface,
 };
@@ -60,7 +62,7 @@ final class OpenPGP
      * @param CurveOid $curve
      * @param int $keyExpiry
      * @param DateTime $time
-     * @return PrivateKey
+     * @return PrivateKeyInterface
      */
     public static function generateKey(
         array $userIDs,
@@ -71,7 +73,7 @@ final class OpenPGP
         CurveOid $curve = CurveOid::Secp521r1,
         int $keyExpiry = 0,
         ?DateTime $time = null
-    ): PrivateKey
+    ): PrivateKeyInterface
     {
         return PrivateKey::generate(
             $userIDs,
@@ -91,13 +93,13 @@ final class OpenPGP
      * @param string $armoredPrivateKey
      * @param string $passphrase
      * @param array<string> $subkeyPassphrases
-     * @return PrivateKey
+     * @return PrivateKeyInterface
      */
     public static function decryptPrivateKey(
         string $armoredPrivateKey,
         string $passphrase,
         array $subkeyPassphrases = []
-    ): PrivateKey
+    ): PrivateKeyInterface
     {
         return self::readPrivateKey($armoredPrivateKey)->decrypt(
             $passphrase, $subkeyPassphrases
@@ -108,11 +110,11 @@ final class OpenPGP
      * Read an armored OpenPGP private key and returns a PrivateKey object
      *
      * @param string $armoredPrivateKey
-     * @return PrivateKey
+     * @return PrivateKeyInterface
      */
     public static function readPrivateKey(
         string $armoredPrivateKey
-    ): PrivateKey
+    ): PrivateKeyInterface
     {
         return PrivateKey::fromArmored($armoredPrivateKey);
     }
@@ -121,11 +123,11 @@ final class OpenPGP
      * Read an armored OpenPGP public key and returns a PublicKey object
      *
      * @param string $armoredPublicKey
-     * @return PublicKey
+     * @return KeyInterface
      */
     public static function readPublicKey(
         string $armoredPublicKey
-    ): PublicKey
+    ): KeyInterface
     {
         return PublicKey::fromArmored($armoredPublicKey);
     }
@@ -134,24 +136,24 @@ final class OpenPGP
      * Read an armored OpenPGP signature and returns a Signature object
      *
      * @param string $armoredSignature
-     * @return Signature
+     * @return SignatureInterface
      */
     public static function readSignature(
         string $armoredSignature
-    ): Signature
+    ): SignatureInterface
     {
         return Signature::fromArmored($armoredSignature);
     }
 
     /**
-     * Read an armored OpenPGP signed message and returns a SignedMessage object
+     * Read an armored OpenPGP signed message and returns a SignedMessageInterface object
      *
      * @param string $armoredSignedMessage
-     * @return SignedMessage
+     * @return SignedMessageInterface
      */
     public static function readSignedMessage(
         string $armoredSignedMessage
-    ): SignedMessage
+    ): SignedMessageInterface
     {
         return SignedMessage::fromArmored($armoredSignedMessage);
     }
@@ -188,13 +190,13 @@ final class OpenPGP
      * @param string $literalData
      * @param string $filename
      * @param DateTime $time
-     * @return LiteralMessage
+     * @return LiteralMessageInterface
      */
     public static function createLiteralMessage(
         string $literalData,
         string $filename = '',
         ?DateTime $time = null
-    ): LiteralMessage
+    ): LiteralMessageInterface
     {
         return LiteralMessage::fromLiteralData(
             $literalData, $filename, $time
