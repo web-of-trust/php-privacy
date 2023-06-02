@@ -320,7 +320,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         }
         if (!$this->isDecrypted()) {
             throw new \UnexpectedValueException(
-                'Private key must be decrypted.'
+                'Private key must be decrypted before encrypting.'
             );
         }
 
@@ -376,7 +376,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         $secretKey = $this->secretKeyPacket->decrypt($passphrase);
         if (!$secretKey->getKeyMaterial()->isValid()) {
             throw new \UnexpectedValueException(
-                'The key parameters are not consistent.'
+                'The key material are not consistent.'
             );
         }
         $privateKey = new self(

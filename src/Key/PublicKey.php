@@ -48,7 +48,11 @@ class PublicKey extends AbstractKey
     )
     {
         parent::__construct(
-            $keyPacket, $revocationSignatures, $directSignatures, $users, $subkeys
+            $keyPacket,
+            $revocationSignatures,
+            $directSignatures,
+            $users,
+            $subkeys
         );
     }
 
@@ -63,7 +67,7 @@ class PublicKey extends AbstractKey
         $armor = Armor::decode($armored);
         if ($armor->getType() !== ArmorType::PublicKey) {
             throw new \UnexpectedValueException(
-                'Armored text not of public key type'
+                'Armored text not of public key type.'
             );
         }
         return self::fromPacketList(
@@ -84,7 +88,7 @@ class PublicKey extends AbstractKey
         $keyMap = self::readPacketList($packetList);
         if (!($keyMap['keyPacket'] instanceof PublicKeyPacketInterface)) {
             throw new \UnexpectedValueException(
-                'Key packet is not public key type'
+                'Key packet is not public key type.'
             );
         }
         $publicKey = new self(

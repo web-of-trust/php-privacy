@@ -72,7 +72,7 @@ class Signature implements SignatureInterface
         $armor = Armor::decode($armored);
         if ($armor->getType() !== ArmorType::Signature) {
             throw new \UnexpectedValueException(
-                'Armored text not of signature type'
+                'Armored text not of signature type.'
             );
         }
         return new self(
@@ -105,7 +105,7 @@ class Signature implements SignatureInterface
             static fn ($key) => $key instanceof KeyInterface
         );
         if (empty($verificationKeys)) {
-            Config::getLogger()->debug('No verification keys provided!');
+            Config::getLogger()->debug('No verification keys provided.');
         }
         $verifications = [];
         foreach ($this->packets as $packet) {

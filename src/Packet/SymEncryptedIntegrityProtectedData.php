@@ -159,7 +159,9 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
             $realHash = substr($decrypted, $digestSize);
             $toHash = substr($decrypted, 0, $digestSize);
             if ($realHash !== hash('sha1', $toHash, true)) {
-                throw new \UnexpectedValueException('Modification detected.');
+                throw new \UnexpectedValueException(
+                    'Modification detected.'
+                );
             }
 
             return new self(

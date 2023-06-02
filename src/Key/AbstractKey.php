@@ -273,7 +273,9 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
                         }
                     }
                     else {
-                        throw new \UnexpectedValueException('Missing embedded signature');
+                        throw new \UnexpectedValueException(
+                            'Missing embedded signature.'
+                        );
                     }
                 }
             }
@@ -471,7 +473,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
         }
         if (empty($users)) {
             throw new \UnexpectedValueException(
-                'Could not find primary user'
+                'Could not find primary user.'
             );
         }
         usort(

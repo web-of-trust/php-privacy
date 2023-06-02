@@ -46,7 +46,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
         $armor = Armor::decode($armored);
         if ($armor->getType() !== ArmorType::Message) {
             throw new \UnexpectedValueException(
-                'Armored text not of message type'
+                'Armored text not of message type.'
             );
         }
         return new self(
@@ -67,7 +67,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
         );
         if (empty($decryptionKeys) && empty($passwords)) {
             throw new \InvalidArgumentException(
-                'No decryption keys or passwords provided'
+                'No decryption keys or passwords provided.'
             );
         }
 
@@ -77,7 +77,9 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
             static fn ($packet) => $packet instanceof EncryptedDataPacketInterface
         );
         if (empty($encryptedPackets)) {
-            throw new \UnexpectedValueException('No encrypted data packets found.');
+            throw new \UnexpectedValueException(
+                'No encrypted data packets found.'
+            );
         }
 
         $encryptedPacket = array_pop($encryptedPackets);

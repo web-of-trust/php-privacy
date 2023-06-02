@@ -64,7 +64,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
         $armor = Armor::decode($armored);
         if ($armor->getType() !== ArmorType::Message) {
             throw new \UnexpectedValueException(
-                'Armored text not of message type'
+                'Armored text not of message type.'
             );
         }
         return new self(

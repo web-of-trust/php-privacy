@@ -55,7 +55,7 @@ class SignedMessage extends CleartextMessage implements SignedMessageInterface
         $armor = Armor::decode($armored);
         if ($armor->getType() !== ArmorType::SignedMessage) {
             throw new \UnexpectedValueException(
-                'Armored text not of signed message type'
+                'Armored text not of signed message type.'
             );
         }
         return new self(

@@ -243,7 +243,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
             KeyAlgorithm::ElGamal => Key\ElGamalSessionKeyCryptor::fromBytes($bytes),
             KeyAlgorithm::Ecdh => Key\ECDHSessionKeyCryptor::fromBytes($bytes),
             default => throw new \UnexpectedValueException(
-                "Public key algorithm $keyAlgorithm->name of the PKESK packet is unsupported."
+                "Public key algorithm {$keyAlgorithm->name} of the PKESK packet is unsupported."
             ),
         };
     }
