@@ -121,7 +121,7 @@ final class OpenPGP
 
     /**
      * Read an armored OpenPGP public key.
-     * Return a public key object,
+     * Return a public key object.
      *
      * @param string $armoredPublicKey
      * @return KeyInterface
@@ -131,6 +131,44 @@ final class OpenPGP
     ): KeyInterface
     {
         return PublicKey::fromArmored($armoredPublicKey);
+    }
+
+    /**
+     * Certify an OpenPGP key by a private key.
+     * Return clone of the key object with the new certification added.
+     * 
+     * @param KeyInterface $privateKey
+     * @param KeyInterface $key
+     * @param DateTime $time
+     * @return KeyInterface
+     */
+    public static function certifyKey(
+        PrivateKeyInterface $privateKey,
+        KeyInterface $key,
+        ?DateTime $time = null
+    ): KeyInterface
+    {
+        return $privateKey->certifyKey($key, $time);
+    }
+
+    /**
+     * Revoke an OpenPGP key by a private key.
+     * Return clone of the key object with the new revocation signature added.
+     * 
+     * @param revokeKey $privateKey
+     * @param KeyInterface $key
+     * @param string $revocationReason
+     * @param DateTime $time
+     * @return KeyInterface
+     */
+    public function revokeKey(
+        PrivateKeyInterface $privateKey,
+        KeyInterface $key,
+        string $revocationReason = '',
+        ?DateTime $time = null
+    ): KeyInterface
+    {
+        return $privateKey->revokeKey($key, $revocationReason, $time);
     }
 
     /**
