@@ -167,7 +167,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
-     * Creates signature
+     * Create signature
      *
      * @param KeyPacketInterface $signKey
      * @param SignatureType $signatureType
@@ -230,7 +230,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
-     * Creates self signature
+     * Create self signature
      *
      * @param KeyPacketInterface $signKey
      * @param UserIDPacketInterface $userID
@@ -296,7 +296,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
-     * Creates cert generic signature
+     * Create cert generic signature
      *
      * @param KeyPacketInterface $signKey
      * @param UserIDPacketInterface $userID
@@ -327,7 +327,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
-     * Creates cert revocation signature
+     * Create cert revocation signature
      *
      * @param KeyPacketInterface $signKey
      * @param UserIDPacketInterface $userID
@@ -360,7 +360,37 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
-     * Creates subkey binding signature
+     * Create key revocation signature
+     *
+     * @param KeyPacketInterface $signKey
+     * @param KeyPacketInterface $keyPacket
+     * @param string $revocationReason
+     * @param DateTime $time
+     * @return self
+     */
+    public static function createKeyRevocation(
+        KeyPacketInterface $signKey,
+        KeyPacketInterface $keyPacket,
+        string $revocationReason = '',
+        ?DateTime $time = null
+    ): self
+    {
+        return self::createSignature(
+            $signKey,
+            SignatureType::KeyRevocation,
+            $keyPacket->getSignBytes(),
+            Config::getPreferredHash(),
+            [
+                Signature\RevocationReason::fromRevocation(
+                    RevocationReasonTag::NoReason, $revocationReason
+                )
+            ],
+            $time
+        );
+    }
+
+    /**
+     * Create subkey binding signature
      *
      * @param KeyPacketInterface $signKey
      * @param SubkeyPacketInterface $subkey
@@ -418,7 +448,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
-     * Creates subkey revocation signature
+     * Create subkey revocation signature
      *
      * @param KeyPacketInterface $signKey
      * @param SubkeyPacketInterface $subkey
@@ -451,7 +481,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
-     * Creates literal data signature
+     * Create literal data signature
      *
      * @param KeyPacketInterface $signKey
      * @param LiteralDataInterface $literalData

@@ -24,42 +24,42 @@ use OpenPGP\Enum\KeyAlgorithm;
 interface KeyInterface extends ArmorableInterface, PacketContainerInterface
 {
     /**
-     * Returns key packet
+     * Return key packet
      *
      * @return KeyPacketInterface
      */
     function getKeyPacket(): KeyPacketInterface;
 
     /**
-     * Returns key as public key
+     * Return key as public key
      *
      * @return KeyInterface
      */
     function toPublic(): KeyInterface;
 
     /**
-     * Returns the expiration time of the key or null if key does not expire.
+     * Return the expiration time of the key or null if key does not expire.
      *
      * @return DateTime
      */
     function getExpirationTime(): ?DateTime;
 
     /**
-     * Gets creation time
+     * Get creation time
      * 
      * @return DateTime
      */
     function getCreationTime(): DateTime;
 
     /**
-     * Gets key algorithm
+     * Get key algorithm
      * 
      * @return KeyAlgorithm
      */
     function getKeyAlgorithm(): KeyAlgorithm;
 
     /**
-     * Gets fingerprint
+     * Get fingerprint
      * 
      * @param bool $toHex
      * @return string
@@ -67,7 +67,7 @@ interface KeyInterface extends ArmorableInterface, PacketContainerInterface
     function getFingerprint(bool $toHex = false): string;
 
     /**
-     * Gets key ID
+     * Get key ID
      * 
      * @param bool $toHex
      * @return string
@@ -75,14 +75,14 @@ interface KeyInterface extends ArmorableInterface, PacketContainerInterface
     function getKeyID(bool $toHex = false): string;
 
     /**
-     * Gets key strength
+     * Get key strength
      * 
      * @return int
      */
     function getKeyStrength(): int;
 
     /**
-     * Returns last created key packet or key packet by given keyID
+     * Return last created key packet or key packet by given keyID
      * that is available for signing or verification
      * 
      * @param string $keyID
@@ -94,7 +94,7 @@ interface KeyInterface extends ArmorableInterface, PacketContainerInterface
     ): KeyPacketInterface;
 
     /**
-     * Returns last created key packet or key packet by given keyID
+     * Return last created key packet or key packet by given keyID
      * that is available for encryption or decryption
      * 
      * @param string $keyID
@@ -106,7 +106,7 @@ interface KeyInterface extends ArmorableInterface, PacketContainerInterface
     ): KeyPacketInterface;
 
     /**
-     * Returns primary user
+     * Return primary user
      * 
      * @param DateTime $time
      * @return UserInterface

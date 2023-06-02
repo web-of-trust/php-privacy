@@ -17,7 +17,10 @@ use OpenPGP\Enum\{
     PacketTag,
     SignatureType,
 };
-use OpenPGP\Packet\PacketList;
+use OpenPGP\Packet\{
+    PacketList,
+    Signature,
+};
 use OpenPGP\Packet\Signature\{
     EmbeddedSignature,
     KeyExpirationTime,
@@ -162,7 +165,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     }
 
     /**
-     * Gets revocation signatures
+     * Get revocation signatures
      * 
      * @return array<SignaturePacketInterface>
      */
@@ -182,7 +185,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     }
 
     /**
-     * Gets users
+     * Get users
      * 
      * @return array<User>
      */
@@ -192,7 +195,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     }
 
     /**
-     * Gets subkeys
+     * Get subkeys
      * 
      * @return array<Subkey>
      */
@@ -542,6 +545,35 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     ): self
     {
         $key = clone $this;
+        $key->revocationSignatures[] = Signature::createKeyRevocation(
+            $signKey->getSigningKeyPacket(),
+            $key->getKeyPacket(),
+            $revocationReason,
+            $time
+        );
+
+        $users = array_map(
+            static fn ($user) => new User(
+                $key,
+                $user->getUserIDPacket(),
+                $user->getRevocationCertifications(),
+                $user->getSelfCertifications(),
+                $user->getOtherCertifications()
+            ),
+            $key->getUsers()
+        );
+        $key->setUsers($users);
+
+        $subkeys = array_map(
+            static fn ($subkey) => new Subkey(
+                $key,
+                $subkey->getKeyPacket(),
+                $subkey->getRevocationSignatures(),
+                $subkey->getBindingSignatures()
+            ),
+            $key->getSubkeys()
+        );
+        $key->setSubkeys($subkeys);
 
         return $key;
     }
@@ -585,7 +617,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     }
 
     /**
-     * Gets key expiration from signatures.
+     * Get key expiration from signatures.
      *
      * @param array<SignaturePacketInterface> $signatures
      * @return DateTime
@@ -624,7 +656,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     }
 
     /**
-     * Reads packet list.
+     * Read packet list to key structure.
      *
      * @param PacketListInterface $packetList
      * @return array<string, mixed>
