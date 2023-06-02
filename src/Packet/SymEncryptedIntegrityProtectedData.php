@@ -79,7 +79,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
     }
 
     /**
-     * Encrypts packet list
+     * Encrypt packet list
      *
      * @param string $key
      * @param PacketListInterface $packetList
@@ -109,7 +109,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
     }
 
     /**
-     * Encrypts packet list with session key
+     * Encrypt packet list with session key
      *
      * @param SessionKeyInterface $sessionKey
      * @param PacketListInterface $packetList

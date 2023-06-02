@@ -49,7 +49,7 @@ class PreferredCompressionAlgorithms extends SignatureSubpacket
     }
 
     /**
-     * Gets preferences
+     * Get preferences
      *
      * @return array<CompressionAlgorithm>
      */

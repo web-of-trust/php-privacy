@@ -28,56 +28,56 @@ use OpenPGP\Enum\{
 interface SignaturePacketInterface extends PacketInterface
 {
     /**
-     * Gets version
+     * Get version
      * 
      * @return int
      */
     function getVersion(): int;
 
     /**
-     * Gets signature type
+     * Get signature type
      * 
      * @return SignatureType
      */
     function getSignatureType(): SignatureType;
 
     /**
-     * Gets key algorithm
+     * Get key algorithm
      * 
      * @return KeyAlgorithm
      */
     function getKeyAlgorithm(): KeyAlgorithm;
 
     /**
-     * Gets hash algorithm
+     * Get hash algorithm
      * 
      * @return HashAlgorithm
      */
     function getHashAlgorithm(): HashAlgorithm;
 
     /**
-     * Gets hashed subpackets
+     * Get hashed subpackets
      *
      * @return array
      */
     function getHashedSubpackets(): array;
 
     /**
-     * Gets unhashed subpackets
+     * Get unhashed subpackets
      *
      * @return array
      */
     function getUnhashedSubpackets(): array;
 
     /**
-     * Gets signed hash value
+     * Get signed hash value
      *
      * @return string
      */
     function getSignedHashValue(): string;
 
     /**
-     * Verifies signature expiration date
+     * Verify signature expiration date
      * Use the given date for verification instead of the current time
      *
      * @param DateTime $time
@@ -86,14 +86,14 @@ interface SignaturePacketInterface extends PacketInterface
     function isExpired(?DateTime $time = null): bool;
 
     /**
-     * Gets signature data
+     * Get signature data
      *
      * @return string
      */
     function getSignature(): string;
 
     /**
-     * Verifies the signature packet.
+     * Verify the signature packet.
      *
      * @param KeyPacketInterface $verifyKey
      * @param string $dataToVerify
@@ -107,70 +107,70 @@ interface SignaturePacketInterface extends PacketInterface
     ): bool;
 
     /**
-     * Gets signature creation time
+     * Get signature creation time
      *
      * @return DateTime
      */
     function getSignatureCreationTime(): ?DateTime;
 
     /**
-     * Gets signature expiration time
+     * Get signature expiration time
      *
      * @return DateTime
      */
     function getSignatureExpirationTime(): ?DateTime;
 
     /**
-     * Gets exportable certification sub packet
+     * Get exportable certification sub packet
      *
      * @return SubpacketInterface
      */
     function getExportableCertification(): ?SubpacketInterface;
 
     /**
-     * Gets trust signature sub packet
+     * Get trust signature sub packet
      *
      * @return SubpacketInterface
      */
     function getTrustSignature(): ?SubpacketInterface;
 
     /**
-     * Gets regular expression sub packet
+     * Get regular expression sub packet
      *
      * @return SubpacketInterface
      */
     function getRegularExpression(): ?SubpacketInterface;
 
     /**
-     * Gets revocable sub packet
+     * Get revocable sub packet
      *
      * @return SubpacketInterface
      */
     function getRevocable(): ?SubpacketInterface;
 
     /**
-     * Gets key expiration time sub packet
+     * Get key expiration time sub packet
      *
      * @return SubpacketInterface
      */
     function getKeyExpirationTime(): ?SubpacketInterface;
 
     /**
-     * Gets preferred symmetric algorithms sub packet
+     * Get preferred symmetric algorithms sub packet
      *
      * @return SubpacketInterface
      */
     function getPreferredSymmetricAlgorithms(): ?SubpacketInterface;
 
     /**
-     * Gets revocation key sub packet
+     * Get revocation key sub packet
      *
      * @return SubpacketInterface
      */
     function getRevocationKey(): ?SubpacketInterface;
 
     /**
-     * Gets issuer key ID sub packet
+     * Get issuer key ID sub packet
      *
      * @param bool $toHex
      * @return string
@@ -178,35 +178,35 @@ interface SignaturePacketInterface extends PacketInterface
     function getIssuerKeyID(bool $toHex = false): string;
 
     /**
-     * Gets notation data sub packet
+     * Get notation data sub packet
      *
      * @return SubpacketInterface
      */
     function getNotationData(): ?SubpacketInterface;
 
     /**
-     * Gets preferred hash algorithms sub packet
+     * Get preferred hash algorithms sub packet
      *
      * @return SubpacketInterface
      */
     function getPreferredHashAlgorithms(): ?SubpacketInterface;
 
     /**
-     * Gets preferred compression algorithms sub packet
+     * Get preferred compression algorithms sub packet
      *
      * @return SubpacketInterface
      */
     function getPreferredCompressionAlgorithms(): ?SubpacketInterface;
 
     /**
-     * Gets key server preferences sub packet
+     * Get key server preferences sub packet
      *
      * @return SubpacketInterface
      */
     function getKeyServerPreferences(): ?SubpacketInterface;
 
     /**
-     * Gets preferred key server sub packet
+     * Get preferred key server sub packet
      *
      * @return SubpacketInterface
      */
@@ -220,56 +220,56 @@ interface SignaturePacketInterface extends PacketInterface
     function isPrimaryUserID(): bool;
 
     /**
-     * Gets policy URI sub packet
+     * Get policy URI sub packet
      *
      * @return SubpacketInterface
      */
     function getPolicyURI(): ?SubpacketInterface;
 
     /**
-     * Gets key flags sub packet
+     * Get key flags sub packet
      *
      * @return SubpacketInterface
      */
     function getKeyFlags(): ?SubpacketInterface;
 
     /**
-     * Gets signer user ID sub packet
+     * Get signer user ID sub packet
      *
      * @return SubpacketInterface
      */
     function getSignerUserID(): ?SubpacketInterface;
 
     /**
-     * Gets revocation reason sub packet
+     * Get revocation reason sub packet
      *
      * @return SubpacketInterface
      */
     function getRevocationReason(): ?SubpacketInterface;
 
     /**
-     * Gets features sub packet
+     * Get features sub packet
      *
      * @return SubpacketInterface
      */
     function getFeatures(): ?SubpacketInterface;
 
     /**
-     * Gets signature target packet
+     * Get signature target packet
      *
      * @return SubpacketInterface
      */
     function getSignatureTarget(): ?SubpacketInterface;
 
     /**
-     * Gets embedded signature packet
+     * Get embedded signature packet
      *
      * @return SubpacketInterface
      */
     function getEmbeddedSignature(): ?SubpacketInterface;
 
     /**
-     * Gets issuer fingerprint sub packet
+     * Get issuer fingerprint sub packet
      *
      * @return SubpacketInterface
      */

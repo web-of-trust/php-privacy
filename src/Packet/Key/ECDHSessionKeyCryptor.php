@@ -77,7 +77,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
     }
 
     /**
-     * Produces cryptor by encrypting session key
+     * Produce cryptor by encrypting session key
      *
      * @param SessionKeyInterface $sessionKey
      * @param KeyMaterialInterface $keyMaterial
@@ -148,7 +148,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
     }
 
     /**
-     * Gets ephemeral key
+     * Get ephemeral key
      *
      * @return BigInteger
      */
@@ -158,7 +158,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
     }
 
     /**
-     * Gets wrapped key
+     * Get wrapped key
      *
      * @return string
      */
@@ -180,7 +180,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
     }
 
     /**
-     * Decrypts session key by using secret key parameters
+     * Decrypt session key by using secret key material
      *
      * @param KeyMaterialInterface $keyMaterial
      * @param string $fingerprint

@@ -24,28 +24,28 @@ use OpenPGP\Enum\LiteralFormat;
 interface LiteralDataInterface extends ForSigningInterface
 {
     /**
-     * Gets literal format
+     * Get literal format
      *
      * @return LiteralFormat
      */
     function getFormat(): LiteralFormat;
 
     /**
-     * Gets filename
+     * Get filename
      *
      * @return string
      */
     function getFilename(): string;
 
     /**
-     * Gets time
+     * Get time
      *
      * @return DateTime
      */
     function getTime(): DateTime;
 
     /**
-     * Gets data
+     * Get data
      *
      * @return string
      */

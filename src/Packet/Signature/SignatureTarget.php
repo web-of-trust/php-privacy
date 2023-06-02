@@ -73,7 +73,7 @@ class SignatureTarget extends SignatureSubpacket
     }
 
     /**
-     * Gets key algorithm
+     * Get key algorithm
      *
      * @return KeyAlgorithm
      */
@@ -83,7 +83,7 @@ class SignatureTarget extends SignatureSubpacket
     }
 
     /**
-     * Gets hash algorithm
+     * Get hash algorithm
      *
      * @return HashAlgorithm
      */
@@ -93,7 +93,7 @@ class SignatureTarget extends SignatureSubpacket
     }
 
     /**
-     * Gets hashData
+     * Get hash data
      *
      * @return string
      */

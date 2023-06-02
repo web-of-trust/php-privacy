@@ -50,7 +50,7 @@ class CompressedData extends AbstractPacket
     }
 
     /**
-     * Reads compressed data packet from byte string
+     * Read compressed data packet from byte string
      *
      * @param string $bytes
      * @return self
@@ -101,7 +101,7 @@ class CompressedData extends AbstractPacket
     }
 
     /**
-     * Gets compressed data
+     * Get compressed data
      *
      * @return string
      */
@@ -111,7 +111,7 @@ class CompressedData extends AbstractPacket
     }
 
     /**
-     * Gets decompressed packets contained within.
+     * Get decompressed packets contained within.
      *
      * @return PacketList
      */
@@ -121,7 +121,7 @@ class CompressedData extends AbstractPacket
     }
 
     /**
-     * Gets compression algorithm
+     * Get compression algorithm
      *
      * @return Algorithm
      */

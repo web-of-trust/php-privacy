@@ -64,7 +64,7 @@ class KeyFlags extends SignatureSubpacket
     }
 
     /**
-     * Gets key flags
+     * Get key flags
      *
      * @return int
      */
@@ -112,7 +112,7 @@ class KeyFlags extends SignatureSubpacket
     }
 
     /**
-     * Is Eencrypt storage
+     * Is encrypt storage
      *
      * @return bool
      */

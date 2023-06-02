@@ -61,7 +61,7 @@ class EmbeddedSignature extends SignatureSubpacket
     }
 
     /**
-     * Gets signature package
+     * Get signature package
      *
      * @return SignaturePacketInterface
      */

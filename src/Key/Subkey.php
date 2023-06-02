@@ -80,7 +80,7 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
     }
 
     /**
-     * Gets main key
+     * Get main key
      * 
      * @return KeyInterface
      */
@@ -90,7 +90,7 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
     }
 
     /**
-     * Gets revocation signatures
+     * Get revocation signatures
      * 
      * @return array<SignaturePacketInterface>
      */
@@ -100,7 +100,7 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
     }
 
     /**
-     * Gets binding signatures
+     * Get binding signatures
      * 
      * @return array<SignaturePacketInterface>
      */
@@ -110,7 +110,7 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
     }
 
     /**
-     * Gets latest binding signature
+     * Get latest binding signature
      * 
      * @return SignaturePacketInterface
      */

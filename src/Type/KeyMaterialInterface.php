@@ -23,35 +23,35 @@ use phpseclib3\Crypt\Common\AsymmetricKey;
 interface KeyMaterialInterface
 {
     /**
-     * Gets public key material
+     * Get public key material
      * 
      * @return KeyMaterialInterface
      */
     function getPublicMaterial(): KeyMaterialInterface;
 
     /**
-     * Gets asymmetric key
+     * Get asymmetric key
      * 
      * @return AsymmetricKey
      */
     function getAsymmetricKey(): AsymmetricKey;
 
     /**
-     * Gets key material parameters
+     * Get key material parameters
      * 
      * @return array<mixed>
      */
     function getParameters(): array;
 
     /**
-     * Returns key material is valid
+     * Return key material is valid
      * 
      * @return bool
      */
     function isValid(): bool;
 
     /**
-     * Serializes key material to bytes
+     * Serialize key material to bytes
      * 
      * @return string
      */

@@ -43,7 +43,7 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
     }
 
     /**
-     * Reads encrypted session key from byte string
+     * Read encrypted session key from byte string
      *
      * @param string $bytes
      * @return self
@@ -56,7 +56,7 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
     }
 
     /**
-     * Produces cryptor by encrypting session key
+     * Produce cryptor by encrypting session key
      *
      * @param SessionKeyInterface $sessionKey
      * @param AsymmetricKey $publicKey
@@ -94,7 +94,7 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
     }
 
     /**
-     * Gets encrypted session key
+     * Get encrypted session key
      *
      * @return BigInteger
      */

@@ -14,7 +14,7 @@ use OpenPGP\Enum\PacketTag;
 use OpenPGP\Type\UserIDPacketInterface;
 
 /**
- * UserID packet class
+ * User ID packet class
  * 
  * Implementation of the User ID packet (Tag 13)
  * A User ID packet consists of UTF-8 text that is intended to represent
@@ -51,7 +51,7 @@ class UserID extends AbstractPacket implements UserIDPacketInterface
     }
 
     /**
-     * Reads user ID from byte string
+     * Read user ID from byte string
      *
      * @param string $bytes
      * @return self
@@ -82,7 +82,7 @@ class UserID extends AbstractPacket implements UserIDPacketInterface
     }
 
     /**
-     * Gets user ID
+     * Get user ID
      *
      * @return string
      */
@@ -92,7 +92,7 @@ class UserID extends AbstractPacket implements UserIDPacketInterface
     }
 
     /**
-     * Gets name
+     * Get name
      *
      * @return string
      */
@@ -102,7 +102,7 @@ class UserID extends AbstractPacket implements UserIDPacketInterface
     }
 
     /**
-     * Gets email
+     * Get email
      *
      * @return string
      */
@@ -112,7 +112,7 @@ class UserID extends AbstractPacket implements UserIDPacketInterface
     }
 
     /**
-     * Gets comment
+     * Get comment
      *
      * @return string
      */

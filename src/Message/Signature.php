@@ -62,7 +62,7 @@ class Signature implements SignatureInterface
     }
 
     /**
-     * Reads signature from armored string
+     * Read signature from armored string
      *
      * @param string $armored
      * @return self

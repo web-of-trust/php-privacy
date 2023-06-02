@@ -23,21 +23,21 @@ use OpenPGP\Enum\PacketTag;
 interface PacketInterface
 {
     /**
-     * Gets packet tag
+     * Get packet tag
      * 
      * @return PacketTag
      */
     function getTag(): PacketTag;
 
     /**
-     * Serializes packet to bytes
+     * Serialize packet to bytes
      * 
      * @return string
      */
     function encode(): string;
 
     /**
-     * Serializes packet data to bytes
+     * Serialize packet data to bytes
      * 
      * @return string
      */

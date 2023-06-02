@@ -97,7 +97,7 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
     }
 
     /**
-     * Encrypts packet list
+     * Encrypt packet list
      *
      * @param string $key
      * @param PacketListInterface $packetList
@@ -120,7 +120,7 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
     }
 
     /**
-     * Encrypts packet list with session key
+     * Encrypt packet list with session key
      *
      * @param SessionKeyInterface $sessionKey
      * @param PacketListInterface $packetList
@@ -153,7 +153,7 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
     }
 
     /**
-     * Gets symmetric algorithm
+     * Get symmetric algorithm
      *
      * @return SymmetricAlgorithm
      */
@@ -163,7 +163,7 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
     }
 
     /**
-     * Gets AEAD algorithm
+     * Get AEAD algorithm
      *
      * @return AeadAlgorithm
      */
@@ -173,7 +173,7 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
     }
 
     /**
-     * Gets chunk size byte
+     * Get chunk size byte
      *
      * @return int
      */
@@ -183,7 +183,7 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
     }
 
     /**
-     * Gets initialization vector
+     * Get initialization vector
      * 
      * @return string
      */

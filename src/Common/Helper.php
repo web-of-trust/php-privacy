@@ -26,7 +26,7 @@ use OpenPGP\Enum\SymmetricAlgorithm;
 final class Helper
 {
     /**
-     * Reads multiprecision integer (MPI) from binary data
+     * Read multiprecision integer (MPI) from binary data
      *
      * @param string $bytes
      * @return BigInteger
@@ -40,7 +40,7 @@ final class Helper
     }
 
     /**
-     * Converts binary data to big integer
+     * Convert binary data to big integer
      *
      * @param string $bytes
      * @return BigInteger
@@ -51,7 +51,7 @@ final class Helper
     }
 
     /**
-     * Converts bit to byte length
+     * Convert bit to byte length
      *
      * @param int $bitLength
      * @return int
@@ -62,7 +62,7 @@ final class Helper
     }
 
     /**
-     * Generates random prefix
+     * Generate random prefix
      *
      * @param SymmetricAlgorithm $symmetric
      * @return string

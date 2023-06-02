@@ -129,7 +129,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     }
 
     /**
-     * Gets public key ID
+     * Get public key ID
      *
      * @param bool $toHex
      * @return string
@@ -140,7 +140,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     }
 
     /**
-     * Gets public key algorithm
+     * Get public key algorithm
      *
      * @return KeyAlgorithm
      */
@@ -150,7 +150,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     }
 
     /**
-     * Gets session key cryptor
+     * Get session key cryptor
      *
      * @return SessionKeyCryptorInterface
      */
@@ -160,7 +160,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     }
 
     /**
-     * Gets session key
+     * Get session key
      *
      * @return SessionKeyInterface
      */

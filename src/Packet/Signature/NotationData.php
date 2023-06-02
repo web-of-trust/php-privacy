@@ -85,7 +85,7 @@ class NotationData extends SignatureSubpacket
     }
 
     /**
-     * Gets notation name
+     * Get notation name
      *
      * @return string
      */
@@ -99,7 +99,7 @@ class NotationData extends SignatureSubpacket
     }
 
     /**
-     * Gets notation value
+     * Get notation value
      *
      * @return string
      */

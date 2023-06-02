@@ -280,7 +280,7 @@ EOT;
             SupportFeature::AeadEncryptedData->value |
             SupportFeature::Version5PublicKey->value
         );
-        $this->assertTrue($features->supprtModificationDetection());
+        $this->assertTrue($features->supportModificationDetection());
         $this->assertTrue($features->supportAeadEncryptedData());
         $this->assertTrue($features->supportVersion5PublicKey());
     }

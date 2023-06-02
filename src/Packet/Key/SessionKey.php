@@ -39,7 +39,7 @@ class SessionKey implements SessionKeyInterface
     }
 
     /**
-     * Reads session key from binary string
+     * Read session key from binary string
      *
      * @param string $bytes
      * @return self
@@ -61,7 +61,7 @@ class SessionKey implements SessionKeyInterface
     }
 
     /**
-     * Produces session key specify by symmetric algorithm
+     * Produce session key specify by symmetric algorithm
      *
      * @param SymmetricAlgorithm $symmetric
      * @return self

@@ -21,7 +21,7 @@ namespace OpenPGP\Type;
 interface VerificationInterface
 {
     /**
-     * Returns verification key ID
+     * Get verification key ID
      *
      * @param bool $toHex
      * @return string
@@ -29,7 +29,7 @@ interface VerificationInterface
 	function getKeyID(bool $toHex = false): string;
 
     /**
-     * Returns signature packet
+     * Get signature packet
      *
      * @return SignaturePacketInterface
      */

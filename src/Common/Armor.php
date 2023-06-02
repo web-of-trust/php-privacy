@@ -71,7 +71,7 @@ final class Armor
     }
 
     /**
-     * Gets armor type
+     * Get armor type
      *
      * @return ArmorType
      */
@@ -81,7 +81,7 @@ final class Armor
     }
 
     /**
-     * Gets armor headers
+     * Get armor headers
      *
      * @return array<string>
      */
@@ -91,7 +91,7 @@ final class Armor
     }
 
     /**
-     * Geta armor data
+     * Get armor data
      *
      * @return string
      */
@@ -101,7 +101,7 @@ final class Armor
     }
 
     /**
-     * Gets armor text
+     * Get armor text
      *
      * @return string
      */
@@ -111,7 +111,7 @@ final class Armor
     }
 
     /**
-     * Dearmor an OpenPGP armored message;
+     * Dearmor an OpenPGP armored message.
      * Verify the checksum and return the encoded bytes
      *
      * @param string $armoredText
@@ -260,7 +260,7 @@ final class Armor
     }
 
     /**
-     * Finds out which Ascii Armoring type is used.
+     * Find out which ASCII armoring type is used.
      * 
      * @param string $armoredText
      * @return ArmorType
@@ -302,7 +302,7 @@ final class Armor
     }
 
     /**
-     * Calculates a checksum over the given data and returns it base64 encoded
+     * Calculate a checksum over the given data and returns it base64 encoded
      * 
      * @param string $data
      * @return string

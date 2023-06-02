@@ -21,14 +21,14 @@ namespace OpenPGP\Type;
 interface PacketContainerInterface
 {
     /**
-     * Gets contained packets
+     * Get contained packets
      *
      * @return array
      */
     function getPackets(): array;
 
     /**
-     * Transforms structured data to packet list
+     * Transform structured data to packet list
      *
      * @return PacketListInterface
      */

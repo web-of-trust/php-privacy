@@ -59,7 +59,7 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
     }
 
     /**
-     * Reads key material from bytes
+     * Read key material from bytes
      *
      * @param string $bytes
      * @param KeyMaterialInterface $publicMaterial
@@ -75,7 +75,7 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
     }
 
     /**
-     * Generates key material by using ElGamal create key
+     * Generate key material by using ElGamal create key
      *
      * @param DHKeySize $keySize
      * @return self
@@ -96,7 +96,7 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
     }
 
     /**
-     * Gets exponent x
+     * Get exponent x
      *
      * @return BigInteger
      */
@@ -106,7 +106,7 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
     }
 
     /**
-     * Gets private key
+     * Get private key
      *
      * @return PrivateKey
      */
@@ -116,7 +116,7 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
     }
 
     /**
-     * Gets public key
+     * Get public key
      *
      * @return PublicKey
      */

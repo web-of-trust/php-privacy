@@ -24,14 +24,14 @@ use OpenPGP\Enum\HashAlgorithm;
 interface PublicKeyMaterialInterface extends KeyMaterialInterface
 {
     /**
-     * Returns phpseclib3 public key
+     * Get phpseclib3 public key
      * 
      * @return PublicKey
      */
     function getPublicKey(): PublicKey;
 
     /**
-     * Verifies a signature with message
+     * Verify a signature with message
      * 
      * @param HashAlgorithm $hash
      * @param string $message

@@ -38,7 +38,7 @@ class EdDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMat
     const SIGNATURE_LENGTH = 64;
 
     /**
-     * Reads key material from bytes
+     * Read key material from bytes
      *
      * @param string $bytes
      * @param KeyMaterialInterface $publicMaterial
@@ -55,7 +55,7 @@ class EdDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMat
     }
 
     /**
-     * Generates key material by using EC create key
+     * Generate key material by using EC create key
      *
      * @param CurveOid $curveOid
      * @return self

@@ -205,7 +205,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     }
 
     /**
-     * Sets users
+     * Set users
      * 
      * @param array<User> $users
      * @return self
@@ -220,7 +220,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     }
 
     /**
-     * Sets subkeys
+     * Set subkeys
      * 
      * @param array<Subkey> $subkeys
      * @return self

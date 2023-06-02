@@ -49,7 +49,7 @@ class PreferredAeadAlgorithms extends SignatureSubpacket
     }
 
     /**
-     * Gets preferences
+     * Get preferences
      *
      * @return array<AeadAlgorithm>
      */

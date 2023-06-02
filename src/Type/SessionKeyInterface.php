@@ -23,7 +23,7 @@ use OpenPGP\Enum\SymmetricAlgorithm;
 interface SessionKeyInterface
 {
     /**
-     * Gets encryption key
+     * Get encryption key
      *
      * @return string
      */
@@ -44,7 +44,7 @@ interface SessionKeyInterface
     function computeChecksum(): string;
 
     /**
-     * Serializes session key to bytes
+     * Serialize session key to bytes
      * 
      * @return string
      */

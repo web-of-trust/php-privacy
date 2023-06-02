@@ -23,21 +23,21 @@ use OpenPGP\Enum\SymmetricAlgorithm;
 interface EncryptedDataPacketInterface extends PacketInterface
 {
     /**
-     * Gets encrypted data
+     * Get encrypted data
      *
      * @return string
      */
     function getEncrypted(): string;
 
     /**
-     * Gets decrypted packets contained within.
+     * Get decrypted packets contained within.
      *
      * @return PacketListInterface
      */
     function getPacketList(): ?PacketListInterface;
 
     /**
-     * Encrypts the payload in the packet.
+     * Encrypt the payload in the packet.
      *
      * @param string $key
      * @param SymmetricAlgorithm $symmetric
@@ -49,7 +49,7 @@ interface EncryptedDataPacketInterface extends PacketInterface
     ): self;
 
     /**
-     * Encrypts the payload in the packet with session key.
+     * Encrypt the payload in the packet with session key.
      *
      * @param SessionKeyInterface $sessionKey
      * @return self
@@ -59,7 +59,7 @@ interface EncryptedDataPacketInterface extends PacketInterface
     ): self;
 
     /**
-     * Decrypts the encrypted data contained in the packet.
+     * Decrypt the encrypted data contained in the packet.
      *
      * @param string $key
      * @param SymmetricAlgorithm $symmetric
@@ -71,7 +71,7 @@ interface EncryptedDataPacketInterface extends PacketInterface
     ): self;
 
     /**
-     * Decrypts the encrypted data contained in the packet with session key.
+     * Decrypt the encrypted data contained in the packet with session key.
      *
      * @param SessionKeyInterface $sessionKey
      * @return self

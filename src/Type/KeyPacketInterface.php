@@ -27,28 +27,28 @@ use OpenPGP\Enum\{
 interface KeyPacketInterface extends ForSigningInterface, PacketInterface
 {
     /**
-     * Gets key version
+     * Get key version
      * 
      * @return int
      */
     function getVersion(): int;
 
     /**
-     * Gets creation time
+     * Get creation time
      * 
      * @return DateTime
      */
     function getCreationTime(): DateTime;
 
     /**
-     * Gets key algorithm
+     * Get key algorithm
      * 
      * @return KeyAlgorithm
      */
     function getKeyAlgorithm(): KeyAlgorithm;
 
     /**
-     * Gets fingerprint
+     * Get fingerprint
      * 
      * @param bool $toHex
      * @return string
@@ -56,7 +56,7 @@ interface KeyPacketInterface extends ForSigningInterface, PacketInterface
     function getFingerprint(bool $toHex = false): string;
 
     /**
-     * Gets key ID
+     * Get key ID
      * 
      * @param bool $toHex
      * @return string
@@ -64,7 +64,7 @@ interface KeyPacketInterface extends ForSigningInterface, PacketInterface
     function getKeyID(bool $toHex = false): string;
 
     /**
-     * Gets key Strength
+     * Get key strength
      * 
      * @return int
      */
@@ -92,14 +92,14 @@ interface KeyPacketInterface extends ForSigningInterface, PacketInterface
     function isEncryptionKey(): bool;
 
     /**
-     * Gets key material
+     * Get key material
      * 
      * @return KeyMaterialInterface
      */
     function getKeyMaterial(): ?KeyMaterialInterface;
 
     /**
-     * Gets preferred hash algorithm
+     * Get preferred hash algorithm
      * 
      * @param HashAlgorithm $preferredHash
      * @return HashAlgorithm

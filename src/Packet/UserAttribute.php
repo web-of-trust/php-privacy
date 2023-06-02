@@ -87,7 +87,7 @@ class UserAttribute extends AbstractPacket implements UserIDPacketInterface
     }
 
     /**
-     * Gets user attributes
+     * Get user attributes
      *
      * @return array<UserAttributeSubpacket>
      */

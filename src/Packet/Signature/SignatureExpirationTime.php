@@ -63,7 +63,7 @@ class SignatureExpirationTime extends SignatureSubpacket
     }
 
     /**
-     * Gets expiration time
+     * Get expiration time
      * 
      * @return DateTime
      */

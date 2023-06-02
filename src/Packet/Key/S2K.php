@@ -65,7 +65,7 @@ class S2K
     }
 
     /**
-     * Gets S2K type
+     * Get S2K type
      *
      * @return S2kType
      */
@@ -75,7 +75,7 @@ class S2K
     }
 
     /**
-     * Gets hash algorithm
+     * Get hash algorithm
      *
      * @return HashAlgorithm
      */
@@ -85,7 +85,7 @@ class S2K
     }
 
     /**
-     * Gets salt
+     * Get salt
      *
      * @return string
      */
@@ -95,7 +95,7 @@ class S2K
     }
 
     /**
-     * Gets iteration count
+     * Get iteration count
      *
      * @return int
      */
@@ -105,7 +105,7 @@ class S2K
     }
 
     /**
-     * Gets packet length
+     * Get packet length
      *
      * @return int
      */
@@ -140,7 +140,7 @@ class S2K
     }
 
     /**
-     * Serializes s2k information to binary string
+     * Serialize s2k information to binary string
      * 
      * @return string
      */
@@ -160,7 +160,7 @@ class S2K
     }
 
     /**
-     * Produces a key using the specified passphrase and the defined hashAlgorithm
+     * Produce a key using the specified passphrase and the defined hash algorithm
      * 
      * @param string $passphrase
      * @param int $keyLen

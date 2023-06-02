@@ -30,7 +30,7 @@ use OpenPGP\Type\KeyMaterialInterface;
 class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
 {
     /**
-     * Reads key material from bytes
+     * Read key material from bytes
      *
      * @param string $bytes
      * @param KeyMaterialInterface $publicMaterial
@@ -46,7 +46,7 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
     }
 
     /**
-     * Generates key material by using EC create key
+     * Generate key material by using EC create key
      *
      * @param CurveOid $curveOid
      * @return self

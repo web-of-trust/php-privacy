@@ -30,7 +30,7 @@ interface PacketListInterface extends \IteratorAggregate, \Countable
     function getPackets(): array;
 
     /**
-     * Serializes packets to bytes
+     * Serialize packets to bytes
      * 
      * @return string
      */
@@ -53,7 +53,7 @@ interface PacketListInterface extends \IteratorAggregate, \Countable
     function whereType(string $type): self;
 
     /**
-     * Gets packet for an offset
+     * Get packet for an offset
      * 
      * @param int $key
      * @return PacketInterface

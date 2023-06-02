@@ -63,7 +63,7 @@ class SymEncryptedSessionKey extends AbstractPacket
     }
 
     /**
-     * Reads SKESK packet from byte string
+     * Read SKESK packet from byte string
      *
      * @param string $bytes
      * @return self
@@ -141,7 +141,7 @@ class SymEncryptedSessionKey extends AbstractPacket
     }
 
     /**
-     * Gets string 2 key
+     * Get string 2 key
      *
      * @return Key\S2K
      */
@@ -151,7 +151,7 @@ class SymEncryptedSessionKey extends AbstractPacket
     }
 
     /**
-     * Gets symmetric algorithm
+     * Get symmetric algorithm
      *
      * @return SymmetricAlgorithm
      */
@@ -161,7 +161,7 @@ class SymEncryptedSessionKey extends AbstractPacket
     }
 
     /**
-     * Gets encrypted data
+     * Get encrypted data
      *
      * @return string
      */
@@ -171,7 +171,7 @@ class SymEncryptedSessionKey extends AbstractPacket
     }
 
     /**
-     * Gets session key
+     * Get session key
      *
      * @return Key\SessionKey
      */
@@ -181,7 +181,7 @@ class SymEncryptedSessionKey extends AbstractPacket
     }
 
     /**
-     * Decrypts session key
+     * Decrypt session key
      *
      * @param string $password
      * @return self

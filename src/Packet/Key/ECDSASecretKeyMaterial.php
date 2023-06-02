@@ -36,7 +36,7 @@ use OpenPGP\Type\{
 class ECDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMaterialInterface
 {
     /**
-     * Reads key material from bytes
+     * Read key material from bytes
      *
      * @param string $bytes
      * @param KeyMaterialInterface $publicMaterial
@@ -53,7 +53,7 @@ class ECDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMat
     }
 
     /**
-     * Generates key material by using EC create key
+     * Generate key material by using EC create key
      *
      * @param CurveOid $curveOid
      * @return self

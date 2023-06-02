@@ -49,10 +49,9 @@ use OpenPGP\Type\{
 final class OpenPGP
 {
     /**
-     * Generates a new OpenPGP key pair. Supports RSA, DSA and ECC key types.
-     * By default, primary and subkeys will be of same type.
+     * Generate a new OpenPGP key pair. Support RSA, DSA and ECC key types.
      * The generated primary key will have signing capabilities.
-     * By default, one subkey with encryption capabilities is also generated.
+     * One subkey with encryption capabilities is also generated.
      *
      * @param array<string> $userIDs
      * @param string $passphrase
@@ -107,7 +106,8 @@ final class OpenPGP
     }
 
     /**
-     * Read an armored OpenPGP private key and returns a PrivateKey object
+     * Read an armored OpenPGP private key.
+     * Return a private key object.
      *
      * @param string $armoredPrivateKey
      * @return PrivateKeyInterface
@@ -120,7 +120,8 @@ final class OpenPGP
     }
 
     /**
-     * Read an armored OpenPGP public key and returns a PublicKey object
+     * Read an armored OpenPGP public key.
+     * Return a public key object,
      *
      * @param string $armoredPublicKey
      * @return KeyInterface
@@ -133,7 +134,8 @@ final class OpenPGP
     }
 
     /**
-     * Read an armored OpenPGP signature and returns a Signature object
+     * Read an armored OpenPGP signature.
+     * Return a signature object.
      *
      * @param string $armoredSignature
      * @return SignatureInterface
@@ -146,7 +148,8 @@ final class OpenPGP
     }
 
     /**
-     * Read an armored OpenPGP signed message and returns a SignedMessageInterface object
+     * Read an armored OpenPGP signed message.
+     * Return a signed message object.
      *
      * @param string $armoredSignedMessage
      * @return SignedMessageInterface
@@ -159,7 +162,8 @@ final class OpenPGP
     }
 
     /**
-     * Read an armored OpenPGP message and returns a LiteralMessage object
+     * Read an armored OpenPGP message.
+     * Return a l iteral message object.
      *
      * @param string $armoredMessage
      * @return LiteralMessageInterface
@@ -172,7 +176,7 @@ final class OpenPGP
     }
 
     /**
-     * Create new cleartext message object from text
+     * Create new cleartext message object from text.
      *
      * @param string $text
      * @return CleartextMessageInterface
@@ -205,6 +209,7 @@ final class OpenPGP
 
     /**
      * Sign a cleartext message.
+     * Return a signed message object
      *
      * @param string $text
      * @param array<PrivateKey> $signingKeys
@@ -223,7 +228,7 @@ final class OpenPGP
     }
 
     /**
-     * Sign a cleartext message & return detached signature
+     * Sign a cleartext message & return detached signature.
      *
      * @param string $text
      * @param array<PrivateKey> $signingKeys
@@ -242,7 +247,7 @@ final class OpenPGP
     }
 
     /**
-     * Sign a message & return signed message
+     * Sign a message & return signed literal message.
      *
      * @param LiteralMessageInterface $message
      * @param array<Key\PrivateKey> $signingKeys
@@ -261,7 +266,7 @@ final class OpenPGP
     }
 
     /**
-     * Sign a message & return detached signature
+     * Sign a message & return detached signature.
      *
      * @param LiteralMessageInterface $message
      * @param array<Key\PrivateKey> $signingKeys
@@ -280,8 +285,8 @@ final class OpenPGP
     }
 
     /**
-     * Verify signatures of cleartext signed message
-     * Return verification array
+     * Verify signatures of cleartext signed message.
+     * Return verification array.
      *
      * @param string $armoredSignedMessage
      * @param array<PublicKey> $verificationKeys
@@ -299,8 +304,8 @@ final class OpenPGP
     }
 
     /**
-     * Verify detached signatures of cleartext message
-     * Return verification array
+     * Verify detached signatures of cleartext message.
+     * Return verification array.
      *
      * @param string $text
      * @param string $armoredSignature

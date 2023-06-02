@@ -75,7 +75,7 @@ class IssuerKeyID extends SignatureSubpacket
     }
 
     /**
-     * Gets key ID
+     * Get key ID
      * 
      * @param bool $toHex
      * @return string

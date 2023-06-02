@@ -95,7 +95,7 @@ class User implements UserInterface
     }
 
     /**
-     * Gets main key
+     * Get main key
      * 
      * @return KeyInterface
      */

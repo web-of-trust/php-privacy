@@ -21,28 +21,28 @@ namespace OpenPGP\Type;
 interface SubpacketInterface
 {
     /**
-     * Gets type
+     * Get type
      * 
      * @return int
      */
 	function getType(): int;
 
     /**
-     * Gets data
+     * Get data
      * 
      * @return string
      */
 	function getData(): string;
 
     /**
-     * Gets is long
+     * Get is long
      * 
      * @return bool
      */
 	function isLong(): bool;
 
     /**
-     * Serializes subpacket to bytes
+     * Serialize subpacket to bytes
      * 
      * @return string
      */

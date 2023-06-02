@@ -76,7 +76,7 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
     }
 
     /**
-     * Gets modulus n
+     * Get modulus n
      *
      * @return BigInteger
      */
@@ -86,7 +86,7 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
     }
 
     /**
-     * Gets exponent e
+     * Get exponent e
      *
      * @return BigInteger
      */

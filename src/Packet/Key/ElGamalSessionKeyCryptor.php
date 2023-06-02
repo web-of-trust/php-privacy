@@ -45,7 +45,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
     }
 
     /**
-     * Reads encrypted session key parameters from bytes
+     * Read encrypted session key parameters from bytes
      *
      * @param string $bytes
      * @return self
@@ -60,7 +60,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
     }
 
     /**
-     * Produces cryptor by encrypting session key
+     * Produce cryptor by encrypting session key
      *
      * @param SessionKeyInterface $sessionKey
      * @param AsymmetricKey $publicKey
@@ -103,7 +103,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
     }
 
     /**
-     * Gets gamma
+     * Get gamma
      *
      * @return BigInteger
      */
@@ -113,7 +113,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
     }
 
     /**
-     * Gets phi
+     * Get phi
      *
      * @return BigInteger
      */

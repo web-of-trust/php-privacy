@@ -46,7 +46,7 @@ class PolicyURI extends SignatureSubpacket
     }
 
     /**
-     * Gets uri
+     * Get uri
      *
      * @return string
      */

@@ -70,7 +70,7 @@ class RevocationReason extends SignatureSubpacket
     }
 
     /**
-     * Gets reason
+     * Get reason
      *
      * @return RevocationReasonTag
      */
@@ -80,7 +80,7 @@ class RevocationReason extends SignatureSubpacket
     }
 
     /**
-     * Gets description
+     * Get description
      *
      * @return string
      */

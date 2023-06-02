@@ -40,7 +40,7 @@ abstract class SessionKeyCryptor implements SessionKeyCryptorInterface
     }
 
     /**
-     * Decrypts session key by using private key
+     * Decrypt session key by using private key
      *
      * @param AsymmetricKey $privateKey
      * @return string

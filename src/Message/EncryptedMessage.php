@@ -36,7 +36,7 @@ use OpenPGP\Type\{
 class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterface
 {
     /**
-     * Reads message from armored string
+     * Read message from armored string
      *
      * @param string $armored
      * @return self
@@ -92,7 +92,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
     }
 
     /**
-     * Decrypts session key.
+     * Decrypt session key.
      *
      * @param array $decryptionKeys
      * @param array $passwords

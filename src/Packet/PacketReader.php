@@ -40,7 +40,7 @@ class PacketReader
     }
 
     /**
-     * Gets packet tag
+     * Get packet tag
      * 
      * @return PacketTag
      */
@@ -50,7 +50,7 @@ class PacketReader
     }
 
     /**
-     * Gets packet data
+     * Get packet data
      * 
      * @return string
      */
@@ -60,7 +60,7 @@ class PacketReader
     }
 
     /**
-     * Gets offset
+     * Get offset
      * 
      * @return int
      */

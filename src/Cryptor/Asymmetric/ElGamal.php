@@ -50,7 +50,7 @@ abstract class ElGamal extends AsymmetricKey
     /**
      * Create public / private key pair.
      *
-     * Returns the private key, from which the publickey can be extracted
+     * Return the private key, from which the publickey can be extracted
      *
      * @param int $lSize
      * @param int $nSize
@@ -86,7 +86,7 @@ abstract class ElGamal extends AsymmetricKey
     }
 
     /**
-     * Gets public key value y
+     * Get public key value y
      *
      * @return BigInteger
      */
@@ -96,7 +96,7 @@ abstract class ElGamal extends AsymmetricKey
     }
 
     /**
-     * Gets Prime P
+     * Get prime p
      *
      * @return BigInteger
      */
@@ -106,7 +106,7 @@ abstract class ElGamal extends AsymmetricKey
     }
 
     /**
-     * Gets Group Generator G
+     * Get group generator g
      *
      * @return BigInteger
      */
@@ -116,7 +116,7 @@ abstract class ElGamal extends AsymmetricKey
     }
 
     /**
-     * Gets bit size
+     * Get bit size
      *
      * @return int
      */

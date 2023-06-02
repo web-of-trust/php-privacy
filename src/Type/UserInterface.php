@@ -24,56 +24,56 @@ use DateTime;
 interface UserInterface extends PacketContainerInterface
 {
     /**
-     * Gets user ID packet
+     * Get user ID packet
      * 
      * @return UserIDPacketInterface
      */
     function getUserIDPacket(): UserIDPacketInterface;
 
     /**
-     * Gets revocation signatures
+     * Get revocation signatures
      * 
      * @return array
      */
     function getRevocationCertifications(): array;
 
     /**
-     * Gets self signatures
+     * Get self signatures
      * 
      * @return array
      */
     function getSelfCertifications(): array;
 
     /**
-     * Gets other signatures
+     * Get other signatures
      * 
      * @return array<SignaturePacketInterface>
      */
     function getOtherCertifications(): array;
 
     /**
-     * Gets latest self certification
+     * Get latest self certification
      * 
      * @return SignaturePacketInterface
      */
     function getLatestSelfCertification(): ?SignaturePacketInterface;
 
     /**
-     * Gets user ID
+     * Get user ID
      * 
      * @return string
      */
     function getUserID(): string;
 
     /**
-     * Returns user is primary
+     * Return user is primary
      * 
      * @return bool
      */
     function isPrimary(): bool;
 
     /**
-     * Checks if a given certificate of the user is revoked
+     * Check if a given certificate of the user is revoked
      * 
      * @param KeyPacketInterface $keyPacket
      * @param SignaturePacketInterface $certificate
@@ -88,7 +88,7 @@ interface UserInterface extends PacketContainerInterface
 
     /**
      * Verify user.
-     * Checks for existence of self signatures, revocation signatures
+     * Check for existence of self signatures, revocation signatures
      * and validity of self signature.
      * 
      * @param DateTime $time
@@ -97,8 +97,8 @@ interface UserInterface extends PacketContainerInterface
     function verify(?DateTime $time = null): bool;
 
     /**
-     * Generate third-party certification over this user and its primary key
-     * return user with new certification.
+     * Generate third-party certification over this user and its primary key.
+     * Return clone user with new certification.
      * 
      * @param PrivateKeyInterface $signKey
      * @param DateTime $time
@@ -109,8 +109,7 @@ interface UserInterface extends PacketContainerInterface
     ): self;
 
     /**
-     * Revokes the user
-     * return user with new revocation signature
+     * Revoke the user & return clone user with new revocation signature
      * 
      * @param PrivateKeyInterface $signKey
      * @param string $revocationReason

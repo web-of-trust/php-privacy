@@ -86,7 +86,7 @@ abstract class ECSecretKeyMaterial implements KeyMaterialInterface
     }
 
     /**
-     * Gets private key d
+     * Get private key d
      *
      * @return BigInteger
      */
@@ -96,7 +96,7 @@ abstract class ECSecretKeyMaterial implements KeyMaterialInterface
     }
 
     /**
-     * Gets EC private key
+     * Get EC private key
      *
      * @return ECPrivateKey
      */

@@ -74,7 +74,7 @@ class RevocationKey extends SignatureSubpacket
     }
 
     /**
-     * Gets signature class
+     * Get signature class
      *
      * @return RevocationKeyTag
      */
@@ -84,7 +84,7 @@ class RevocationKey extends SignatureSubpacket
     }
 
     /**
-     * Gets key algorithm
+     * Get key algorithm
      *
      * @return KeyAlgorithm
      */
@@ -94,7 +94,7 @@ class RevocationKey extends SignatureSubpacket
     }
 
     /**
-     * Gets fingerprint
+     * Get fingerprint
      *
      * @return string
      */

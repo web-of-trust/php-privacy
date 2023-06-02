@@ -42,7 +42,7 @@ abstract class KeyWrapper
     }
 
     /**
-     * Wraps the key
+     * Wrap the key
      *
      * @param string $kek
      * @param string $key
@@ -76,7 +76,7 @@ abstract class KeyWrapper
     }
 
     /**
-     * Unwraps the key
+     * Unwrap the key
      *
      * @param string $kek
      * @param string $wrappedKey

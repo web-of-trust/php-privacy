@@ -74,7 +74,7 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
     }
 
     /**
-     * Reads key material from bytes
+     * Read key material from bytes
      *
      * @param string $bytes
      * @param KeyMaterialInterface $publicMaterial
@@ -101,7 +101,7 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
     }
 
     /**
-     * Generates key material by using RSA create key
+     * Generate key material by using RSA create key
      *
      * @param RSAKeySize $keySize
      * @return self
@@ -127,7 +127,7 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
     }
 
     /**
-     * Gets exponent d
+     * Get exponent d
      *
      * @return BigInteger
      */
@@ -137,7 +137,7 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
     }
 
     /**
-     * Gets prime value p
+     * Get prime value p
      *
      * @return BigInteger
      */
@@ -147,7 +147,7 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
     }
 
     /**
-     * Gets prime value q (p < q)
+     * Get prime value q (p < q)
      *
      * @return BigInteger
      */
@@ -157,7 +157,7 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
     }
 
     /**
-     * Gets multiplicative inverse of p, mod q
+     * Get multiplicative inverse of p, mod q
      *
      * @return BigInteger
      */

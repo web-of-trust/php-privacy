@@ -53,7 +53,7 @@ class ElGamalPublicKeyMaterial implements KeyMaterialInterface
     }
 
     /**
-     * Reads key material from bytes
+     * Read key material from bytes
      *
      * @param string $bytes
      * @return self
@@ -76,7 +76,7 @@ class ElGamalPublicKeyMaterial implements KeyMaterialInterface
     }
 
     /**
-     * Gets prime p
+     * Get prime p
      *
      * @return BigInteger
      */
@@ -86,7 +86,7 @@ class ElGamalPublicKeyMaterial implements KeyMaterialInterface
     }
 
     /**
-     * Gets group generator g
+     * Get group generator g
      *
      * @return BigInteger
      */
@@ -96,7 +96,7 @@ class ElGamalPublicKeyMaterial implements KeyMaterialInterface
     }
 
     /**
-     * Gets exponent y (= g ** x mod p where x is secret)
+     * Get exponent y (= g ** x mod p where x is secret)
      *
      * @return BigInteger
      */
@@ -106,7 +106,7 @@ class ElGamalPublicKeyMaterial implements KeyMaterialInterface
     }
 
     /**
-     * Gets public key
+     * Get public key
      * 
      * @return PublicKey
      */

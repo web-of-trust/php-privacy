@@ -25,7 +25,7 @@ use OpenPGP\Type\PublicKeyMaterialInterface;
 class ECDSAPublicKeyMaterial extends ECPublicKeyMaterial implements PublicKeyMaterialInterface
 {
     /**
-     * Reads key material from bytes
+     * Read key material from bytes
      *
      * @param string $bytes
      * @return self

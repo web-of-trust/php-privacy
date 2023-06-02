@@ -27,7 +27,7 @@ use OpenPGP\Enum\{
 interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInterface
 {
     /**
-     * Gets literal data
+     * Get literal data
      *
      * @return LiteralDataInterface
      */

@@ -54,7 +54,7 @@ class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
     }
 
     /**
-     * Reads key material from bytes
+     * Read key material from bytes
      *
      * @param string $bytes
      * @return self
@@ -80,7 +80,7 @@ class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
     }
 
     /**
-     * Gets kdf hash
+     * Get kdf hash
      *
      * @return HashAlgorithm
      */
@@ -90,7 +90,7 @@ class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
     }
 
     /**
-     * Gets kdf symmetric
+     * Get kdf symmetric
      *
      * @return SymmetricAlgorithm
      */
@@ -100,7 +100,7 @@ class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
     }
 
     /**
-     * Gets reserved
+     * Get reserved
      *
      * @return int
      */

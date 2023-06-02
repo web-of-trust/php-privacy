@@ -23,7 +23,7 @@ use DateTime;
 interface SignedMessageInterface extends ArmorableInterface
 {
     /**
-     * Gets signature 
+     * Get signature of signed message
      *
      * @return SignatureInterface
      */

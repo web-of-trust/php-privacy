@@ -72,7 +72,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     }
 
     /**
-     * Reads private key from armored string
+     * Read private key from armored string
      *
      * @param string $armored
      * @return self
@@ -91,7 +91,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     }
 
     /**
-     * Reads private key from packet list
+     * Read private key from packet list
      *
      * @param PacketListInterface $packetList
      * @return self
@@ -135,10 +135,9 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     }
 
     /**
-     * Generates a new OpenPGP key pair. Supports RSA, DSA and ECC key types.
-     * By default, primary and subkeys will be of same type.
+     * Generate a new OpenPGP key pair. Support RSA, DSA and ECC key types.
      * The generated primary key will have signing capabilities.
-     * By default, one subkey with encryption capabilities is also generated.
+     * One subkey with encryption capabilities is also generated.
      *
      * @param array<string> $userIDs
      * @param string $passphrase
@@ -444,6 +443,18 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             );
         }
         $privateKey->setUsers($users);
+
+        $subkeys = array_map(
+            static fn ($subkey) => new Subkey(
+                $privateKey,
+                $subkey->getKeyPacket(),
+                $subkey->getRevocationSignatures(),
+                $subkey->getBindingSignatures()
+            ),
+            $privateKey->getSubkeys()
+        );
+        $privateKey->setSubkeys($subkeys);
+
         return $privateKey;
     }
 
@@ -489,6 +500,19 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             bindingSignatures: [$bindingSignature]
         );
         $privateKey->setSubkeys($subkeys);
+
+        $users = array_map(
+            static fn ($user) => new User(
+                $privateKey,
+                $user->getUserIDPacket(),
+                $user->getRevocationCertifications(),
+                $user->getSelfCertifications(),
+                $user->getOtherCertifications()
+            ),
+            $privateKey->getUsers()
+        );
+        $privateKey->setUsers($users);
+
         return $privateKey;
     }
 
@@ -515,8 +539,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     }
 
     /**
-     * Revokes User,
-     * and returns a clone of the key object with the new revoked user.
+     * Revoke user & return a clone of the key object with the new revoked user.
      * 
      * @param string $userID
      * @param string $revocationReason
@@ -548,8 +571,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     }
 
     /**
-     * Revokes subkey,
-     * and returns a clone of the key object with the new revoked subkey.
+     * Revoke subkey & return a clone of the key object with the new revoked subkey.
      * 
      * @param string $keyID
      * @param string $revocationReason

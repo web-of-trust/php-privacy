@@ -45,7 +45,7 @@ class SignedMessage extends CleartextMessage implements SignedMessageInterface
     }
 
     /**
-     * Reads signed message from armored string
+     * Read signed message from armored string
      *
      * @param string $armored
      * @return self

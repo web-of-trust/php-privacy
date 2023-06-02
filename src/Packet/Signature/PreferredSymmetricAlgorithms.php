@@ -49,7 +49,7 @@ class PreferredSymmetricAlgorithms extends SignatureSubpacket
     }
 
     /**
-     * Gets preferences
+     * Get preferences
      *
      * @return array<SymmetricAlgorithm>
      */

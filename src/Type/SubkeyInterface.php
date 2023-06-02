@@ -24,35 +24,35 @@ use OpenPGP\Enum\KeyAlgorithm;
 interface SubkeyInterface
 {
     /**
-     * Returns key packet
+     * Get key packet
      *
      * @return SubkeyPacketInterface
      */
     function getKeyPacket(): SubkeyPacketInterface;
 
     /**
-     * Returns the expiration time of the subkey or null if subkey does not expire.
+     * Get the expiration time of the subkey or null if subkey does not expire.
      * 
      * @return DateTime
      */
     function getExpirationTime(): ?DateTime;
 
     /**
-     * Gets creation time
+     * Get creation time
      * 
      * @return DateTime
      */
     function getCreationTime(): DateTime;
 
     /**
-     * Gets key algorithm
+     * Get key algorithm
      * 
      * @return KeyAlgorithm
      */
     function getKeyAlgorithm(): KeyAlgorithm;
 
     /**
-     * Gets fingerprint
+     * Get fingerprint
      * 
      * @param bool $toHex
      * @return string
@@ -60,7 +60,7 @@ interface SubkeyInterface
     function getFingerprint(bool $toHex = false): string;
 
     /**
-     * Gets key ID
+     * Get key ID
      * 
      * @param bool $toHex
      * @return string
@@ -68,7 +68,7 @@ interface SubkeyInterface
     function getKeyID(bool $toHex = false): string;
 
     /**
-     * Gets key strength
+     * Get key strength
      * 
      * @return int
      */
@@ -89,7 +89,7 @@ interface SubkeyInterface
     function isEncryptionKey(): bool;
 
     /**
-     * Checks if a binding signature of a subkey is revoked
+     * Check if a binding signature of a subkey is revoked
      * 
      * @param KeyPacketInterface $keyPacket
      * @param SignaturePacketInterface $certificate

@@ -108,7 +108,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
-     * Reads signature packet from byte string
+     * Read signature packet from byte string
      *
      * @param string $bytes
      * @return self
@@ -134,7 +134,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         // One-octet hash algorithm.
         $hashAlgorithm = HashAlgorithm::from(ord($bytes[$offset++]));
 
-        // Reads hashed subpackets
+        // Read hashed subpackets
         $hashedLength = Helper::bytesToShort($bytes, $offset);
         $offset += 2;
         $hashedSubpackets = self::readSubpackets(

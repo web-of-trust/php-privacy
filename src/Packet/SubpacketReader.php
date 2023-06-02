@@ -272,7 +272,7 @@ class SubpacketReader
     }
 
     /**
-     * Reads sub packet from byte string
+     * Read sub packet from byte string
      *
      * @param string $bytes
      * @param int $offset

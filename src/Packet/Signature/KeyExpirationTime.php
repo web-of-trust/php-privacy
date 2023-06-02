@@ -62,7 +62,7 @@ class KeyExpirationTime extends SignatureSubpacket
     }
 
     /**
-     * Gets expiration time
+     * Get expiration time
      * 
      * @return int
      */

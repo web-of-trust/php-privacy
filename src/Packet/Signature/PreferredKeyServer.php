@@ -46,7 +46,7 @@ class PreferredKeyServer extends SignatureSubpacket
     }
 
     /**
-     * Gets key server
+     * Get key server
      *
      * @return string
      */

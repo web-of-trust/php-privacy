@@ -72,7 +72,7 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
     }
 
     /**
-     * Encrypts packet list
+     * Encrypt packet list
      *
      * @param string $key
      * @param PacketListInterface $packetList
@@ -97,7 +97,7 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
     }
 
     /**
-     * Encrypts packet list with session key
+     * Encrypt packet list with session key
      *
      * @param SessionKeyInterface $sessionKey
      * @param PacketListInterface $packetList

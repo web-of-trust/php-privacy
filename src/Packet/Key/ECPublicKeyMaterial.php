@@ -84,7 +84,7 @@ abstract class ECPublicKeyMaterial implements KeyMaterialInterface
     }
 
     /**
-     * Gets curve oid
+     * Get curve oid
      *
      * @return CurveOid
      */
@@ -94,7 +94,7 @@ abstract class ECPublicKeyMaterial implements KeyMaterialInterface
     }
 
     /**
-     * Gets public key coordinates
+     * Get public key coordinates
      *
      * @return BigInteger
      */
@@ -104,7 +104,7 @@ abstract class ECPublicKeyMaterial implements KeyMaterialInterface
     }
 
     /**
-     * Gets public key length
+     * Get public key length
      *
      * @return int
      */
@@ -114,7 +114,7 @@ abstract class ECPublicKeyMaterial implements KeyMaterialInterface
     }
 
     /**
-     * Gets EC public key
+     * Get EC public key
      *
      * @return ECPublicKey
      */

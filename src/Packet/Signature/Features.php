@@ -63,18 +63,18 @@ class Features extends SignatureSubpacket
     }
 
     /**
-     * Supprts modification detection
+     * Support modification detection
      *
      * @return bool
      */
-    public function supprtModificationDetection(): bool
+    public function supportModificationDetection(): bool
     {
         return (ord($this->getData()[0]) & SupportFeature::ModificationDetection->value)
             == SupportFeature::ModificationDetection->value;
     }
 
     /**
-     * Supprts aead encrypted data
+     * Support aead encrypted data
      *
      * @return bool
      */
@@ -85,7 +85,7 @@ class Features extends SignatureSubpacket
     }
 
     /**
-     * Supprts version 5 public key
+     * Support version 5 public key
      *
      * @return bool
      */

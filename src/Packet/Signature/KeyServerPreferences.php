@@ -46,7 +46,7 @@ class KeyServerPreferences extends SignatureSubpacket
     }
 
     /**
-     * Gets server preferences
+     * Get server preferences
      *
      * @return string
      */

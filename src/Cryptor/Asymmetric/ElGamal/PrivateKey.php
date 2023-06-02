@@ -44,7 +44,7 @@ class PrivateKey extends ElGamal
     }
 
     /**
-     * Gets private key value x
+     * Get private key value x
      *
      * @return BigInteger
      */
@@ -85,7 +85,7 @@ class PrivateKey extends ElGamal
     }
 
     /**
-     * Returns the private key
+     * Return the private key
      *
      * @param string $type
      * @param array<string> $options

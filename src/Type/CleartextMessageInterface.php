@@ -23,14 +23,14 @@ use DateTime;
 interface CleartextMessageInterface
 {
     /**
-     * Gets cleartext
+     * Get cleartext
      *
      * @return string
      */
     function getText(): string;
 
     /**
-     * Gets normalized cleartext
+     * Get normalized cleartext
      *
      * @return string
      */
@@ -59,8 +59,7 @@ interface CleartextMessageInterface
     ): SignatureInterface;
 
     /**
-     * Verify detached signature
-     * Return verification array
+     * Verify detached signature & return verification array
      *
      * @param array $verificationKeys
      * @param SignatureInterface $signature

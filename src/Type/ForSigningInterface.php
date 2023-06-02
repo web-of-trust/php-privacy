@@ -21,7 +21,7 @@ namespace OpenPGP\Type;
 interface ForSigningInterface
 {
     /**
-     * Gets bytes for sign
+     * Get bytes for sign
      *
      * @return string
      */

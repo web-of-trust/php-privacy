@@ -53,7 +53,7 @@ class PublicKey extends AbstractKey
     }
 
     /**
-     * Reads public key from armored string
+     * Read public key from armored string
      *
      * @param string $armored
      * @return self
@@ -72,7 +72,7 @@ class PublicKey extends AbstractKey
     }
 
     /**
-     * Reads public key from packet list
+     * Read public key from packet list
      *
      * @param PacketListInterface $packetList
      * @return self

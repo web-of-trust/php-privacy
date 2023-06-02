@@ -23,7 +23,7 @@ use DateTime;
 interface SignatureInterface extends ArmorableInterface, PacketContainerInterface
 {
     /**
-     * Returns signing key IDs
+     * Get signing key IDs
      *
      * @param bool $toHex
      * @return array

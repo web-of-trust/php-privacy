@@ -28,7 +28,7 @@ use OpenPGP\Enum\{
 interface SecretKeyPacketInterface extends KeyPacketInterface
 {
     /**
-     * Gets public key packet
+     * Get public key packet
      *
      * @return PublicKeyPacketInterface
      */
@@ -49,7 +49,7 @@ interface SecretKeyPacketInterface extends KeyPacketInterface
     function isDecrypted(): bool;
 
     /**
-     * Encrypts secret key with passphrase
+     * Encrypt secret key with passphrase
      *
      * @param string $passphrase
      * @param S2kUsage $s2kUsage
@@ -67,7 +67,7 @@ interface SecretKeyPacketInterface extends KeyPacketInterface
     ): self;
 
     /**
-     * Decrypts secret key with passphrase
+     * Decrypt secret key with passphrase
      *
      * @param string $passphrase
      * @return self

@@ -53,7 +53,7 @@ class PublicKey extends ElGamal
     }
 
     /**
-     * Returns the public key
+     * Return the public key
      *
      * @param string $type
      * @param array<string> $options

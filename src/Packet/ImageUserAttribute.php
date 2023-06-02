@@ -53,7 +53,7 @@ class ImageUserAttribute extends UserAttributeSubpacket
     }
 
     /**
-     * Gets header length
+     * Get header length
      *
      * @return int
      */
@@ -64,7 +64,7 @@ class ImageUserAttribute extends UserAttributeSubpacket
     }
 
     /**
-     * Gets version
+     * Get version
      *
      * @return int
      */
@@ -75,7 +75,7 @@ class ImageUserAttribute extends UserAttributeSubpacket
     }
 
     /**
-     * Gets encoding
+     * Get encoding
      *
      * @return int
      */
@@ -86,7 +86,7 @@ class ImageUserAttribute extends UserAttributeSubpacket
     }
 
     /**
-     * Gets image data
+     * Get image data
      *
      * @return string
      */

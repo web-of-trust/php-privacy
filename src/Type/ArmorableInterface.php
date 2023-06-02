@@ -21,7 +21,7 @@ namespace OpenPGP\Type;
 interface ArmorableInterface
 {
     /**
-     * Returns ASCII armored text
+     * Return ASCII armored text
      *
      * @return string
      */

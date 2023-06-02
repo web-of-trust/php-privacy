@@ -46,7 +46,7 @@ class SignerUserID extends SignatureSubpacket
     }
 
     /**
-     * Gets user ID
+     * Get user ID
      *
      * @return string
      */

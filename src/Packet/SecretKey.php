@@ -403,7 +403,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     }
 
     /**
-     * Gets S2k usage
+     * Get S2k usage
      * 
      * @return S2kUsage
      */
@@ -413,7 +413,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     }
 
     /**
-     * Gets symmetric algorithm
+     * Get symmetric algorithm
      * 
      * @return SymmetricAlgorithm
      */
@@ -423,7 +423,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     }
 
     /**
-     * Gets string 2 key
+     * Get string 2 key
      * 
      * @return Key\S2K
      */
@@ -433,7 +433,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     }
 
     /**
-     * Gets initialization vector
+     * Get initialization vector
      * 
      * @return string
      */
@@ -443,7 +443,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     }
 
     /**
-     * Gets key data
+     * Get key data
      * 
      * @return string
      */

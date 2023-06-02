@@ -46,7 +46,7 @@ final class Config
     private static bool $allowUnauthenticated = false;
 
     /**
-     * Gets preferred hash algorithm.
+     * Get preferred hash algorithm.
      *
      * @return HashAlgorithm
      */
@@ -56,7 +56,7 @@ final class Config
     }
 
     /**
-     * Sets preferred hash algorithm.
+     * Set preferred hash algorithm.
      *
      * @param HashAlgorithm $hash
      */
@@ -66,7 +66,7 @@ final class Config
     }
 
     /**
-     * Gets preferred symmetric algorithm.
+     * Get preferred symmetric algorithm.
      *
      * @return SymmetricAlgorithm
      */
@@ -76,7 +76,7 @@ final class Config
     }
 
     /**
-     * Sets preferred symmetric algorithm.
+     * Set preferred symmetric algorithm.
      *
      * @param SymmetricAlgorithm $symmetric
      */
@@ -88,7 +88,7 @@ final class Config
     }
 
     /**
-     * Gets preferred compression algorithm.
+     * Get preferred compression algorithm.
      *
      * @return CompressionAlgorithm
      */
@@ -98,7 +98,7 @@ final class Config
     }
 
     /**
-     * Sets preferred compression algorithm.
+     * Set preferred compression algorithm.
      *
      * @param CompressionAlgorithm $compression
      */
@@ -110,7 +110,7 @@ final class Config
     }
 
     /**
-     * Gets a logger.
+     * Get a logger.
      *
      * @return LoggerInterface
      */
@@ -123,7 +123,7 @@ final class Config
     }
 
     /**
-     * Sets a logger.
+     * Set a logger.
      *
      * @param LoggerInterface $logger
      */
@@ -133,7 +133,7 @@ final class Config
     }
 
     /**
-     * Gets S2K iteration count byte.
+     * Get S2K iteration count byte.
      *
      * @return int
      */
@@ -143,7 +143,7 @@ final class Config
     }
 
     /**
-     * Sets S2K iteration count byte.
+     * Set S2K iteration count byte.
      *
      * @param int $s2kItCount
      */
@@ -153,7 +153,7 @@ final class Config
     }
 
     /**
-     * Gets allow decryption of messages without integrity protection.
+     * Get allow decryption of messages without integrity protection.
      *
      * @return bool
      */
@@ -163,7 +163,7 @@ final class Config
     }
 
     /**
-     * Sets allow decryption of messages without integrity protection.
+     * Set allow decryption of messages without integrity protection.
      *
      * @param bool $allow
      */

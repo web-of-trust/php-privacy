@@ -49,7 +49,7 @@ class PreferredHashAlgorithms extends SignatureSubpacket
     }
 
     /**
-     * Gets preferences
+     * Get preferences
      *
      * @return array<HashAlgorithm>
      */

@@ -46,7 +46,7 @@ class TrustSignature extends SignatureSubpacket
     }
 
     /**
-     * Gets trust level
+     * Get trust level
      *
      * @return int
      */
@@ -56,7 +56,7 @@ class TrustSignature extends SignatureSubpacket
     }
 
     /**
-     * Gets trust amount
+     * Get trust amount
      *
      * @return int
      */

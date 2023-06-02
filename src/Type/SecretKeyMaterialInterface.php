@@ -27,21 +27,21 @@ use OpenPGP\Enum\HashAlgorithm;
 interface SecretKeyMaterialInterface extends KeyMaterialInterface
 {
     /**
-     * Returns phpseclib3 private key
+     * Get phpseclib3 private key
      * 
      * @return PrivateKey
      */
     function getPrivateKey(): PrivateKey;
 
     /**
-     * Returns phpseclib3 public key
+     * Get phpseclib3 public key
      * 
      * @return PublicKey
      */
     function getPublicKey(): PublicKey;
 
     /**
-     * Signs a message and returns signature
+     * Sign a message and return signature
      * 
      * @param HashAlgorithm $hash
      * @param string $message

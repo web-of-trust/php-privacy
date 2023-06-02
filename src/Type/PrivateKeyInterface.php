@@ -29,21 +29,21 @@ use OpenPGP\Enum\{
 interface PrivateKeyInterface extends KeyInterface
 {
     /**
-     * Returns true if the key packet is encrypted.
+     * Return true if the key packet is encrypted.
      * 
      * @return bool
      */
     function isEncrypted(): bool;
 
     /**
-     * Returns true if the key packet is decrypted.
+     * Return true if the key packet is decrypted.
      * 
      * @return bool
      */
     function isDecrypted(): bool;
 
     /**
-     * Returns array of key packets that is available for decryption
+     * Get array of key packets that is available for decryption
      * 
      * @param DateTime $time
      * @return array
@@ -85,8 +85,8 @@ interface PrivateKeyInterface extends KeyInterface
     function addUsers(array $userIDs): self;
 
     /**
-     * Generates a new OpenPGP subkey,
-     * and returns a clone of the key object with the new subkey added.
+     * Generate a new OpenPGP subkey
+     * Return a clone of the key object with the new subkey added.
      * 
      * @param string $passphrase
      * @param KeyAlgorithm $keyAlgorithm
@@ -110,8 +110,8 @@ interface PrivateKeyInterface extends KeyInterface
     ): self;
 
     /**
-     * Certify an OpenPGP key,
-     * and returns key object with the new certification added.
+     * Certify an OpenPGP key.
+     * Return clone of the key object with the new certification added.
      * 
      * @param KeyInterface $key
      * @param DateTime $time
@@ -120,8 +120,8 @@ interface PrivateKeyInterface extends KeyInterface
     function certifyKey(KeyInterface $key, ?DateTime $time = null): KeyInterface;
 
     /**
-     * Revokes an OpenPGP key,
-     * and returns key object with the new revocation signature added.
+     * Revoke an OpenPGP key.
+     * Return clone of the key object with the new revocation signature added.
      * 
      * @param KeyInterface $key
      * @param string $revocationReason

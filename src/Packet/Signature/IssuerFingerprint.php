@@ -65,7 +65,7 @@ class IssuerFingerprint extends SignatureSubpacket
     }
 
     /**
-     * Gets key version
+     * Get key version
      * 
      * @return int
      */
@@ -75,7 +75,7 @@ class IssuerFingerprint extends SignatureSubpacket
     }
 
     /**
-     * Gets fingerprint
+     * Get fingerprint
      * 
      * @param bool $toHex
      * @return string

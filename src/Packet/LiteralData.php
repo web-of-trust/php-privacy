@@ -55,7 +55,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface, Literal
     }
 
     /**
-     * Reads literal data packet from byte string
+     * Read literal data packet from byte string
      *
      * @param string $bytes
      * @return self
@@ -81,7 +81,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface, Literal
     }
 
     /**
-     * Builds literal data packet from text
+     * Build literal data packet from text
      *
      * @param string $text
      * @param DateTime $time

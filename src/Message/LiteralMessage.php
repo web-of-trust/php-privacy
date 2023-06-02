@@ -54,7 +54,7 @@ use OpenPGP\Type\{
 class LiteralMessage extends AbstractMessage implements LiteralMessageInterface, SignedMessageInterface
 {
     /**
-     * Reads message from armored string
+     * Read message from armored string
      *
      * @param string $armored
      * @return self

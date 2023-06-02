@@ -62,7 +62,7 @@ class SignatureCreationTime extends SignatureSubpacket
     }
 
     /**
-     * Gets creation time
+     * Get creation time
      * 
      * @return DateTime
      */

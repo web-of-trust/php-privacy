@@ -65,7 +65,7 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
     }
 
     /**
-     * Reads key material from bytes
+     * Read key material from bytes
      *
      * @param string $bytes
      * @param KeyMaterialInterface $publicMaterial
@@ -81,7 +81,7 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
     }
 
     /**
-     * Generates key material by using DSA create key
+     * Generate key material by using DSA create key
      *
      * @param DHKeySize $keySize
      * @return self
@@ -104,7 +104,7 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
     }
 
     /**
-     * Gets exponent x
+     * Get exponent x
      *
      * @return BigInteger
      */

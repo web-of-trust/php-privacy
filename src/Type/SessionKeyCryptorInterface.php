@@ -21,7 +21,7 @@ namespace OpenPGP\Type;
 interface SessionKeyCryptorInterface
 {
     /**
-     * Decrypts session key by using secret key packet
+     * Decrypt session key by using secret key packet
      *
      * @param SecretKeyPacketInterface $secretKey
      * @return SessionKeyInterface
@@ -29,7 +29,7 @@ interface SessionKeyCryptorInterface
     function decryptSessionKey(SecretKeyPacketInterface $secretKey): SessionKeyInterface;
 
     /**
-     * Serializes session key material to bytes
+     * Serialize session key cryptor to bytes
      * 
      * @return string
      */

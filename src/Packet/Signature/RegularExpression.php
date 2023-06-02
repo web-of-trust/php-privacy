@@ -46,7 +46,7 @@ class RegularExpression extends SignatureSubpacket
     }
 
     /**
-     * Gets expression
+     * Get expression
      *
      * @return string
      */

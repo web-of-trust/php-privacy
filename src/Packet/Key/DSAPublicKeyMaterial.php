@@ -67,7 +67,7 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
     }
 
     /**
-     * Reads key material from bytes
+     * Read key material from bytes
      *
      * @param string $bytes
      * @return self
@@ -94,7 +94,7 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
     }
 
     /**
-     * Gets prime p
+     * Get prime p
      *
      * @return BigInteger
      */
@@ -104,7 +104,7 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
     }
 
     /**
-     * Gets group order q (q is a prime divisor of p-1)
+     * Get group order q (q is a prime divisor of p-1)
      *
      * @return BigInteger
      */
@@ -114,7 +114,7 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
     }
 
     /**
-     * Gets group generator g
+     * Get group generator g
      *
      * @return BigInteger
      */
@@ -124,7 +124,7 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
     }
 
     /**
-     * Gets exponent y (= g ** x mod p where x is secret)
+     * Get exponent y (= g ** x mod p where x is secret)
      *
      * @return BigInteger
      */

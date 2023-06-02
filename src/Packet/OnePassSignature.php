@@ -57,7 +57,7 @@ class OnePassSignature extends AbstractPacket
     }
 
     /**
-     * Reads one pass signature packet from byte string
+     * Read one pass signature packet from byte string
      *
      * @param string $bytes
      * @return self
@@ -102,7 +102,7 @@ class OnePassSignature extends AbstractPacket
     }
 
     /**
-     * Gets signature type
+     * Get signature type
      *
      * @return SignatureType
      */
@@ -112,7 +112,7 @@ class OnePassSignature extends AbstractPacket
     }
 
     /**
-     * Gets hash algorithm
+     * Get hash algorithm
      *
      * @return HashAlgorithm
      */
@@ -122,7 +122,7 @@ class OnePassSignature extends AbstractPacket
     }
 
     /**
-     * Gets key algorithm
+     * Get key algorithm
      *
      * @return KeyAlgorithm
      */
@@ -132,7 +132,7 @@ class OnePassSignature extends AbstractPacket
     }
 
     /**
-     * Gets issuer key ID
+     * Get issuer key ID
      *
      * @return string
      */
@@ -142,7 +142,7 @@ class OnePassSignature extends AbstractPacket
     }
 
     /**
-     * Gets nested
+     * Get nested
      *
      * @return int
      */
