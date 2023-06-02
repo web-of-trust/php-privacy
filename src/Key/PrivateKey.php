@@ -552,22 +552,41 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         ?DateTime $time = null
     )
     {
-        $users = $this->getUsers();
+        $privateKey = clone $this;
+
+        $users = $privateKey->getUsers();
         foreach ($users as $key => $user) {
             if ($user->getUserID() === $userID) {
                 $users[$key] = $user->revokeBy(
-                    $this, $revocationReason, $time
+                    $privateKey, $revocationReason, $time
                 );
             }
         }
 
-        return new self(
-            $this->secretKeyPacket,
-            $this->getRevocationSignatures(),
-            $this->getDirectSignatures(),
-            $users,
-            $this->getSubkeys()
+        $users = array_map(
+            static fn ($user) => new User(
+                $privateKey,
+                $user->getUserIDPacket(),
+                $user->getRevocationCertifications(),
+                $user->getSelfCertifications(),
+                $user->getOtherCertifications()
+            ),
+            $users
         );
+        $privateKey->setUsers($users);
+
+        $subkeys = array_map(
+            static fn ($subkey) => new Subkey(
+                $privateKey,
+                $subkey->getKeyPacket(),
+                $subkey->getRevocationSignatures(),
+                $subkey->getBindingSignatures()
+            ),
+            $privateKey->getSubkeys()
+        );
+        $privateKey->setSubkeys($subkeys);
+
+        return $privateKey;
     }
 
     /**
@@ -584,21 +603,39 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         ?DateTime $time = null
     )
     {
-        $subkeys = $this->getSubkeys();
+        $privateKey = clone $this;
+        $subkeys = $privateKey->getSubkeys();
         foreach ($subkeys as $key => $subkey) {
             if ($subkey->getKeyID() === $keyID) {
                 $subkeys[$key] = $subkey->revokeBy(
-                    $this, $revocationReason, $time
+                    $privateKey, $revocationReason, $time
                 );
             }
         }
 
-        return new self(
-            $this->secretKeyPacket,
-            $this->getRevocationSignatures(),
-            $this->getDirectSignatures(),
-            $this->getUsers(),
+        $subkeys = array_map(
+            static fn ($subkey) => new Subkey(
+                $privateKey,
+                $subkey->getKeyPacket(),
+                $subkey->getRevocationSignatures(),
+                $subkey->getBindingSignatures()
+            ),
             $subkeys
         );
+        $privateKey->setSubkeys($subkeys);
+
+        $users = array_map(
+            static fn ($user) => new User(
+                $privateKey,
+                $user->getUserIDPacket(),
+                $user->getRevocationCertifications(),
+                $user->getSelfCertifications(),
+                $user->getOtherCertifications()
+            ),
+            $privateKey->getUsers()
+        );
+        $privateKey->setUsers($users);
+
+        return $privateKey;
     }
 }
