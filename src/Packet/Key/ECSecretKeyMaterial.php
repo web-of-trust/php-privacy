@@ -81,7 +81,7 @@ abstract class ECSecretKeyMaterial implements KeyMaterialInterface
                     $d, $curve, $params['QA']
                 );
             }
-            $this->privateKey = EC::loadFormat($format, $key);
+            $this->privateKey = EC::loadPrivateKeyFormat($format, $key);
         }
     }
 

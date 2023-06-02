@@ -79,7 +79,7 @@ abstract class ECPublicKeyMaterial implements KeyMaterialInterface
                     );
                     break;
             }
-            $this->publicKey = EC::loadFormat($format, $key);
+            $this->publicKey = EC::loadPublicKeyFormat($format, $key);
         }
     }
 

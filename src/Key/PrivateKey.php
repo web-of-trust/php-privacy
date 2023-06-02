@@ -370,13 +370,13 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     {
         if (empty($passphrase)) {
             throw new \InvalidArgumentException(
-                'passphrase are required for key decryption.'
+                'passphrase is required for key decryption.'
             );
         }
         $secretKey = $this->secretKeyPacket->decrypt($passphrase);
         if (!$secretKey->getKeyMaterial()->isValid()) {
             throw new \UnexpectedValueException(
-                'The key material are not consistent.'
+                'The key material is not consistent.'
             );
         }
         $privateKey = new self(
@@ -473,7 +473,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     {
         if (empty($passphrase)) {
             throw new \InvalidArgumentException(
-                'passphrase are required for key generation.',
+                'passphrase is required for key generation.',
             );
         }
 
