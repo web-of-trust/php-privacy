@@ -144,24 +144,24 @@ interface KeyInterface extends ArmorableInterface, PacketContainerInterface
     /**
      * Certify by private key.
      * 
-     * @param PrivateKeyInterface $privateKey
+     * @param PrivateKeyInterface $signKey
      * @param DateTime $time
      * @return self
      */
-    protected function certifyBy(
-        PrivateKeyInterface $privateKey, ?DateTime $time = null
+    function certifyBy(
+        PrivateKeyInterface $signKey, ?DateTime $time = null
     ): self;
 
     /**
      * Revoke by private key.
      * 
-     * @param PrivateKeyInterface $privateKey
+     * @param PrivateKeyInterface $signKey
      * @param string $revocationReason
      * @param DateTime $time
      * @return self
      */
-    protected function revokeBy(
-        PrivateKeyInterface $privateKey,
+    function revokeBy(
+        PrivateKeyInterface $signKey,
         string $revocationReason = '',
         ?DateTime $time = null
     ): self;

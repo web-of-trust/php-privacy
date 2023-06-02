@@ -345,8 +345,11 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
 
         $subkeys = [];
         foreach ($this->getSubkeys() as $key => $subkey) {
-            $subkeyPassphrase = $subkeyPassphrases[$key] ?? $passphrase;
-            $keyPacket = $subkey->getKeyPacket()->encrypt($subkeyPassphrase);
+            $keyPacket = $subkey->getKeyPacket();
+            if ($keyPacket instanceof SecretKeyPacketInterface) {
+                $subkeyPassphrase = $subkeyPassphrases[$key] ?? $passphrase;
+                $keyPacket = $keyPacket->encrypt($subkeyPassphrase);
+            }
             $subkeys[] = new Subkey(
                 $privateKey,
                 $keyPacket,
@@ -397,8 +400,11 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
 
         $subkeys = [];
         foreach ($this->getSubkeys() as $key => $subkey) {
-            $subkeyPassphrase = $subkeyPassphrases[$key] ?? $passphrase;
-            $keyPacket = $subkey->getKeyPacket()->decrypt($subkeyPassphrase);
+            $keyPacket = $subkey->getKeyPacket();
+            if ($keyPacket instanceof SecretKeyPacketInterface) {
+                $subkeyPassphrase = $subkeyPassphrases[$key] ?? $passphrase;
+                $keyPacket = $keyPacket->decrypt($subkeyPassphrase);
+            }
             $subkeys[] = new Subkey(
                 $privateKey,
                 $keyPacket,
@@ -526,7 +532,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         $users = $this->getUsers();
         foreach ($users as $key => $user) {
             if ($user->getUserID() === $userID) {
-                $users[$key] = $user->revoke(
+                $users[$key] = $user->revokeBy(
                     $this, $revocationReason, $time
                 );
             }
@@ -559,7 +565,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         $subkeys = $this->getSubkeys();
         foreach ($subkeys as $key => $subkey) {
             if ($subkey->getKeyID() === $keyID) {
-                $subkeys[$key] = $subkey->revoke(
+                $subkeys[$key] = $subkey->revokeBy(
                     $this, $revocationReason, $time
                 );
             }

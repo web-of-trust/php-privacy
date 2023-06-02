@@ -233,7 +233,7 @@ class User implements UserInterface
     /**
      * {@inheritdoc}
      */
-    public function certify(
+    public function certifyBy(
         PrivateKeyInterface $signKey, ?DateTime $time = null
     ): self
     {
@@ -254,7 +254,7 @@ class User implements UserInterface
     /**
      * {@inheritdoc}
      */
-    public function revoke(
+    public function revokeBy(
         PrivateKeyInterface $signKey,
         string $revocationReason = '',
         ?DateTime $time = null

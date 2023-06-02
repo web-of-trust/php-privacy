@@ -104,7 +104,9 @@ interface UserInterface extends PacketContainerInterface
      * @param DateTime $time
      * @return self
      */
-    function certify(PrivateKeyInterface $signKey, ?DateTime $time = null): self;
+    function certifyBy(
+        PrivateKeyInterface $signKey, ?DateTime $time = null
+    ): self;
 
     /**
      * Revokes the user
@@ -115,7 +117,7 @@ interface UserInterface extends PacketContainerInterface
      * @param DateTime $time
      * @return self
      */
-    function revoke(
+    function revokeBy(
         PrivateKeyInterface $signKey,
         string $revocationReason = '',
         ?DateTime $time = null

@@ -284,7 +284,7 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
      * @param DateTime $time
      * @return self
      */
-    public function revoke(
+    public function revokeBy(
         PrivateKeyInterface $signKey,
         string $revocationReason = '',
         ?DateTime $time = null

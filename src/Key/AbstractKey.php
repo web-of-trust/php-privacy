@@ -492,23 +492,58 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * {@inheritdoc}
      */
-    protected function certifyBy(
-        PrivateKeyInterface $privateKey, ?DateTime $time = null
+    public function certifyBy(
+        PrivateKeyInterface $signKey, ?DateTime $time = null
     ): self
     {
-        return $this;
+        $key = clone $this;
+        $certifedUser = $key->getPrimaryUser()->certifyBy($signKey, $time);
+        $users = [new User(
+            $key,
+            $certifedUser->getUserIDPacket(),
+            $certifedUser->getRevocationCertifications(),
+            $certifedUser->getSelfCertifications(),
+            $certifedUser->getOtherCertifications()
+        )];
+        foreach ($key->getUsers() as $user) {
+            if ($user->getUserID() !== $certifedUser->getUserID()) {
+                $users[] = new User(
+                    $key,
+                    $user->getUserIDPacket(),
+                    $user->getRevocationCertifications(),
+                    $user->getSelfCertifications(),
+                    $user->getOtherCertifications()
+                );
+            }
+        }
+        $key->setUsers($users);
+
+        $subkeys = array_map(
+            static fn ($subkey) => new Subkey(
+                $key,
+                $subkey->getKeyPacket(),
+                $subkey->getRevocationSignatures(),
+                $subkey->getBindingSignatures()
+            ),
+            $key->getSubkeys()
+        );
+        $key->setSubkeys($subkeys);
+
+        return $key;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function revokeBy(
-        PrivateKeyInterface $privateKey,
+    public function revokeBy(
+        PrivateKeyInterface $signKey,
         string $revocationReason = '',
         ?DateTime $time = null
     ): self
     {
-        return $this;
+        $key = clone $this;
+
+        return $key;
     }
 
     /**
