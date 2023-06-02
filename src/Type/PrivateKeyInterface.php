@@ -133,4 +133,33 @@ interface PrivateKeyInterface extends KeyInterface
         string $revocationReason = '',
         ?DateTime $time = null
     ): KeyInterface;
+
+
+    /**
+     * Revoke user & return a clone of the key object with the new revoked user.
+     * 
+     * @param string $userID
+     * @param string $revocationReason
+     * @param DateTime $time
+     * @return self
+     */
+    function revokeUser(
+        string $userID,
+        string $revocationReason = '',
+        ?DateTime $time = null
+    ): self;
+
+    /**
+     * Revoke subkey & return a clone of the key object with the new revoked subkey.
+     * 
+     * @param string $keyID
+     * @param string $revocationReason
+     * @param DateTime $time
+     * @return self
+     */
+    function revokeSubkey(
+        string $keyID,
+        string $revocationReason = '',
+        ?DateTime $time = null
+    ): self;
 }

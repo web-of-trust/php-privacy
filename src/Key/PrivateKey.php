@@ -433,8 +433,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $packet = new UserID($userID);
             $selfCertificate = Signature::createSelfCertificate(
                 $privateKey->getSigningKeyPacket(),
-                $packet,
-                false,
+                $packet
             );
             $users[] = new User(
                 $privateKey,
@@ -539,18 +538,13 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     }
 
     /**
-     * Revoke user & return a clone of the key object with the new revoked user.
-     * 
-     * @param string $userID
-     * @param string $revocationReason
-     * @param DateTime $time
-     * @return self
+     * {@inheritdoc}
      */
     public function revokeUser(
         string $userID,
         string $revocationReason = '',
         ?DateTime $time = null
-    )
+    ): self
     {
         $privateKey = clone $this;
 
@@ -590,18 +584,13 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     }
 
     /**
-     * Revoke subkey & return a clone of the key object with the new revoked subkey.
-     * 
-     * @param string $keyID
-     * @param string $revocationReason
-     * @param DateTime $time
-     * @return self
+     * {@inheritdoc}
      */
     public function revokeSubkey(
         string $keyID,
         string $revocationReason = '',
         ?DateTime $time = null
-    )
+    ): self
     {
         $privateKey = clone $this;
         $subkeys = $privateKey->getSubkeys();
