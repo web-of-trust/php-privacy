@@ -137,7 +137,7 @@ final class OpenPGP
      * Certify an OpenPGP key by a private key.
      * Return clone of the key object with the new certification added.
      * 
-     * @param KeyInterface $privateKey
+     * @param PrivateKeyInterface $privateKey
      * @param KeyInterface $key
      * @param DateTime $time
      * @return KeyInterface
@@ -155,7 +155,7 @@ final class OpenPGP
      * Revoke an OpenPGP key by a private key.
      * Return clone of the key object with the new revocation signature added.
      * 
-     * @param revokeKey $privateKey
+     * @param PrivateKeyInterface $privateKey
      * @param KeyInterface $key
      * @param string $revocationReason
      * @param DateTime $time
