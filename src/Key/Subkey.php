@@ -223,13 +223,14 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
      * {@inheritdoc}
      */
     public function isRevoked(
-        ?KeyPacketInterface $keyPacket = null,
+        ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
         ?DateTime $time = null
     ): bool
     {
         $keyID = $certificate?->getIssuerKeyID() ?? '';
-        $keyPacket = $keyPacket ?? $this->mainKey->toPublic()->getKeyPacket();
+        $keyPacket = $verifyKey?->toPublic()->getSigningKeyPacket() ??
+                     $this->mainKey->toPublic()->getSigningKeyPacket();
         $dataToVerify = implode([
             $keyPacket->getSignBytes(),
             $this->keyPacket->getSignBytes(),
@@ -259,7 +260,7 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
             );
             return false;
         }
-        $keyPacket = $this->mainKey->toPublic()->getKeyPacket();
+        $keyPacket = $this->mainKey->toPublic()->getSigningKeyPacket();
         $dataToVerify = implode([
             $keyPacket->getSignBytes(),
             $this->keyPacket->getSignBytes(),
@@ -277,12 +278,7 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
     }
 
     /**
-     * Revokes the subkey
-     * 
-     * @param PrivateKeyInterface $signKey
-     * @param string $revocationReason
-     * @param DateTime $time
-     * @return self
+     * {@inheritdoc}
      */
     public function revokeBy(
         PrivateKeyInterface $signKey,

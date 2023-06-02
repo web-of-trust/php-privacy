@@ -91,13 +91,13 @@ interface SubkeyInterface
     /**
      * Check if a binding signature of a subkey is revoked
      * 
-     * @param KeyPacketInterface $keyPacket
+     * @param KeyInterface $verifyKey
      * @param SignaturePacketInterface $certificate
      * @param DateTime $time
      * @return bool
      */
     function isRevoked(
-        ?KeyPacketInterface $keyPacket = null,
+        ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
         ?DateTime $time = null
     ): bool;
@@ -110,4 +110,18 @@ interface SubkeyInterface
      * @return bool
      */
     function verify(?DateTime $time = null): bool;
+
+    /**
+     * Revoke the subkey
+     * 
+     * @param PrivateKeyInterface $signKey
+     * @param string $revocationReason
+     * @param DateTime $time
+     * @return self
+     */
+    function revokeBy(
+        PrivateKeyInterface $signKey,
+        string $revocationReason = '',
+        ?DateTime $time = null
+    ): self;
 }

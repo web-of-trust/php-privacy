@@ -241,11 +241,6 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
         string $keyID = '', ?DateTime $time = null
     ): KeyPacketInterface
     {
-        if (!$this->verify(time: $time)) {
-            throw new \UnexpectedValueException(
-                'Primary key is invalid.'
-            );
-        }
         $subkeys = $this->subkeys;
         usort(
             $subkeys,
@@ -254,29 +249,27 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
         );
         foreach ($subkeys as $subkey) {
             if (empty($keyID) || $keyID === $subkey->getKeyID()) {
-                if ($subkey->verify($time)) {
-                    if (!$subkey->isSigningKey()) {
-                        continue;
+                if (!$subkey->isSigningKey()) {
+                    continue;
+                }
+                $signature = $subkey->getLatestBindingSignature()?->getEmbeddedSignature();
+                if ($signature instanceof EmbeddedSignature) {
+                    // verify embedded signature
+                    if ($signature->getSignature()->verify(
+                        $subkey->getKeyPacket(),
+                        implode([
+                            $this->getKeyPacket()->getSignBytes(),
+                            $subkey->getKeyPacket()->getSignBytes(),
+                        ]),
+                        $time
+                    )) {
+                        return $subkey->getKeyPacket();
                     }
-                    $signature = $subkey->getLatestBindingSignature()?->getEmbeddedSignature();
-                    if ($signature instanceof EmbeddedSignature) {
-                        // verify embedded signature
-                        if ($signature->getSignature()->verify(
-                            $subkey->getKeyPacket(),
-                            implode([
-                                $this->getKeyPacket()->getSignBytes(),
-                                $subkey->getKeyPacket()->getSignBytes(),
-                            ]),
-                            $time
-                        )) {
-                            return $subkey->getKeyPacket();
-                        }
-                    }
-                    else {
-                        throw new \UnexpectedValueException(
-                            'Missing embedded signature.'
-                        );
-                    }
+                }
+                else {
+                    throw new \UnexpectedValueException(
+                        'Missing embedded signature.'
+                    );
                 }
             }
         }
@@ -299,11 +292,6 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
         string $keyID = '', ?DateTime $time = null
     ): KeyPacketInterface
     {
-        if (!$this->verify(time: $time)) {
-            throw new \UnexpectedValueException(
-                'Primary key is invalid.'
-            );
-        }
         $subkeys = $this->subkeys;
         usort(
             $subkeys,
@@ -312,12 +300,10 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
         );
         foreach ($subkeys as $subkey) {
             if (empty($keyID) || $keyID === $subkey->getKeyID()) {
-                if ($subkey->verify($time)) {
-                    if (!$subkey->isEncryptionKey()) {
-                        continue;
-                    }
-                    return $subkey->getKeyPacket();
+                if (!$subkey->isEncryptionKey()) {
+                    continue;
                 }
+                return $subkey->getKeyPacket();
             }
         }
 
@@ -404,15 +390,18 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
      * {@inheritdoc}
      */
     public function isRevoked(
+        ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
         ?DateTime $time = null
     ): bool
     {
         $keyID = ($certificate != null) ? $certificate->getIssuerKeyID() : '';
+        $keyPacket = $verifyKey?->toPublic()->getSigningKeyPacket() ??
+                     $this->toPublic()->getSigningKeyPacket();
         foreach ($this->revocationSignatures as $signature) {
             if (empty($keyID) || $keyID === $signature->getIssuerKeyID()) {
                 if ($signature->verify(
-                    $this->toPublic()->getKeyPacket(),
+                    $keyPacket,
                     $this->keyPacket->getSignBytes(),
                     $time
                 )) {

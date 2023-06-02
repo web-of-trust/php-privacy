@@ -123,12 +123,15 @@ interface KeyInterface extends ArmorableInterface, PacketContainerInterface
     /**
      * Is revoked key
      *
+     * @param KeyInterface $verifyKey
      * @param SignaturePacketInterface $certificate
      * @param DateTime $time
      * @return bool
      */
     function isRevoked(
-        ?SignaturePacketInterface $certificate = null, ?DateTime $time = null
+        ?KeyInterface $verifyKey = null,
+        ?SignaturePacketInterface $certificate = null,
+        ?DateTime $time = null
     ): bool;
 
     /**
