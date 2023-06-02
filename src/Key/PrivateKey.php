@@ -45,6 +45,8 @@ use OpenPGP\Type\{
  */
 class PrivateKey extends AbstractKey implements PrivateKeyInterface
 {
+    private readonly SecretKeyPacketInterface $secretKeyPacket;
+
     /**
      * Constructor
      *
@@ -66,6 +68,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         parent::__construct(
             $keyPacket, $revocationSignatures, $directSignatures, $users, $subkeys
         );
+        $this->secretKeyPacket = $keyPacket;
     }
 
     /**
@@ -256,7 +259,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
      */
     public function isEncrypted(): bool
     {
-        return $this->getKeyPacket()->isEncrypted();
+        return $this->secretKeyPacket->isEncrypted();
     }
 
     /**
@@ -264,7 +267,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
      */
     public function isDecrypted(): bool
     {
-        return $this->getKeyPacket()->isDecrypted();
+        return $this->secretKeyPacket->isDecrypted();
     }
 
     /**
@@ -297,7 +300,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         }
 
         if ($this->isEncryptionKey()) {
-            $keyPackets[] = $this->getKeyPacket();
+            $keyPackets[] = $this->secretKeyPacket;
         }
 
         return $keyPackets;
@@ -323,7 +326,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         }
 
         $privateKey = new self(
-            $this->getKeyPacket()->encrypt($passphrase),
+            $this->secretKeyPacket->encrypt($passphrase),
             $this->getRevocationSignatures(),
             $this->getDirectSignatures(),
         );
@@ -368,7 +371,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 'passphrase are required for key decryption.'
             );
         }
-        $secretKey = $this->getKeyPacket()->decrypt($passphrase);
+        $secretKey = $this->secretKeyPacket->decrypt($passphrase);
         if (!$secretKey->getKeyMaterial()->isValid()) {
             throw new \UnexpectedValueException(
                 'The key parameters are not consistent.'
@@ -530,7 +533,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         }
 
         return new self(
-            $this->getKeyPacket(),
+            $this->secretKeyPacket,
             $this->getRevocationSignatures(),
             $this->getDirectSignatures(),
             $users,
@@ -563,7 +566,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         }
 
         return new self(
-            $this->getKeyPacket(),
+            $this->secretKeyPacket,
             $this->getRevocationSignatures(),
             $this->getDirectSignatures(),
             $this->getUsers(),

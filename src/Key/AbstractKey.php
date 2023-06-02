@@ -490,6 +490,28 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function certifyBy(
+        PrivateKeyInterface $privateKey, ?DateTime $time = null
+    ): self
+    {
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function revokeBy(
+        PrivateKeyInterface $privateKey,
+        string $revocationReason = '',
+        ?DateTime $time = null
+    ): self
+    {
+        return $this;
+    }
+
+    /**
      * Return the key is signing or verification key
      * 
      * @return bool
@@ -564,22 +586,6 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
             }
         }
         return null;
-    }
-
-    protected function certifyBy(
-        PrivateKeyInterface $privateKey, ?DateTime $time = null
-    ): self
-    {
-        return $this;
-    }
-
-    protected function revokeBy(
-        PrivateKeyInterface $privateKey,
-        string $revocationReason = '',
-        ?DateTime $time = null
-    ): self
-    {
-        return $this;
     }
 
     /**
