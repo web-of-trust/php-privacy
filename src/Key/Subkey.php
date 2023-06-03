@@ -20,8 +20,6 @@ use OpenPGP\Packet\{
 use OpenPGP\Packet\Signature\KeyFlags;
 use OpenPGP\Type\{
     KeyInterface,
-    KeyPacketInterface,
-    PacketContainerInterface,
     PacketListInterface,
     PrivateKeyInterface,
     SignaturePacketInterface,
@@ -37,7 +35,7 @@ use OpenPGP\Type\{
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class Subkey implements PacketContainerInterface, SubkeyInterface
+class Subkey implements SubkeyInterface
 {
     /**
      * Revocation signature packets
@@ -90,9 +88,7 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
     }
 
     /**
-     * Get revocation signatures
-     * 
-     * @return array<SignaturePacketInterface>
+     * {@inheritdoc}
      */
     public function getRevocationSignatures(): array
     {
@@ -100,9 +96,7 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
     }
 
     /**
-     * Get binding signatures
-     * 
-     * @return array<SignaturePacketInterface>
+     * {@inheritdoc}
      */
     public function getBindingSignatures(): array
     {
@@ -110,9 +104,7 @@ class Subkey implements PacketContainerInterface, SubkeyInterface
     }
 
     /**
-     * Get latest binding signature
-     * 
-     * @return SignaturePacketInterface
+     * {@inheritdoc}
      */
     public function getLatestBindingSignature(): ?SignaturePacketInterface
     {

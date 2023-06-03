@@ -21,7 +21,7 @@ use OpenPGP\Enum\KeyAlgorithm;
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface SubkeyInterface
+interface SubkeyInterface extends PacketContainerInterface
 {
     /**
      * Get key packet
@@ -73,6 +73,27 @@ interface SubkeyInterface
      * @return int
      */
     function getKeyStrength(): int;
+
+    /**
+     * Get revocation signatures
+     * 
+     * @return array<SignaturePacketInterface>
+     */
+    function getRevocationSignatures(): array;
+
+    /**
+     * Get binding signatures
+     * 
+     * @return array<SignaturePacketInterface>
+     */
+    function getBindingSignatures(): array;
+
+    /**
+     * Get latest binding signature
+     * 
+     * @return SignaturePacketInterface
+     */
+    function getLatestBindingSignature(): ?SignaturePacketInterface;
 
     /**
      * Return subkey is signing or verification key

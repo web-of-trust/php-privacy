@@ -32,6 +32,7 @@ use OpenPGP\Type\{
     PacketListInterface,
     PrivateKeyInterface,
     SignaturePacketInterface,
+    SubkeyInterface,
     SubkeyPacketInterface,
     UserIDPacketInterface,
     UserInterface,
@@ -71,14 +72,14 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * Users of the key
      * 
-     * @var array<User>
+     * @var array<UserInterface>
      */
     private array $users;
 
     /**
      * Subkeys of the key
      * 
-     * @var array<Subkey>
+     * @var array<SubkeyInterface>
      */
     private array $subkeys;
 
@@ -167,7 +168,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * Get revocation signatures
      * 
-     * @return array<SignaturePacketInterface>
+     * @return array
      */
     public function getRevocationSignatures(): array
     {
@@ -177,7 +178,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * Get direct signatures
      * 
-     * @return array<SignaturePacketInterface>
+     * @return array
      */
     public function getDirectSignatures(): array
     {
@@ -187,7 +188,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * Get users
      * 
-     * @return array<User>
+     * @return array
      */
     public function getUsers(): array
     {
@@ -197,7 +198,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * Get subkeys
      * 
-     * @return array<Subkey>
+     * @return array
      */
     public function getSubkeys(): array
     {
@@ -207,14 +208,14 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * Set users
      * 
-     * @param array<User> $users
+     * @param array<UserInterface> $users
      * @return self
      */
     protected function setUsers(array $users): self
     {
         $this->users = array_filter(
             $users,
-            static fn ($user) => $user instanceof User
+            static fn ($user) => $user instanceof UserInterface
         );
         return $this;
     }
@@ -222,14 +223,14 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * Set subkeys
      * 
-     * @param array<Subkey> $subkeys
+     * @param array $subkeys
      * @return self
      */
     protected function setSubkeys(array $subkeys): self
     {
         $this->subkeys = array_filter(
             $subkeys,
-            static fn ($subkey) => $subkey instanceof Subkey
+            static fn ($subkey) => $subkey instanceof SubkeyInterface
         );
         return $this;
     }
