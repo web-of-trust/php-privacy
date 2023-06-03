@@ -34,9 +34,10 @@ use OpenPGP\Packet\{
 use OpenPGP\Packet\Key\SessionKey;
 use OpenPGP\Type\{
     EncryptedMessageInterface,
+    KeyInterface,
     LiteralDataInterface,
     LiteralMessageInterface,
-    KeyInterface,
+    NotationDataInterface,
     PrivateKeyInterface,
     SignatureInterface,
     SignaturePacketInterface,
@@ -123,7 +124,9 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
      * {@inheritdoc}
      */
     public function sign(
-        array $signingKeys, ?DateTime $time = null
+        array $signingKeys,
+        ?NotationDataInterface $notationData = null,
+        ?DateTime $time = null
     ): self
     {
         $signaturePackets = [
@@ -131,7 +134,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
                 self::unwrapCompressed($this->getPackets()),
                 static fn ($packet) => $packet instanceof SignaturePacketInterface
             ),
-            ...$this->signDetached($signingKeys, $time)->getPackets(),
+            ...$this->signDetached($signingKeys, $notationData, $time)->getPackets(),
         ];
 
         $index = 0;
@@ -158,7 +161,9 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
      * {@inheritdoc}
      */
     public function signDetached(
-        array $signingKeys, ?DateTime $time = null
+        array $signingKeys,
+        ?NotationDataInterface $notationData = null,
+        ?DateTime $time = null
     ): SignatureInterface
     {
         $signingKeys = array_filter(
@@ -173,6 +178,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
             fn ($key) => SignaturePacket::createLiteralData(
                 $key->getSigningKeyPacket(),
                 $this->getLiteralData(),
+                $notationData,
                 $time
             ),
             $signingKeys

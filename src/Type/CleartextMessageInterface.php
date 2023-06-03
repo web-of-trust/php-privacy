@@ -40,22 +40,28 @@ interface CleartextMessageInterface
      * Sign the message
      *
      * @param array $signingKeys
+     * @param NotationDataInterface $notationData
      * @param DateTime $time
      * @return SignedMessageInterface
      */
     function sign(
-        array $signingKeys, ?DateTime $time = null
+        array $signingKeys,
+        ?NotationDataInterface $notationData = null,
+        ?DateTime $time = null
     ): SignedMessageInterface;
 
     /**
      * Create a detached signature for the message
      *
      * @param array $signingKeys
+     * @param NotationDataInterface $notationData
      * @param DateTime $time
      * @return SignatureInterface
      */
     function signDetached(
-        array $signingKeys, ?DateTime $time = null
+        array $signingKeys,
+        ?NotationDataInterface $notationData = null,
+        ?DateTime $time = null
     ): SignatureInterface;
 
     /**

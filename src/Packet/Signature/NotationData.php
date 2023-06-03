@@ -12,6 +12,7 @@ namespace OpenPGP\Packet\Signature;
 
 use OpenPGP\Enum\SignatureSubpacketType;
 use OpenPGP\Packet\SignatureSubpacket;
+use OpenPGP\Type\NotationDataInterface;
 
 /**
  * NotationData sub-packet class.
@@ -22,7 +23,7 @@ use OpenPGP\Packet\SignatureSubpacket;
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-class NotationData extends SignatureSubpacket
+class NotationData extends SignatureSubpacket implements NotationDataInterface
 {
     const FLAG_LENGTH  = 4;
     const NAME_LENGTH  = 2;
@@ -75,9 +76,7 @@ class NotationData extends SignatureSubpacket
     }
 
     /**
-     * Is human readable
-     *
-     * @return bool
+     * {@inheritdoc}
      */
     public function isHumanReadable(): bool
     {
@@ -85,9 +84,7 @@ class NotationData extends SignatureSubpacket
     }
 
     /**
-     * Get notation name
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getNotationName(): string
     {
@@ -99,9 +96,7 @@ class NotationData extends SignatureSubpacket
     }
 
     /**
-     * Get notation value
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getNotationValue(): string
     {

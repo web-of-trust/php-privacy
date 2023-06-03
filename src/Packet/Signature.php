@@ -31,6 +31,7 @@ use OpenPGP\Enum\{
 use OpenPGP\Type\{
     KeyPacketInterface,
     LiteralDataInterface,
+    NotationDataInterface,
     PublicKeyPacketInterface,
     SignaturePacketInterface,
     SecretKeyMaterialInterface,
@@ -483,12 +484,14 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      *
      * @param KeyPacketInterface $signKey
      * @param LiteralDataInterface $literalData
+     * @param NotationDataInterface $notationData
      * @param DateTime $time
      * @return self
      */
     public static function createLiteralData(
         KeyPacketInterface $signKey,
         LiteralDataInterface $literalData,
+        ?NotationDataInterface $notationData = null,
         ?DateTime $time = null
     )
     {
@@ -497,12 +500,21 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         if ($format === LiteralFormat::Text || $format === LiteralFormat::Utf8) {
             $signatureType = SignatureType::Text;
         }
+        $subpackets = [];
+        if ($notationData instanceof NotationDataInterface) {
+            $subpackets[] = Signature\NotationData::fromNotation(
+                $notationData->isHumanReadable(),
+                $notationData->getNotationName(),
+                $notationData->getNotationValue()
+            );
+        }
         return self::createSignature(
             $signKey,
             $signatureType,
             $literalData->getSignBytes(),
             Config::getPreferredHash(),
-            time: $time
+            $subpackets,
+            $time
         );
     }
 

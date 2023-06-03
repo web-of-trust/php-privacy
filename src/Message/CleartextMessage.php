@@ -16,6 +16,7 @@ use OpenPGP\Packet\Signature as SignaturePacket;
 use OpenPGP\Type\{
     CleartextMessageInterface,
     MessageInterface,
+    NotationDataInterface,
     PrivateKeyInterface,
     SignatureInterface,
     SignedMessageInterface,
@@ -63,11 +64,17 @@ class CleartextMessage implements CleartextMessageInterface
      * {@inheritdoc}
      */
     public function sign(
-        array $signingKeys, ?DateTime $time = null
+        array $signingKeys,
+        ?NotationDataInterface $notationData = null,
+        ?DateTime $time = null
     ): SignedMessageInterface
     {
         return new SignedMessage(
-            $this->getText(), $this->signDetached($signingKeys, $time)
+            $this->getText(), $this->signDetached(
+                $signingKeys,
+                $notationData,
+                $time
+            )
         );
     }
 
@@ -75,7 +82,9 @@ class CleartextMessage implements CleartextMessageInterface
      * {@inheritdoc}
      */
     public function signDetached(
-        array $signingKeys, ?DateTime $time = null
+        array $signingKeys,
+        ?NotationDataInterface $notationData = null,
+        ?DateTime $time = null
     ): SignatureInterface
     {
         $signingKeys = array_filter(
@@ -88,6 +97,7 @@ class CleartextMessage implements CleartextMessageInterface
             fn ($key) => SignaturePacket::createLiteralData(
                 $key->getSigningKeyPacket(),
                 LiteralData::fromText($this->getText()),
+                $notationData,
                 $time
             ),
             $signingKeys
@@ -99,7 +109,9 @@ class CleartextMessage implements CleartextMessageInterface
      * {@inheritdoc}
      */
     public function verifyDetached(
-        array $verificationKeys, SignatureInterface $signature, ?DateTime $time = null
+        array $verificationKeys,
+        SignatureInterface $signature,
+        ?DateTime $time = null
     ): array
     {
         return $signature->verifyCleartext(

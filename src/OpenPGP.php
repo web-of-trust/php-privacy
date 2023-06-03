@@ -34,6 +34,7 @@ use OpenPGP\Type\{
     EncryptedMessageInterface,
     KeyInterface,
     LiteralMessageInterface,
+    NotationDataInterface,
     PrivateKeyInterface,
     SignatureInterface,
     SignedMessageInterface,
@@ -251,17 +252,19 @@ final class OpenPGP
      *
      * @param string $text
      * @param array $signingKeys
+     * @param NotationDataInterface $notationData
      * @param DateTime $time
      * @return SignedMessageInterface
      */
     public static function signCleartext(
         string $text,
         array $signingKeys,
+        ?NotationDataInterface $notationData = null,
         ?DateTime $time = null
     ): SignedMessageInterface
     {
         return self::createCleartextMessage($text)->sign(
-            $signingKeys, $time
+            $signingKeys, $notationData, $time
         );
     }
 
@@ -270,17 +273,19 @@ final class OpenPGP
      *
      * @param string $text
      * @param array $signingKeys
+     * @param NotationDataInterface $notationData
      * @param DateTime $time
      * @return SignatureInterface
      */
     public static function signDetachedCleartext(
         string $text,
         array $signingKeys,
+        ?NotationDataInterface $notationData = null,
         ?DateTime $time = null
     ): SignatureInterface
     {
         return self::createCleartextMessage($text)->signDetached(
-            $signingKeys, $time
+            $signingKeys, $notationData, $time
         );
     }
 
@@ -289,17 +294,19 @@ final class OpenPGP
      *
      * @param LiteralMessageInterface $message
      * @param array $signingKeys
+     * @param NotationDataInterface $notationData
      * @param DateTime $time
      * @return LiteralMessageInterface
      */
     public static function sign(
         LiteralMessageInterface $message,
         array $signingKeys,
+        ?NotationDataInterface $notationData = null,
         ?DateTime $time = null
     ): LiteralMessageInterface
     {
         return $message->sign(
-            $signingKeys, $time
+            $signingKeys, $notationData, $time
         );
     }
 
@@ -308,17 +315,19 @@ final class OpenPGP
      *
      * @param LiteralMessageInterface $message
      * @param array $signingKeys
+     * @param NotationDataInterface $notationData
      * @param DateTime $time
      * @return SignatureInterface
      */
     public static function signDetached(
         LiteralMessageInterface $message,
         array $signingKeys,
+        ?NotationDataInterface $notationData = null,
         ?DateTime $time = null
     ): SignatureInterface
     {
         return $message->signDetached(
-            $signingKeys, $time
+            $signingKeys, $notationData, $time
         );
     }
 
@@ -374,6 +383,7 @@ final class OpenPGP
      * @param array $signingKeys
      * @param SymmetricAlgorithm $symmetric
      * @param CompressionAlgorithm $compression
+     * @param NotationDataInterface $notationData
      * @param DateTime $time
      * @return EncryptedMessageInterface
      */
@@ -384,11 +394,12 @@ final class OpenPGP
         array $signingKeys = [],
         ?SymmetricAlgorithm $symmetric = null,
         ?CompressionAlgorithm $compression = null,
+        ?NotationDataInterface $notationData = null,
         ?DateTime $time = null
     ): EncryptedMessageInterface
     {
         if (!empty($signingKeys)) {
-            return $message->sign($signingKeys, $time)
+            return $message->sign($signingKeys, $notationData, $time)
                 ->compress($compression)
                 ->encrypt($encryptionKeys, $passwords, $symmetric);
         }
