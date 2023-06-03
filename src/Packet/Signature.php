@@ -299,12 +299,14 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * Create cert generic signature
      *
      * @param KeyPacketInterface $signKey
-     * @param UserIDPacketInterface $userID
+     * @param KeyPacketInterface $userKey
+     * @param KeyPacketInterface $signKey
      * @param DateTime $time
      * @return self
      */
     public static function createCertGeneric(
         KeyPacketInterface $signKey,
+        KeyPacketInterface $userKey,
         UserIDPacketInterface $userID,
         ?DateTime $time = null
     ): self
@@ -313,7 +315,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             $signKey,
             SignatureType::CertGeneric,
             implode([
-                $signKey->getSignBytes(),
+                $userKey->getSignBytes(),
                 $userID->getSignBytes(),
             ]),
             Config::getPreferredHash(),
@@ -330,6 +332,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * Create cert revocation signature
      *
      * @param KeyPacketInterface $signKey
+     * @param KeyPacketInterface $userKey
      * @param UserIDPacketInterface $userID
      * @param string $revocationReason
      * @param DateTime $time
@@ -337,6 +340,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      */
     public static function createCertRevocation(
         KeyPacketInterface $signKey,
+        KeyPacketInterface $userKey,
         UserIDPacketInterface $userID,
         string $revocationReason = '',
         ?DateTime $time = null
@@ -346,7 +350,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             $signKey,
             SignatureType::CertRevocation,
             implode([
-                $signKey->getSignBytes(),
+                $userKey->getSignBytes(),
                 $userID->getSignBytes(),
             ]),
             Config::getPreferredHash(),

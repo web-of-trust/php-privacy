@@ -155,4 +155,35 @@ class PublicKeyTest extends OpenPGPTestCase
         $encryptionKey = $publicKey->getEncryptionKeyPacket();
         $this->assertSame('8efa53a375fc569aa9ca564a044eac93f0b69ea0', $encryptionKey->getFingerprint(true));
     }
+
+    public function testKeyIsCertified()
+    {
+        $keyData = <<<EOT
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mDMEZFhdBRYJKwYBBAHaRw8BAQdAu9HRWiJVK3f7HPFJJCtHv/KszNAbw5e54yEi
+RBvRQ8y0KWN1cnZlIDI1NTE5IHBocCBwZyBrZXkgPHBocC1wZ0BkdW1teS5jb20+
+iJMEExYKADsWIQQcQRbrK1jPoZbFfdu9/xNRYMVqCwUCZFhdBQIbAwULCQgHAgIi
+AgYVCgkICwIEFgIDAQIeBwIXgAAKCRC9/xNRYMVqC/i9AP9r3z0aFMwMq6jDAA88
+wj0gsm8QjuC1eMebqYvPzDnj6AEAy1O9BM3ZB9tpFmNeHCNehfiWtguZ+in50oyc
+U+KVZQmJATMEEAEIAB0WIQT8UATflHMncQfqpgUYTQ3E9cUysgUCZHsGjgAKCRAY
+TQ3E9cUysoY5CACLdETNDlxxULFfOz9W16t49SAcbpgtFy5OYMAdEjxStwBfAfok
+VX8vzsVUECkfaJEllmuTD5CpFrYaDLiNqmunTJnMdkuZhlyOPOrOvifWPWfT07yq
+dkGwgROEwo1pt/xHpRl9+Eb/Cd1EHi6jlj9KSrRldzYRjGdQku0uTyB+X4QOZqII
+mKTGFvWVVYSZ+QTAEVe+mlsRcUvHVzpeKdpRbSmBzDeWA6jCrWlyG0LPr+yX+SIe
+4/EId95VuQv6AGYxmIv2WwYUd8FRXWoncMDNsGTl3UZ6ynHD4kP8m4TuohBNCVU5
+/pmztpTDuyxh2wZnpBGkXgbjUbBgG7sXYqkGuDgEZFhdBRIKKwYBBAGXVQEFAQEH
+QEJtQU2oVkqkUsEHff1xmunu52i+iG9UyIbuo/36KPoBAwEIB4h4BBgWCgAgFiEE
+HEEW6ytYz6GWxX3bvf8TUWDFagsFAmRYXQUCGwwACgkQvf8TUWDFagssBQD9GJsJ
+F8t5mOWmy5X/MCixnm/6TjhlSMDiEdaorWHIEocA/1j6/Em0Z5cLpyqx6PX6IoGa
+T3ryNIYca7l/BO+m8zgP
+=N4j9
+-----END PGP PUBLIC KEY BLOCK-----
+EOT;
+        $publicKey = PublicKey::fromArmored(
+            file_get_contents('tests/Data/RsaPublicKey.asc')
+        );
+        $certifiedKey = PublicKey::fromArmored($keyData);
+        $this->assertTrue($certifiedKey->isCertified($publicKey));
+    }
 }
