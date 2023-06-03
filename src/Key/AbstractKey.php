@@ -416,6 +416,20 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * {@inheritdoc}
      */
+    public function isCertified(
+        ?KeyInterface $verifyKey = null,
+        ?SignaturePacketInterface $certificate = null,
+        ?DateTime $time = null
+    ): bool
+    {
+        return $this->getPrimaryUser()->isCertified(
+            $verifyKey, $certificate, $time
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function verify(string $userID = '', ?DateTime $time = null): bool
     {
         if ($this->isRevoked(time: $time)) {
@@ -455,17 +469,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
      */
     public function getPrimaryUser(?DateTime $time = null): UserInterface
     {
-        $users = [];
-        foreach ($this->users as $user) {
-            if ($user->verify($time)) {
-                $users[] = $user;
-            }
-        }
-        if (empty($users)) {
-            throw new \UnexpectedValueException(
-                'Could not find primary user.'
-            );
-        }
+        $users = $this->users;
         usort(
             $users,
             static function ($a, $b) {

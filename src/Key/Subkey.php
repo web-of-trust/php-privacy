@@ -223,15 +223,14 @@ class Subkey implements SubkeyInterface
         $keyID = $certificate?->getIssuerKeyID() ?? '';
         $keyPacket = $verifyKey?->toPublic()->getSigningKeyPacket() ??
                      $this->mainKey->toPublic()->getSigningKeyPacket();
-        $dataToVerify = implode([
-            $keyPacket->getSignBytes(),
-            $this->keyPacket->getSignBytes(),
-        ]);
         foreach ($this->revocationSignatures as $signature) {
             if (empty($keyID) || $keyID === $signature->getIssuerKeyID()) {
                 if ($signature->verify(
                     $keyPacket,
-                    $dataToVerify,
+                    implode([
+                        $keyPacket->getSignBytes(),
+                        $this->keyPacket->getSignBytes(),
+                    ]),
                     $time
                 )) {
                     return true;
@@ -253,14 +252,13 @@ class Subkey implements SubkeyInterface
             return false;
         }
         $keyPacket = $this->mainKey->toPublic()->getSigningKeyPacket();
-        $dataToVerify = implode([
-            $keyPacket->getSignBytes(),
-            $this->keyPacket->getSignBytes(),
-        ]);
         foreach ($this->bindingSignatures as $signature) {
             if (!$signature->verify(
                 $keyPacket,
-                $dataToVerify,
+                implode([
+                    $keyPacket->getSignBytes(),
+                    $this->keyPacket->getSignBytes(),
+                ]),
                 $time
             )) {
                 return false;
@@ -279,8 +277,9 @@ class Subkey implements SubkeyInterface
     ): self
     {
         $subkey = clone $this;
+        $keyPacket = $signKey->getSigningKeyPacket();
         $subkey->revocationSignatures[] = Signature::createSubkeyRevocation(
-            $signKey->getSigningKeyPacket(),
+            $keyPacket,
             $subkey->getKeyPacket(),
             $revocationReason,
             $time

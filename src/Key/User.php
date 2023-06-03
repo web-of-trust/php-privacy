@@ -177,22 +177,57 @@ class User implements UserInterface
      * {@inheritdoc}
      */
     public function isRevoked(
-        ?KeyPacketInterface $keyPacket = null,
+        ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
         ?DateTime $time = null
     ): bool
     {
         $keyID = $certificate?->getIssuerKeyID() ?? '';
-        $keyPacket = $keyPacket ?? $this->mainKey->toPublic()->getKeyPacket();
-        $dataToVerify = implode([
-            $keyPacket->getSignBytes(),
-            $this->userIDPacket->getSignBytes(),
-        ]);
+        $keyPacket = $verifyKey?->toPublic()->getSigningKeyPacket() ??
+                     $this->mainKey->toPublic()->getSigningKeyPacket();
         foreach ($this->revocationSignatures as $signature) {
             if (empty($keyID) || $keyID === $signature->getIssuerKeyID()) {
                 if ($signature->verify(
                     $keyPacket,
-                    $dataToVerify,
+                    implode([
+                        $keyPacket->getSignBytes(),
+                        $this->userIDPacket->getSignBytes(),
+                    ]),
+                    $time
+                )) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isCertified(
+        ?KeyInterface $verifyKey = null,
+        ?SignaturePacketInterface $certificate = null,
+        ?DateTime $time = null
+    ): bool
+    {
+        if ($this->isRevoked($verifyKey, time: $time)) {
+            Config::getLogger()->debug(
+                'User is revoked.'
+            );
+            return false;
+        }
+        $keyID = $certificate?->getIssuerKeyID() ?? '';
+        $keyPacket = $verifyKey?->toPublic()->getSigningKeyPacket() ??
+                     $this->mainKey->toPublic()->getSigningKeyPacket();
+        foreach ($this->otherCertifications as $signature) {
+            if (empty($keyID) || $keyID === $signature->getIssuerKeyID()) {
+                if ($signature->verify(
+                    $keyPacket,
+                    implode([
+                        $keyPacket->getSignBytes(),
+                        $this->userIDPacket->getSignBytes(),
+                    ]),
                     $time
                 )) {
                     return true;
@@ -214,14 +249,13 @@ class User implements UserInterface
             return false;
         }
         $keyPacket = $this->mainKey->toPublic()->getKeyPacket();
-        $dataToVerify = implode([
-            $keyPacket->getSignBytes(),
-            $this->userIDPacket->getSignBytes(),
-        ]);
         foreach ($this->selfCertifications as $signature) {
             if (!$signature->verify(
                 $keyPacket,
-                $dataToVerify,
+                implode([
+                    $keyPacket->getSignBytes(),
+                    $this->userIDPacket->getSignBytes(),
+                ]),
                 $time
             )) {
                 return false;
@@ -243,8 +277,9 @@ class User implements UserInterface
             );
         }
         $user = clone $this;
+        $keyPacket = $signKey->getSigningKeyPacket();
         $user->otherCertifications[] = Signature::createCertGeneric(
-            $signKey->getSigningKeyPacket(),
+            $keyPacket,
             $user->getUserIDPacket(),
             $time
         );
@@ -261,8 +296,9 @@ class User implements UserInterface
     ): self
     {
         $user = clone $this;
+        $keyPacket = $signKey->getSigningKeyPacket();
         $user->revocationSignatures[] = Signature::createCertRevocation(
-            $signKey->getSigningKeyPacket(),
+            $keyPacket,
             $user->getUserIDPacket(),
             $revocationReason,
             $time

@@ -337,11 +337,9 @@ class PrivateKeyTest extends OpenPGPTestCase
         );
         $subkey = $privateKey->getSubKeys()[1];
         $this->assertTrue($subkey->verify());
-        $expirationTime = $subkey->getExpirationTime()->sub(
-            \DateInterval::createFromDateString($keyExpiry . ' seconds')
-        );
+        $expirationTime = $subkey->getExpirationTime();
         $this->assertSame(
-            $expirationTime->format('Y-m-d H:i:s'), $now->format('Y-m-d H:i:s')
+            $expirationTime->getTimestamp(), $now->getTimestamp() + $keyExpiry
         );
 
         $subkey = $privateKey->revokeSubkey($subkey->getKeyID())->getSubKeys()[1];
@@ -398,11 +396,9 @@ class PrivateKeyTest extends OpenPGPTestCase
         );
         $subkey = $privateKey->getSubKeys()[1];
         $this->assertTrue($subkey->verify());
-        $expirationTime = $subkey->getExpirationTime()->sub(
-            \DateInterval::createFromDateString($keyExpiry . ' seconds')
-        );
+        $expirationTime = $subkey->getExpirationTime();
         $this->assertSame(
-            $expirationTime->format('Y-m-d H:i:s'), $now->format('Y-m-d H:i:s')
+            $expirationTime->getTimestamp(), $now->getTimestamp() + $keyExpiry
         );
 
         $subkey = $privateKey->revokeSubkey($subkey->getKeyID())->getSubKeys()[1];
@@ -461,11 +457,9 @@ class PrivateKeyTest extends OpenPGPTestCase
         );
         $subkey = $privateKey->getSubKeys()[1];
         $this->assertTrue($subkey->verify());
-        $expirationTime = $subkey->getExpirationTime()->sub(
-            \DateInterval::createFromDateString($keyExpiry . ' seconds')
-        );
+        $expirationTime = $subkey->getExpirationTime();
         $this->assertSame(
-            $expirationTime->format('Y-m-d H:i:s'), $now->format('Y-m-d H:i:s')
+            $expirationTime->getTimestamp(), $now->getTimestamp() + $keyExpiry
         );
 
         $subkey = $privateKey->revokeSubkey($subkey->getKeyID())->getSubKeys()[1];
@@ -524,11 +518,9 @@ class PrivateKeyTest extends OpenPGPTestCase
         );
         $subkey = $privateKey->getSubKeys()[1];
         $this->assertTrue($subkey->verify());
-        $expirationTime = $subkey->getExpirationTime()->sub(
-            \DateInterval::createFromDateString($keyExpiry . ' seconds')
-        );
+        $expirationTime = $subkey->getExpirationTime();
         $this->assertSame(
-            $expirationTime->format('Y-m-d H:i:s'), $now->format('Y-m-d H:i:s')
+            $expirationTime->getTimestamp(), $now->getTimestamp() + $keyExpiry
         );
 
         $subkey = $privateKey->revokeSubkey($subkey->getKeyID())->getSubKeys()[1];
@@ -587,16 +579,48 @@ class PrivateKeyTest extends OpenPGPTestCase
         );
         $subkey = $privateKey->getSubKeys()[1];
         $this->assertTrue($subkey->verify());
-        $expirationTime = $subkey->getExpirationTime()->sub(
-            \DateInterval::createFromDateString($keyExpiry . ' seconds')
-        );
+        $expirationTime = $subkey->getExpirationTime();
         $this->assertSame(
-            $expirationTime->format('Y-m-d H:i:s'), $now->format('Y-m-d H:i:s')
+            $expirationTime->getTimestamp(), $now->getTimestamp() + $keyExpiry
         );
 
         $subkey = $privateKey->revokeSubkey($subkey->getKeyID())->getSubKeys()[1];
         $this->assertTrue($subkey->isRevoked());
         $user = $privateKey->revokeUser($userID)->getUsers()[0];
         $this->assertTrue($user->isRevoked());
+    }
+
+    public function testCertifyKey()
+    {
+        $privateKey = PrivateKey::fromArmored(
+            file_get_contents('tests/Data/RsaPrivateKey.asc')
+        )->decrypt(self::PASSPHRASE);
+        $publicKey = PublicKey::fromArmored(
+            file_get_contents('tests/Data/DsaPublicKey.asc')
+        );
+
+        $certifiedKey = $privateKey->certifyKey($publicKey);
+        $this->assertSame(
+            $certifiedKey->getFingerprint(), $publicKey->getFingerprint()
+        );
+        $this->assertFalse($publicKey->isCertified($privateKey));
+        $this->assertTrue($certifiedKey->isCertified($privateKey));
+    }
+
+    public function testRevokeKey()
+    {
+        $privateKey = PrivateKey::fromArmored(
+            file_get_contents('tests/Data/RsaPrivateKey.asc')
+        )->decrypt(self::PASSPHRASE);
+        $publicKey = PublicKey::fromArmored(
+            file_get_contents('tests/Data/DsaPublicKey.asc')
+        );
+
+        $revokedKey = $privateKey->revokeKey($publicKey);
+        $this->assertSame(
+            $revokedKey->getFingerprint(), $publicKey->getFingerprint()
+        );
+        $this->assertFalse($publicKey->isRevoked($privateKey));
+        $this->assertTrue($revokedKey->isRevoked($privateKey));
     }
 }

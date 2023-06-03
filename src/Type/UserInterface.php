@@ -75,13 +75,29 @@ interface UserInterface extends PacketContainerInterface
     /**
      * Check if a given certificate of the user is revoked
      * 
-     * @param KeyPacketInterface $keyPacket
+     * @param KeyInterface $keyPacket
      * @param SignaturePacketInterface $certificate
      * @param DateTime $time
      * @return bool
      */
     function isRevoked(
-        ?KeyPacketInterface $keyPacket = null,
+        ?KeyInterface $verifyKey = null,
+        ?SignaturePacketInterface $certificate = null,
+        ?DateTime $time = null
+    ): bool;
+
+    /**
+     * Verify user is certified.
+     * Check for existence of other signatures, revocation signatures
+     * and validity of other signature.
+     * 
+     * @param KeyInterface $verifyKey
+     * @param SignaturePacketInterface $certificate
+     * @param DateTime $time
+     * @return bool
+     */
+    function isCertified(
+        ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
         ?DateTime $time = null
     ): bool;

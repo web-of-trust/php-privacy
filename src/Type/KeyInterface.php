@@ -121,7 +121,7 @@ interface KeyInterface extends ArmorableInterface, PacketContainerInterface
     function isPrivate(): bool;
 
     /**
-     * Is revoked key
+     * The key is revoked
      *
      * @param KeyInterface $verifyKey
      * @param SignaturePacketInterface $certificate
@@ -129,6 +129,20 @@ interface KeyInterface extends ArmorableInterface, PacketContainerInterface
      * @return bool
      */
     function isRevoked(
+        ?KeyInterface $verifyKey = null,
+        ?SignaturePacketInterface $certificate = null,
+        ?DateTime $time = null
+    ): bool;
+
+    /**
+     * The key is certified
+     *
+     * @param KeyInterface $verifyKey
+     * @param SignaturePacketInterface $certificate
+     * @param DateTime $time
+     * @return bool
+     */
+    function isCertified(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
         ?DateTime $time = null
