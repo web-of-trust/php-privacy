@@ -40,14 +40,14 @@ class Subkey implements SubkeyInterface
     /**
      * Revocation signature packets
      * 
-     * @var array<SignaturePacketInterface>
+     * @var array
      */
     private array $revocationSignatures;
 
     /**
      * Binding signature packets
      * 
-     * @var array<SignaturePacketInterface>
+     * @var array
      */
     private array $bindingSignatures;
 
@@ -56,8 +56,8 @@ class Subkey implements SubkeyInterface
      *
      * @param KeyInterface $mainKey
      * @param SubkeyPacketInterface $keyPacket
-     * @param array<SignaturePacketInterface> $revocationSignatures
-     * @param array<SignaturePacketInterface> $bindingSignatures
+     * @param array $revocationSignatures
+     * @param array $bindingSignatures
      * @return self
      */
     public function __construct(

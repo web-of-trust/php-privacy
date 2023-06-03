@@ -30,15 +30,12 @@ use OpenPGP\Type\UserIDPacketInterface;
  */
 class UserAttribute extends AbstractPacket implements UserIDPacketInterface
 {
-    /**
-     * @var array<UserAttributeSubpacket>
-     */
     private readonly array $attributes;
 
     /**
      * Constructor
      *
-     * @param array<UserAttributeSubpacket> $attributes
+     * @param array $attributes
      * @return self
      */
     public function __construct(array $attributes)
@@ -89,7 +86,7 @@ class UserAttribute extends AbstractPacket implements UserIDPacketInterface
     /**
      * Get user attributes
      *
-     * @return array<UserAttributeSubpacket>
+     * @return array
      */
     public function getAttributes(): array
     {

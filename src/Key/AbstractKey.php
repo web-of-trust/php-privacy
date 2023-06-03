@@ -58,28 +58,28 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * Revocation signature packets
      * 
-     * @var array<SignaturePacketInterface>
+     * @var array
      */
     private array $revocationSignatures;
 
     /**
      * Direct signature packets
      * 
-     * @var array<SignaturePacketInterface>
+     * @var array
      */
     private array $directSignatures;
 
     /**
      * Users of the key
      * 
-     * @var array<UserInterface>
+     * @var array
      */
     private array $users;
 
     /**
      * Subkeys of the key
      * 
-     * @var array<SubkeyInterface>
+     * @var array
      */
     private array $subkeys;
 
@@ -208,7 +208,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * Set users
      * 
-     * @param array<UserInterface> $users
+     * @param array $users
      * @return self
      */
     protected function setUsers(array $users): self
@@ -615,7 +615,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * Get key expiration from signatures.
      *
-     * @param array<SignaturePacketInterface> $signatures
+     * @param array $signatures
      * @return DateTime
      */
     public static function getKeyExpiration(array $signatures): ?DateTime
@@ -655,7 +655,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
      * Read packet list to key structure.
      *
      * @param PacketListInterface $packetList
-     * @return array<string, mixed>
+     * @return array
      */
     protected static function readPacketList(PacketListInterface $packetList): array
     {

@@ -44,21 +44,21 @@ class User implements UserInterface
     /**
      * Revocation signature packets
      * 
-     * @var array<SignaturePacketInterface>
+     * @var array
      */
     private array $revocationSignatures;
 
     /**
      * Self certification signature packets
      * 
-     * @var array<SignaturePacketInterface>
+     * @var array
      */
     private array $selfCertifications;
 
     /**
      * Other certification signature packets
      * 
-     * @var array<SignaturePacketInterface>
+     * @var array
      */
     private array $otherCertifications;
 
@@ -67,9 +67,9 @@ class User implements UserInterface
      *
      * @param KeyInterface $mainKey
      * @param UserIDPacketInterface $userIDPacket
-     * @param array<SignaturePacketInterface> $revocationSignatures
-     * @param array<SignaturePacketInterface> $selfCertifications
-     * @param array<SignaturePacketInterface> $otherCertifications
+     * @param array $revocationSignatures
+     * @param array $selfCertifications
+     * @param array $otherCertifications
      * @return self
      */
     public function __construct(

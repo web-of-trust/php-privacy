@@ -76,8 +76,8 @@ interface PrivateKeyInterface extends KeyInterface
     ): self;
 
     /**
-     * Add userIDs to the key,
-     * and returns a clone of the key object with the new userIDs added.
+     * Add userIDs to the key.
+     * Return a clone of the key object with the new userIDs added.
      * 
      * @param array $userIDs
      * @return self

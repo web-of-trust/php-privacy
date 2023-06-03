@@ -56,7 +56,7 @@ final class Armor
      * Constructor
      *
      * @param ArmorType $type
-     * @param array<string> $headers
+     * @param array $headers
      * @param string $data
      * @param string $text
      * @return self
@@ -83,7 +83,7 @@ final class Armor
     /**
      * Get armor headers
      *
-     * @return array<string>
+     * @return array
      */
     public function getHeaders(): array
     {

@@ -29,14 +29,14 @@ class PacketList implements PacketListInterface
     /**
      * Packet list
      *
-     * @var array<PacketInterface> $packets
+     * @var array $packets
      */
     private readonly array $packets;
 
     /**
      * Constructor
      *
-     * @param array<PacketInterface> $packets
+     * @param array $packets
      * @return self
      */
     public function __construct(array $packets = [])

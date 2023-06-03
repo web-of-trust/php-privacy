@@ -55,14 +55,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 
     private string $signatureData;
 
-    /**
-     * @var array<SignatureSubpacket>
-     */
     private readonly array $hashedSubpackets;
 
-    /**
-     * @var array<SignatureSubpacket>
-     */
     private readonly array $unhashedSubpackets;
 
     /**
@@ -74,8 +68,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @param HashAlgorithm $hashAlgorithm
      * @param string $signedHashValue
      * @param string $signature
-     * @param array<SignatureSubpacket> $hashedSubpackets
-     * @param array<SignatureSubpacket> $unhashedSubpackets
+     * @param array $hashedSubpackets
+     * @param array $unhashedSubpackets
      * @return self
      */
     public function __construct(
@@ -173,7 +167,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @param SignatureType $signatureType
      * @param string $dataToSign
      * @param HashAlgorithm $hashAlgorithm
-     * @param array<SignatureSubpacket> $subpackets
+     * @param array $subpackets
      * @param DateTime $time
      * @return self
      */
@@ -957,7 +951,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
-     * @return array<SignatureSubpacket>
+     * Read subpackets
+     * 
+     * @return array
      */
     private static function readSubpackets(string $bytes): array
     {
@@ -1000,7 +996,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
-     * @param array<SignatureSubpacket> $subpackets
+     * Serialize subpackets to bytes
+     * 
+     * @param array $subpackets
      * @return string
      */
     private static function subpacketsToBytes(array $subpackets): string
@@ -1013,7 +1011,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
-     * @param array<SignatureSubpacket> $subpackets
+     * Get subpacket by type
+     * 
+     * @param array $subpackets
      * @param SignatureSubpacketType $type
      * @return SubpacketInterface
      */

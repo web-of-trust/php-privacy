@@ -240,7 +240,7 @@ class SubpacketReader
      * Read user attribute sub packet from byte string
      *
      * @param string $bytes
-     * @return array<UserAttributeSubpacket>
+     * @return array
      */
     public static function readUserAttributes(string $bytes): array
     {

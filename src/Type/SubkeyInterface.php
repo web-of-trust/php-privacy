@@ -77,14 +77,14 @@ interface SubkeyInterface extends PacketContainerInterface
     /**
      * Get revocation signatures
      * 
-     * @return array<SignaturePacketInterface>
+     * @return array
      */
     function getRevocationSignatures(): array;
 
     /**
      * Get binding signatures
      * 
-     * @return array<SignaturePacketInterface>
+     * @return array
      */
     function getBindingSignatures(): array;
 
