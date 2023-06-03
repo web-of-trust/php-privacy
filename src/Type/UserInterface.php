@@ -75,7 +75,7 @@ interface UserInterface extends PacketContainerInterface
     /**
      * Check if a given certificate of the user is revoked
      * 
-     * @param KeyInterface $keyPacket
+     * @param KeyInterface $verifyKey
      * @param SignaturePacketInterface $certificate
      * @param DateTime $time
      * @return bool
