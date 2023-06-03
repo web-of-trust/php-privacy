@@ -160,8 +160,12 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
         $publicKey = $this->publicKey
             ->withHash(strtolower($hash->name))
             ->withPadding(RSA::SIGNATURE_PKCS1);
+        $bitLength = Helper::bytesToShort($signature);
+        $signatureBytes = substr(
+            $signature, 2, Helper::bit2ByteLength($bitLength)
+        );
         return $publicKey->verify(
-            $message, Helper::readMPI($signature)->toBytes()
+            $message, $signatureBytes
         );
     }
 }

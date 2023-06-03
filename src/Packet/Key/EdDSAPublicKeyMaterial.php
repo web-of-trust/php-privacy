@@ -54,7 +54,9 @@ class EdDSAPublicKeyMaterial extends ECPublicKeyMaterial implements PublicKeyMat
         $bitLength = Helper::bytesToShort(
             substr($signature, strlen($r) + 2)
         );
-        $s = substr($signature, strlen($r) + 4, Helper::bit2ByteLength($bitLength));
+        $s = substr(
+            $signature, strlen($r) + 4, Helper::bit2ByteLength($bitLength)
+        );
         return $this->getPublicKey()->verify(
             hash(strtolower($hash->name), $message, true),
             implode([$r, $s])
