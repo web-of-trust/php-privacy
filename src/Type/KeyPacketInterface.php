@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Type;
 
-use DateTime;
+use DateTimeInterface;
 use OpenPGP\Enum\{
     HashAlgorithm,
     KeyAlgorithm,
@@ -36,9 +36,9 @@ interface KeyPacketInterface extends ForSigningInterface, PacketInterface
     /**
      * Get creation time
      * 
-     * @return DateTime
+     * @return DateTimeInterface
      */
-    function getCreationTime(): DateTime;
+    function getCreationTime(): DateTimeInterface;
 
     /**
      * Get key algorithm

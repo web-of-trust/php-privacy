@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Message;
 
-use DateTime;
+use DateTimeInterface;
 use OpenPGP\Packet\LiteralData;
 use OpenPGP\Packet\Signature as SignaturePacket;
 use OpenPGP\Type\{
@@ -66,7 +66,7 @@ class CleartextMessage implements CleartextMessageInterface
     public function sign(
         array $signingKeys,
         ?NotationDataInterface $notationData = null,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): SignedMessageInterface
     {
         return new SignedMessage(
@@ -84,7 +84,7 @@ class CleartextMessage implements CleartextMessageInterface
     public function signDetached(
         array $signingKeys,
         ?NotationDataInterface $notationData = null,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): SignatureInterface
     {
         $signingKeys = array_filter(
@@ -111,7 +111,7 @@ class CleartextMessage implements CleartextMessageInterface
     public function verifyDetached(
         array $verificationKeys,
         SignatureInterface $signature,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): array
     {
         return $signature->verifyCleartext(

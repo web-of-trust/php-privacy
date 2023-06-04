@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Key;
 
-use DateTime;
+use DateTimeInterface;
 use OpenPGP\Common\Config;
 use OpenPGP\Enum\KeyAlgorithm;
 use OpenPGP\Packet\{
@@ -113,8 +113,8 @@ class Subkey implements SubkeyInterface
             usort(
                 $signatures,
                 static function ($a, $b) {
-                    $aTime = $a->getSignatureCreationTime() ?? new DateTime();
-                    $bTime = $b->getSignatureCreationTime() ?? new DateTime();
+                    $aTime = $a->getSignatureCreationTime() ?? new \DateTime();
+                    $bTime = $b->getSignatureCreationTime() ?? new \DateTime();
                     return $aTime->getTimestamp() - $bTime->getTimestamp();
                 }
             );
@@ -134,7 +134,7 @@ class Subkey implements SubkeyInterface
     /**
      * {@inheritdoc}
      */
-    public function getExpirationTime(): ?DateTime
+    public function getExpirationTime(): ?DateTimeInterface
     {
         return AbstractKey::getKeyExpiration($this->bindingSignatures);
     }
@@ -142,7 +142,7 @@ class Subkey implements SubkeyInterface
     /**
      * {@inheritdoc}
      */
-    public function getCreationTime(): DateTime
+    public function getCreationTime(): DateTimeInterface
     {
         return $this->keyPacket->getCreationTime();
     }
@@ -217,7 +217,7 @@ class Subkey implements SubkeyInterface
     public function isRevoked(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): bool
     {
         $keyID = $certificate?->getIssuerKeyID() ?? '';
@@ -243,7 +243,7 @@ class Subkey implements SubkeyInterface
     /**
      * {@inheritdoc}
      */
-    public function verify(?DateTime $time = null): bool
+    public function verify(?DateTimeInterface $time = null): bool
     {
         if ($this->isRevoked(time: $time)) {
             Config::getLogger()->debug(
@@ -273,7 +273,7 @@ class Subkey implements SubkeyInterface
     public function revokeBy(
         PrivateKeyInterface $signKey,
         string $revocationReason = '',
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): self
     {
         $subkey = clone $this;

@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Type;
 
-use DateTime;
+use DateTimeInterface;
 use OpenPGP\Enum\{
     HashAlgorithm,
     KeyAlgorithm,
@@ -80,10 +80,10 @@ interface SignaturePacketInterface extends PacketInterface
      * Verify signature expiration date
      * Use the given date for verification instead of the current time
      *
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return bool
      */
-    function isExpired(?DateTime $time = null): bool;
+    function isExpired(?DateTimeInterface $time = null): bool;
 
     /**
      * Get signature data
@@ -97,28 +97,28 @@ interface SignaturePacketInterface extends PacketInterface
      *
      * @param KeyPacketInterface $verifyKey
      * @param string $dataToVerify
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return bool
      */
     function verify(
         KeyPacketInterface $verifyKey,
         string $dataToVerify,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): bool;
 
     /**
      * Get signature creation time
      *
-     * @return DateTime
+     * @return DateTimeInterface
      */
-    function getSignatureCreationTime(): ?DateTime;
+    function getSignatureCreationTime(): ?DateTimeInterface;
 
     /**
      * Get signature expiration time
      *
-     * @return DateTime
+     * @return DateTimeInterface
      */
-    function getSignatureExpirationTime(): ?DateTime;
+    function getSignatureExpirationTime(): ?DateTimeInterface;
 
     /**
      * Get exportable certification sub packet

@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Key;
 
-use DateTime;
+use DateTimeInterface;
 use OpenPGP\Common\Armor;
 use OpenPGP\Enum\{
     ArmorType,
@@ -146,7 +146,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
      * @param DHKeySize $dhKeySize
      * @param CurveOid $curve
      * @param int $keyExpiry
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return self
      */
     public static function generate(
@@ -157,7 +157,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         DHKeySize $dhKeySize = DHKeySize::L2048_N224,
         CurveOid $curve = CurveOid::Secp521r1,
         int $keyExpiry = 0,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): self
     {
         if (empty($userIDs) || empty($passphrase)) {
@@ -272,7 +272,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     /**
      * {@inheritdoc}
      */
-    public function getDecryptionKeyPackets(?DateTime $time = null): array
+    public function getDecryptionKeyPackets(?DateTimeInterface $time = null): array
     {
         if (!$this->verify(time: $time)) {
             throw new \UnexpectedValueException(
@@ -451,7 +451,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         CurveOid $curve = CurveOid::Secp521r1,
         int $keyExpiry = 0,
         bool $subkeySign = false,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): self
     {
         if (empty($passphrase)) {
@@ -490,7 +490,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
      * {@inheritdoc}
      */
     public function certifyKey(
-        KeyInterface $key, ?DateTime $time = null
+        KeyInterface $key, ?DateTimeInterface $time = null
     ): KeyInterface
     {
         return $key->certifyBy($this, $time);
@@ -502,7 +502,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     public function revokeKey(
         KeyInterface $key,
         string $revocationReason = '',
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): KeyInterface
     {
         return $key->revokeBy($this, $revocationReason, $time);
@@ -514,7 +514,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     public function revokeUser(
         string $userID,
         string $revocationReason = '',
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): self
     {
         $privateKey = $this->clone();
@@ -538,7 +538,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     public function revokeSubkey(
         string $keyID,
         string $revocationReason = '',
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): self
     {
         $privateKey = $this->clone();

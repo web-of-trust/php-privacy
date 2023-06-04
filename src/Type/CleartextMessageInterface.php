@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Type;
 
-use DateTime;
+use DateTimeInterface;
 
 /**
  * Cleartext message interface
@@ -41,13 +41,13 @@ interface CleartextMessageInterface
      *
      * @param array $signingKeys
      * @param NotationDataInterface $notationData
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return SignedMessageInterface
      */
     function sign(
         array $signingKeys,
         ?NotationDataInterface $notationData = null,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): SignedMessageInterface;
 
     /**
@@ -55,13 +55,13 @@ interface CleartextMessageInterface
      *
      * @param array $signingKeys
      * @param NotationDataInterface $notationData
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return SignatureInterface
      */
     function signDetached(
         array $signingKeys,
         ?NotationDataInterface $notationData = null,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): SignatureInterface;
 
     /**
@@ -69,12 +69,12 @@ interface CleartextMessageInterface
      *
      * @param array $verificationKeys
      * @param SignatureInterface $signature
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return array
      */
     function verifyDetached(
         array $verificationKeys,
         SignatureInterface $signature,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): array;
 }

@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Message;
 
-use DateTime;
+use DateTimeInterface;
 use OpenPGP\Common\{
     Armor,
     Config,
@@ -78,13 +78,13 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
      *
      * @param string $literalData
      * @param string $filename
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return self
      */
     public static function fromLiteralData(
         string $literalData,
         string $filename = '',
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): self
     {
         return new self([new LiteralData(
@@ -126,7 +126,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
     public function sign(
         array $signingKeys,
         ?NotationDataInterface $notationData = null,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): self
     {
         $signaturePackets = [
@@ -163,7 +163,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
     public function signDetached(
         array $signingKeys,
         ?NotationDataInterface $notationData = null,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): SignatureInterface
     {
         $signingKeys = array_filter(
@@ -189,7 +189,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
      * {@inheritdoc}
      */
     public function verify(
-        array $verificationKeys, ?DateTime $time = null
+        array $verificationKeys, ?DateTimeInterface $time = null
     ): array
     {
         return $this->getSignature()->verify(
@@ -203,7 +203,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
     public function verifyDetached(
         array $verificationKeys,
         SignatureInterface $signature,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): array
     {
         return $signature->verify(

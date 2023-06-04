@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Type;
 
-use DateTime;
+use DateTimeInterface;
 
 /**
  * Signature interface
@@ -36,13 +36,13 @@ interface SignatureInterface extends ArmorableInterface, PacketContainerInterfac
      *
      * @param array $verificationKeys
      * @param LiteralDataInterface $literalData
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return array
      */
     function verify(
         array $verificationKeys,
         LiteralDataInterface $literalData,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): array;
 
     /**
@@ -51,12 +51,12 @@ interface SignatureInterface extends ArmorableInterface, PacketContainerInterfac
      *
      * @param array $verificationKeys
      * @param CleartextMessageInterface $cleartext
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return array
      */
     function verifyCleartext(
         array $verificationKeys,
         CleartextMessageInterface $cleartext,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): array;
 }

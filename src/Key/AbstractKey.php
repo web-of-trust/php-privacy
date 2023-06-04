@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Key;
 
-use DateTime;
+use DateTimeInterface;
 use OpenPGP\Common\Config;
 use OpenPGP\Enum\{
     KeyAlgorithm,
@@ -239,7 +239,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
      * {@inheritdoc}
      */
     public function getSigningKeyPacket(
-        string $keyID = '', ?DateTime $time = null
+        string $keyID = '', ?DateTimeInterface $time = null
     ): KeyPacketInterface
     {
         $subkeys = $this->subkeys;
@@ -290,7 +290,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
      * {@inheritdoc}
      */
     public function getEncryptionKeyPacket(
-        string $keyID = '', ?DateTime $time = null
+        string $keyID = '', ?DateTimeInterface $time = null
     ): KeyPacketInterface
     {
         $subkeys = $this->subkeys;
@@ -322,7 +322,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function getExpirationTime(): ?DateTime
+    public function getExpirationTime(): ?DateTimeInterface
     {
         $selfCertifications = [];
         foreach ($this->users as $user) {
@@ -342,7 +342,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function getCreationTime(): DateTime
+    public function getCreationTime(): DateTimeInterface
     {
         return $this->keyPacket->getCreationTime();
     }
@@ -393,7 +393,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     public function isRevoked(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): bool
     {
         $keyID = ($certificate != null) ? $certificate->getIssuerKeyID() : '';
@@ -419,7 +419,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     public function isCertified(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): bool
     {
         return $this->getPrimaryUser()->isCertified(
@@ -430,7 +430,9 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function verify(string $userID = '', ?DateTime $time = null): bool
+    public function verify(
+        string $userID = '', ?DateTimeInterface $time = null
+    ): bool
     {
         if ($this->isRevoked(time: $time)) {
             $this->getLogger()->debug(
@@ -455,7 +457,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
             }
         }
         $expirationTime = $this->getExpirationTime();
-        if ($expirationTime instanceof DateTime && $expirationTime < new DateTime()) {
+        if ($expirationTime instanceof DateTimeInterface && $expirationTime < new \DateTime()) {
             $this->getLogger()->debug(
                 'Primary key is expired.'
             );
@@ -467,7 +469,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function getPrimaryUser(?DateTime $time = null): UserInterface
+    public function getPrimaryUser(?DateTimeInterface $time = null): UserInterface
     {
         $users = $this->users;
         usort(
@@ -476,8 +478,8 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
                 $aPrimary = (int) $a->isPrimary();
                 $bPrimary = (int) $b->isPrimary();
                 if ($aPrimary === $bPrimary) {
-                    $aTime = $a->getLatestSelfCertification()?->getSignatureCreationTime() ?? new DateTime();
-                    $bTime = $b->getLatestSelfCertification()?->getSignatureCreationTime() ?? new DateTime();
+                    $aTime = $a->getLatestSelfCertification()?->getSignatureCreationTime() ?? new \DateTime();
+                    $bTime = $b->getLatestSelfCertification()?->getSignatureCreationTime() ?? new \DateTime();
                     return $aTime->getTimestamp() - $bTime->getTimestamp();
                 }
                 else {
@@ -492,7 +494,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
      * {@inheritdoc}
      */
     public function certifyBy(
-        PrivateKeyInterface $signKey, ?DateTime $time = null
+        PrivateKeyInterface $signKey, ?DateTimeInterface $time = null
     ): self
     {
         $key = clone $this;
@@ -537,7 +539,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     public function revokeBy(
         PrivateKeyInterface $signKey,
         string $revocationReason = '',
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): self
     {
         $key = clone $this;
@@ -579,7 +581,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
      * 
      * @return bool
      */
-    protected function isSigningKey(?DateTime $time = null): bool
+    protected function isSigningKey(?DateTimeInterface $time = null): bool
     {
         if (!$this->keyPacket->isSigningKey()) {
             return false;
@@ -597,7 +599,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
      * 
      * @return bool
      */
-    protected function isEncryptionKey(?DateTime $time = null): bool
+    protected function isEncryptionKey(?DateTimeInterface $time = null): bool
     {
         if (!$this->keyPacket->isEncryptionKey()) {
             return false;
@@ -616,15 +618,15 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
      * Get key expiration from signatures.
      *
      * @param array $signatures
-     * @return DateTime
+     * @return DateTimeInterface
      */
-    public static function getKeyExpiration(array $signatures): ?DateTime
+    public static function getKeyExpiration(array $signatures): ?DateTimeInterface
     {
         usort(
             $signatures,
             static function ($a, $b) {
-                $aTime = $a->getSignatureCreationTime() ?? new DateTime();
-                $bTime = $b->getSignatureCreationTime() ?? new DateTime();
+                $aTime = $a->getSignatureCreationTime() ?? new \DateTime();
+                $bTime = $b->getSignatureCreationTime() ?? new \DateTime();
                 return $bTime->getTimestamp() - $aTime->getTimestamp();
             }
         );
@@ -632,7 +634,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
             $keyExpirationTime = $signature->getKeyExpirationTime();
             if ($keyExpirationTime instanceof KeyExpirationTime) {
                 $expirationTime = $keyExpirationTime->getExpirationTime();
-                $creationTime = $signature->getSignatureCreationTime() ?? new DateTime();
+                $creationTime = $signature->getSignatureCreationTime() ?? new \DateTime();
                 $keyExpiry = $creationTime->setTimestamp(
                     $creationTime->getTimestamp() + $expirationTime
                 );

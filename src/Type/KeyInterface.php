@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Type;
 
-use DateTime;
+use DateTimeInterface;
 use OpenPGP\Enum\KeyAlgorithm;
 
 /**
@@ -40,16 +40,16 @@ interface KeyInterface extends ArmorableInterface, PacketContainerInterface
     /**
      * Return the expiration time of the key or null if key does not expire.
      *
-     * @return DateTime
+     * @return DateTimeInterface
      */
-    function getExpirationTime(): ?DateTime;
+    function getExpirationTime(): ?DateTimeInterface;
 
     /**
      * Get creation time
      * 
-     * @return DateTime
+     * @return DateTimeInterface
      */
-    function getCreationTime(): DateTime;
+    function getCreationTime(): DateTimeInterface;
 
     /**
      * Get key algorithm
@@ -86,11 +86,11 @@ interface KeyInterface extends ArmorableInterface, PacketContainerInterface
      * that is available for signing or verification
      * 
      * @param string $keyID
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return KeyPacketInterface
      */
     function getSigningKeyPacket(
-        string $keyID = '', ?DateTime $time = null
+        string $keyID = '', ?DateTimeInterface $time = null
     ): KeyPacketInterface;
 
     /**
@@ -98,20 +98,20 @@ interface KeyInterface extends ArmorableInterface, PacketContainerInterface
      * that is available for encryption or decryption
      * 
      * @param string $keyID
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return KeyPacketInterface
      */
     function getEncryptionKeyPacket(
-        string $keyID = '', ?DateTime $time = null
+        string $keyID = '', ?DateTimeInterface $time = null
     ): KeyPacketInterface;
 
     /**
      * Return primary user
      * 
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return UserInterface
      */
-    function getPrimaryUser(?DateTime $time = null): UserInterface;
+    function getPrimaryUser(?DateTimeInterface $time = null): UserInterface;
 
     /**
      * Return key is private
@@ -125,13 +125,13 @@ interface KeyInterface extends ArmorableInterface, PacketContainerInterface
      *
      * @param KeyInterface $verifyKey
      * @param SignaturePacketInterface $certificate
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return bool
      */
     function isRevoked(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): bool;
 
     /**
@@ -139,13 +139,13 @@ interface KeyInterface extends ArmorableInterface, PacketContainerInterface
      *
      * @param KeyInterface $verifyKey
      * @param SignaturePacketInterface $certificate
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return bool
      */
     function isCertified(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): bool;
 
     /**
@@ -153,20 +153,22 @@ interface KeyInterface extends ArmorableInterface, PacketContainerInterface
      * Checks for revocation signatures, expiration time and valid self signature.
      * 
      * @param string $userID
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return bool
      */
-    function verify(string $userID = '', ?DateTime $time = null): bool;
+    function verify(
+        string $userID = '', ?DateTimeInterface $time = null
+    ): bool;
 
     /**
      * Certify by private key.
      * 
      * @param PrivateKeyInterface $signKey
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return self
      */
     function certifyBy(
-        PrivateKeyInterface $signKey, ?DateTime $time = null
+        PrivateKeyInterface $signKey, ?DateTimeInterface $time = null
     ): self;
 
     /**
@@ -174,12 +176,12 @@ interface KeyInterface extends ArmorableInterface, PacketContainerInterface
      * 
      * @param PrivateKeyInterface $signKey
      * @param string $revocationReason
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return self
      */
     function revokeBy(
         PrivateKeyInterface $signKey,
         string $revocationReason = '',
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): self;
 }

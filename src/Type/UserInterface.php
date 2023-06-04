@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Type;
 
-use DateTime;
+use DateTimeInterface;
 
 /**
  * OpenPGP user interface
@@ -77,13 +77,13 @@ interface UserInterface extends PacketContainerInterface
      * 
      * @param KeyInterface $verifyKey
      * @param SignaturePacketInterface $certificate
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return bool
      */
     function isRevoked(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): bool;
 
     /**
@@ -93,13 +93,13 @@ interface UserInterface extends PacketContainerInterface
      * 
      * @param KeyInterface $verifyKey
      * @param SignaturePacketInterface $certificate
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return bool
      */
     function isCertified(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): bool;
 
     /**
@@ -107,21 +107,21 @@ interface UserInterface extends PacketContainerInterface
      * Check for existence of self signatures, revocation signatures
      * and validity of self signature.
      * 
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return bool
      */
-    function verify(?DateTime $time = null): bool;
+    function verify(?DateTimeInterface $time = null): bool;
 
     /**
      * Generate third-party certification over this user and its primary key.
      * Return clone user with new certification.
      * 
      * @param PrivateKeyInterface $signKey
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return self
      */
     function certifyBy(
-        PrivateKeyInterface $signKey, ?DateTime $time = null
+        PrivateKeyInterface $signKey, ?DateTimeInterface $time = null
     ): self;
 
     /**
@@ -129,12 +129,12 @@ interface UserInterface extends PacketContainerInterface
      * 
      * @param PrivateKeyInterface $signKey
      * @param string $revocationReason
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return self
      */
     function revokeBy(
         PrivateKeyInterface $signKey,
         string $revocationReason = '',
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): self;
 }

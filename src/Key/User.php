@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Key;
 
-use DateTime;
+use DateTimeInterface;
 use OpenPGP\Common\Config;
 use OpenPGP\Enum\{
     HashAlgorithm,
@@ -146,8 +146,8 @@ class User implements UserInterface
             usort(
                 $signatures,
                 static function ($a, $b) {
-                    $aTime = $a->getSignatureCreationTime() ?? new DateTime();
-                    $bTime = $b->getSignatureCreationTime() ?? new DateTime();
+                    $aTime = $a->getSignatureCreationTime() ?? new \DateTime();
+                    $bTime = $b->getSignatureCreationTime() ?? new \DateTime();
                     return $aTime->getTimestamp() - $bTime->getTimestamp();
                 }
             );
@@ -179,7 +179,7 @@ class User implements UserInterface
     public function isRevoked(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): bool
     {
         $keyID = $certificate?->getIssuerKeyID() ?? '';
@@ -208,7 +208,7 @@ class User implements UserInterface
     public function isCertified(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): bool
     {
         if ($this->isRevoked($verifyKey, time: $time)) {
@@ -240,7 +240,7 @@ class User implements UserInterface
     /**
      * {@inheritdoc}
      */
-    public function verify(?DateTime $time = null): bool
+    public function verify(?DateTimeInterface $time = null): bool
     {
         if ($this->isRevoked(time: $time)) {
             Config::getLogger()->debug(
@@ -268,7 +268,7 @@ class User implements UserInterface
      * {@inheritdoc}
      */
     public function certifyBy(
-        PrivateKeyInterface $signKey, ?DateTime $time = null
+        PrivateKeyInterface $signKey, ?DateTimeInterface $time = null
     ): self
     {
         if ($signKey->getFingerprint() === $this->mainKey->getFingerprint()) {
@@ -292,7 +292,7 @@ class User implements UserInterface
     public function revokeBy(
         PrivateKeyInterface $signKey,
         string $revocationReason = '',
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): self
     {
         $user = clone $this;

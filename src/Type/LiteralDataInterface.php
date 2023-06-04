@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Type;
 
-use DateTime;
+use DateTimeInterface;
 use OpenPGP\Enum\LiteralFormat;
 
 /**
@@ -40,9 +40,9 @@ interface LiteralDataInterface extends ForSigningInterface
     /**
      * Get time
      *
-     * @return DateTime
+     * @return DateTimeInterface
      */
-    function getTime(): DateTime;
+    function getTime(): DateTimeInterface;
 
     /**
      * Get data

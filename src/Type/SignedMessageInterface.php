@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Type;
 
-use DateTime;
+use DateTimeInterface;
 
 /**
  * Signed message interface
@@ -34,8 +34,8 @@ interface SignedMessageInterface extends ArmorableInterface
      * Return verification array
      *
      * @param array $verificationKeys
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return array
      */
-    function verify(array $verificationKeys, ?DateTime $time = null): array;
+    function verify(array $verificationKeys, ?DateTimeInterface $time = null): array;
 }

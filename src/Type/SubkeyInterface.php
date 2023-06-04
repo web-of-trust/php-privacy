@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Type;
 
-use DateTime;
+use DateTimeInterface;
 use OpenPGP\Enum\KeyAlgorithm;
 
 /**
@@ -33,16 +33,16 @@ interface SubkeyInterface extends PacketContainerInterface
     /**
      * Get the expiration time of the subkey or null if subkey does not expire.
      * 
-     * @return DateTime
+     * @return DateTimeInterface
      */
-    function getExpirationTime(): ?DateTime;
+    function getExpirationTime(): ?DateTimeInterface;
 
     /**
      * Get creation time
      * 
-     * @return DateTime
+     * @return DateTimeInterface
      */
-    function getCreationTime(): DateTime;
+    function getCreationTime(): DateTimeInterface;
 
     /**
      * Get key algorithm
@@ -114,35 +114,35 @@ interface SubkeyInterface extends PacketContainerInterface
      * 
      * @param KeyInterface $verifyKey
      * @param SignaturePacketInterface $certificate
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return bool
      */
     function isRevoked(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): bool;
 
     /**
      * Verify subkey.
      * Checks for revocation signatures, expiration time and valid binding signature.
      * 
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return bool
      */
-    function verify(?DateTime $time = null): bool;
+    function verify(?DateTimeInterface $time = null): bool;
 
     /**
      * Revoke the subkey
      * 
      * @param PrivateKeyInterface $signKey
      * @param string $revocationReason
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return self
      */
     function revokeBy(
         PrivateKeyInterface $signKey,
         string $revocationReason = '',
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): self;
 }

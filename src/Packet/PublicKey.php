@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Packet;
 
-use DateTime;
+use DateTimeInterface;
 use phpseclib3\Common\Functions\Strings;
 use OpenPGP\Common\{
     Config,
@@ -50,13 +50,13 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
     /**
      * Constructor
      *
-     * @param DateTime $creationTime
+     * @param DateTimeInterface $creationTime
      * @param KeyMaterialInterface $keyMaterial
      * @param KeyAlgorithm $keyAlgorithm
      * @return self
      */
     public function __construct(
-        private readonly DateTime $creationTime,
+        private readonly DateTimeInterface $creationTime,
         private readonly KeyMaterialInterface $keyMaterial,
         private readonly KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
     )
@@ -87,7 +87,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         }
 
         // A four-octet number denoting the time that the key was created.
-        $creationTime = (new DateTime())->setTimestamp(
+        $creationTime = (new \DateTime())->setTimestamp(
             Helper::bytesToLong($bytes, $offset)
         );
         $offset += 4;
@@ -132,7 +132,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
     /**
      * {@inheritdoc}
      */
-    public function getCreationTime(): DateTime
+    public function getCreationTime(): DateTimeInterface
     {
         return $this->creationTime;
     }

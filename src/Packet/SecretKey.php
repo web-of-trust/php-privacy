@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Packet;
 
-use DateTime;
+use DateTimeInterface;
 use phpseclib3\Crypt\Random;
 use OpenPGP\Common\Config;
 use OpenPGP\Enum\{
@@ -128,7 +128,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
      * @param RSAKeySize $rsaKeySize
      * @param DHKeySize $dhKeySize
      * @param CurveOid $curveOid
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return self
      */
     public static function generate(
@@ -136,7 +136,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         RSAKeySize $rsaKeySize = RSAKeySize::S4096,
         DHKeySize $dhKeySize = DHKeySize::L2048_N224,
         CurveOid $curveOid = CurveOid::Secp521r1,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): self
     {
         $keyMaterial = match($keyAlgorithm) {
@@ -153,7 +153,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         };
         return new self(
             new PublicKey(
-                $time ?? new DateTime(),
+                $time ?? new \DateTime(),
                 $keyMaterial->getPublicMaterial(),
                 $keyAlgorithm
             ),
@@ -197,7 +197,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     /**
      * {@inheritdoc}
      */
-    public function getCreationTime(): DateTime
+    public function getCreationTime(): DateTimeInterface
     {
         return $this->publicKey->getCreationTime();
     }

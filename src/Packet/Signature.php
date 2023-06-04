@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Packet;
 
-use DateTime;
+use DateTimeInterface;
 use OpenPGP\Common\{
     Config,
     Helper,
@@ -169,7 +169,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @param string $dataToSign
      * @param HashAlgorithm $hashAlgorithm
      * @param array $subpackets
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return self
      */
     public static function createSignature(
@@ -178,7 +178,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         string $dataToSign,
         HashAlgorithm $hashAlgorithm = HashAlgorithm::Sha256,
         array $subpackets = [],
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): self
     {
         $version = $signKey->getVersion();
@@ -187,7 +187,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 
         $hashedSubpackets = [
             Signature\SignatureCreationTime::fromTime(
-                $time ?? new DateTime()
+                $time ?? new \DateTime()
             ),
             Signature\IssuerFingerprint::fromKeyPacket($signKey),
             Signature\IssuerKeyID::fromKeyID($signKey->getKeyID()),
@@ -231,7 +231,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @param UserIDPacketInterface $userID
      * @param bool $isPrimaryUser
      * @param int $keyExpiry
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return self
      */
     public static function createSelfCertificate(
@@ -239,7 +239,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         UserIDPacketInterface $userID,
         bool $isPrimaryUser = false,
         int $keyExpiry = 0,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     )
     {
         $subpackets = [
@@ -296,14 +296,14 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @param KeyPacketInterface $signKey
      * @param KeyPacketInterface $userKey
      * @param KeyPacketInterface $signKey
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return self
      */
     public static function createCertGeneric(
         KeyPacketInterface $signKey,
         KeyPacketInterface $userKey,
         UserIDPacketInterface $userID,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): self
     {
         return self::createSignature(
@@ -330,7 +330,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @param KeyPacketInterface $userKey
      * @param UserIDPacketInterface $userID
      * @param string $revocationReason
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return self
      */
     public static function createCertRevocation(
@@ -338,7 +338,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         KeyPacketInterface $userKey,
         UserIDPacketInterface $userID,
         string $revocationReason = '',
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): self
     {
         return self::createSignature(
@@ -364,14 +364,14 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @param KeyPacketInterface $signKey
      * @param KeyPacketInterface $keyPacket
      * @param string $revocationReason
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return self
      */
     public static function createKeyRevocation(
         KeyPacketInterface $signKey,
         KeyPacketInterface $keyPacket,
         string $revocationReason = '',
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): self
     {
         return self::createSignature(
@@ -395,7 +395,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @param SubkeyPacketInterface $subkey
      * @param int $keyExpiry
      * @param bool $subkeySign
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return self
      */
     public static function createSubkeyBinding(
@@ -403,7 +403,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         SubkeyPacketInterface $subkey,
         int $keyExpiry = 0,
         bool $subkeySign = false,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): self
     {
         $subpackets = [];
@@ -453,7 +453,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @param KeyPacketInterface $primaryKey
      * @param SubkeyPacketInterface $subkey
      * @param string $revocationReason
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return self
      */
     public static function createSubkeyRevocation(
@@ -461,7 +461,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         KeyPacketInterface $primaryKey,
         SubkeyPacketInterface $subkey,
         string $revocationReason = '',
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): self
     {
         return self::createSignature(
@@ -487,14 +487,14 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @param KeyPacketInterface $signKey
      * @param LiteralDataInterface $literalData
      * @param NotationDataInterface $notationData
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return self
      */
     public static function createLiteralData(
         KeyPacketInterface $signKey,
         LiteralDataInterface $literalData,
         ?NotationDataInterface $notationData = null,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     )
     {
         $signatureType = SignatureType::Binary;
@@ -539,7 +539,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function verify(
         KeyPacketInterface $verifyKey,
         string $dataToVerify,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): bool
     {
         if ($this->getIssuerKeyID() !== $verifyKey->getKeyID()) {
@@ -556,14 +556,14 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         }
 
         $expirationTime = $this->getSignatureExpirationTime();
-        if ($expirationTime instanceof DateTime) {
-            $time = $time ?? new DateTime();
+        if ($expirationTime instanceof DateTimeInterface) {
+            $time = $time ?? new \DateTime();
             if ($expirationTime < $time) {
                 $this->getLogger()->warning(
                     'Signature is expired at {expirationTime}.',
                     [
                         'expirationTime' => $expirationTime->format(
-                            DateTime::RFC3339_EXTENDED
+                            DateTimeInterface::RFC3339_EXTENDED
                         ),
                     ]
                 );
@@ -670,7 +670,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * {@inheritdoc}
      */
-    public function isExpired(?DateTime $time = null): bool
+    public function isExpired(?DateTimeInterface $time = null): bool
     {
         $timestamp = $time?->getTimestamp() ?? time();
         $creationTime = $this->getSignatureCreationTime()?->getTimestamp() ?? 0;
@@ -681,7 +681,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * {@inheritdoc}
      */
-    public function getSignatureCreationTime(): ?DateTime
+    public function getSignatureCreationTime(): ?DateTimeInterface
     {
         $subpacket = self::getSubpacket(
             $this->hashedSubpackets,
@@ -696,7 +696,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * {@inheritdoc}
      */
-    public function getSignatureExpirationTime(): ?DateTime
+    public function getSignatureExpirationTime(): ?DateTimeInterface
     {
         $subpacket = self::getSubpacket(
             $this->hashedSubpackets,

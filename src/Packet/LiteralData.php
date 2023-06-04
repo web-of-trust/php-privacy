@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Packet;
 
-use DateTime;
+use DateTimeInterface;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\LiteralFormat as Format;
 use OpenPGP\Enum\PacketTag;
@@ -32,7 +32,7 @@ use OpenPGP\Type\{
  */
 class LiteralData extends AbstractPacket implements ForSigningInterface, LiteralDataInterface
 {
-    private readonly DateTime $time;
+    private readonly DateTimeInterface $time;
 
     /**
      * Constructor
@@ -40,18 +40,18 @@ class LiteralData extends AbstractPacket implements ForSigningInterface, Literal
      * @param string $data
      * @param Format $format
      * @param string $filename
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return self
      */
     public function __construct(
         private readonly string $data,
         private readonly Format $format = Format::Utf8,
         private readonly string $filename = '',
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     )
     {
         parent::__construct(PacketTag::LiteralData);
-        $this->time = $time ?? (new DateTime())->setTimestamp(time());
+        $this->time = $time ?? (new \DateTime())->setTimestamp(time());
     }
 
     /**
@@ -68,7 +68,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface, Literal
         $filename = substr($bytes, $offset, $length);
 
         $offset += $length;
-        $time = (new DateTime())->setTimestamp(
+        $time = (new \DateTime())->setTimestamp(
             Helper::bytesToLong($bytes, $offset)
         );
 
@@ -84,11 +84,11 @@ class LiteralData extends AbstractPacket implements ForSigningInterface, Literal
      * Build literal data packet from text
      *
      * @param string $text
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return self
      */
     public static function fromText(
-        string $text, ?DateTime $time = null
+        string $text, ?DateTimeInterface $time = null
     ): self
     {
         return new self(
@@ -115,7 +115,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface, Literal
     /**
      * {@inheritdoc}
      */
-    public function getTime(): DateTime
+    public function getTime(): DateTimeInterface
     {
         return $this->time;
     }

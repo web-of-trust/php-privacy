@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Type;
 
-use DateTime;
+use DateTimeInterface;
 use OpenPGP\Enum\{
     CompressionAlgorithm,
     SymmetricAlgorithm,
@@ -38,13 +38,13 @@ interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInt
      *
      * @param array $signingKeys
      * @param NotationDataInterface $notationData
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return self
      */
     function sign(
         array $signingKeys,
         ?NotationDataInterface $notationData = null,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): self;
 
     /**
@@ -52,13 +52,13 @@ interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInt
      *
      * @param array $signingKeys
      * @param NotationDataInterface $notationData
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return SignatureInterface
      */
     function signDetached(
         array $signingKeys,
         ?NotationDataInterface $notationData = null,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): SignatureInterface;
 
     /**
@@ -67,13 +67,13 @@ interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInt
      *
      * @param array $verificationKeys
      * @param SignatureInterface $signature
-     * @param DateTime $time
+     * @param DateTimeInterface $time
      * @return array
      */
     function verifyDetached(
         array $verificationKeys,
         SignatureInterface $signature,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): array;
 
     /**

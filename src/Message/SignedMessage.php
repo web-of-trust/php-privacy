@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Message;
 
-use DateTime;
+use DateTimeInterface;
 use OpenPGP\Common\Armor;
 use OpenPGP\Enum\ArmorType;
 use OpenPGP\Packet\PacketList;
@@ -97,7 +97,7 @@ class SignedMessage extends CleartextMessage implements SignedMessageInterface
      * {@inheritdoc}
      */
     public function verify(
-        array $verificationKeys, ?DateTime $time = null
+        array $verificationKeys, ?DateTimeInterface $time = null
     ): array
     {
         return $this->signature->verifyCleartext(

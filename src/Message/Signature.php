@@ -10,7 +10,7 @@
 
 namespace OpenPGP\Message;
 
-use DateTime;
+use DateTimeInterface;
 use OpenPGP\Common\{
     Armor,
     Config,
@@ -94,7 +94,7 @@ class Signature implements SignatureInterface
     public function verify(
         array $verificationKeys,
         LiteralDataInterface $literalData,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): array
     {
         $verificationKeys = array_filter(
@@ -135,7 +135,7 @@ class Signature implements SignatureInterface
     public function verifyCleartext(
         array $verificationKeys,
         CleartextMessageInterface $cleartext,
-        ?DateTime $time = null
+        ?DateTimeInterface $time = null
     ): array
     {
         return $this->verify(
