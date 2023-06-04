@@ -209,9 +209,9 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
      * Set users
      * 
      * @param array $users
-     * @return self
+     * @return static
      */
-    protected function setUsers(array $users): self
+    protected function setUsers(array $users): static
     {
         $this->users = array_filter(
             $users,
@@ -224,9 +224,9 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
      * Set subkeys
      * 
      * @param array $subkeys
-     * @return self
+     * @return static
      */
-    protected function setSubkeys(array $subkeys): self
+    protected function setSubkeys(array $subkeys): static
     {
         $this->subkeys = array_filter(
             $subkeys,
@@ -612,9 +612,9 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * Clone key.
      *
-     * @return self
+     * @return static
      */
-    protected function clone(): self
+    protected function clone(): static
     {
         $key = clone $this;
 
@@ -627,9 +627,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
                 $user->getOtherCertifications()
             ),
             $key->getUsers()
-        ));
-
-        $key->setSubkeys(array_map(
+        ))->setSubkeys(array_map(
             static fn ($subkey) => new Subkey(
                 $key,
                 $subkey->getKeyPacket(),
@@ -653,8 +651,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
                 $user['otherCertifications']
             ),
             $keyMap['users']
-        ));
-        $key->setSubkeys(array_map(
+        ))->setSubkeys(array_map(
             static fn ($subkey) => new Subkey(
                 $key,
                 $subkey['keyPacket'],
