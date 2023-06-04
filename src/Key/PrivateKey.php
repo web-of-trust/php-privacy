@@ -327,8 +327,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $this->getRevocationSignatures(),
             $this->getDirectSignatures(),
         );
-
-        $users = array_map(
+        $privateKey->setUsers(array_map(
             static fn ($user) => new User(
                 $privateKey,
                 $user->getUserIDPacket(),
@@ -337,8 +336,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 $user->getOtherCertifications()
             ),
             $this->getUsers()
-        );
-        $privateKey->setUsers($users);
+        ));
 
         $subkeys = [];
         foreach ($this->getSubkeys() as $key => $subkey) {
@@ -382,8 +380,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $this->getRevocationSignatures(),
             $this->getDirectSignatures(),
         );
-
-        $users = array_map(
+        $privateKey->setUsers(array_map(
             static fn ($user) => new User(
                 $privateKey,
                 $user->getUserIDPacket(),
@@ -392,8 +389,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 $user->getOtherCertifications()
             ),
             $this->getUsers()
-        );
-        $privateKey->setUsers($users);
+        ));
 
         $subkeys = [];
         foreach ($this->getSubkeys() as $key => $subkey) {
@@ -425,7 +421,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             );
         }
 
-        $privateKey = clone $this;
+        $privateKey = $this->clone();
         $users = $privateKey->getUsers();
         foreach ($userIDs as $userID) {
             $packet = new UserID($userID);
@@ -440,17 +436,6 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             );
         }
         $privateKey->setUsers($users);
-
-        $subkeys = array_map(
-            static fn ($subkey) => new Subkey(
-                $privateKey,
-                $subkey->getKeyPacket(),
-                $subkey->getRevocationSignatures(),
-                $subkey->getBindingSignatures()
-            ),
-            $privateKey->getSubkeys()
-        );
-        $privateKey->setSubkeys($subkeys);
 
         return $privateKey;
     }
@@ -475,7 +460,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             );
         }
 
-        $privateKey = clone $this;
+        $privateKey = $this->clone();
         $subkeys = $privateKey->getSubkeys();
         $secretSubkey = SecretSubkey::generate(
             $keyAlgorithm,
@@ -497,18 +482,6 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             bindingSignatures: [$bindingSignature]
         );
         $privateKey->setSubkeys($subkeys);
-
-        $users = array_map(
-            static fn ($user) => new User(
-                $privateKey,
-                $user->getUserIDPacket(),
-                $user->getRevocationCertifications(),
-                $user->getSelfCertifications(),
-                $user->getOtherCertifications()
-            ),
-            $privateKey->getUsers()
-        );
-        $privateKey->setUsers($users);
 
         return $privateKey;
     }
@@ -544,7 +517,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         ?DateTime $time = null
     ): self
     {
-        $privateKey = clone $this;
+        $privateKey = $this->clone();
 
         $users = $privateKey->getUsers();
         foreach ($users as $key => $user) {
@@ -554,29 +527,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 );
             }
         }
-
-        $users = array_map(
-            static fn ($user) => new User(
-                $privateKey,
-                $user->getUserIDPacket(),
-                $user->getRevocationCertifications(),
-                $user->getSelfCertifications(),
-                $user->getOtherCertifications()
-            ),
-            $users
-        );
         $privateKey->setUsers($users);
-
-        $subkeys = array_map(
-            static fn ($subkey) => new Subkey(
-                $privateKey,
-                $subkey->getKeyPacket(),
-                $subkey->getRevocationSignatures(),
-                $subkey->getBindingSignatures()
-            ),
-            $privateKey->getSubkeys()
-        );
-        $privateKey->setSubkeys($subkeys);
 
         return $privateKey;
     }
@@ -590,7 +541,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         ?DateTime $time = null
     ): self
     {
-        $privateKey = clone $this;
+        $privateKey = $this->clone();
         $subkeys = $privateKey->getSubkeys();
         foreach ($subkeys as $key => $subkey) {
             if ($subkey->getKeyID() === $keyID) {
@@ -599,17 +550,19 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 );
             }
         }
-
-        $subkeys = array_map(
-            static fn ($subkey) => new Subkey(
-                $privateKey,
-                $subkey->getKeyPacket(),
-                $subkey->getRevocationSignatures(),
-                $subkey->getBindingSignatures()
-            ),
-            $subkeys
-        );
         $privateKey->setSubkeys($subkeys);
+
+        return $privateKey;
+    }
+
+    /**
+     * Clone key.
+     *
+     * @return self
+     */
+    private function clone(): self
+    {
+        $privateKey = clone $this;
 
         $users = array_map(
             static fn ($user) => new User(
@@ -622,6 +575,17 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $privateKey->getUsers()
         );
         $privateKey->setUsers($users);
+
+        $subkeys = array_map(
+            static fn ($subkey) => new Subkey(
+                $privateKey,
+                $subkey->getKeyPacket(),
+                $subkey->getRevocationSignatures(),
+                $subkey->getBindingSignatures()
+            ),
+            $privateKey->getSubkeys()
+        );
+        $privateKey->setSubkeys($subkeys);
 
         return $privateKey;
     }
