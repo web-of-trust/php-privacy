@@ -616,30 +616,30 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
      */
     protected function clone(): self
     {
-        $privateKey = clone $this;
+        $key = clone $this;
 
-        $privateKey->setUsers(array_map(
+        $key->setUsers(array_map(
             static fn ($user) => new User(
-                $privateKey,
+                $key,
                 $user->getUserIDPacket(),
                 $user->getRevocationCertifications(),
                 $user->getSelfCertifications(),
                 $user->getOtherCertifications()
             ),
-            $privateKey->getUsers()
+            $key->getUsers()
         ));
 
-        $privateKey->setSubkeys(array_map(
+        $key->setSubkeys(array_map(
             static fn ($subkey) => new Subkey(
-                $privateKey,
+                $key,
                 $subkey->getKeyPacket(),
                 $subkey->getRevocationSignatures(),
                 $subkey->getBindingSignatures()
             ),
-            $privateKey->getSubkeys()
+            $key->getSubkeys()
         ));
 
-        return $privateKey;
+        return $key;
     }
 
     protected static function applyKeyStructure(AbstractKey $key, array $keyMap): void
