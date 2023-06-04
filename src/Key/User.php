@@ -183,14 +183,14 @@ class User implements UserInterface
     ): bool
     {
         $keyID = $certificate?->getIssuerKeyID() ?? '';
-        $mainKeyPacket = $this->mainKey->toPublic()->getSigningKeyPacket();
-        $verifyKeyPacket = $verifyKey?->toPublic()->getSigningKeyPacket() ?? $mainKeyPacket;
+        $keyPacket = $verifyKey?->toPublic()->getSigningKeyPacket() ??
+                     $this->mainKey->toPublic()->getSigningKeyPacket();
         foreach ($this->revocationSignatures as $signature) {
             if (empty($keyID) || $keyID === $signature->getIssuerKeyID()) {
                 if ($signature->verify(
-                    $verifyKeyPacket,
+                    $keyPacket,
                     implode([
-                        $mainKeyPacket->getSignBytes(),
+                        $this->mainKey->getKeyPacket()->getSignBytes(),
                         $this->userIDPacket->getSignBytes(),
                     ]),
                     $time
@@ -218,14 +218,14 @@ class User implements UserInterface
             return false;
         }
         $keyID = $certificate?->getIssuerKeyID() ?? '';
-        $mainKeyPacket = $this->mainKey->toPublic()->getSigningKeyPacket();
-        $verifyKeyPacket = $verifyKey?->toPublic()->getSigningKeyPacket() ?? $mainKeyPacket;
+        $keyPacket = $verifyKey?->toPublic()->getSigningKeyPacket() ??
+                     $this->mainKey->toPublic()->getSigningKeyPacket();
         foreach ($this->otherCertifications as $signature) {
             if (empty($keyID) || $keyID === $signature->getIssuerKeyID()) {
                 if ($signature->verify(
-                    $verifyKeyPacket,
+                    $keyPacket,
                     implode([
-                        $mainKeyPacket->getSignBytes(),
+                        $this->mainKey->getKeyPacket()->getSignBytes(),
                         $this->userIDPacket->getSignBytes(),
                     ]),
                     $time
@@ -253,7 +253,7 @@ class User implements UserInterface
             if (!$signature->verify(
                 $keyPacket,
                 implode([
-                    $keyPacket->getSignBytes(),
+                    $this->mainKey->getKeyPacket()->getSignBytes(),
                     $this->userIDPacket->getSignBytes(),
                 ]),
                 $time

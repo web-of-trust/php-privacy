@@ -450,6 +450,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * Create subkey revocation signature
      *
      * @param KeyPacketInterface $signKey
+     * @param KeyPacketInterface $primaryKey
      * @param SubkeyPacketInterface $subkey
      * @param string $revocationReason
      * @param DateTime $time
@@ -457,6 +458,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      */
     public static function createSubkeyRevocation(
         KeyPacketInterface $signKey,
+        KeyPacketInterface $primaryKey,
         SubkeyPacketInterface $subkey,
         string $revocationReason = '',
         ?DateTime $time = null
@@ -466,7 +468,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             $signKey,
             SignatureType::SubkeyRevocation,
             implode([
-                $signKey->getSignBytes(),
+                $primaryKey->getSignBytes(),
                 $subkey->getSignBytes(),
             ]),
             Config::getPreferredHash(),

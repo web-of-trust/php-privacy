@@ -228,7 +228,7 @@ class Subkey implements SubkeyInterface
                 if ($signature->verify(
                     $keyPacket,
                     implode([
-                        $keyPacket->getSignBytes(),
+                        $this->mainKey->getKeyPacket()->getSignBytes(),
                         $this->keyPacket->getSignBytes(),
                     ]),
                     $time
@@ -256,7 +256,7 @@ class Subkey implements SubkeyInterface
             if (!$signature->verify(
                 $keyPacket,
                 implode([
-                    $keyPacket->getSignBytes(),
+                    $this->mainKey->getKeyPacket()->getSignBytes(),
                     $this->keyPacket->getSignBytes(),
                 ]),
                 $time
@@ -280,6 +280,7 @@ class Subkey implements SubkeyInterface
         $keyPacket = $signKey->getSigningKeyPacket();
         $subkey->revocationSignatures[] = Signature::createSubkeyRevocation(
             $keyPacket,
+            $subkey->getMainKey()->getKeyPacket(),
             $subkey->getKeyPacket(),
             $revocationReason,
             $time
