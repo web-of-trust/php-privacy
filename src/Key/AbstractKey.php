@@ -166,6 +166,14 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function __toString(): string
+    {
+        return $this->armor();
+    }
+
+    /**
      * Get revocation signatures
      * 
      * @return array

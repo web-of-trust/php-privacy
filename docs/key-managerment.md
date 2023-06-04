@@ -14,6 +14,7 @@ $privateKey = OpenPGP::generateKey(
     rsaKeySize: RSAKeySize::S4096,
 );
 $publicKey = $privateKey->toPublic();
+echo $publicKey; // '-----BEGIN PGP PUBLIC KEY BLOCK ... '
 ```
 
 Dsa key type (uses DSA algorithm for signing & ElGamal algorithm for encryption):
@@ -27,6 +28,7 @@ $privateKey = OpenPGP::generateKey(
     dhKeySize: RSAKeySize::L2048_N224,
 );
 $publicKey = $privateKey->toPublic();
+echo $publicKey; // '-----BEGIN PGP PUBLIC KEY BLOCK ... '
 ```
 
 Ecc key type (uses ECDSA/EdDSA algorithm for signing & ECDH algorithm for encryption):
@@ -37,9 +39,10 @@ $privateKey = OpenPGP::generateKey(
     [USER_ID],
     PASSPHRASE,
     type: KeyType::Ecc,
-    curve: CurveInfo::ed25519,
+    curve: CurveInfo::Ed25519,
 );
 $publicKey = $privateKey->toPublic();
+echo $publicKey; // '-----BEGIN PGP PUBLIC KEY BLOCK ... '
 ```
 
 ## Key reading
@@ -67,6 +70,7 @@ $privateKey = OpenPGP::decryptPrivateKey($armoredPrivateKey, PASSPHRASE);
 
 $certifiedKey = $privateKey->certifyKey($publicKey);
 $certifiedKey->isCertified($privateKey->toPublic());
+echo $certifiedKey; // '-----BEGIN PGP PUBLIC KEY BLOCK ... '
 ```
 
 ## Revoke a key
@@ -82,4 +86,5 @@ $privateKey = OpenPGP::decryptPrivateKey($armoredPrivateKey, PASSPHRASE);
 
 $revokedKey = $privateKey->revokeKey($publicKey);
 $revokedKey->isRevoked($privateKey->toPublic());
+echo $revokedKey; // '-----BEGIN PGP PUBLIC KEY BLOCK ... '
 ```

@@ -104,4 +104,12 @@ class SignedMessage extends CleartextMessage implements SignedMessageInterface
             $verificationKeys, $this, $time
         );
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __toString(): string
+    {
+        return $this->armor();
+    }
 }

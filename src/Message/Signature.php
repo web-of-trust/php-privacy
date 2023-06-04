@@ -171,4 +171,12 @@ class Signature implements SignatureInterface
     {
         return $this->packets;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __toString(): string
+    {
+        return $this->armor();
+    }
 }

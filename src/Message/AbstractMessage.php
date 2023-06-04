@@ -93,4 +93,12 @@ abstract class AbstractMessage implements ArmorableInterface, LoggerAwareInterfa
     {
         return $this->logger ?? Config::getLogger();
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __toString(): string
+    {
+        return $this->armor();
+    }
 }
