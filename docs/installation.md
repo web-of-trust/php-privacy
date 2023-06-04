@@ -19,3 +19,25 @@ or just add it to your `composer.json` file directly.
     }
 }
 ```
+
+## Configuration
+
+```php
+<?php declare(strict_types=1);
+
+require_once 'vendor/autoload.php';
+
+use OpenPGP\Common\Config;
+
+// Set preferred hash algorithm.
+Config::setPreferredHash($hash);
+
+// Set preferred symmetric algorithm.
+Config::setPreferredSymmetric($symmetric);
+
+// Set preferred compression algorithm.
+Config::setPreferredCompression($compression);
+
+// Set a logger.
+Config::setLogger($logger);
+```
