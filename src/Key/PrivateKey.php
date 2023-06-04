@@ -98,38 +98,18 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
      */
     public static function fromPacketList(PacketListInterface $packetList): self
     {
-        $keyMap = self::readPacketList($packetList);
-        if (!($keyMap['keyPacket'] instanceof SecretKeyPacketInterface)) {
+        $keyStruct = self::readPacketList($packetList);
+        if (!($keyStruct['keyPacket'] instanceof SecretKeyPacketInterface)) {
             throw new \UnexpectedValueException(
                 'Key packet is not secret key type'
             );
         }
         $privateKey = new self(
-            $keyMap['keyPacket'],
-            $keyMap['revocationSignatures'],
-            $keyMap['directSignatures']
+            $keyStruct['keyPacket'],
+            $keyStruct['revocationSignatures'],
+            $keyStruct['directSignatures']
         );
-        $users = array_map(
-            static fn ($user) => new User(
-                $privateKey,
-                $user['userIDPacket'],
-                $user['revocationSignatures'],
-                $user['selfCertifications'],
-                $user['otherCertifications']
-            ),
-            $keyMap['users']
-        );
-        $privateKey->setUsers($users);
-        $subkeys = array_map(
-            static fn ($subkey) => new Subkey(
-                $privateKey,
-                $subkey['keyPacket'],
-                $subkey['revocationSignatures'],
-                $subkey['bindingSignatures']
-            ),
-            $keyMap['subkeys']
-        );
-        $privateKey->setSubkeys($subkeys);
+        self::applyKeyStructure($privateKey, $keyStruct);
 
         return $privateKey;
     }
@@ -550,41 +530,6 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 );
             }
         }
-        $privateKey->setSubkeys($subkeys);
-
-        return $privateKey;
-    }
-
-    /**
-     * Clone key.
-     *
-     * @return self
-     */
-    private function clone(): self
-    {
-        $privateKey = clone $this;
-
-        $users = array_map(
-            static fn ($user) => new User(
-                $privateKey,
-                $user->getUserIDPacket(),
-                $user->getRevocationCertifications(),
-                $user->getSelfCertifications(),
-                $user->getOtherCertifications()
-            ),
-            $privateKey->getUsers()
-        );
-        $privateKey->setUsers($users);
-
-        $subkeys = array_map(
-            static fn ($subkey) => new Subkey(
-                $privateKey,
-                $subkey->getKeyPacket(),
-                $subkey->getRevocationSignatures(),
-                $subkey->getBindingSignatures()
-            ),
-            $privateKey->getSubkeys()
-        );
         $privateKey->setSubkeys($subkeys);
 
         return $privateKey;

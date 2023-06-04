@@ -497,38 +497,17 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
         PrivateKeyInterface $signKey, ?DateTimeInterface $time = null
     ): self
     {
-        $key = clone $this;
+        $key = $this->clone();
         $certifedUser = $key->getPrimaryUser()->certifyBy($signKey, $time);
-        $users = [new User(
-            $key,
-            $certifedUser->getUserIDPacket(),
-            $certifedUser->getRevocationCertifications(),
-            $certifedUser->getSelfCertifications(),
-            $certifedUser->getOtherCertifications()
-        )];
+        $users = [
+            $certifedUser,
+        ];
         foreach ($key->getUsers() as $user) {
             if ($user->getUserID() !== $certifedUser->getUserID()) {
-                $users[] = new User(
-                    $key,
-                    $user->getUserIDPacket(),
-                    $user->getRevocationCertifications(),
-                    $user->getSelfCertifications(),
-                    $user->getOtherCertifications()
-                );
+                $users[] = $user;
             }
         }
         $key->setUsers($users);
-
-        $subkeys = array_map(
-            static fn ($subkey) => new Subkey(
-                $key,
-                $subkey->getKeyPacket(),
-                $subkey->getRevocationSignatures(),
-                $subkey->getBindingSignatures()
-            ),
-            $key->getSubkeys()
-        );
-        $key->setSubkeys($subkeys);
 
         return $key;
     }
@@ -542,36 +521,13 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
         ?DateTimeInterface $time = null
     ): self
     {
-        $key = clone $this;
+        $key = $this->clone();
         $key->revocationSignatures[] = Signature::createKeyRevocation(
             $signKey->getSigningKeyPacket(),
             $key->getKeyPacket(),
             $revocationReason,
             $time
         );
-
-        $users = array_map(
-            static fn ($user) => new User(
-                $key,
-                $user->getUserIDPacket(),
-                $user->getRevocationCertifications(),
-                $user->getSelfCertifications(),
-                $user->getOtherCertifications()
-            ),
-            $key->getUsers()
-        );
-        $key->setUsers($users);
-
-        $subkeys = array_map(
-            static fn ($subkey) => new Subkey(
-                $key,
-                $subkey->getKeyPacket(),
-                $subkey->getRevocationSignatures(),
-                $subkey->getBindingSignatures()
-            ),
-            $key->getSubkeys()
-        );
-        $key->setSubkeys($subkeys);
 
         return $key;
     }
@@ -651,6 +607,62 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
             }
         }
         return null;
+    }
+
+    /**
+     * Clone key.
+     *
+     * @return self
+     */
+    protected function clone(): self
+    {
+        $privateKey = clone $this;
+
+        $privateKey->setUsers(array_map(
+            static fn ($user) => new User(
+                $privateKey,
+                $user->getUserIDPacket(),
+                $user->getRevocationCertifications(),
+                $user->getSelfCertifications(),
+                $user->getOtherCertifications()
+            ),
+            $privateKey->getUsers()
+        ));
+
+        $privateKey->setSubkeys(array_map(
+            static fn ($subkey) => new Subkey(
+                $privateKey,
+                $subkey->getKeyPacket(),
+                $subkey->getRevocationSignatures(),
+                $subkey->getBindingSignatures()
+            ),
+            $privateKey->getSubkeys()
+        ));
+
+        return $privateKey;
+    }
+
+    protected static function applyKeyStructure(AbstractKey $key, array $keyMap): void
+    {
+        $key->setUsers(array_map(
+            static fn ($user) => new User(
+                $key,
+                $user['userIDPacket'],
+                $user['revocationSignatures'],
+                $user['selfCertifications'],
+                $user['otherCertifications']
+            ),
+            $keyMap['users']
+        ));
+        $key->setSubkeys(array_map(
+            static fn ($subkey) => new Subkey(
+                $key,
+                $subkey['keyPacket'],
+                $subkey['revocationSignatures'],
+                $subkey['bindingSignatures']
+            ),
+            $keyMap['subkeys']
+        ));
     }
 
     /**
