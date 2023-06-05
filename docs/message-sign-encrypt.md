@@ -10,6 +10,8 @@ $password = 'secret stuff';
 $encryptedMessage = OpenPGP::encrypt(
     OpenPGP::createLiteralMessage($text), passwords: [$password]
 );
+file_put_contents('encryptedMessage.asc', $encryptedMessage->armor());
+
 $decryptedMessage = OpenPGP::decrypt(
     $encryptedMessage, passwords: [$password]
 );
@@ -32,6 +34,8 @@ $privateKey = OpenPGP::decryptPrivateKey($armoredPrivateKey, $passphrase);
 $encryptedMessage = OpenPGP::encrypt(
     OpenPGP::createLiteralMessage($text), [$publicKey]
 );
+file_put_contents('encryptedMessage.asc', $encryptedMessage->armor());
+
 $decryptedMessage = OpenPGP::decrypt(
     $encryptedMessage, [$privateKey]
 );
@@ -54,6 +58,8 @@ $privateKey = OpenPGP::decryptPrivateKey($armoredPrivateKey, $passphrase);
 $encryptedMessage = OpenPGP::encrypt(
     OpenPGP::createLiteralMessage($text), $publicKeys, signingKeys: [$privateKey]
 );
+file_put_contents('encryptedMessage.asc', $encryptedMessage->armor());
+
 $decryptedMessage = OpenPGP::decrypt(
     $encryptedMessage, [$privateKey]
 );

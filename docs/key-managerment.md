@@ -13,6 +13,7 @@ $privateKey = OpenPGP::generateKey(
     type: KeyType::Rsa,
     rsaKeySize: RSAKeySize::S4096,
 );
+file_put_contents('privateKey.asc', $privateKey->armor());
 $publicKey = $privateKey->toPublic();
 echo $publicKey; // '-----BEGIN PGP PUBLIC KEY BLOCK ... '
 ```
@@ -27,6 +28,7 @@ $privateKey = OpenPGP::generateKey(
     type: KeyType::Dsa,
     dhKeySize: RSAKeySize::L2048_N224,
 );
+file_put_contents('privateKey.asc', $privateKey->armor());
 $publicKey = $privateKey->toPublic();
 echo $publicKey; // '-----BEGIN PGP PUBLIC KEY BLOCK ... '
 ```
@@ -41,6 +43,7 @@ $privateKey = OpenPGP::generateKey(
     type: KeyType::Ecc,
     curve: CurveInfo::Ed25519,
 );
+file_put_contents('privateKey.asc', $privateKey->armor());
 $publicKey = $privateKey->toPublic();
 echo $publicKey; // '-----BEGIN PGP PUBLIC KEY BLOCK ... '
 ```
