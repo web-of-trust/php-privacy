@@ -13,6 +13,7 @@ namespace OpenPGP\Packet\Key;
 use phpseclib3\Crypt\EC;
 use phpseclib3\Crypt\EC\PrivateKey;
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
+use phpseclib3\Crypt\Random;
 use phpseclib3\File\ASN1;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
@@ -29,6 +30,8 @@ use OpenPGP\Type\KeyMaterialInterface;
  */
 class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
 {
+    const CURVE25519_KEY_LENGTH = 32;
+
     /**
      * Read key material from bytes
      *
@@ -54,8 +57,12 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
     public static function generate(CurveOid $curveOid): self
     {
         if ($curveOid !== CurveOid::Ed25519) {
-            $privateKey = EC::createKey($curveOid->name);
             if ($curveOid === CurveOid::Curve25519) {
+                $secretKey = Random::string(self::CURVE25519_KEY_LENGTH);
+                $secretKey[0] = chr((ord($secretKey[0]) & 127) | 64);
+                $secretKey[31] = chr(ord($secretKey[31]) & 248);
+                $privateKey = EC::loadPrivateKeyFormat('MontgomeryPrivate', strrev($secretKey));
+
                 $d = Helper::bin2BigInt(
                     strrev($privateKey->toString('MontgomeryPrivate'))
                 );
@@ -64,6 +71,7 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
                 );
             }
             else {
+                $privateKey = EC::createKey($curveOid->name);
                 $key = PKCS8::load($privateKey->toString('PKCS8'));
                 $d = $key['dA'];
                 $q = Helper::bin2BigInt($privateKey->getEncodedCoordinates());
