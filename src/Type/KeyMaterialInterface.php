@@ -15,10 +15,9 @@ use phpseclib3\Crypt\Common\AsymmetricKey;
 /**
  * Key material interface
  * 
- * @package   OpenPGP
- * @category  Type
- * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Type
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 interface KeyMaterialInterface
 {

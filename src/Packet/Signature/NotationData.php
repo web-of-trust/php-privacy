@@ -18,10 +18,9 @@ use OpenPGP\Type\NotationDataInterface;
  * NotationData sub-packet class.
  * Class provided a NotationData object according to RFC2440, Chapter 5.2.3.15.
  * 
- * @package   OpenPGP
- * @category  Packet
- * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Packet
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 class NotationData extends SignatureSubpacket implements NotationDataInterface
 {

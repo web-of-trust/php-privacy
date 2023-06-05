@@ -36,10 +36,9 @@ use OpenPGP\Type\{
  * but in theory other Symmetrically Encrypted Data packets
  * or sequences of packets that form whole OpenPGP messages).
  * 
- * @package   OpenPGP
- * @category  Packet
- * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Packet
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInterface
 {

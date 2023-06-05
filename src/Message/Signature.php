@@ -33,10 +33,9 @@ use OpenPGP\Type\{
  * Signature class
  * Class that represents a detacted OpenPGP signature.
  *
- * @package   OpenPGP
- * @category  Message
- * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Message
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 class Signature implements SignatureInterface
 {

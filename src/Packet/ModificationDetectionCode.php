@@ -23,10 +23,9 @@ use OpenPGP\Enum\PacketTag;
  * that is encrypted in the Symmetrically Encrypted Integrity Protected Data packet,
  * and MUST appear in no other place.
  * 
- * @package   OpenPGP
- * @category  Packet
- * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Packet
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 class ModificationDetectionCode extends AbstractPacket
 {

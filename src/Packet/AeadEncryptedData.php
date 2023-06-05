@@ -28,10 +28,9 @@ use OpenPGP\Type\{
  * Additional Data (AEAD) Protected Data Packet(Tag 20)
  * See https://tools.ietf.org/html/draft-ford-openpgp-format-00#section-2.1
  * 
- * @package   OpenPGP
- * @category  Packet
- * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Packet
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInterface
 {

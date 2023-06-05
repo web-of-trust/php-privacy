@@ -32,10 +32,9 @@ use OpenPGP\Type\{
  * detecting a modification to encrypted data.
  * It is used in combination with a Modification Detection Code packet.
  * 
- * @package   OpenPGP
- * @category  Packet
- * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Packet
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 class SymEncryptedIntegrityProtectedData extends AbstractPacket implements EncryptedDataPacketInterface
 {

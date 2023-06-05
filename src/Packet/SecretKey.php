@@ -38,10 +38,9 @@ use OpenPGP\Type\{
  * SecretKey represents a possibly encrypted private key.
  * See RFC 4880, section 5.5.3.
  * 
- * @package   OpenPGP
- * @category  Packet
- * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Packet
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 {

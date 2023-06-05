@@ -25,10 +25,9 @@ use OpenPGP\Type\{
  * 
  * A Literal Data packet contains the body of a message; data that is not to be further interpreted.
  * 
- * @package   OpenPGP
- * @category  Packet
- * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Packet
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 class LiteralData extends AbstractPacket implements ForSigningInterface, LiteralDataInterface
 {

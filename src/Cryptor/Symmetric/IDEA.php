@@ -26,10 +26,9 @@ use OpenPGP\Common\Helper;
  * It can be found at ftp://ftp.funet.fi/pub/crypt/cryptography/symmetric/idea/
  * Note: This algorithm was patented in the USA, Japan and Europe. These patents expired in 2011/2012.
  *
- * @package    OpenPGP
- * @category   Cryptor
- * @author     Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright  Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Cryptor
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 class IDEA extends BlockCipher
 {

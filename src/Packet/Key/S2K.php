@@ -25,10 +25,9 @@ use OpenPGP\Enum\{
  * of private keys in the private keyring, and to convert passphrases
  * to encryption keys for symmetrically encrypted messages.
  *
- * @package   OpenPGP
- * @category  Packet
- * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Packet
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 class S2K
 {

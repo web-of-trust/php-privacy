@@ -17,10 +17,9 @@ use OpenPGP\Type\PublicKeyMaterialInterface;
 /**
  * ECDSA public key material class
  * 
- * @package   OpenPGP
- * @category  Packet
- * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Packet
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 class ECDSAPublicKeyMaterial extends ECPublicKeyMaterial implements PublicKeyMaterialInterface
 {

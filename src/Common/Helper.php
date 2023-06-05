@@ -17,10 +17,9 @@ use OpenPGP\Enum\SymmetricAlgorithm;
 /**
  * Helper class
  * 
- * @package   OpenPGP
- * @category  Common
- * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Common
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 final class Helper
 {

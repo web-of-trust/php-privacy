@@ -16,10 +16,9 @@ use OpenPGP\Enum\KekSize;
  * CamelliaKeyWrapper class
  * An implementation of the Camellia key wrapper based on RFC 3657/RFC 3394.
  * 
- * @package   OpenPGP
- * @category  Packet
- * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Packet
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 class CamelliaKeyWrapper extends KeyWrapper
 {

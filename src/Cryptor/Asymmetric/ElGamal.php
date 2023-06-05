@@ -16,10 +16,9 @@ use phpseclib3\Math\BigInteger;
 /**
  * ElGamal class
  *
- * @package    OpenPGP
- * @category   Cryptor
- * @author     Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright  Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Cryptor
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 abstract class ElGamal extends AsymmetricKey
 {

@@ -26,10 +26,9 @@ use phpseclib3\Crypt\EC\Curves\{
 /**
  * Curve oid enum
  *
- * @package    OpenPGP
- * @category   Enum
- * @author     Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright  Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Enum
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 enum CurveOid: string
 {

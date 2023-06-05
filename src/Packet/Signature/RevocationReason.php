@@ -21,10 +21,9 @@ use OpenPGP\Packet\SignatureSubpacket;
  * RevocationReason sub-packet class
  * Represents revocation reason OpenPGP signature sub packet.
  * 
- * @package   OpenPGP
- * @category  Packet
- * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Packet
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 class RevocationReason extends SignatureSubpacket
 {

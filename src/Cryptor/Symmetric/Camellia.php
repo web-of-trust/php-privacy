@@ -19,10 +19,9 @@ use OpenPGP\Cryptor\Math\Bitwise;
  * Camellia class
  * Based on RFC 3713.
  *
- * @package    OpenPGP
- * @category   Cryptor
- * @author     Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright  Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Cryptor
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 class Camellia extends BlockCipher
 {

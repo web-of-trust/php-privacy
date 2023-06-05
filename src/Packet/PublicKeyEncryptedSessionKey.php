@@ -38,10 +38,9 @@ use OpenPGP\Type\{
  * The recipient of the message finds a session key that is encrypted to their public key,
  * decrypts the session key, and then uses the session key to decrypt the message.
  * 
- * @package   OpenPGP
- * @category  Packet
- * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Packet
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 class PublicKeyEncryptedSessionKey extends AbstractPacket
 {

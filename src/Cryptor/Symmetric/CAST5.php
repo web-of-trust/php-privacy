@@ -25,10 +25,9 @@ use OpenPGP\Cryptor\Math\Bitwise;
  * RFC2144 - Cast5 (64bit block, 40-128bit key)
  * and implement a simplified cryptography interface.
  *
- * @package    OpenPGP
- * @category   Cryptor
- * @author     Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright  Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Cryptor
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 class CAST5 extends BlockCipher
 {

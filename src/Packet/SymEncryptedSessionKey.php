@@ -34,10 +34,9 @@ use OpenPGP\Enum\{
  * itself encrypted and stored in the Encrypted Session Key packet or
  * the Symmetric-Key Encrypted Session Key packet.
  * 
- * @package   OpenPGP
- * @category  Packet
- * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Packet
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 class SymEncryptedSessionKey extends AbstractPacket
 {

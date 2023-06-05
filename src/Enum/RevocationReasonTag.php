@@ -14,10 +14,9 @@ namespace OpenPGP\Enum;
  * Reason for revocation enum
  * See https://tools.ietf.org/html/rfc4880#section-5.2.3.23
  *
- * @package    OpenPGP
- * @category   Enum
- * @author     Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright  Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Enum
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 enum RevocationReasonTag: int
 {

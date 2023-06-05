@@ -31,10 +31,9 @@ use Psr\Log\{
 /**
  * OpenPGP abstract message class
  *
- * @package   OpenPGP
- * @category  Message
- * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Message
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 abstract class AbstractMessage implements ArmorableInterface, LoggerAwareInterface, PacketContainerInterface
 {

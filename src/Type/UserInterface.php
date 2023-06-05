@@ -16,10 +16,9 @@ use DateTimeInterface;
  * OpenPGP user interface
  * that represents an user ID or attribute packet and the relevant signatures.
  * 
- * @package   OpenPGP
- * @category  Type
- * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Type
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 interface UserInterface extends PacketContainerInterface
 {

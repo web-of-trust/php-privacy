@@ -20,10 +20,9 @@ use OpenPGP\Enum\PacketTag;
  * Typically, this packet is found as the contents of an encrypted packet,
  * or following a Signature or One-Pass Signature packet, and contains a literal data packet.
  * 
- * @package   OpenPGP
- * @category  Packet
- * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
- * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
+ * @package  OpenPGP
+ * @category Packet
+ * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 class CompressedData extends AbstractPacket
 {
