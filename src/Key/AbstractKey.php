@@ -101,14 +101,14 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
         array $subkeys = []
     )
     {
-        $this->revocationSignatures = array_filter(
+        $this->revocationSignatures = array_values(array_filter(
             $revocationSignatures,
             static fn ($signature) => $signature instanceof SignaturePacketInterface
-        );
-        $this->directSignatures = array_filter(
+        ));
+        $this->directSignatures = array_values(array_filter(
             $directSignatures,
             static fn ($signature) => $signature instanceof SignaturePacketInterface
-        );
+        ));
         $this->setUsers($users)
              ->setSubkeys($subkeys)
              ->setLogger(Config::getLogger());
@@ -221,10 +221,10 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
      */
     protected function setUsers(array $users): static
     {
-        $this->users = array_filter(
+        $this->users = array_values(array_filter(
             $users,
             static fn ($user) => $user instanceof UserInterface
-        );
+        ));
         return $this;
     }
 
@@ -236,10 +236,10 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
      */
     protected function setSubkeys(array $subkeys): static
     {
-        $this->subkeys = array_filter(
+        $this->subkeys = array_values(array_filter(
             $subkeys,
             static fn ($subkey) => $subkey instanceof SubkeyInterface
-        );
+        ));
         return $this;
     }
 
