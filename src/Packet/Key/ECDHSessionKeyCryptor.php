@@ -95,10 +95,13 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
                 $keyMaterial->getCurveOid()->name
             );
             $sharedKey = DH::computeSecret(
-                $privateKey, $keyMaterial->getECPublicKey()->getEncodedCoordinates()
+                $privateKey,
+                $keyMaterial->getECPublicKey()->getEncodedCoordinates()
             );
 
-            $keyWrapper = self::selectKeyWrapper($keyMaterial->getKdfSymmetric());
+            $keyWrapper = self::selectKeyWrapper(
+                $keyMaterial->getKdfSymmetric()
+            );
             $kek = self::ecdhKdf(
                 $keyMaterial->getKdfHash(),
                 $sharedKey,
@@ -114,12 +117,12 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
 
             if ($keyMaterial->getCurveOid() === CurveOid::Curve25519) {
                 $ephemeralKey = Helper::bin2BigInt(
-                    "\x40" . $privateKey->getPublicKey()->getEncodedCoordinates()
+                    "\x40" . $privateKey->getEncodedCoordinates()
                 );
             }
             else {
                 $ephemeralKey = Helper::bin2BigInt(
-                    $privateKey->getPublicKey()->getEncodedCoordinates()
+                    $privateKey->getEncodedCoordinates()
                 );
             }
             return new self(
@@ -175,7 +178,8 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
     ): SessionKeyInterface
     {
         return SessionKey::fromBytes($this->decrypt(
-            $secretKey->getKeyMaterial(), $secretKey->getFingerprint()
+            $secretKey->getKeyMaterial(),
+            $secretKey->getFingerprint()
         ));
     }
 
@@ -208,10 +212,13 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
             }
             $publicKey = EC::loadFormat($format, $key);
             $sharedKey = DH::computeSecret(
-                $keyMaterial->getECPrivateKey(), $publicKey->getEncodedCoordinates()
+                $keyMaterial->getECPrivateKey(),
+                $publicKey->getEncodedCoordinates()
             );
 
-            $keyWrapper = self::selectKeyWrapper($publicMaterial->getKdfSymmetric());
+            $keyWrapper = self::selectKeyWrapper(
+                $publicMaterial->getKdfSymmetric()
+            );
             $kek = self::ecdhKdf(
                 $publicMaterial->getKdfHash(),
                 $sharedKey,
@@ -234,7 +241,10 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
      * @return string
      */
     private static function ecdhKdf(
-        HashAlgorithm $hash, string $sharedKey, string $param, int $keySize
+        HashAlgorithm $hash,
+        string $sharedKey,
+        string $param,
+        int $keySize
     ): string
     {
         $toHash = implode([

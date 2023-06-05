@@ -96,7 +96,11 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
         $coefficient = Helper::readMPI(substr($bytes, $offset));
 
         return new self(
-            $exponent, $primeP, $primeQ, $coefficient, $publicMaterial
+            $exponent,
+            $primeP,
+            $primeQ,
+            $coefficient,
+            $publicMaterial
         );
     }
 
@@ -225,14 +229,22 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
             }
 
             // expect p*u = 1 mod q
-            list(, $c) = $this->primeP->multiply($this->coefficient)->divide($this->primeQ);
+            list(, $c) = $this->primeP
+                ->multiply($this->coefficient)
+                ->divide($this->primeQ);
             if (!$c->equals($one)) {
                 return false;
             }
 
-            $nSizeOver3 = (int) floor($this->publicMaterial->getModulus()->getLength() / 3);
-            $r = BigInteger::randomRange($one, $two->bitwise_leftShift($nSizeOver3));
-            $rde = $r->multiply($this->exponent)->multiply($this->publicMaterial->getExponent());
+            $nSizeOver3 = (int) floor(
+                $this->publicMaterial->getModulus()->getLength() / 3
+            );
+            $r = BigInteger::randomRange(
+                $one, $two->bitwise_leftShift($nSizeOver3)
+            );
+            $rde = $r->multiply($this->exponent)->multiply(
+                $this->publicMaterial->getExponent()
+            );
 
             list(, $p) = $rde->divide($this->primeP->subtract($one));
             list(, $q) = $rde->divide($this->primeQ->subtract($one));

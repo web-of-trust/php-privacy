@@ -11,7 +11,7 @@
 namespace OpenPGP\Packet\Key;
 
 use phpseclib3\Crypt\Random;
-use OpenPGP\Enum\SymmetricAlgorithm;
+use OpenPGP\Enum\SymmetricAlgorithm as Algorithm;
 use OpenPGP\Type\SessionKeyInterface;
 
 /**
@@ -28,12 +28,12 @@ class SessionKey implements SessionKeyInterface
      * Constructor
      *
      * @param string $encryptionKey
-     * @param SymmetricAlgorithm $symmetric
+     * @param Algorithm $symmetric
      * @return self
      */
     public function __construct(
         private readonly string $encryptionKey,
-        private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        private readonly Algorithm $symmetric = Algorithm::Aes128
     )
     {
     }
@@ -54,7 +54,9 @@ class SessionKey implements SessionKeyInterface
         $checksum = substr($bytes, strlen($bytes) - 2);
         $computedChecksum = $sessionKey->computeChecksum();
         if ($computedChecksum !== $checksum) {
-            throw new \UnexpectedValueException('Session key decryption error');
+            throw new \UnexpectedValueException(
+                'Session key decryption error'
+            );
         }
 
         return $sessionKey;
@@ -63,11 +65,11 @@ class SessionKey implements SessionKeyInterface
     /**
      * Produce session key specify by symmetric algorithm
      *
-     * @param SymmetricAlgorithm $symmetric
+     * @param Algorithm $symmetric
      * @return self
      */
     public static function produceKey(
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        Algorithm $symmetric = Algorithm::Aes128
     ): self
     {
         return new self(
@@ -87,7 +89,7 @@ class SessionKey implements SessionKeyInterface
     /**
      * {@inheritdoc}
      */
-    public function getSymmetric(): SymmetricAlgorithm
+    public function getSymmetric(): Algorithm
     {
         return $this->symmetric;
     }

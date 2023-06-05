@@ -90,7 +90,9 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
         DHKeySize $keySize = DHKeySize::L2048_N224
     ): self
     {
-        $privateKey = DSA::createKey($keySize->lSize(), $keySize->nSize());
+        $privateKey = DSA::createKey(
+            $keySize->lSize(), $keySize->nSize()
+        );
         $key = PKCS8::load($privateKey->toString('PKCS8'));
         return new self(
             $key['x'],
@@ -197,7 +199,8 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
             // Expect y == y'
             // Blinded exponentiation computes g**{rq + x} to compare to y
             $r = BigInteger::randomRange(
-                $two->bitwise_leftShift($qSize - 1), $two->bitwise_leftShift($qSize)
+                $two->bitwise_leftShift($qSize - 1),
+                $two->bitwise_leftShift($qSize)
             );
             $rqx = $order->multiply($r)->add($this->exponent);
 

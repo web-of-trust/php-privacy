@@ -73,7 +73,9 @@ class ECDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMat
                     $key['dA'],
                     new ECDSAPublicKeyMaterial(
                         ASN1::encodeOID($curveOid->value),
-                        Helper::bin2BigInt($privateKey->getEncodedCoordinates()),
+                        Helper::bin2BigInt(
+                            $privateKey->getEncodedCoordinates()
+                        ),
                         $privateKey->getPublicKey()
                     ),
                     $privateKey,

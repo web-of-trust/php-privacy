@@ -84,7 +84,9 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
         DHKeySize $keySize = DHKeySize::L2048_N224
     ): self
     {
-        $privateKey = ElGamal::createKey($keySize->lSize(), $keySize->nSize());
+        $privateKey = ElGamal::createKey(
+            $keySize->lSize(), $keySize->nSize()
+        );
         return new self(
             $privateKey->getX(),
             new ElGamalPublicKeyMaterial(
@@ -179,7 +181,9 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
 
             // g should have order p-1
             // Check that g ** (p-1) = 1 mod p
-            if (!$generator->modPow($prime->subtract($one), $prime)->equals($one)) {
+            if (!$generator->modPow(
+                $prime->subtract($one), $prime
+            )->equals($one)) {
                 return false;
             }
 
@@ -187,11 +191,16 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
             // Expect y == y'
             // Blinded exponentiation computes g**{r(p-1) + x} to compare to y
             $r = BigInteger::randomRange(
-                $two->bitwise_leftShift($pSize - 1), $two->bitwise_leftShift($pSize)
+                $two->bitwise_leftShift($pSize - 1),
+                $two->bitwise_leftShift($pSize)
             );
-            $rqx = $prime->subtract($one)->multiply($r)->add($this->exponent);
+            $rqx = $prime->subtract($one)
+                ->multiply($r)
+                ->add($this->exponent);
 
-            return $exponent->equals($generator->modPow($rqx, $prime));
+            return $exponent->equals(
+                $generator->modPow($rqx, $prime)
+            );
         }
         return false;
     }

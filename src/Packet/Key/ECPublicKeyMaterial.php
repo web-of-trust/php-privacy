@@ -75,7 +75,8 @@ abstract class ECPublicKeyMaterial implements KeyMaterialInterface
                     break;
                 default:
                     $key = PKCS8::savePublicKey(
-                        $curve, PKCS8::extractPoint("\x0" . $q->toBytes(), $curve)
+                        $curve,
+                        PKCS8::extractPoint("\x0" . $q->toBytes(), $curve)
                     );
                     break;
             }

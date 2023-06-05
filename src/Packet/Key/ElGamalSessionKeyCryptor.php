@@ -147,13 +147,17 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
      * 
      * @return string
      */
-    private static function pkcs1Encode(string $message, int $keyLength): string
+    private static function pkcs1Encode(
+        string $message, int $keyLength
+    ): string
     {
         $mLength = strlen($message);
 
         // length checking
         if ($mLength > $keyLength - 11) {
-            throw new \UnexpectedValueException('Message too long');
+            throw new \UnexpectedValueException(
+                'Message too long.'
+            );
         }
         $ps = self::pkcs1Padding($keyLength - $mLength - 3);
         $encoded = str_repeat("\x00", $keyLength);
