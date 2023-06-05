@@ -53,10 +53,10 @@ abstract class AbstractMessage implements ArmorableInterface, LoggerAwareInterfa
     )
     {
         $this->setLogger(Config::getLogger());
-        $this->packets = array_filter(
+        $this->packets = array_values(array_filter(
             $packets,
             static fn ($packet) => $packet instanceof PacketInterface
-        );
+        ));
     }
 
     /**

@@ -318,7 +318,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     {
         if ($this->isDecrypted()) {
             $this->getLogger()->debug(
-                'Encrypt secret key with passphrase.'
+                'Encrypt secret key material with passphrase.'
             );
             $s2k = new Key\S2K(
                 Random::string(Key\S2K::SALT_LENGTH),
@@ -364,7 +364,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         }
         else {
             $this->getLogger()->debug(
-                'Decrypt secret key with passphrase.'
+                'Decrypt secret key material with passphrase.'
             );
             $cipher = $this->symmetric->cipherEngine();
             $cipher->setIV($this->iv);

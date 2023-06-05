@@ -52,10 +52,10 @@ class Signature implements SignatureInterface
         array $packets,
     )
     {
-        $this->packets = array_filter(
+        $this->packets = array_values(array_filter(
             $packets,
             static fn ($packet) => $packet instanceof SignaturePacketInterface
-        );
+        ));
     }
 
     /**

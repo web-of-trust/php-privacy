@@ -41,10 +41,10 @@ class PacketList implements PacketListInterface
      */
     public function __construct(array $packets = [])
     {
-        $this->packets = array_filter(
+        $this->packets = array_values(array_filter(
             $packets,
             static fn ($packet) => $packet instanceof PacketInterface
-        );
+        ));
     }
 
     /**
@@ -219,8 +219,32 @@ class PacketList implements PacketListInterface
     /**
      * {@inheritdoc}
      */
-    public function offsetGet($key): PacketInterface
+    public function offsetExists(mixed $offset): bool
     {
-        return $this->packets[$key];
+        return isset($this->packets[(int) $offset]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetGet(mixed $offset): mixed
+    {
+        return $this->packets[(int) $offset];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        $this->packets[(int) $offset] = $value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetUnset(mixed $offset): void
+    {
+        unset($this->packets[(int) $offset]);
     }
 }

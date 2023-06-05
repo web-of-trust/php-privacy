@@ -20,7 +20,7 @@ use OpenPGP\Enum\PacketTag;
  * @author    Nguyen Van Nguyen - nguyennv1981@gmail.com
  * @copyright Copyright © 2023-present by Nguyen Van Nguyen.
  */
-interface PacketListInterface extends \IteratorAggregate, \Countable
+interface PacketListInterface extends \ArrayAccess, \IteratorAggregate, \Countable
 {
     /**
      * Get array packets
@@ -51,12 +51,4 @@ interface PacketListInterface extends \IteratorAggregate, \Countable
      * @return self
      */
     function whereType(string $type): self;
-
-    /**
-     * Get packet for an offset
-     * 
-     * @param int $key
-     * @return PacketInterface
-     */
-    function offsetGet($key): PacketInterface;
 }
