@@ -69,7 +69,7 @@ final class OpenPGP
         array $userIDs,
         string $passphrase,
         KeyType $type = KeyType::Rsa,
-        RSAKeySize $rsaKeySize = RSAKeySize::S4096,
+        RSAKeySize $rsaKeySize = RSAKeySize::S2048,
         DHKeySize $dhKeySize = DHKeySize::L2048_N224,
         CurveOid $curve = CurveOid::Secp521r1,
         int $keyExpiry = 0,

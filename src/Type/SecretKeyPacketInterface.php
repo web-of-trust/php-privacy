@@ -52,18 +52,12 @@ interface SecretKeyPacketInterface extends KeyPacketInterface
      * Encrypt secret key with passphrase
      *
      * @param string $passphrase
-     * @param S2kUsage $s2kUsage
      * @param SymmetricAlgorithm $symmetric
-     * @param HashAlgorithm $hash
-     * @param S2kType $s2kType
      * @return self
      */
     function encrypt(
         string $passphrase,
-        S2kUsage $s2kUsage = S2kUsage::Sha1,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        HashAlgorithm $hash = HashAlgorithm::Sha1,
-        S2kType $s2kType = S2kType::Iterated
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self;
 
     /**

@@ -133,7 +133,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
      */
     public static function generate(
         KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
-        RSAKeySize $rsaKeySize = RSAKeySize::S4096,
+        RSAKeySize $rsaKeySize = RSAKeySize::S2048,
         DHKeySize $dhKeySize = DHKeySize::L2048_N224,
         CurveOid $curveOid = CurveOid::Secp521r1,
         ?DateTimeInterface $time = null
@@ -313,10 +313,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
      */
     public function encrypt(
         string $passphrase,
-        S2kUsage $s2kUsage = S2kUsage::Sha1,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        HashAlgorithm $hash = HashAlgorithm::Sha1,
-        S2kType $s2kType = S2kType::Iterated
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self
     {
         if ($this->isDecrypted()) {
@@ -325,8 +322,8 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             );
             $s2k = new Key\S2K(
                 Random::string(Key\S2K::SALT_LENGTH),
-                $s2kType,
-                $hash,
+                S2kType::Iterated,
+                HashAlgorithm::Sha1,
                 Config::getS2kItCount()
             );
             $iv = Random::string($symmetric->blockSize());
@@ -346,7 +343,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $this->publicKey,
                 $encrypted,
                 $this->keyMaterial,
-                $s2kUsage,
+                S2kUsage::Sha1,
                 $symmetric,
                 $s2k,
                 $iv

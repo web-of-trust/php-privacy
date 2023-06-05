@@ -205,7 +205,7 @@ EOT;
         $secretKey = SecretKey::generate(KeyAlgorithm::RsaEncryptSign);
         $this->assertFalse($secretKey->isEncrypted());
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
-        $this->assertSame(4096, $secretKey->getKeyStrength());
+        $this->assertSame(2048, $secretKey->getKeyStrength());
 
         $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
         $this->assertTrue($encryptedSecretKey->isEncrypted());

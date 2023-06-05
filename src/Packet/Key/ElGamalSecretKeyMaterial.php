@@ -80,7 +80,9 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
      * @param DHKeySize $keySize
      * @return self
      */
-    public static function generate(DHKeySize $keySize): self
+    public static function generate(
+        DHKeySize $keySize = DHKeySize::L2048_N224
+    ): self
     {
         $privateKey = ElGamal::createKey($keySize->lSize(), $keySize->nSize());
         return new self(

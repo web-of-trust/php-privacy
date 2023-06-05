@@ -113,19 +113,12 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
      */
     public function encrypt(
         string $passphrase,
-        S2kUsage $s2kUsage = S2kUsage::Sha1,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        HashAlgorithm $hash = HashAlgorithm::Sha1,
-        S2kType $s2kType = S2kType::Iterated
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self
     {
         if ($this->getKeyMaterial() instanceof KeyMaterialInterface) {
             $secretKey = parent::encrypt(
-                $passphrase,
-                $s2kUsage,
-                $symmetric,
-                $hash,
-                $s2kType
+                $passphrase, $symmetric
             );
             return self::fromSecretKey($secretKey);
         }

@@ -106,7 +106,9 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
      * @param RSAKeySize $keySize
      * @return self
      */
-    public static function generate(RSAKeySize $keySize): self
+    public static function generate(
+        RSAKeySize $keySize = RSAKeySize::S2048
+    ): self
     {
         $privateKey = RSA::createKey($keySize->value);
         $key = PKCS8::load($privateKey->toString('PKCS8'));
