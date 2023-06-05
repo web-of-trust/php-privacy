@@ -143,7 +143,7 @@ EOT;
 
     public function testRsaSigning()
     {
-        $message = Random::string(100);
+        $message = Random::string(1024);
         $secretKey = SecretKey::fromBytes(base64_decode(self::$rsaSecretKeyData))->decrypt(self::PASSPHRASE);
         $publicKey = PublicKey::fromBytes(base64_decode(self::$rsaPublicKeyData));
 
@@ -172,7 +172,7 @@ EOT;
 
     public function testDsaSigning()
     {
-        $message = Random::string(100);
+        $message = Random::string(1024);
         $secretKey = SecretKey::fromBytes(base64_decode(self::$dsaSecretKeyData))->decrypt(self::PASSPHRASE);
         $publicKey = PublicKey::fromBytes(base64_decode(self::$dsaPublicKeyData));
 
@@ -202,7 +202,7 @@ EOT;
 
     public function testEcdsaP384Signing()
     {
-        $message = Random::string(100);
+        $message = Random::string(1024);
         $secretKey = SecretKey::fromBytes(base64_decode(self::$ecdsaP384SecretKeyData))->decrypt(self::PASSPHRASE);
         $publicKey = PublicKey::fromBytes(base64_decode(self::$ecdsaP384PublicKeyData));
 
@@ -231,7 +231,7 @@ EOT;
 
     public function testEcdsaBrainpoolSigning()
     {
-        $message = Random::string(100);
+        $message = Random::string(1024);
         $secretKey = SecretKey::fromBytes(base64_decode(self::$ecdsaBrainpoolSecretKeyData))->decrypt(self::PASSPHRASE);
         $publicKey = PublicKey::fromBytes(base64_decode(self::$ecdsaBrainpoolPublicKeyData));
 
@@ -260,7 +260,7 @@ EOT;
 
     public function testEddsaCurve25519Signing()
     {
-        $message = Random::string(100);
+        $message = Random::string(1024);
         $secretKey = SecretKey::fromBytes(base64_decode(self::$eddsaCurve25519SecretKeyData))->decrypt(self::PASSPHRASE);
         $publicKey = PublicKey::fromBytes(base64_decode(self::$eddsaCurve25519PublicKeyData));
 
