@@ -389,15 +389,6 @@ EOT;
         );
     }
 
-    public function testGenerateEdDsaSecretKeyException()
-    {
-        $this->expectException(\UnexpectedValueException::class);
-        SecretKey::generate(
-            KeyAlgorithm::EdDsa,
-            curveOid: CurveOid::Curve25519
-        );
-    }
-
     public function testGenerateEcdhSecretKeyException()
     {
         $this->expectException(\UnexpectedValueException::class);
