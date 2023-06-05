@@ -61,10 +61,10 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
                 $secretKey = Random::string(self::CURVE25519_KEY_LENGTH);
                 $secretKey[0] = chr((ord($secretKey[0]) & 127) | 64);
                 $secretKey[31] = chr(ord($secretKey[31]) & 248);
-                $privateKey = EC::loadPrivateKeyFormat('MontgomeryPrivate', strrev($secretKey));
+                $d = Helper::bin2BigInt($secretKey);
 
-                $d = Helper::bin2BigInt(
-                    strrev($privateKey->toString('MontgomeryPrivate'))
+                $privateKey = EC::loadPrivateKeyFormat(
+                    'MontgomeryPrivate', strrev($secretKey)
                 );
                 $q = Helper::bin2BigInt(
                     "\x40" . $privateKey->getEncodedCoordinates()
