@@ -237,7 +237,6 @@ class PacketList implements PacketListInterface
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
-        $this->packets[(int) $offset] = $value;
     }
 
     /**
@@ -245,6 +244,5 @@ class PacketList implements PacketListInterface
      */
     public function offsetUnset(mixed $offset): void
     {
-        unset($this->packets[(int) $offset]);
     }
 }
