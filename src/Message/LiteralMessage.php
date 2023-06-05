@@ -134,7 +134,9 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
                 self::unwrapCompressed($this->getPackets()),
                 static fn ($packet) => $packet instanceof SignaturePacketInterface
             ),
-            ...$this->signDetached($signingKeys, $notationData, $time)->getPackets(),
+            ...$this->signDetached(
+                $signingKeys, $notationData, $time
+            )->getPackets(),
         ];
 
         $index = 0;
@@ -167,7 +169,8 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
     ): SignatureInterface
     {
         $signingKeys = array_filter(
-            $signingKeys, static fn ($key) => $key instanceof PrivateKeyInterface
+            $signingKeys,
+            static fn ($key) => $key instanceof PrivateKeyInterface
         );
         if (empty($signingKeys)) {
             throw new \InvalidArgumentException(
@@ -221,7 +224,8 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
     ): EncryptedMessageInterface
     {
         $encryptionKeys = array_filter(
-            $encryptionKeys, static fn ($key) => $key instanceof KeyInterface
+            $encryptionKeys,
+            static fn ($key) => $key instanceof KeyInterface
         );
         if (empty($encryptionKeys) && empty($passwords)) {
             throw new \InvalidArgumentException(
@@ -241,7 +245,9 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
         );
         $skeskPackets = array_map(
             static fn ($password) => SymEncryptedSessionKey::encryptSessionKey(
-                $password, $sessionKey, $symmetric ?? Config::getPreferredSymmetric()
+                $password,
+                $sessionKey,
+                $symmetric ?? Config::getPreferredSymmetric()
             ),
             $passwords
         );

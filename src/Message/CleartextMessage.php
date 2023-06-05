@@ -88,7 +88,8 @@ class CleartextMessage implements CleartextMessageInterface
     ): SignatureInterface
     {
         $signingKeys = array_filter(
-            $signingKeys, static fn ($key) => $key instanceof PrivateKeyInterface
+            $signingKeys,
+            static fn ($key) => $key instanceof PrivateKeyInterface
         );
         if (empty($signingKeys)) {
             throw new \InvalidArgumentException('No signing keys provided.');

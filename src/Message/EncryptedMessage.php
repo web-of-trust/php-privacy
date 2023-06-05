@@ -63,7 +63,8 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
     ): LiteralMessageInterface
     {
         $decryptionKeys = array_filter(
-            $decryptionKeys, static fn ($key) => $key instanceof PrivateKeyInterface
+            $decryptionKeys,
+            static fn ($key) => $key instanceof PrivateKeyInterface
         );
         if (empty($decryptionKeys) && empty($passwords)) {
             throw new \InvalidArgumentException(
