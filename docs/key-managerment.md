@@ -1,7 +1,7 @@
 Key managerment
 ===============
 
-## Generate new key pair
+### Generate new key pair
 
 Rsa key type:
 ```php
@@ -45,7 +45,7 @@ $publicKey = $privateKey->toPublic();
 echo $publicKey; // '-----BEGIN PGP PUBLIC KEY BLOCK ... '
 ```
 
-## Key reading
+### Key reading
 
 Key reading from armored key strings
 ```php
@@ -57,7 +57,7 @@ $publicKey = OpenPGP::readPublicKey($armoredPublicKey);
 $privateKey = OpenPGP::decryptPrivateKey($armoredPrivateKey, PASSPHRASE);
 ```
 
-## Certify a key
+### Certify a key
 
 Certify a key by using the private key:
 ```php
@@ -73,7 +73,7 @@ $certifiedKey->isCertified($privateKey->toPublic());
 echo $certifiedKey; // '-----BEGIN PGP PUBLIC KEY BLOCK ... '
 ```
 
-## Revoke a key
+### Revoke a key
 
 Revoke a key by using the private key:
 ```php
