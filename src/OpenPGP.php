@@ -25,8 +25,9 @@ use OpenPGP\Key\{
 };
 use OpenPGP\Message\{
     CleartextMessage,
-    Signature,
+    EncryptedMessage,
     LiteralMessage,
+    Signature,
     SignedMessage,
 };
 use OpenPGP\Type\{
@@ -202,7 +203,21 @@ final class OpenPGP
 
     /**
      * Read an armored OpenPGP message.
-     * Return a l iteral message object.
+     * Return an encrypted message object.
+     *
+     * @param string $armoredMessage
+     * @return EncryptedMessageInterface
+     */
+    public static function readEncryptedMessage(
+        string $armoredMessage
+    ): EncryptedMessageInterface
+    {
+        return EncryptedMessage::fromArmored($armoredMessage);
+    }
+
+    /**
+     * Read an armored OpenPGP message.
+     * Return a literal message object.
      *
      * @param string $armoredMessage
      * @return LiteralMessageInterface

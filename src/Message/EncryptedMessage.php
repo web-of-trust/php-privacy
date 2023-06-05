@@ -49,9 +49,9 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
                 'Armored text not of message type.'
             );
         }
-        return new self(
-            PacketList::decode($armor->getData())->getPackets()
-        );
+        $packets = PacketList::decode($armor->getData())->getPackets();
+        self::validatePackets($packets);
+        return new self($packets);
     }
 
     /**
@@ -72,15 +72,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
         }
 
         $packets = $this->getPackets();
-        $encryptedPackets = array_filter(
-            $packets,
-            static fn ($packet) => $packet instanceof EncryptedDataPacketInterface
-        );
-        if (empty($encryptedPackets)) {
-            throw new \UnexpectedValueException(
-                'No encrypted data packets found.'
-            );
-        }
+        self::validatePackets($packets);
 
         $encryptedPacket = array_pop($encryptedPackets);
         $sessionKey = $this->decryptSessionKey($decryptionKeys, $passwords);
@@ -158,5 +150,18 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
         }
 
         return array_pop($sessionKeys);
+    }
+
+    private static function validatePackets(array $packets)
+    {
+        $encryptedPackets = array_filter(
+            $packets,
+            static fn ($packet) => $packet instanceof EncryptedDataPacketInterface
+        );
+        if (empty($encryptedPackets)) {
+            throw new \UnexpectedValueException(
+                'No encrypted data packets found.'
+            );
+        }
     }
 }
