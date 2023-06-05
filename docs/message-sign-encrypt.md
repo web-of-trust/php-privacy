@@ -43,9 +43,11 @@ Sign message & encrypt with multiple public keys:
 ```php
 $text = 'Hello PHP Privacy!';
 $passphrase = 'secret stuff';
+$armoredPublicKey = '-----BEGIN PGP PUBLIC KEY BLOCK-----';
 $armoredPublicKeys = ['-----BEGIN PGP PUBLIC KEY BLOCK-----'];
 $armoredPrivateKey = '-----BEGIN PGP PRIVATE KEY BLOCK-----';
 
+$publicKey = OpenPGP::readPublicKey($armoredPublicKey);
 $publicKeys = array_map(static fn ($armored) => OpenPGP::readPublicKey($armored), $armoredPublicKeys);
 $privateKey = OpenPGP::decryptPrivateKey($armoredPrivateKey, $passphrase);
 
@@ -55,5 +57,6 @@ $encryptedMessage = OpenPGP::encrypt(
 $decryptedMessage = OpenPGP::decrypt(
     $encryptedMessage, [$privateKey]
 );
+$verifications = $decryptedMessage->verify([$publicKey]);
 echo $decryptedMessage->getLiteralData()->getData();
 ```
