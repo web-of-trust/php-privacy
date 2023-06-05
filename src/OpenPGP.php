@@ -89,25 +89,6 @@ final class OpenPGP
     }
 
     /**
-     * Read an armored & unlock OpenPGP private key with the given passphrase.
-     *
-     * @param string $armoredPrivateKey
-     * @param string $passphrase
-     * @param array $subkeyPassphrases
-     * @return PrivateKeyInterface
-     */
-    public static function decryptPrivateKey(
-        string $armoredPrivateKey,
-        string $passphrase,
-        array $subkeyPassphrases = []
-    ): PrivateKeyInterface
-    {
-        return self::readPrivateKey($armoredPrivateKey)->decrypt(
-            $passphrase, $subkeyPassphrases
-        );
-    }
-
-    /**
      * Read an armored OpenPGP private key.
      * Return a private key object.
      *
@@ -133,6 +114,45 @@ final class OpenPGP
     ): KeyInterface
     {
         return PublicKey::fromArmored($armoredPublicKey);
+    }
+
+    /**
+     * Lock a private key with the given passphrase.
+     * The private key must be decrypted.
+     *
+     * @param PrivateKeyInterface $privateKey
+     * @param string $passphrase
+     * @param array $subkeyPassphrases
+     * @return PrivateKeyInterface
+     */
+    public static function encryptPrivateKey(
+        PrivateKeyInterface $privateKey,
+        string $passphrase,
+        array $subkeyPassphrases = []
+    ): PrivateKeyInterface
+    {
+        return $privateKey->encrypt(
+            $passphrase, $subkeyPassphrases
+        );
+    }
+
+    /**
+     * Read an armored & unlock OpenPGP private key with the given passphrase.
+     *
+     * @param string $armoredPrivateKey
+     * @param string $passphrase
+     * @param array $subkeyPassphrases
+     * @return PrivateKeyInterface
+     */
+    public static function decryptPrivateKey(
+        string $armoredPrivateKey,
+        string $passphrase,
+        array $subkeyPassphrases = []
+    ): PrivateKeyInterface
+    {
+        return self::readPrivateKey($armoredPrivateKey)->decrypt(
+            $passphrase, $subkeyPassphrases
+        );
     }
 
     /**
