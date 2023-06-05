@@ -72,7 +72,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
         }
 
         $packets = $this->getPackets();
-        self::validatePackets($packets);
+        $encryptedPackets = self::validatePackets($packets);
 
         $encryptedPacket = array_pop($encryptedPackets);
         $sessionKey = $this->decryptSessionKey($decryptionKeys, $passwords);
@@ -152,7 +152,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
         return array_pop($sessionKeys);
     }
 
-    private static function validatePackets(array $packets)
+    private static function validatePackets(array $packets): array
     {
         $encryptedPackets = array_filter(
             $packets,
@@ -163,5 +163,6 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
                 'No encrypted data packets found.'
             );
         }
+        return $encryptedPackets;
     }
 }
