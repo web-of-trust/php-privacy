@@ -60,12 +60,13 @@ class EdDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMat
      */
     public static function generate(): self
     {
-        $privateKey = EC::createKey(CurveOid::Ed25519->name);
+        $curve = CurveOid::Ed25519;
+        $privateKey = EC::createKey($curve->name);
         $key = PKCS8::load($privateKey->toString('PKCS8'));
         return new self(
             Helper::bin2BigInt($key['secret']),
             new EdDSAPublicKeyMaterial(
-                ASN1::encodeOID($curveOid->value),
+                ASN1::encodeOID($curve->value),
                 Helper::bin2BigInt(
                     "\x40" . $privateKey->getEncodedCoordinates()
                 ),
