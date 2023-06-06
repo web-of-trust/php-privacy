@@ -211,7 +211,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     {
         return Armor::encode(
             ArmorType::PrivateKey,
-            $this->toPacketList()->encode()
+            $this->getPacketList()->encode()
         );
     }
 

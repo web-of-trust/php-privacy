@@ -12,6 +12,7 @@ namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\CompressionAlgorithm as Algorithm;
 use OpenPGP\Enum\PacketTag;
+use OpenPGP\Type\PacketListInterface;
 
 /**
  * Implementation of the Compressed Data Packet (Tag 8)
@@ -35,13 +36,13 @@ class CompressedData extends AbstractPacket
      * Constructor
      *
      * @param string $compressed
-     * @param PacketList $packetList
+     * @param PacketListInterface $packetList
      * @param Algorithm $algorithm
      * @return self
      */
     public function __construct(
         private readonly string $compressed,
-        private readonly PacketList $packetList,
+        private readonly PacketListInterface $packetList,
         private readonly Algorithm $algorithm = Algorithm::Uncompressed
     )
     {
@@ -68,12 +69,12 @@ class CompressedData extends AbstractPacket
     /**
      * Build compressed data packet from packet list
      *
-     * @param PacketList $packetList
+     * @param PacketListInterface $packetList
      * @param Algorithm $algorithm
      * @return self
      */
     public static function fromPacketList(
-        PacketList $packetList,
+        PacketListInterface $packetList,
         Algorithm $algorithm = Algorithm::Uncompressed
     ): self
     {
@@ -110,11 +111,11 @@ class CompressedData extends AbstractPacket
     }
 
     /**
-     * Get decompressed packets contained within.
+     * Get decompressed packet list contained within.
      *
-     * @return PacketList
+     * @return PacketListInterface
      */
-    public function getPacketList(): PacketList
+    public function getPacketList(): PacketListInterface
     {
         return $this->packetList;
     }
@@ -141,7 +142,7 @@ class CompressedData extends AbstractPacket
     }
 
     private static function compress(
-        PacketList $packetList, Algorithm $algorithm
+        PacketListInterface $packetList, Algorithm $algorithm
     ): string
     {
         return match($algorithm) {
@@ -154,7 +155,7 @@ class CompressedData extends AbstractPacket
 
     private static function decompress(
         string $compressed, Algorithm $algorithm
-    ): PacketList
+    ): PacketListInterface
     {
         return match($algorithm) {
             Algorithm::Uncompressed => PacketList::decode($compressed),

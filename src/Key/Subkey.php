@@ -290,7 +290,7 @@ class Subkey implements SubkeyInterface
     /**
      * {@inheritdoc}
      */
-    public function toPacketList(): PacketListInterface
+    public function getPacketList(): PacketListInterface
     {
         return new PacketList([
             $this->keyPacket,
@@ -304,6 +304,6 @@ class Subkey implements SubkeyInterface
      */
     public function getPackets(): array
     {
-        return $this->toPacketList()->getPackets();
+        return $this->getPacketList()->getPackets();
     }
 }

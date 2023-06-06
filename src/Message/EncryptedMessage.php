@@ -21,6 +21,7 @@ use OpenPGP\Type\{
     EncryptedDataPacketInterface,
     EncryptedMessageInterface,
     LiteralMessageInterface,
+    PacketListInterface,
     PrivateKeyInterface,
     SessionKeyInterface,
 };
@@ -48,9 +49,9 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
                 'Armored text not of message type.'
             );
         }
-        $packets = PacketList::decode($armor->getData())->getPackets();
-        self::validatePackets($packets);
-        return new self($packets);
+        $packetList = PacketList::decode($armor->getData());
+        self::validatePacketList($packetList);
+        return new self($packetList);
     }
 
     /**
@@ -71,9 +72,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
             );
         }
 
-        $packets = $this->getPackets();
-        $encryptedPackets = self::validatePackets($packets);
-
+        $encryptedPackets = self::validatePacketList($this->getPacketList());
         $encryptedPacket = array_pop($encryptedPackets);
         $sessionKey = $this->decryptSessionKey($decryptionKeys, $passwords);
         $decryptedPacket = $encryptedPacket->decryptWithSessionKey(
@@ -81,7 +80,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
         );
 
         return new LiteralMessage(
-            $decryptedPacket->getPacketList()->getPackets()
+            $decryptedPacket->getPacketList()
         );
     }
 
@@ -96,17 +95,15 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
         array $decryptionKeys, array $passwords
     ): SessionKeyInterface
     {
-        $packets = $this->getPackets();
         $sessionKeys = [];
         if (!empty($passwords)) {
             $this->getLogger()->debug(
                 'Decrypt session keys by passwords.'
             );
-            $skeskPackets = array_filter(
-                $packets,
-                static fn ($packet) => $packet instanceof SymEncryptedSessionKey
+            $skeskPacketList = $this->getPacketList()->whereType(
+                SymEncryptedSessionKey::class
             );
-            foreach ($skeskPackets as $skesk) {
+            foreach ($skeskPacketList as $skesk) {
                 foreach ($passwords as $password) {
                     try {
                         $sessionKeys[] = $skesk->decrypt($password)->getSessionKey();
@@ -122,11 +119,10 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
             $this->getLogger()->debug(
                 'Decrypt session keys by public keys.'
             );
-            $pkeskPackets = array_filter(
-                $packets,
-                static fn ($packet) => $packet instanceof PublicKeyEncryptedSessionKey
+            $pkeskPacketList = $this->getPacketList()->whereType(
+                PublicKeyEncryptedSessionKey::class
             );
-            foreach ($pkeskPackets as $pkesk) {
+            foreach ($pkeskPacketList as $pkesk) {
                 foreach ($decryptionKeys as $key) {
                     $keyPacket = $key->getEncryptionKeyPacket();
                     if ($pkesk->getPublicKeyAlgorithm() === $keyPacket->getKeyAlgorithm() &&
@@ -152,12 +148,11 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
         return array_pop($sessionKeys);
     }
 
-    private static function validatePackets(array $packets): array
+    private static function validatePacketList(PacketListInterface $packetList): array
     {
-        $encryptedPackets = array_filter(
-            $packets,
-            static fn ($packet) => $packet instanceof EncryptedDataPacketInterface
-        );
+        $encryptedPackets = $packetList->whereType(
+            EncryptedDataPacketInterface::class
+        )->getPackets();
         if (empty($encryptedPackets)) {
             throw new \UnexpectedValueException(
                 'No encrypted data packets found.'

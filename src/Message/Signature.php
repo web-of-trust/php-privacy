@@ -39,22 +39,19 @@ use OpenPGP\Type\{
  */
 class Signature implements SignatureInterface
 {
-    private readonly array $packets;
+    private readonly PacketListInterface $packetList;
 
     /**
      * Constructor
      *
-     * @param array $packets
+     * @param PacketListInterface $packetList
      * @return self
      */
     public function __construct(
-        array $packets,
+        PacketListInterface $packetList
     )
     {
-        $this->packets = array_values(array_filter(
-            $packets,
-            static fn ($packet) => $packet instanceof SignaturePacketInterface
-        ));
+        $this->packetList = $packetList->whereType(SignaturePacketInterface::class);
     }
 
     /**
@@ -72,7 +69,7 @@ class Signature implements SignatureInterface
             );
         }
         return new self(
-            PacketList::decode($armor->getData())->getPackets()
+            PacketList::decode($armor->getData())
         );
     }
 
@@ -83,7 +80,7 @@ class Signature implements SignatureInterface
     {
         return array_map(
             static fn ($packet) => $packet->getIssuerKeyID($toHex),
-            $this->packets
+            $this->getPackets()
         );
     }
 
@@ -104,7 +101,7 @@ class Signature implements SignatureInterface
             Config::getLogger()->debug('No verification keys provided.');
         }
         $verifications = [];
-        foreach ($this->packets as $packet) {
+        foreach ($this->packetList as $packet) {
             foreach ($verificationKeys as $key) {
                 try {
                     $keyPacket = $key->toPublic()->getSigningKeyPacket(
@@ -151,16 +148,16 @@ class Signature implements SignatureInterface
     {
         return Armor::encode(
             ArmorType::Signature,
-            $this->toPacketList()->encode()
+            $this->getPacketList()->encode()
         );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function toPacketList(): PacketListInterface
+    public function getPacketList(): PacketListInterface
     {
-        return new PacketList($this->packets);
+        return $this->packetList;
     }
 
     /**
@@ -168,7 +165,7 @@ class Signature implements SignatureInterface
      */
     public function getPackets(): array
     {
-        return $this->packets;
+        return $this->packetList->getPackets();
     }
 
     /**

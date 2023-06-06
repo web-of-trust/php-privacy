@@ -39,23 +39,17 @@ abstract class AbstractMessage implements ArmorableInterface, LoggerAwareInterfa
 {
     use LoggerAwareTrait;
 
-    private readonly array $packets;
-
     /**
      * Constructor
      *
-     * @param array $packets
+     * @param PacketListInterface $packetList
      * @return self
      */
     public function __construct(
-        array $packets
+        private readonly PacketListInterface $packetList
     )
     {
         $this->setLogger(Config::getLogger());
-        $this->packets = array_values(array_filter(
-            $packets,
-            static fn ($packet) => $packet instanceof PacketInterface
-        ));
     }
 
     /**
@@ -65,16 +59,16 @@ abstract class AbstractMessage implements ArmorableInterface, LoggerAwareInterfa
     {
         return Armor::encode(
             ArmorType::Message,
-            $this->toPacketList()->encode()
+            $this->getPacketList()->encode()
         );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function toPacketList(): PacketListInterface
+    public function getPacketList(): PacketListInterface
     {
-        return new PacketList($this->packets);
+        return $this->packetList;
     }
 
     /**
@@ -82,7 +76,7 @@ abstract class AbstractMessage implements ArmorableInterface, LoggerAwareInterfa
      */
     public function getPackets(): array
     {
-        return $this->packets;
+        return $this->packetList->getPackets();
     }
 
     /**

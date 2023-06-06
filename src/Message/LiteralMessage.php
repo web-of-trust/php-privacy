@@ -68,7 +68,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
             );
         }
         return new self(
-            PacketList::decode($armor->getData())->getPackets()
+            PacketList::decode($armor->getData())
         );
     }
 
@@ -86,9 +86,9 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
         ?DateTimeInterface $time = null
     ): self
     {
-        return new self([new LiteralData(
+        return new self(new PacketList([new LiteralData(
             $literalData, LiteralFormat::Binary, $filename, $time
-        )]);
+        )]));
     }
 
     /**
@@ -113,10 +113,10 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
      */
     public function getSignature(): SignatureInterface
     {
-        return new Signature(array_filter(
+        return new Signature(new PacketList(array_filter(
             self::unwrapCompressed($this->getPackets()),
             static fn ($packet) => $packet instanceof SignaturePacketInterface
-        ));
+        )));
     }
 
     /**
@@ -151,11 +151,11 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
             $signaturePackets
         );
 
-        return new self([
+        return new self(new PacketList([
             ...$onePassSignaturePackets,
             $this->getLiteralData(),
             ...$signaturePackets,
-        ]);
+        ]));
     }
 
     /**
@@ -176,7 +176,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
                 'No signing keys provided.'
             );
         }
-        return new Signature(array_map(
+        return new Signature(new PacketList(array_map(
             fn ($key) => SignaturePacket::createLiteralData(
                 $key->getSigningKeyPacket(),
                 $this->getLiteralData(),
@@ -184,7 +184,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
                 $time
             ),
             $signingKeys
-        ));
+        )));
     }
 
     /**
@@ -251,14 +251,14 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
             $passwords
         );
         $seipPacket = SymEncryptedIntegrityProtectedData::encryptPacketsWithSessionKey(
-            $sessionKey, $this->toPacketList()
+            $sessionKey, $this->getPacketList()
         );
 
-        return new EncryptedMessage([
+        return new EncryptedMessage(new PacketList([
             ...$pkeskPackets,
             ...$skeskPackets,
             $seipPacket,
-        ]);
+        ]));
     }
 
     /**
@@ -270,9 +270,9 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
     {
         $algorithm = $algorithm ?? Config::getPreferredCompression();
         if ($algorithm !== CompressionAlgorithm::Uncompressed) {
-            return new self([
+            return new self(new PacketList([
                 CompressedData::fromPackets($this->getPackets(), $algorithm)
-            ]);
+            ]));
         }
         return $this;
     }

@@ -6,7 +6,7 @@ use phpseclib3\Crypt\Random;
 use OpenPGP\Enum\{CompressionAlgorithm, LiteralFormat};
 use OpenPGP\Key\{PrivateKey, PublicKey};
 use OpenPGP\Message\{LiteralMessage, Signature};
-use OpenPGP\Packet\LiteralData;
+use OpenPGP\Packet\{LiteralData, PacketList};
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
@@ -201,9 +201,9 @@ EOT;
         $publicKey = PublicKey::fromArmored(
             file_get_contents('tests/Data/RsaPublicKey.asc')
         );
-        $message = new LiteralMessage([
+        $message = new LiteralMessage(new PacketList([
             new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary)
-        ]);
+        ]));
         $signature = Signature::fromArmored($signatureData);
 
         $verification = $message->verifyDetached([$publicKey], $signature)[0];
@@ -226,9 +226,9 @@ EOT;
         $publicKey = PublicKey::fromArmored(
             file_get_contents('tests/Data/DsaPublicKey.asc')
         );
-        $message = new LiteralMessage([
+        $message = new LiteralMessage(new PacketList([
             new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary)
-        ]);
+        ]));
         $signature = Signature::fromArmored($signatureData);
 
         $verification = $message->verifyDetached([$publicKey], $signature)[0];
@@ -252,9 +252,9 @@ EOT;
         $publicKey = PublicKey::fromArmored(
             file_get_contents('tests/Data/EcP384PublicKey.asc')
         );
-        $message = new LiteralMessage([
+        $message = new LiteralMessage(new PacketList([
             new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary)
-        ]);
+        ]));
         $signature = Signature::fromArmored($signatureData);
 
         $verification = $message->verifyDetached([$publicKey], $signature)[0];
@@ -277,9 +277,9 @@ EOT;
         $publicKey = PublicKey::fromArmored(
             file_get_contents('tests/Data/EcBrainpoolPublicKey.asc')
         );
-        $message = new LiteralMessage([
+        $message = new LiteralMessage(new PacketList([
             new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary)
-        ]);
+        ]));
         $signature = Signature::fromArmored($signatureData);
 
         $verification = $message->verifyDetached([$publicKey], $signature)[0];
@@ -302,9 +302,9 @@ EOT;
         $publicKey = PublicKey::fromArmored(
             file_get_contents('tests/Data/EcCurve25519PublicKey.asc')
         );
-        $message = new LiteralMessage([
+        $message = new LiteralMessage(new PacketList([
             new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary)
-        ]);
+        ]));
         $signature = Signature::fromArmored($signatureData);
 
         $verification = $message->verifyDetached([$publicKey], $signature)[0];
@@ -321,9 +321,9 @@ EOT;
             file_get_contents('tests/Data/RsaPublicKey.asc')
         );
         $literalData = Random::string(1024);
-        $literalMessage = new LiteralMessage([
+        $literalMessage = new LiteralMessage(new PacketList([
             new LiteralData($literalData, LiteralFormat::Binary)
-        ]);
+        ]));
 
         $signedMessage = $literalMessage->sign([$privateKey]);
         $verification = $signedMessage->verify([$publicKey])[0];
@@ -349,9 +349,9 @@ EOT;
             file_get_contents('tests/Data/DsaPublicKey.asc')
         );
         $literalData = Random::string(1024);
-        $literalMessage = new LiteralMessage([
+        $literalMessage = new LiteralMessage(new PacketList([
             new LiteralData($literalData, LiteralFormat::Binary)
-        ]);
+        ]));
 
         $signedMessage = $literalMessage->sign([$privateKey]);
         $verification = $signedMessage->verify([$publicKey])[0];
@@ -377,9 +377,9 @@ EOT;
             file_get_contents('tests/Data/EcP384PublicKey.asc')
         );
         $literalData = Random::string(1024);
-        $literalMessage = new LiteralMessage([
+        $literalMessage = new LiteralMessage(new PacketList([
             new LiteralData($literalData, LiteralFormat::Binary)
-        ]);
+        ]));
 
         $signedMessage = $literalMessage->sign([$privateKey]);
         $verification = $signedMessage->verify([$publicKey])[0];
@@ -405,9 +405,9 @@ EOT;
             file_get_contents('tests/Data/EcBrainpoolPublicKey.asc')
         );
         $literalData = Random::string(1024);
-        $literalMessage = new LiteralMessage([
+        $literalMessage = new LiteralMessage(new PacketList([
             new LiteralData($literalData, LiteralFormat::Binary)
-        ]);
+        ]));
 
         $signedMessage = $literalMessage->sign([$privateKey]);
         $verification = $signedMessage->verify([$publicKey])[0];
@@ -433,9 +433,9 @@ EOT;
             file_get_contents('tests/Data/EcCurve25519PublicKey.asc')
         );
         $literalData = Random::string(1024);
-        $literalMessage = new LiteralMessage([
+        $literalMessage = new LiteralMessage(new PacketList([
             new LiteralData($literalData, LiteralFormat::Binary)
-        ]);
+        ]));
 
         $signedMessage = $literalMessage->sign([$privateKey]);
         $verification = $signedMessage->verify([$publicKey])[0];
@@ -471,9 +471,9 @@ EOT;
         );
 
         $literalData = Random::string(1024);
-        $message = new LiteralMessage([
+        $message = new LiteralMessage(new PacketList([
             new LiteralData($literalData, LiteralFormat::Binary)
-        ]);
+        ]));
         $encryptedMessage = $message->compress(CompressionAlgorithm::BZip2)->encrypt(
             [
                 $rsaPublicKey,

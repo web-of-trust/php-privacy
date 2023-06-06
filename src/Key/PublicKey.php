@@ -107,7 +107,7 @@ class PublicKey extends AbstractKey
     {
         return Armor::encode(
             ArmorType::PublicKey,
-            $this->toPacketList()->encode()
+            $this->getPacketList()->encode()
         );
     }
 

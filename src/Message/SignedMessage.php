@@ -60,7 +60,7 @@ class SignedMessage extends CleartextMessage implements SignedMessageInterface
         return new self(
             $armor->getText(),
             new Signature(
-                PacketList::decode($armor->getData())->getPackets()
+                PacketList::decode($armor->getData())
             )
         );
     }
@@ -86,7 +86,7 @@ class SignedMessage extends CleartextMessage implements SignedMessageInterface
         );
         return Armor::encode(
             ArmorType::SignedMessage,
-            $this->signature->toPacketList()->encode(),
+            $this->signature->getPacketList()->encode(),
             $this->getText(),
             implode(',', $hashes)
         );

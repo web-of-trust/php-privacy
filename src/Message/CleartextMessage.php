@@ -11,7 +11,10 @@
 namespace OpenPGP\Message;
 
 use DateTimeInterface;
-use OpenPGP\Packet\LiteralData;
+use OpenPGP\Packet\{
+    LiteralData,
+    PacketList,
+};
 use OpenPGP\Packet\Signature as SignaturePacket;
 use OpenPGP\Type\{
     CleartextMessageInterface,
@@ -102,7 +105,7 @@ class CleartextMessage implements CleartextMessageInterface
             ),
             $signingKeys
         );
-        return new Signature($packets);
+        return new Signature(new PacketList($packets));
     }
 
     /**

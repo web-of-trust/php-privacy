@@ -196,10 +196,10 @@ class PacketList implements PacketListInterface
      */
     public function whereTag(PacketTag $tag): self
     {
-        $packets = array_filter(
+        $packets = array_values(array_filter(
             $this->packets,
             static fn ($packet) => $packet->getTag() === $tag
-        );
+        ));
         return new self($packets);
     }
 
@@ -208,10 +208,10 @@ class PacketList implements PacketListInterface
      */
     public function whereType(string $type): self
     {
-        $packets = array_filter(
+        $packets = array_values(array_filter(
             $this->packets,
-            static fn ($packet) => get_class($packet) === $type
-        );
+            static fn ($packet) => $packet instanceof $type
+        ));
         return new self($packets);
     }
 

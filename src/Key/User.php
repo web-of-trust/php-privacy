@@ -308,7 +308,7 @@ class User implements UserInterface
     /**
      * {@inheritdoc}
      */
-    public function toPacketList(): PacketListInterface
+    public function getPacketList(): PacketListInterface
     {
         return new PacketList([
             $this->userIDPacket,
@@ -323,6 +323,6 @@ class User implements UserInterface
      */
     public function getPackets(): array
     {
-        return $this->toPacketList()->getPackets();
+        return $this->getPacketList()->getPackets();
     }
 }

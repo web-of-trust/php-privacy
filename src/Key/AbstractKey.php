@@ -116,18 +116,18 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function toPacketList(): PacketListInterface
+    public function getPacketList(): PacketListInterface
     {
         $userPackets = [];
         foreach ($this->users as $user) {
             $userPackets = array_merge(
-                $userPackets, $user->toPacketList()->getPackets()
+                $userPackets, $user->getPacketList()->getPackets()
             );
         }
         $subkeyPackets = [];
         foreach ($this->subkeys as $subkey) {
             $subkeyPackets = array_merge(
-                $subkeyPackets, $subkey->toPacketList()->getPackets()
+                $subkeyPackets, $subkey->getPacketList()->getPackets()
             );
         }
 
@@ -145,7 +145,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
      */
     public function getPackets(): array
     {
-        return $this->toPacketList()->getPackets();
+        return $this->getPacketList()->getPackets();
     }
 
     /**
