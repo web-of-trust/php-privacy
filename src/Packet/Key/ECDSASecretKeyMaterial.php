@@ -61,7 +61,7 @@ class ECDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMat
             case CurveOid::Ed25519:
             case CurveOid::Curve25519:
                 throw new \UnexpectedValueException(
-                    "{$curveOid->name} is not supported for ECDSA key generation"
+                    "{$curveOid->name} is not supported for ECDSA key generation."
                 );
             default:
                 $privateKey = EC::createKey($curveOid->name);

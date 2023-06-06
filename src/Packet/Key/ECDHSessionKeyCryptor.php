@@ -129,7 +129,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
         }
         else {
             throw new \InvalidArgumentException(
-                'Key material is not instance of ECDH key material'
+                'Key material is not instance of ECDH key material.'
             );
         }
     }
@@ -227,7 +227,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
         }
         else {
             throw new \InvalidArgumentException(
-                'Key material is not instance of ECDH key material'
+                'Key material is not instance of ECDH key material.'
             );
         }
     }
@@ -300,11 +300,15 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
         $len = strlen($message);
         $n = ord($message[$len - 1]);
         if ($len < $n || $n > self::PKCS5_BLOCK_SIZE) {
-            throw new \LengthException('Invalid padding length.');
+            throw new \LengthException(
+                'Invalid padding length.'
+            );
         }
         $ps = substr($message, -$n);
         if ($ps !== str_repeat(chr($n), $n)) {
-            throw new \UnexpectedValueException('Invalid padding string.');
+            throw new \UnexpectedValueException(
+                'Invalid padding string.'
+            );
         }
         return substr($message, 0, -$n);
     }
@@ -315,9 +319,10 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
     {
         $keySize = KekSize::from($symmetric->keySizeInByte());
         return match ($symmetric) {
-            SymmetricAlgorithm::Camellia128 => new CamelliaKeyWrapper($keySize),
-            SymmetricAlgorithm::Camellia192 => new CamelliaKeyWrapper($keySize),
-            SymmetricAlgorithm::Camellia256 => new CamelliaKeyWrapper($keySize),
+            SymmetricAlgorithm::Camellia128,
+            SymmetricAlgorithm::Camellia192,
+            SymmetricAlgorithm::Camellia256
+            => new CamelliaKeyWrapper($keySize),
             default => new AesKeyWrapper($keySize),
         };
     }
