@@ -65,15 +65,15 @@ abstract class ECSecretKeyMaterial implements KeyMaterialInterface
             $format = 'PKCS8';
             $params = $publicMaterial->getParameters();
             $curve = $params['curve'];
-            if ($curve instanceof Ed25519) {
+            if ($curve instanceof Curve25519) {
+                $key = strrev($d->toBytes());
+                $format = 'MontgomeryPrivate';
+            }
+            elseif ($curve instanceof Ed25519) {
                 $arr = $curve->extractSecret($d->toBytes());
                 $key = PKCS8::savePrivateKey(
                     $arr['dA'], $curve, $params['QA'], $arr['secret']
                 );
-            }
-            elseif ($curve instanceof Curve25519) {
-                $key = strrev($d->toBytes());
-                $format = 'MontgomeryPrivate';
             }
             else {
                 $key = PKCS8::savePrivateKey(

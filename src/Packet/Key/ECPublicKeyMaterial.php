@@ -61,21 +61,16 @@ abstract class ECPublicKeyMaterial implements KeyMaterialInterface
             $format = 'PKCS8';
             $curve = $this->curveOid->getCurve();
             switch ($this->curveOid) {
-                case CurveOid::Ed25519:
-                    $key = PKCS8::savePublicKey(
-                        $curve, PKCS8::extractPoint(
-                            substr($q->toBytes(), 1), $curve
-                        )
-                    );
-                    break;
                 case CurveOid::Curve25519:
                     $key = substr($q->toBytes(), 1);
                     $format = 'MontgomeryPublic';
                     break;
                 default:
+                    $point = ($this->curveOid === CurveOid::Ed25519) ?
+                             substr($q->toBytes(), 1) : "\x0" . $q->toBytes();
                     $key = PKCS8::savePublicKey(
                         $curve,
-                        PKCS8::extractPoint("\x0" . $q->toBytes(), $curve)
+                        PKCS8::extractPoint($point, $curve)
                     );
                     break;
             }

@@ -34,7 +34,8 @@ use OpenPGP\Type\{
  */
 class EdDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMaterialInterface
 {
-    const SIGNATURE_LENGTH = 64;
+    const ED25519_KEY_LENGTH = 32;
+    const SIGNATURE_LENGTH   = 64;
 
     /**
      * Read key material from bytes
@@ -61,8 +62,10 @@ class EdDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMat
     public static function generate(): self
     {
         $curve = CurveOid::Ed25519;
-        $privateKey = EC::createKey($curve->name);
-        $key = PKCS8::load($privateKey->toString('PKCS8'));
+        do {
+            $privateKey = EC::createKey($curve->name);
+            $key = PKCS8::load($privateKey->toString('PKCS8'));
+        } while (strlen($key['secret']) !== self::ED25519_KEY_LENGTH);
         return new self(
             Helper::bin2BigInt($key['secret']),
             new EdDSAPublicKeyMaterial(
