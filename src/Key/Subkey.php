@@ -245,7 +245,7 @@ class Subkey implements SubkeyInterface
     public function verify(?DateTimeInterface $time = null): bool
     {
         if ($this->isRevoked(time: $time)) {
-            Config::getLogger()->debug(
+            Config::getLogger()->warning(
                 'Subkey is revoked.'
             );
             return false;

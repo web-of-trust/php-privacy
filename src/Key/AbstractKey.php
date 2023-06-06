@@ -442,7 +442,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     ): bool
     {
         if ($this->isRevoked(time: $time)) {
-            $this->getLogger()->debug(
+            $this->getLogger()->warning(
                 'Primary key is revoked.'
             );
             return false;
@@ -465,7 +465,7 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
         }
         $expirationTime = $this->getExpirationTime();
         if ($expirationTime instanceof DateTimeInterface && $expirationTime < new \DateTime()) {
-            $this->getLogger()->debug(
+            $this->getLogger()->warning(
                 'Primary key is expired.'
             );
             return false;

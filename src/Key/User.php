@@ -211,7 +211,7 @@ class User implements UserInterface
     ): bool
     {
         if ($this->isRevoked($verifyKey, time: $time)) {
-            Config::getLogger()->debug(
+            Config::getLogger()->warning(
                 'User is revoked.'
             );
             return false;
@@ -242,7 +242,7 @@ class User implements UserInterface
     public function verify(?DateTimeInterface $time = null): bool
     {
         if ($this->isRevoked(time: $time)) {
-            Config::getLogger()->debug(
+            Config::getLogger()->warning(
                 'User is revoked.'
             );
             return false;
