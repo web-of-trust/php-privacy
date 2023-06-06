@@ -65,9 +65,10 @@ class EdDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMat
         do {
             $privateKey = EC::createKey($curve->name);
             $key = PKCS8::load($privateKey->toString('PKCS8'));
-        } while (strlen($key['secret']) !== self::ED25519_KEY_LENGTH);
+            $d = Helper::bin2BigInt($key['secret']);
+        } while ($d->getLengthInBytes() !== self::ED25519_KEY_LENGTH);
         return new self(
-            Helper::bin2BigInt($key['secret']),
+            $d,
             new EdDSAPublicKeyMaterial(
                 ASN1::encodeOID($curve->value),
                 Helper::bin2BigInt(
