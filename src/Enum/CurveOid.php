@@ -65,21 +65,6 @@ enum CurveOid: string
         };
     }
 
-    public function fieldSize(): int
-    {
-        return match($this) {
-            self::Prime256v1 => 256,
-            self::Secp256k1 => 256,
-            self::Secp384r1 => 384,
-            self::Secp521r1 => 521,
-            self::BrainpoolP256r1 => 256,
-            self::BrainpoolP384r1 => 384,
-            self::BrainpoolP512r1 => 512,
-            self::Ed25519 => 255,
-            self::Curve25519 => 255,
-        };
-    }
-
     public function hashAlgorithm(): HashAlgorithm
     {
         return match($this) {
