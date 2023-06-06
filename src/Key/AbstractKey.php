@@ -25,6 +25,7 @@ use OpenPGP\Packet\Signature\{
     EmbeddedSignature,
     KeyExpirationTime,
     KeyFlags,
+    RevocationReason,
 };
 use OpenPGP\Type\{
     KeyInterface,
@@ -38,7 +39,6 @@ use OpenPGP\Type\{
     UserInterface,
 };
 use Psr\Log\{
-    LoggerAwareInterface,
     LoggerAwareTrait,
     LoggerInterface,
 };
@@ -50,7 +50,7 @@ use Psr\Log\{
  * @category Key
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
+abstract class AbstractKey implements KeyInterface
 {
     use LoggerAwareTrait;
 
@@ -413,6 +413,20 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
                     $this->keyPacket->getSignBytes(),
                     $time
                 )) {
+                    $reason = $signature->getRevocationReason();
+                    if ($reason instanceof RevocationReason) {
+                        $this->getLogger()->warning(
+                            'Primary key is revoked. Reason: {reason}',
+                            [
+                                'reason' => $reason->getDescription(),
+                            ]
+                        );
+                    }
+                    else {
+                        $this->getLogger()->warning(
+                            'Primary key is revoked.'
+                        );
+                    }
                     return true;
                 }
             }
@@ -442,9 +456,6 @@ abstract class AbstractKey implements KeyInterface, LoggerAwareInterface
     ): bool
     {
         if ($this->isRevoked(time: $time)) {
-            $this->getLogger()->warning(
-                'Primary key is revoked.'
-            );
             return false;
         }
         foreach ($this->users as $user) {

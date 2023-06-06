@@ -97,7 +97,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
     {
         $sessionKeys = [];
         if (!empty($passwords)) {
-            $this->getLogger()->debug(
+            $this->getLogger()->warning(
                 'Decrypt session keys by passwords.'
             );
             $skeskPacketList = $this->getPacketList()->whereType(
@@ -116,7 +116,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
             }
         }
         if (empty($sessionKeys) && !empty($decryptionKeys)) {
-            $this->getLogger()->debug(
+            $this->getLogger()->warning(
                 'Decrypt session keys by public keys.'
             );
             $pkeskPacketList = $this->getPacketList()->whereType(

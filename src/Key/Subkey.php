@@ -11,13 +11,15 @@
 namespace OpenPGP\Key;
 
 use DateTimeInterface;
-use OpenPGP\Common\Config;
 use OpenPGP\Enum\KeyAlgorithm;
 use OpenPGP\Packet\{
     PacketList,
     Signature,
 };
-use OpenPGP\Packet\Signature\KeyFlags;
+use OpenPGP\Packet\Signature\{
+    KeyFlags,
+    RevocationReason,
+};
 use OpenPGP\Type\{
     KeyInterface,
     PacketListInterface,
@@ -232,6 +234,20 @@ class Subkey implements SubkeyInterface
                     ]),
                     $time
                 )) {
+                    $reason = $signature->getRevocationReason();
+                    if ($reason instanceof RevocationReason) {
+                        $this->mainKey->getLogger()->warning(
+                            'Subkey is revoked. Reason: {reason}',
+                            [
+                                'reason' => $reason->getDescription(),
+                            ]
+                        );
+                    }
+                    else {
+                        $this->mainKey->getLogger()->warning(
+                            'Subkey is revoked.'
+                        );
+                    }
                     return true;
                 }
             }
@@ -245,9 +261,6 @@ class Subkey implements SubkeyInterface
     public function verify(?DateTimeInterface $time = null): bool
     {
         if ($this->isRevoked(time: $time)) {
-            Config::getLogger()->warning(
-                'Subkey is revoked.'
-            );
             return false;
         }
         $keyPacket = $this->mainKey->toPublic()->getSigningKeyPacket();

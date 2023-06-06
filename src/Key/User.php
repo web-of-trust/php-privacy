@@ -11,7 +11,6 @@
 namespace OpenPGP\Key;
 
 use DateTimeInterface;
-use OpenPGP\Common\Config;
 use OpenPGP\Enum\{
     HashAlgorithm,
     SignatureType,
@@ -21,6 +20,7 @@ use OpenPGP\Packet\{
     Signature,
     UserID,
 };
+use OpenPGP\Packet\Signature\RevocationReason;
 use OpenPGP\Type\{
     KeyInterface,
     KeyPacketInterface,
@@ -194,6 +194,20 @@ class User implements UserInterface
                     ]),
                     $time
                 )) {
+                    $reason = $signature->getRevocationReason();
+                    if ($reason instanceof RevocationReason) {
+                        $this->mainKey->getLogger()->warning(
+                            'User is revoked. Reason: {reason}',
+                            [
+                                'reason' => $reason->getDescription(),
+                            ]
+                        );
+                    }
+                    else {
+                        $this->mainKey->getLogger()->warning(
+                            'User is revoked.'
+                        );
+                    }
                     return true;
                 }
             }
@@ -211,9 +225,6 @@ class User implements UserInterface
     ): bool
     {
         if ($this->isRevoked($verifyKey, time: $time)) {
-            Config::getLogger()->warning(
-                'User is revoked.'
-            );
             return false;
         }
         $keyID = $certificate?->getIssuerKeyID() ?? '';
@@ -242,9 +253,6 @@ class User implements UserInterface
     public function verify(?DateTimeInterface $time = null): bool
     {
         if ($this->isRevoked(time: $time)) {
-            Config::getLogger()->warning(
-                'User is revoked.'
-            );
             return false;
         }
         $keyPacket = $this->mainKey->toPublic()->getSigningKeyPacket();
@@ -272,7 +280,7 @@ class User implements UserInterface
     {
         if ($signKey->getFingerprint() === $this->mainKey->getFingerprint()) {
             throw new \InvalidArgumentException(
-                'The user\'s own key can only be used for self-certifications'
+                'The user\'s own key can only be used for self-certifications.'
             );
         }
         $user = clone $this;

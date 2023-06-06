@@ -12,6 +12,10 @@ namespace OpenPGP\Type;
 
 use DateTimeInterface;
 use OpenPGP\Enum\KeyAlgorithm;
+use Psr\Log\{
+    LoggerAwareInterface,
+    LoggerInterface,
+};
 
 /**
  * Key interface
@@ -20,7 +24,7 @@ use OpenPGP\Enum\KeyAlgorithm;
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-interface KeyInterface extends ArmorableInterface, PacketContainerInterface
+interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketContainerInterface
 {
     /**
      * Return key packet
@@ -183,4 +187,11 @@ interface KeyInterface extends ArmorableInterface, PacketContainerInterface
         string $revocationReason = '',
         ?DateTimeInterface $time = null
     ): self;
+
+    /**
+     * Get the logger.
+     * 
+     * @return LoggerInterface
+     */
+    function getLogger(): LoggerInterface;
 }

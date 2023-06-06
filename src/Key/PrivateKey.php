@@ -81,7 +81,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         $armor = Armor::decode($armored);
         if ($armor->getType() !== ArmorType::PrivateKey) {
             throw new \UnexpectedValueException(
-                'Armored text not of private key type'
+                'Armored text not of private key type.'
             );
         }
         return self::fromPacketList(
@@ -100,7 +100,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         $keyStruct = self::readPacketList($packetList);
         if (!($keyStruct['keyPacket'] instanceof SecretKeyPacketInterface)) {
             throw new \UnexpectedValueException(
-                'Key packet is not secret key type'
+                'Key packet is not secret key type.'
             );
         }
         $privateKey = new self(
@@ -251,7 +251,9 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     /**
      * {@inheritdoc}
      */
-    public function getDecryptionKeyPackets(?DateTimeInterface $time = null): array
+    public function getDecryptionKeyPackets(
+        ?DateTimeInterface $time = null
+    ): array
     {
         if (!$this->verify(time: $time)) {
             throw new \UnexpectedValueException(

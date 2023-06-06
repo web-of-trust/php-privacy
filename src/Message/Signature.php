@@ -98,7 +98,7 @@ class Signature implements SignatureInterface
             static fn ($key) => $key instanceof KeyInterface
         );
         if (empty($verificationKeys)) {
-            Config::getLogger()->debug('No verification keys provided.');
+            Config::getLogger()->warning('No verification keys provided.');
         }
         $verifications = [];
         foreach ($this->packetList as $packet) {
