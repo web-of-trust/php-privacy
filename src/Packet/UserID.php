@@ -142,8 +142,8 @@ class UserID extends AbstractPacket implements UserIDPacketInterface
     private function extractComment(): string
     {
         if (str_contains($this->userID, '(') && str_contains($this->userID, ')')) {
-            $start = strpos($this->userID, '(') + 1;
-            $end = strpos($this->userID, ')');;
+            $start = (int) strpos($this->userID, '(') + 1;
+            $end = (int) strpos($this->userID, ')');
             return substr(
                 $this->userID,
                 $start,

@@ -292,7 +292,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      *
      * @param KeyPacketInterface $signKey
      * @param KeyPacketInterface $userKey
-     * @param KeyPacketInterface $signKey
+     * @param UserIDPacketInterface $userID
      * @param DateTimeInterface $time
      * @return self
      */
@@ -1015,7 +1015,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     private static function subpacketsToBytes(array $subpackets): string
     {
         $bytes = implode(array_map(
-            static fn ($subpacket) => $subpacket->toBytes(),
+            static fn ($subpacket): string => $subpacket->toBytes(),
             $subpackets
         ));
         return pack('n', strlen($bytes)) . $bytes;

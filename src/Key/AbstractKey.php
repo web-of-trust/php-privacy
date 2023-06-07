@@ -57,28 +57,28 @@ abstract class AbstractKey implements KeyInterface
      * 
      * @var array
      */
-    private array $revocationSignatures;
+    private array $revocationSignatures = [];
 
     /**
      * Direct signature packets
      * 
      * @var array
      */
-    private array $directSignatures;
+    private array $directSignatures = [];
 
     /**
      * Users of the key
      * 
      * @var array
      */
-    private array $users;
+    private array $users = [];
 
     /**
      * Subkeys of the key
      * 
      * @var array
      */
-    private array $subkeys;
+    private array $subkeys = [];
 
     /**
      * Constructor
@@ -250,8 +250,8 @@ abstract class AbstractKey implements KeyInterface
         $subkeys = $this->subkeys;
         usort(
             $subkeys,
-            static fn ($a, $b) => $b->getCreationTime()->getTimestamp()
-                                - $a->getCreationTime()->getTimestamp()
+            static fn ($a, $b): int => $b->getCreationTime()->getTimestamp()
+                                     - $a->getCreationTime()->getTimestamp()
         );
         foreach ($subkeys as $subkey) {
             if (empty($keyID) || $keyID === $subkey->getKeyID()) {
@@ -301,8 +301,8 @@ abstract class AbstractKey implements KeyInterface
         $subkeys = $this->subkeys;
         usort(
             $subkeys,
-            static fn ($a, $b) => $b->getCreationTime()->getTimestamp()
-                                - $a->getCreationTime()->getTimestamp()
+            static fn ($a, $b): int => $b->getCreationTime()->getTimestamp()
+                                     - $a->getCreationTime()->getTimestamp()
         );
         foreach ($subkeys as $subkey) {
             if (empty($keyID) || $keyID === $subkey->getKeyID()) {
@@ -596,7 +596,7 @@ abstract class AbstractKey implements KeyInterface
     {
         usort(
             $signatures,
-            static function ($a, $b) {
+            static function ($a, $b): int {
                 $aTime = $a->getSignatureCreationTime() ?? new \DateTime();
                 $bTime = $b->getSignatureCreationTime() ?? new \DateTime();
                 return $bTime->getTimestamp() - $aTime->getTimestamp();
@@ -659,7 +659,7 @@ abstract class AbstractKey implements KeyInterface
     protected static function applyKeyStructure(AbstractKey $key, array $keyMap): void
     {
         $key->setUsers(array_map(
-            static fn ($user) => new User(
+            static fn (array $user) => new User(
                 $key,
                 $user['userIDPacket'],
                 $user['revocationSignatures'],
@@ -668,7 +668,7 @@ abstract class AbstractKey implements KeyInterface
             ),
             $keyMap['users']
         ))->setSubkeys(array_map(
-            static fn ($subkey) => new Subkey(
+            static fn (array $subkey) => new Subkey(
                 $key,
                 $subkey['keyPacket'],
                 $subkey['revocationSignatures'],

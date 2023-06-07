@@ -77,7 +77,7 @@ class Signature implements SignatureInterface
     public function getSigningKeyIDs(bool $toHex = false): array
     {
         return array_map(
-            static fn ($packet) => $packet->getIssuerKeyID($toHex),
+            static fn ($packet): string => $packet->getIssuerKeyID($toHex),
             $this->getPackets()
         );
     }
@@ -93,7 +93,7 @@ class Signature implements SignatureInterface
     {
         $verificationKeys = array_filter(
             $verificationKeys,
-            static fn ($key) => $key instanceof KeyInterface
+            static fn ($key): bool => $key instanceof KeyInterface
         );
         if (empty($verificationKeys)) {
             Config::getLogger()->warning('No verification keys provided.');

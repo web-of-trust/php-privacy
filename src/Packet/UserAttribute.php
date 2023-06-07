@@ -62,9 +62,10 @@ class UserAttribute extends AbstractPacket implements UserIDPacketInterface
      */
     public function toBytes(): string
     {
-        return implode(
-            array_map(static fn ($attr) => $attr->toBytes(), $this->attributes)
-        );
+        return implode(array_map(
+            static fn ($attr): string => $attr->toBytes(),
+            $this->attributes
+        ));
     }
 
     /**

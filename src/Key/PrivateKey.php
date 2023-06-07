@@ -250,7 +250,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
      * {@inheritdoc}
      */
     public function getDecryptionKeyPackets(
-        ?DateTimeInterface $time = null
+        string $keyID = '', ?DateTimeInterface $time = null
     ): array
     {
         if (!$this->verify(time: $time)) {
@@ -261,8 +261,8 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         $subkeys = $this->getSubkeys();
         usort(
             $subkeys,
-            static fn ($a, $b) => $b->getCreationTime()->getTimestamp()
-                                - $a->getCreationTime()->getTimestamp()
+            static fn ($a, $b): int => $b->getCreationTime()->getTimestamp()
+                                    - $a->getCreationTime()->getTimestamp()
         );
 
         $keyPackets = [];

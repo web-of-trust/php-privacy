@@ -111,7 +111,7 @@ class Subkey implements SubkeyInterface
             $signatures = $this->bindingSignatures;
             usort(
                 $signatures,
-                static function ($a, $b) {
+                static function ($a, $b): int {
                     $aTime = $a->getSignatureCreationTime() ?? new \DateTime();
                     $bTime = $b->getSignatureCreationTime() ?? new \DateTime();
                     return $aTime->getTimestamp() - $bTime->getTimestamp();

@@ -184,9 +184,10 @@ class PacketList implements PacketListInterface
      */
     public function encode(): string
     {
-        return implode(
-            array_map(static fn ($packet) => $packet->encode(), $this->packets)
-        );
+        return implode(array_map(
+            static fn ($packet): string => $packet->encode(),
+            $this->packets
+        ));
     }
 
     /**

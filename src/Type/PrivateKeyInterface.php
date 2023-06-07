@@ -42,10 +42,13 @@ interface PrivateKeyInterface extends KeyInterface
     /**
      * Get array of key packets that is available for decryption
      * 
+     * @param string $keyID
      * @param DateTimeInterface $time
      * @return array
      */
-    function getDecryptionKeyPackets(?DateTimeInterface $time = null): array;
+    function getDecryptionKeyPackets(
+        string $keyID = '', ?DateTimeInterface $time = null
+    ): array;
 
     /**
      * Lock a private key with the given passphrase.

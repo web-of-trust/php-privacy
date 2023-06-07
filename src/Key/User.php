@@ -142,7 +142,7 @@ class User implements UserInterface
             $signatures = $this->selfCertifications;
             usort(
                 $signatures,
-                static function ($a, $b) {
+                static function ($a, $b): int {
                     $aTime = $a->getSignatureCreationTime() ?? new \DateTime();
                     $bTime = $b->getSignatureCreationTime() ?? new \DateTime();
                     return $aTime->getTimestamp() - $bTime->getTimestamp();
