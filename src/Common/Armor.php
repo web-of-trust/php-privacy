@@ -316,6 +316,8 @@ final class Armor
                 }
             }
         }
-        return Strings::base64_encode(substr(pack('N', $crc & 0xffffff), 1));
+        return Strings::base64_encode(
+            substr(pack('N', $crc & 0xffffff), 1)
+        );
     }
 }

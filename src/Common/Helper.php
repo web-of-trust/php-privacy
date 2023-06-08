@@ -86,10 +86,7 @@ final class Helper
     ): int
     {
         $unpacked = unpack($be ? 'N' : 'V', substr($bytes, $offset, 4));
-        if (!empty($unpacked)) {
-            return array_values($unpacked)[0];
-        }
-        return 0;
+        return (int) array_pop($unpacked);
     }
 
     /**
@@ -105,9 +102,6 @@ final class Helper
     ): int
     {
         $unpacked = unpack($be ? 'n' : 'v', substr($bytes, $offset, 2));
-        if (!empty($unpacked)) {
-            return array_values($unpacked)[0];
-        }
-        return 0;
+        return (int) array_pop($unpacked);
     }
 }

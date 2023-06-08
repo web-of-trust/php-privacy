@@ -33,15 +33,22 @@ class PublicKey extends ElGamal
         $prime = $this->getPrime();
         $input = Helper::bin2BigInt($plainText);
         if ($input->compare($prime) > 0) {
-            throw new \InvalidArgumentException('input too large for ' . self::ALGORITHM . ' cipher.');
+            throw new \InvalidArgumentException(
+                'input too large for ' . self::ALGORITHM . ' cipher.'
+            );
         }
 
         $byteLength = ($this->getBitSize() + 7) >> 3;
         do {
             $k = BigInteger::randomRange($one, $prime->subtract($one));
             $gamma = $this->getGenerator()->modPow($k, $prime);
-            list(, $phi) = $input->multiply($this->getY()->modPow($k, $prime))->divide($prime);
-        } while ($gamma->getLengthInBytes() < $byteLength || $phi->getLengthInBytes() < $byteLength);
+            list(, $phi) = $input->multiply(
+                $this->getY()->modPow($k, $prime)
+            )->divide($prime);
+        } while (
+            $gamma->getLengthInBytes() < $byteLength ||
+            $phi->getLengthInBytes() < $byteLength
+        );
 
         return implode([
             substr($gamma->toBytes(), 0, $byteLength),

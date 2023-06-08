@@ -73,8 +73,12 @@ class PrivateKey extends ElGamal
         $length = strlen($cipherText);
 
         $prime = $this->getPrime();
-        $gamma = Helper::bin2BigInt(substr($cipherText, 0, (int) ($length / 2)));
-        $phi = Helper::bin2BigInt(substr($cipherText, (int) ($length / 2)));
+        $gamma = Helper::bin2BigInt(
+            substr($cipherText, 0, (int) ($length / 2))
+        );
+        $phi = Helper::bin2BigInt(
+            substr($cipherText, (int) ($length / 2))
+        );
         list(, $m) = $gamma->modPow(
             $prime->subtract($one->add($this->getX())), $prime
         )->multiply($phi)->divide($prime);
