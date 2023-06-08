@@ -3,9 +3,10 @@
 
 # Ignore all test and documentation with "export-ignore".
 /.gitattributes     export-ignore
+/.github            export-ignore
 /.gitignore         export-ignore
 /phpstan.neon       export-ignore
 /phpunit.xml.dist   export-ignore
-/.github            export-ignore
+/psalm.xml          export-ignore
 /docs               export-ignore
 /tests              export-ignore
