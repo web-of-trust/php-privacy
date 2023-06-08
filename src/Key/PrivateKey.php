@@ -63,7 +63,11 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     )
     {
         parent::__construct(
-            $keyPacket, $revocationSignatures, $directSignatures, $users, $subkeys
+            $keyPacket,
+            $revocationSignatures,
+            $directSignatures,
+            $users,
+            $subkeys
         );
         $this->secretKeyPacket = $keyPacket;
     }
@@ -93,7 +97,9 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
      * @param PacketListInterface $packetList
      * @return self
      */
-    public static function fromPacketList(PacketListInterface $packetList): self
+    public static function fromPacketList(
+        PacketListInterface $packetList
+    ): self
     {
         $keyStruct = self::readPacketList($packetList);
         if (!($keyStruct['keyPacket'] instanceof SecretKeyPacketInterface)) {
@@ -262,7 +268,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         usort(
             $subkeys,
             static fn ($a, $b): int => $b->getCreationTime()->getTimestamp()
-                                    - $a->getCreationTime()->getTimestamp()
+                                    -  $a->getCreationTime()->getTimestamp()
         );
 
         $keyPackets = [];

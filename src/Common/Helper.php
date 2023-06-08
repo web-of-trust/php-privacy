@@ -85,7 +85,9 @@ final class Helper
         string $bytes, int $offset = 0, bool $be = true
     ): int
     {
-        $unpacked = unpack($be ? 'N' : 'V', substr($bytes, $offset, 4));
+        $unpacked = unpack(
+            $be ? 'N' : 'V', substr($bytes, $offset, 4)
+        );
         return (int) array_pop($unpacked);
     }
 
@@ -101,7 +103,9 @@ final class Helper
         string $bytes, int $offset = 0, bool $be = true
     ): int
     {
-        $unpacked = unpack($be ? 'n' : 'v', substr($bytes, $offset, 2));
+        $unpacked = unpack(
+            $be ? 'n' : 'v', substr($bytes, $offset, 2)
+        );
         return (int) array_pop($unpacked);
     }
 }

@@ -473,7 +473,8 @@ abstract class AbstractKey implements KeyInterface
             }
         }
         $expirationTime = $this->getExpirationTime();
-        if ($expirationTime instanceof DateTimeInterface && $expirationTime < new \DateTime()) {
+        if ($expirationTime instanceof DateTimeInterface &&
+            $expirationTime < new \DateTime()) {
             $this->getLogger()->warning(
                 'Primary key is expired.'
             );
@@ -494,8 +495,10 @@ abstract class AbstractKey implements KeyInterface
                 $aPrimary = (int) $a->isPrimary();
                 $bPrimary = (int) $b->isPrimary();
                 if ($aPrimary === $bPrimary) {
-                    $aTime = $a->getLatestSelfCertification()?->getSignatureCreationTime() ?? new \DateTime();
-                    $bTime = $b->getLatestSelfCertification()?->getSignatureCreationTime() ?? new \DateTime();
+                    $aTime = $a->getLatestSelfCertification()?->getSignatureCreationTime()
+                             ?? new \DateTime();
+                    $bTime = $b->getLatestSelfCertification()?->getSignatureCreationTime()
+                             ?? new \DateTime();
                     return $aTime->getTimestamp() - $bTime->getTimestamp();
                 }
                 else {
@@ -656,7 +659,9 @@ abstract class AbstractKey implements KeyInterface
         return $key;
     }
 
-    protected static function applyKeyStructure(AbstractKey $key, array $keyMap): void
+    protected static function applyKeyStructure(
+        AbstractKey $key, array $keyMap
+    ): void
     {
         $key->setUsers(array_map(
             static fn (array $user) => new User(

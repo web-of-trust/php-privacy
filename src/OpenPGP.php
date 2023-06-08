@@ -187,7 +187,9 @@ final class OpenPGP
         ?DateTimeInterface $time = null
     ): KeyInterface
     {
-        return $privateKey->revokeKey($key, $revocationReason, $time);
+        return $privateKey->revokeKey(
+            $key, $revocationReason, $time
+        );
     }
 
     /**
@@ -378,8 +380,9 @@ final class OpenPGP
         ?DateTimeInterface $time = null
     ): array
     {
-        return self::readSignedMessage($armoredSignedMessage)
-            ->verify($verificationKeys, $time);
+        return self::readSignedMessage(
+            $armoredSignedMessage
+        )->verify($verificationKeys, $time);
     }
 
     /**
@@ -400,7 +403,9 @@ final class OpenPGP
     ): array
     {
         return self::createCleartextMessage($text)->verifyDetached(
-            $verificationKeys, self::readSignature($armoredSignature), $time
+            $verificationKeys,
+            self::readSignature($armoredSignature),
+            $time
         );
     }
 
@@ -431,13 +436,16 @@ final class OpenPGP
     ): EncryptedMessageInterface
     {
         if (!empty($signingKeys)) {
-            return $message->sign($signingKeys, $notationData, $time)
-                ->compress($compression)
-                ->encrypt($encryptionKeys, $passwords, $symmetric);
+            return $message->sign(
+                $signingKeys, $notationData, $time
+            )->compress($compression)->encrypt(
+                $encryptionKeys, $passwords, $symmetric
+            );
         }
         else {
-            return $message->compress($compression)
-                ->encrypt($encryptionKeys, $passwords, $symmetric);
+            return $message->compress($compression)->encrypt(
+                $encryptionKeys, $passwords, $symmetric
+            );
         }
     }
 

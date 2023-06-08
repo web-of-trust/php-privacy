@@ -167,10 +167,14 @@ abstract class ECSecretKeyMaterial implements KeyMaterialInterface
                     return $this->publicMaterial->getQ()->equals($dG);
                 default:
                     $params = $this->publicMaterial->getParameters();
+                    $QA = $params['QA'];
+
                     $curve = $params['curve'];
-                    $QA = $curve->multiplyPoint($curve->getBasePoint(), $this->d);
-                    return $QA[0]->toBigInteger()->equals($params['QA'][0]->toBigInteger()) &&
-                           $QA[1]->toBigInteger()->equals($params['QA'][1]->toBigInteger());
+                    list($x, $y) = $curve->multiplyPoint(
+                        $curve->getBasePoint(), $this->d
+                    );
+                    return $x->toBigInteger()->equals($QA[0]->toBigInteger()) &&
+                           $y->toBigInteger()->equals($QA[1]->toBigInteger());
             }
         }
         return false;

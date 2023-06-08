@@ -49,7 +49,9 @@ class Signature implements SignatureInterface
         PacketListInterface $packetList
     )
     {
-        $this->packetList = $packetList->whereType(SignaturePacketInterface::class);
+        $this->packetList = $packetList->whereType(
+            SignaturePacketInterface::class
+        );
     }
 
     /**
@@ -96,7 +98,9 @@ class Signature implements SignatureInterface
             static fn ($key): bool => $key instanceof KeyInterface
         );
         if (empty($verificationKeys)) {
-            Config::getLogger()->warning('No verification keys provided.');
+            Config::getLogger()->warning(
+                'No verification keys provided.'
+            );
         }
         $verifications = [];
         foreach ($this->packetList as $packet) {

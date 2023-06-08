@@ -146,7 +146,9 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
         return array_pop($sessionKeys);
     }
 
-    private static function validatePacketList(PacketListInterface $packetList): array
+    private static function validatePacketList(
+        PacketListInterface $packetList
+    ): array
     {
         $encryptedPackets = $packetList->whereType(
             EncryptedDataPacketInterface::class
