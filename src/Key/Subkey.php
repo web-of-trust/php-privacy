@@ -219,7 +219,7 @@ class Subkey implements SubkeyInterface
         ?DateTimeInterface $time = null
     ): bool
     {
-        $keyID = $certificate?->getIssuerKeyID() ?? '';
+        $keyID = $certificate?->getIssuerKeyID();
         $keyPacket = $verifyKey?->toPublic()->getSigningKeyPacket() ??
                      $this->mainKey->toPublic()->getSigningKeyPacket();
         foreach ($this->revocationSignatures as $signature) {

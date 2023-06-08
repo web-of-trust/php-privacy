@@ -179,7 +179,7 @@ class User implements UserInterface
         ?DateTimeInterface $time = null
     ): bool
     {
-        $keyID = $certificate?->getIssuerKeyID() ?? '';
+        $keyID = $certificate?->getIssuerKeyID();
         $keyPacket = $verifyKey?->toPublic()->getSigningKeyPacket() ??
                      $this->mainKey->toPublic()->getSigningKeyPacket();
         foreach ($this->revocationSignatures as $signature) {
@@ -225,7 +225,7 @@ class User implements UserInterface
         if ($this->isRevoked($verifyKey, time: $time)) {
             return false;
         }
-        $keyID = $certificate?->getIssuerKeyID() ?? '';
+        $keyID = $certificate?->getIssuerKeyID();
         $keyPacket = $verifyKey?->toPublic()->getSigningKeyPacket() ??
                      $this->mainKey->toPublic()->getSigningKeyPacket();
         foreach ($this->otherCertifications as $signature) {

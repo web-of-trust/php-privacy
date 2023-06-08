@@ -401,7 +401,7 @@ abstract class AbstractKey implements KeyInterface
         ?DateTimeInterface $time = null
     ): bool
     {
-        $keyID = ($certificate != null) ? $certificate->getIssuerKeyID() : '';
+        $keyID = $certificate?->getIssuerKeyID();
         $keyPacket = $verifyKey?->toPublic()->getSigningKeyPacket() ??
                      $this->toPublic()->getSigningKeyPacket();
         foreach ($this->revocationSignatures as $signature) {
