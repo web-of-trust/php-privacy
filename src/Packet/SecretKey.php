@@ -137,8 +137,10 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     ): self
     {
         $keyMaterial = match($keyAlgorithm) {
-            KeyAlgorithm::RsaEncryptSign, KeyAlgorithm::RsaEncrypt, KeyAlgorithm::RsaSign
-            => Key\RSASecretKeyMaterial::generate($rsaKeySize),
+            KeyAlgorithm::RsaEncryptSign,
+            KeyAlgorithm::RsaEncrypt,
+            KeyAlgorithm::RsaSign
+                => Key\RSASecretKeyMaterial::generate($rsaKeySize),
             KeyAlgorithm::ElGamal => Key\ElGamalSecretKeyMaterial::generate($dhKeySize),
             KeyAlgorithm::Dsa => Key\DSASecretKeyMaterial::generate($dhKeySize),
             KeyAlgorithm::Ecdh => Key\ECDHSecretKeyMaterial::generate($curveOid),
@@ -452,10 +454,12 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     {
         $keyAlgorithm = $publicKey->getKeyAlgorithm();
         return match($keyAlgorithm) {
-            KeyAlgorithm::RsaEncryptSign, KeyAlgorithm::RsaEncrypt, KeyAlgorithm::RsaSign
-            => Key\RSASecretKeyMaterial::fromBytes(
-                $bytes, $publicKey->getKeyMaterial()
-            ),
+            KeyAlgorithm::RsaEncryptSign,
+            KeyAlgorithm::RsaEncrypt,
+            KeyAlgorithm::RsaSign
+                => Key\RSASecretKeyMaterial::fromBytes(
+                    $bytes, $publicKey->getKeyMaterial()
+                ),
             KeyAlgorithm::ElGamal => Key\ElGamalSecretKeyMaterial::fromBytes(
                 $bytes, $publicKey->getKeyMaterial()
             ),

@@ -26,9 +26,7 @@ enum AeadAlgorithm: int
     public function blockLength(): int
     {
         return match($this) {
-            self::Eax => 16,
-            self::Ocb => 16,
-            self::Gcm => 16,
+            self::Eax, self::Ocb, self::Gcm => 16,
         };
     }
 
@@ -44,9 +42,7 @@ enum AeadAlgorithm: int
     public function tagLength(): int
     {
         return match($this) {
-            self::Eax => 16,
-            self::Ocb => 16,
-            self::Gcm => 16,
+            self::Eax, self::Ocb, self::Gcm => 16,
         };
     }
 }

@@ -38,8 +38,7 @@ enum HashAlgorithm: int
         return match($this) {
             self::Unknown => 0,
             self::Md5 => 16,
-            self::Sha1 => 20,
-            self::Ripemd160 => 20,
+            self::Sha1, self::Ripemd160 => 20,
             self::Sha256 => 32,
             self::Sha384 => 48,
             self::Sha512 => 64,

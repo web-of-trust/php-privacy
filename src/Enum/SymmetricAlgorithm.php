@@ -53,17 +53,20 @@ enum SymmetricAlgorithm: int
     {
         return match($this) {
             self::Plaintext => 0,
-            self::Idea => 128,
-            self::TripleDes => 192,
-            self::Cast5 => 128,
-            self::Blowfish => 128,
-            self::Aes128 => 128,
-            self::Aes192 => 192,
-            self::Aes256 => 256,
-            self::Twofish => 256,
-            self::Camellia128 => 128,
-            self::Camellia192 => 192,
-            self::Camellia256 => 256,
+            self::Aes128,
+            self::Blowfish,
+            self::Camellia128,
+            self::Cast5,
+            self::Idea
+                => 128,
+            self::Aes192,
+            self::Camellia192,
+            self::TripleDes
+                => 192,
+            self::Aes256,
+            self::Camellia256,
+            self::Twofish
+                => 256,
         };
     }
 
@@ -86,17 +89,19 @@ enum SymmetricAlgorithm: int
     {
         return match($this) {
             self::Plaintext => 0,
-            self::Idea => 8,
-            self::TripleDes => 8,
-            self::Cast5 => 8,
-            self::Blowfish => 16,
-            self::Aes128 => 16,
-            self::Aes192 => 16,
-            self::Aes256 => 16,
-            self::Twofish => 16,
-            self::Camellia128 => 16,
-            self::Camellia192 => 16,
-            self::Camellia256 => 16,
+            self::Idea,
+            self::TripleDes,
+            self::Cast5
+                => 8,
+            self::Blowfish,
+            self::Aes128,
+            self::Aes192,
+            self::Aes256,
+            self::Twofish,
+            self::Camellia128,
+            self::Camellia192,
+            self::Camellia256
+                => 16,
         };
     }
 
@@ -115,13 +120,11 @@ enum SymmetricAlgorithm: int
             self::TripleDes => new \phpseclib3\Crypt\TripleDES('cfb'),
             self::Cast5 => new \OpenPGP\Cryptor\Symmetric\CAST5('cfb'),
             self::Blowfish => new \phpseclib3\Crypt\Blowfish('cfb'),
-            self::Aes128 => new \phpseclib3\Crypt\AES('cfb'),
-            self::Aes192 => new \phpseclib3\Crypt\AES('cfb'),
-            self::Aes256 => new \phpseclib3\Crypt\AES('cfb'),
+            self::Aes128, self::Aes192, self::Aes256
+                => new \phpseclib3\Crypt\AES('cfb'),
             self::Twofish => new \phpseclib3\Crypt\Twofish('cfb'),
-            self::Camellia128 => new \OpenPGP\Cryptor\Symmetric\Camellia('cfb'),
-            self::Camellia192 => new \OpenPGP\Cryptor\Symmetric\Camellia('cfb'),
-            self::Camellia256 => new \OpenPGP\Cryptor\Symmetric\Camellia('cfb'),
+            self::Camellia128, self::Camellia192, self::Camellia256
+                => new \OpenPGP\Cryptor\Symmetric\Camellia('cfb'),
         };
     }
 }

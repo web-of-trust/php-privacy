@@ -171,19 +171,16 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
      */
     public function getKeyStrength(): int
     {
-        if ($this->keyMaterial instanceof Key\RSAPublicKeyMaterial) {
-            return $this->keyMaterial->getModulus()->getLength();
-        }
-        elseif ($this->keyMaterial instanceof Key\DSAPublicKeyMaterial) {
-            return $this->keyMaterial->getPrime()->getLength();
-        }
-        elseif ($this->keyMaterial instanceof Key\ElGamalPublicKeyMaterial) {
-            return $this->keyMaterial->getPrime()->getLength();
-        }
-        elseif ($this->keyMaterial instanceof Key\ECPublicKeyMaterial) {
-            return $this->keyMaterial->getPublicKeyLength();
+        return match (true) {
+            $this->keyMaterial instanceof Key\RSAPublicKeyMaterial
+                => $this->keyMaterial->getModulus()->getLength(),
+            $this->keyMaterial instanceof Key\DSAPublicKeyMaterial,
+            $this->keyMaterial instanceof Key\ElGamalPublicKeyMaterial
+                => $this->keyMaterial->getPrime()->getLength(),
+            $this->keyMaterial instanceof Key\ECPublicKeyMaterial
+                => $this->keyMaterial->getPublicKeyLength(),
+            default => 0,
         };
-        return 0;
     }
 
     /**
@@ -200,11 +197,12 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
     public function isSigningKey(): bool
     {
         return match ($this->keyAlgorithm) {
-            KeyAlgorithm::RsaEncrypt => false,
-            KeyAlgorithm::ElGamal => false,
-            KeyAlgorithm::Ecdh => false,
-            KeyAlgorithm::DiffieHellman => false,
-            KeyAlgorithm::Aedh => false,
+            KeyAlgorithm::RsaEncrypt,
+            KeyAlgorithm::ElGamal,
+            KeyAlgorithm::Ecdh,
+            KeyAlgorithm::DiffieHellman,
+            KeyAlgorithm::Aedh
+                => false,
             default => true,
         };
     }
@@ -215,11 +213,12 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
     public function isEncryptionKey(): bool
     {
         return match ($this->keyAlgorithm) {
-            KeyAlgorithm::RsaSign => false,
-            KeyAlgorithm::Dsa => false,
-            KeyAlgorithm::EcDsa => false,
-            KeyAlgorithm::EdDsa => false,
-            KeyAlgorithm::AeDsa => false,
+            KeyAlgorithm::RsaSign,
+            KeyAlgorithm::Dsa,
+            KeyAlgorithm::EcDsa,
+            KeyAlgorithm::EdDsa,
+            KeyAlgorithm::AeDsa
+                => false,
             default => true,
         };
     }
@@ -257,8 +256,10 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
     ): KeyMaterialInterface
     {
         return match($keyAlgorithm) {
-            KeyAlgorithm::RsaEncryptSign, KeyAlgorithm::RsaEncrypt, KeyAlgorithm::RsaSign
-            => Key\RSAPublicKeyMaterial::fromBytes($bytes),
+            KeyAlgorithm::RsaEncryptSign,
+            KeyAlgorithm::RsaEncrypt,
+            KeyAlgorithm::RsaSign
+                => Key\RSAPublicKeyMaterial::fromBytes($bytes),
             KeyAlgorithm::ElGamal => Key\ElGamalPublicKeyMaterial::fromBytes($bytes),
             KeyAlgorithm::Dsa => Key\DSAPublicKeyMaterial::fromBytes($bytes),
             KeyAlgorithm::Ecdh => Key\ECDHPublicKeyMaterial::fromBytes($bytes),

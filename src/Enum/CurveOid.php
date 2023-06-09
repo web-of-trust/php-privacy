@@ -66,30 +66,36 @@ enum CurveOid: string
     public function hashAlgorithm(): HashAlgorithm
     {
         return match($this) {
-            self::Prime256v1 => HashAlgorithm::Sha256,
-            self::Secp256k1 => HashAlgorithm::Sha256,
-            self::Secp384r1 => HashAlgorithm::Sha384,
-            self::Secp521r1 => HashAlgorithm::Sha512,
-            self::BrainpoolP256r1 => HashAlgorithm::Sha256,
-            self::BrainpoolP384r1 => HashAlgorithm::Sha384,
-            self::BrainpoolP512r1 => HashAlgorithm::Sha512,
-            self::Ed25519 => HashAlgorithm::Sha512,
-            self::Curve25519 => HashAlgorithm::Sha256,
+            self::Prime256v1,
+            self::Secp256k1,
+            self::BrainpoolP256r1,
+            self::Curve25519
+                => HashAlgorithm::Sha256,
+            self::Secp384r1,
+            self::BrainpoolP384r1
+                => HashAlgorithm::Sha384,
+            self::Secp521r1,
+            self::BrainpoolP512r1,
+            self::Ed25519
+                => HashAlgorithm::Sha512,
         };
     }
 
     public function symmetricAlgorithm(): SymmetricAlgorithm
     {
         return match($this) {
-            self::Prime256v1 => SymmetricAlgorithm::Aes128,
-            self::Secp256k1 => SymmetricAlgorithm::Aes128,
-            self::Secp384r1 => SymmetricAlgorithm::Aes128,
-            self::Secp521r1 => SymmetricAlgorithm::Aes256,
-            self::BrainpoolP256r1 => SymmetricAlgorithm::Aes192,
-            self::BrainpoolP384r1 => SymmetricAlgorithm::Aes192,
-            self::BrainpoolP512r1 => SymmetricAlgorithm::Aes256,
-            self::Ed25519 => SymmetricAlgorithm::Aes128,
-            self::Curve25519 => SymmetricAlgorithm::Aes128,
+            self::Prime256v1,
+            self::Secp256k1,
+            self::Secp384r1,
+            self::Ed25519,
+            self::Curve25519
+                => SymmetricAlgorithm::Aes128,
+            self::BrainpoolP256r1,
+            self::BrainpoolP384r1
+                => SymmetricAlgorithm::Aes192,
+            self::Secp521r1,
+            self::BrainpoolP512r1
+                => SymmetricAlgorithm::Aes256,
         };
     }
 }
