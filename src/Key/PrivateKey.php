@@ -406,23 +406,23 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             );
         }
 
-        $privateKey = $this->clone();
-        $users = $privateKey->getUsers();
+        $self = $this->clone();
+        $users = $self->getUsers();
         foreach ($userIDs as $userID) {
             $packet = new UserID($userID);
             $selfCertificate = Signature::createSelfCertificate(
-                $privateKey->getSigningKeyPacket(),
+                $self->getSigningKeyPacket(),
                 $packet
             );
             $users[] = new User(
-                $privateKey,
+                $self,
                 $packet,
                 selfCertifications: [$selfCertificate],
             );
         }
-        $privateKey->setUsers($users);
+        $self->setUsers($users);
 
-        return $privateKey;
+        return $self;
     }
 
     /**
@@ -445,8 +445,8 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             );
         }
 
-        $privateKey = $this->clone();
-        $subkeys = $privateKey->getSubkeys();
+        $self = $this->clone();
+        $subkeys = $self->getSubkeys();
         $secretSubkey = SecretSubkey::generate(
             $keyAlgorithm,
             $rsaKeySize,
@@ -455,20 +455,20 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $time,
         )->encrypt($passphrase);
         $bindingSignature = Signature::createSubkeyBinding(
-            $privateKey->getSigningKeyPacket(),
+            $self->getSigningKeyPacket(),
             $secretSubkey,
             $keyExpiry,
             $subkeySign,
             $time
         );
         $subkeys[] = new Subkey(
-            $privateKey,
+            $self,
             $secretSubkey,
             bindingSignatures: [$bindingSignature]
         );
-        $privateKey->setSubkeys($subkeys);
+        $self->setSubkeys($subkeys);
 
-        return $privateKey;
+        return $self;
     }
 
     /**
@@ -502,19 +502,19 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         ?DateTimeInterface $time = null
     ): self
     {
-        $privateKey = $this->clone();
+        $self = $this->clone();
 
-        $users = $privateKey->getUsers();
+        $users = $self->getUsers();
         foreach ($users as $key => $user) {
             if ($user->getUserID() === $userID) {
                 $users[$key] = $user->revokeBy(
-                    $privateKey, $revocationReason, $time
+                    $self, $revocationReason, $time
                 );
             }
         }
-        $privateKey->setUsers($users);
+        $self->setUsers($users);
 
-        return $privateKey;
+        return $self;
     }
 
     /**
@@ -526,17 +526,17 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         ?DateTimeInterface $time = null
     ): self
     {
-        $privateKey = $this->clone();
-        $subkeys = $privateKey->getSubkeys();
+        $self = $this->clone();
+        $subkeys = $self->getSubkeys();
         foreach ($subkeys as $key => $subkey) {
             if ($subkey->getKeyID() === $keyID) {
                 $subkeys[$key] = $subkey->revokeBy(
-                    $privateKey, $revocationReason, $time
+                    $self, $revocationReason, $time
                 );
             }
         }
-        $privateKey->setSubkeys($subkeys);
+        $self->setSubkeys($subkeys);
 
-        return $privateKey;
+        return $self;
     }
 }

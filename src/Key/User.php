@@ -281,14 +281,14 @@ class User implements UserInterface
                 'The user\'s own key can only be used for self-certifications.'
             );
         }
-        $user = clone $this;
-        $user->otherCertifications[] = Signature::createCertGeneric(
+        $self = clone $this;
+        $self->otherCertifications[] = Signature::createCertGeneric(
             $signKey->getSigningKeyPacket(),
-            $user->getMainKey()->getKeyPacket(),
-            $user->getUserIDPacket(),
+            $self->getMainKey()->getKeyPacket(),
+            $self->getUserIDPacket(),
             $time
         );
-        return $user;
+        return $self;
     }
 
     /**
@@ -300,15 +300,15 @@ class User implements UserInterface
         ?DateTimeInterface $time = null
     ): self
     {
-        $user = clone $this;
-        $user->revocationSignatures[] = Signature::createCertRevocation(
+        $self = clone $this;
+        $self->revocationSignatures[] = Signature::createCertRevocation(
             $signKey->getSigningKeyPacket(),
-            $user->getMainKey()->getKeyPacket(),
-            $user->getUserIDPacket(),
+            $self->getMainKey()->getKeyPacket(),
+            $self->getUserIDPacket(),
             $revocationReason,
             $time
         );
-        return $user;
+        return $self;
     }
 
     /**

@@ -516,19 +516,19 @@ abstract class AbstractKey implements KeyInterface
         PrivateKeyInterface $signKey, ?DateTimeInterface $time = null
     ): self
     {
-        $key = $this->clone();
-        $certifedUser = $key->getPrimaryUser()->certifyBy($signKey, $time);
+        $self = $this->clone();
+        $certifedUser = $self->getPrimaryUser()->certifyBy($signKey, $time);
         $users = [
             $certifedUser,
         ];
-        foreach ($key->getUsers() as $user) {
+        foreach ($self->getUsers() as $user) {
             if ($user->getUserID() !== $certifedUser->getUserID()) {
                 $users[] = $user;
             }
         }
-        $key->setUsers($users);
+        $self->setUsers($users);
 
-        return $key;
+        return $self;
     }
 
     /**
@@ -540,15 +540,15 @@ abstract class AbstractKey implements KeyInterface
         ?DateTimeInterface $time = null
     ): self
     {
-        $key = $this->clone();
-        $key->revocationSignatures[] = Signature::createKeyRevocation(
+        $self = $this->clone();
+        $self->revocationSignatures[] = Signature::createKeyRevocation(
             $signKey->getSigningKeyPacket(),
-            $key->getKeyPacket(),
+            $self->getKeyPacket(),
             $revocationReason,
             $time
         );
 
-        return $key;
+        return $self;
     }
 
     /**
@@ -635,28 +635,28 @@ abstract class AbstractKey implements KeyInterface
      */
     protected function clone(): static
     {
-        $key = clone $this;
+        $self = clone $this;
 
-        $key->setUsers(array_map(
+        $self->setUsers(array_map(
             static fn ($user) => new User(
-                $key,
+                $self,
                 $user->getUserIDPacket(),
                 $user->getRevocationCertifications(),
                 $user->getSelfCertifications(),
                 $user->getOtherCertifications()
             ),
-            $key->getUsers()
+            $self->getUsers()
         ))->setSubkeys(array_map(
             static fn ($subkey) => new Subkey(
-                $key,
+                $self,
                 $subkey->getKeyPacket(),
                 $subkey->getRevocationSignatures(),
                 $subkey->getBindingSignatures()
             ),
-            $key->getSubkeys()
+            $self->getSubkeys()
         ));
 
-        return $key;
+        return $self;
     }
 
     protected static function applyKeyStructure(

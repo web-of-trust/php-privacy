@@ -286,16 +286,16 @@ class Subkey implements SubkeyInterface
         ?DateTimeInterface $time = null
     ): self
     {
-        $subkey = clone $this;
+        $self = clone $this;
         $keyPacket = $signKey->getSigningKeyPacket();
-        $subkey->revocationSignatures[] = Signature::createSubkeyRevocation(
+        $self->revocationSignatures[] = Signature::createSubkeyRevocation(
             $keyPacket,
-            $subkey->getMainKey()->getKeyPacket(),
-            $subkey->getKeyPacket(),
+            $self->getMainKey()->getKeyPacket(),
+            $self->getKeyPacket(),
             $revocationReason,
             $time
         );
-        return $subkey;
+        return $self;
     }
 
     /**
