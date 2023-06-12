@@ -68,7 +68,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
     ): self
     {
         if ($publicKey instanceof PublicKey) {
-            $size = ($publicKey->getBitSize() + 7) >> 3;
+            $size = $publicKey->getPrime()->getLengthInBytes();
             $padded = self::pkcs1Encode(implode([
                 $sessionKey->toBytes(),
                 $sessionKey->computeChecksum(),

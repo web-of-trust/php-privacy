@@ -170,7 +170,8 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
             $exponent = $this->publicMaterial->getExponent();
 
             // Check that 1 < g < p
-            if ($generator->compare($one) <= 0 || $generator->compare($prime) >= 0) {
+            if ($generator->compare($one) <= 0 ||
+                $generator->compare($prime) >= 0) {
                 return false;
             }
 

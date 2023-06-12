@@ -40,7 +40,7 @@ use OpenPGP\Type\{
 class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
 {
     const ANONYMOUS_SENDER = "\x41\x6e\x6f\x6e\x79\x6d\x6f\x75\x73\x20\x53\x65\x6e\x64\x65\x72\x20\x20\x20\x20";
-    const KDF_HEADER = "\x00\x00\x00\x01";
+    const KDF_HEADER       = "\x00\x00\x00\x01";
     const PKCS5_BLOCK_SIZE = 8;
 
     /**
