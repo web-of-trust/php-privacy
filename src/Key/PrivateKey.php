@@ -382,6 +382,11 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             if ($keyPacket instanceof SecretKeyPacketInterface) {
                 $subkeyPassphrase = $subkeyPassphrases[$key] ?? $passphrase;
                 $keyPacket = $keyPacket->decrypt($subkeyPassphrase);
+                if (!$keyPacket->getKeyMaterial()->isValid()) {
+                    throw new \UnexpectedValueException(
+                        'The subkey material is not consistent.'
+                    );
+                }
             }
             $subkeys[] = new Subkey(
                 $privateKey,
