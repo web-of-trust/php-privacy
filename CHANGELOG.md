@@ -6,3 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## 1.0.0 - released 2023-06-06
 - First major release
+
+## 1.0.1 - released 2023-06-13
+[Full Changelog](https://github.com/web-of-trust/php-privacy/1.0.0...1.0.1)
+- Re-format code by psalm recomendations
