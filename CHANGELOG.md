@@ -10,3 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 1.0.1 - released 2023-06-13
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.0.0...1.0.1)
 - Re-format code by psalm recomendations
+
+## 1.0.2 - released 2023-06-13
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.0.1...1.0.2)
+- Validate subkey packet when decrypt private key
+- Migrate phpunit XML configuration
