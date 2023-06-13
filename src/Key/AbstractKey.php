@@ -474,7 +474,7 @@ abstract class AbstractKey implements KeyInterface
         }
         $expirationTime = $this->getExpirationTime();
         if ($expirationTime instanceof DateTimeInterface &&
-            $expirationTime < new \DateTime()) {
+            $expirationTime->getTimestamp() < time()) {
             $this->getLogger()->warning(
                 'Primary key is expired.'
             );
