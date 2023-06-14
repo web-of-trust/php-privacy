@@ -39,4 +39,12 @@ interface PacketInterface
      * @return string
      */
     function toBytes(): string;
+
+    /**
+     * Read packet data from byte string
+     *
+     * @param string $bytes
+     * @return self
+     */
+    static function fromBytes(string $bytes): self;
 }

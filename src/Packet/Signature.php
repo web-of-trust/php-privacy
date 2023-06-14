@@ -100,10 +100,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
-     * Read signature packet from byte string
-     *
-     * @param string $bytes
-     * @return self
+     * {@inheritdoc}
      */
     public static function fromBytes(string $bytes): self
     {

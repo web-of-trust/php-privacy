@@ -66,10 +66,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
     }
 
     /**
-     * Read public key packets from byte string
-     *
-     * @param string $bytes
-     * @return self
+     * {@inheritdoc}
      */
     public static function fromBytes(string $bytes): self
     {

@@ -60,10 +60,7 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
     }
 
     /**
-     * Read AEAD Protected Data packet from byte string
-     *
-     * @param string $bytes
-     * @return self
+     * {@inheritdoc}
      */
     public static function fromBytes(string $bytes): self
     {

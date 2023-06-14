@@ -45,10 +45,7 @@ class UserAttribute extends AbstractPacket implements UserIDPacketInterface
     }
 
     /**
-     * Read user attributes from byte string
-     *
-     * @param string $bytes
-     * @return self
+     * {@inheritdoc}
      */
     public static function fromBytes(string $bytes): self
     {

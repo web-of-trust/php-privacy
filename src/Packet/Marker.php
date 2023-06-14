@@ -34,6 +34,14 @@ class Marker extends AbstractPacket
     /**
      * {@inheritdoc}
      */
+    public static function fromBytes(string $bytes): self
+    {
+        return new self();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function toBytes(): string
     {
         return self::MARKER;

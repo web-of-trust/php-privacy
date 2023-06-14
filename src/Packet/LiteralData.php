@@ -52,10 +52,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface, Literal
     }
 
     /**
-     * Read literal data packet from byte string
-     *
-     * @param string $bytes
-     * @return self
+     * {@inheritdoc}
      */
     public static function fromBytes(string $bytes): self
     {

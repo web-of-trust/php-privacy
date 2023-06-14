@@ -64,10 +64,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     }
 
     /**
-     * Read PKESK packet from byte string
-     *
-     * @param string $bytes
-     * @return self
+     * {@inheritdoc}
      */
     public static function fromBytes(string $bytes): self
     {

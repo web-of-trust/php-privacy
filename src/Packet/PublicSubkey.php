@@ -46,10 +46,7 @@ class PublicSubkey extends PublicKey implements SubkeyPacketInterface
     }
 
     /**
-     * Read public subkey packets from byte string
-     *
-     * @param string $bytes
-     * @return self
+     * {@inheritdoc}
      */
     public static function fromBytes(string $bytes): self
     {
