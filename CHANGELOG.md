@@ -15,3 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.0.1...1.0.2)
 - Validate subkey packet when decrypt private key
 - Migrate phpunit XML configuration
+
+## 1.0.3 - released 2023-06-15
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.0.2...1.0.3)
+- Add S2K hash configuration
