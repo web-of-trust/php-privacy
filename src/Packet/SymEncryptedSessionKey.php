@@ -93,22 +93,18 @@ class SymEncryptedSessionKey extends AbstractPacket
      * @param string $password
      * @param Key\SessionKey $sessionKey
      * @param SymmetricAlgorithm $symmetric
-     * @param HashAlgorithm $s2kHash
-     * @param S2kType $s2kType
      * @return self
      */
     public static function encryptSessionKey(
         string $password,
         ?Key\SessionKey $sessionKey = null,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        HashAlgorithm $s2kHash = HashAlgorithm::Sha1,
-        S2kType $s2kType = S2kType::Iterated
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self
     {
         $s2k = new Key\S2K(
             Random::string(Key\S2K::SALT_LENGTH),
-            $s2kType,
-            $s2kHash,
+            S2kType::Iterated,
+            Config::getS2kHash(),
             Config::getS2kItCount()
         );
         $cipher = $symmetric->cipherEngine();

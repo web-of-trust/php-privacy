@@ -38,6 +38,8 @@ final class Config
 
     private static ?LoggerInterface $logger = null;
 
+    private static HashAlgorithm $s2kHash = HashAlgorithm::Sha256;
+
     private static int $s2kItCount = 224;
 
     private static bool $allowUnauthenticated = false;
@@ -127,6 +129,26 @@ final class Config
     public static function setLogger(LoggerInterface $logger): void
     {
         self::$logger = $logger;
+    }
+
+    /**
+     * Get S2K hash algorithm.
+     *
+     * @return HashAlgorithm
+     */
+    public static function getS2kHash(): HashAlgorithm
+    {
+        return self::$s2kHash;
+    }
+
+    /**
+     * Set S2K hash algorithm.
+     *
+     * @param HashAlgorithm $s2kHash
+     */
+    public static function setS2kHash(HashAlgorithm $s2kHash): void
+    {
+        self::$s2kHash = $s2kHash;
     }
 
     /**

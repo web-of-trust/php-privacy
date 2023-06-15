@@ -319,7 +319,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             $s2k = new Key\S2K(
                 Random::string(Key\S2K::SALT_LENGTH),
                 S2kType::Iterated,
-                HashAlgorithm::Sha1,
+                Config::getS2kHash(),
                 Config::getS2kItCount()
             );
             $iv = Random::string($symmetric->blockSize());
