@@ -14,7 +14,7 @@ use OpenPGP\Common\Helper;
 use OpenPGP\Cryptor\Math\Bitwise;
 
 /**
- * Camellia class
+ * Camellia cipher engine class. Ported from Bouncy Castle project.
  * Based on RFC 3713.
  *
  * @package  OpenPGP

@@ -13,7 +13,7 @@ use phpseclib3\Exception\BadModeException;
 use OpenPGP\Common\Helper;
 
 /**
- * IDEA class
+ * IDEA cipher engine class. Ported from Bouncy Castle project.
  * 
  * A class that provides a basic International Data Encryption Algorithm (IDEA) engine.
  * 
@@ -46,7 +46,9 @@ class IDEA extends BlockCipher
     {
         parent::__construct($mode);
         if ($this->mode == self::MODE_STREAM) {
-            throw new BadModeException('Block ciphers cannot be ran in stream mode');
+            throw new BadModeException(
+                'Block ciphers cannot be ran in stream mode'
+            );
         }
         $this->block_size = self::BLOCK_SIZE;
     }
@@ -78,10 +80,14 @@ class IDEA extends BlockCipher
     {
     }
 
-    private static function wordToBytes(int $word, string $bytes, int $offset = 0): string
+    private static function wordToBytes(
+        int $word, string $bytes, int $offset = 0
+    ): string
     {
         $replace = pack('n', $word);
-        return substr_replace($bytes, $replace, $offset, strlen($replace));
+        return substr_replace(
+            $bytes, $replace, $offset, strlen($replace)
+        );
     }
 
     private static function mul(int $x, int $y): int
@@ -140,10 +146,18 @@ class IDEA extends BlockCipher
         }
 
         $output = str_repeat("\x00", self::BLOCK_SIZE);
-        $output = self::wordToBytes(self::mul($x0, $workingKey[$keyOff++]), $output, 0);
-        $output = self::wordToBytes($x2 + $workingKey[$keyOff++], $output, 2);
-        $output = self::wordToBytes($x1 + $workingKey[$keyOff++], $output, 4);
-        $output = self::wordToBytes(self::mul($x3, $workingKey[$keyOff]), $output, 6);
+        $output = self::wordToBytes(
+            self::mul($x0, $workingKey[$keyOff++]), $output, 0
+        );
+        $output = self::wordToBytes(
+            $x2 + $workingKey[$keyOff++], $output, 2
+        );
+        $output = self::wordToBytes(
+            $x1 + $workingKey[$keyOff++], $output, 4
+        );
+        $output = self::wordToBytes(
+            self::mul($x3, $workingKey[$keyOff]), $output, 6
+        );
 
         return $output;
     }
@@ -286,7 +300,9 @@ class IDEA extends BlockCipher
      * @param string $key
      * @return array<int>
      */
-    private static function generateWorkingKey(bool $forEncryption, string $key): array
+    private static function generateWorkingKey(
+        bool $forEncryption, string $key
+    ): array
     {
         if ($forEncryption) {
             return self::expandKey($key);

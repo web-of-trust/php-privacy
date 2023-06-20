@@ -14,7 +14,7 @@ use OpenPGP\Common\Helper;
 use OpenPGP\Cryptor\Math\Bitwise;
 
 /**
- * CAST5 class
+ * CAST5 cipher engine class. Ported from Bouncy Castle project.
  * 
  * A class that provides CAST key encryption operations,
  * such as encoding data and generating keys.
