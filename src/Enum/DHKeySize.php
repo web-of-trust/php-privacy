@@ -9,7 +9,7 @@
 namespace OpenPGP\Enum;
 
 /**
- * DH key size enum
+ * Diffie-Hellman key size enum
  *
  * @package  OpenPGP
  * @category Enum
