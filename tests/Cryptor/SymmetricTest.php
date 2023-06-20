@@ -16,6 +16,7 @@ class SymmetricTest extends OpenPGPTestCase
     public function testCamelliaCipher()
     {
         $cipher = new Camellia('ecb');
+        $cipher->setPreferredEngine('PHP');
         $cipher->disablePadding();
 
         // 128 bit
