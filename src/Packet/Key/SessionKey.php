@@ -99,9 +99,9 @@ class SessionKey implements SessionKeyInterface
         $sum = 0;
         $keyLen = strlen($this->encryptionKey);
         for ($i = 0; $i < $keyLen; $i++) {
-          $sum = ($sum + ord($this->encryptionKey[$i])) & 0xffff;
+            $sum += ord($this->encryptionKey[$i]);
         }
-        return pack('n', $sum);
+        return pack('n', $sum & 0xffff);
     }
 
     /**
