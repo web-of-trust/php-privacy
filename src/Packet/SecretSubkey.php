@@ -9,6 +9,7 @@
 namespace OpenPGP\Packet;
 
 use DateTimeInterface;
+use OpenPGP\Common\S2K;
 use OpenPGP\Enum\{
     CurveOid,
     DHKeySize,
@@ -42,7 +43,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
      * @param KeyMaterialInterface $keyMaterial
      * @param S2kUsage $s2kUsage
      * @param SymmetricAlgorithm $symmetric
-     * @param Key\S2K $s2k
+     * @param S2K $s2k
      * @param string $iv
      * @return self
      */
@@ -52,7 +53,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         ?KeyMaterialInterface $keyMaterial = null,
         S2kUsage $s2kUsage = S2kUsage::Sha1,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        ?Key\S2K $s2k = null,
+        ?S2K $s2k = null,
         string $iv = ''
     )
     {

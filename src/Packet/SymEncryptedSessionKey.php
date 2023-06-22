@@ -9,7 +9,11 @@
 namespace OpenPGP\Packet;
 
 use phpseclib3\Crypt\Random;
-use OpenPGP\Common\Config;
+use OpenPGP\Common\{
+    Config,
+    Helper,
+    S2K,
+};
 use OpenPGP\Enum\{
     HashAlgorithm,
     PacketTag,
@@ -43,14 +47,14 @@ class SymEncryptedSessionKey extends AbstractPacket
     /**
      * Constructor
      *
-     * @param Key\S2K $s2k
+     * @param S2K $s2k
      * @param SymmetricAlgorithm $symmetric
      * @param string $encrypted
      * @param Key\SessionKey $sessionKey
      * @return self
      */
     public function __construct(
-        private readonly Key\S2K $s2k,
+        private readonly S2K $s2k,
         private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         private readonly string $encrypted = '',
         private readonly ?Key\SessionKey $sessionKey = null
@@ -78,7 +82,7 @@ class SymEncryptedSessionKey extends AbstractPacket
         $symmetric = SymmetricAlgorithm::from(ord($bytes[$offset++]));
 
         // A string-to-key (S2K) specifier, length as defined above.
-        $s2k = Key\S2K::fromBytes(substr($bytes, $offset));
+        $s2k = S2K::fromBytes(substr($bytes, $offset));
 
         return new self(
             $s2k,
@@ -101,12 +105,7 @@ class SymEncryptedSessionKey extends AbstractPacket
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self
     {
-        $s2k = new Key\S2K(
-            Random::string(Key\S2K::SALT_LENGTH),
-            S2kType::Iterated,
-            Config::getS2kHash(),
-            Config::getS2kItCount()
-        );
+        $s2k = Helper::stringToKey();
         $cipher = $symmetric->cipherEngine();
         $key = $s2k->produceKey(
             $password,
@@ -133,9 +132,9 @@ class SymEncryptedSessionKey extends AbstractPacket
     /**
      * Get string 2 key
      *
-     * @return Key\S2K
+     * @return S2K
      */
-    public function getS2K(): Key\S2K
+    public function getS2K(): S2K
     {
         return $this->s2k;
     }

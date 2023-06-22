@@ -2,10 +2,10 @@
 
 namespace OpenPGP\Tests\Packet;
 
+use OpenPGP\Common\S2K;
 use OpenPGP\Enum\HashAlgorithm;
 use OpenPGP\Enum\S2kType;
 use OpenPGP\Enum\SymmetricAlgorithm;
-use OpenPGP\Packet\Key\S2K;
 use OpenPGP\Packet\SymEncryptedSessionKey;
 use OpenPGP\Tests\OpenPGPTestCase;
 

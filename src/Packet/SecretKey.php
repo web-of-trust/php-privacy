@@ -10,7 +10,11 @@ namespace OpenPGP\Packet;
 
 use DateTimeInterface;
 use phpseclib3\Crypt\Random;
-use OpenPGP\Common\Config;
+use OpenPGP\Common\{
+    Config,
+    Helper,
+    S2K,
+};
 use OpenPGP\Enum\{
     CurveOid,
     DHKeySize,
@@ -50,7 +54,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
      * @param string $keyData
      * @param KeyMaterialInterface $keyMaterial
      * @param SymmetricAlgorithm $symmetric
-     * @param Key\S2K $s2k
+     * @param S2K $s2k
      * @param string $iv
      * @return self
      */
@@ -60,7 +64,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         private readonly ?KeyMaterialInterface $keyMaterial = null,
         private readonly S2kUsage $s2kUsage = S2kUsage::Sha1,
         private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        private readonly ?Key\S2K $s2k = null,
+        private readonly ?S2K $s2k = null,
         private readonly string $iv = ''
     )
     {
@@ -84,7 +88,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             case S2kUsage::Checksum:
             case S2kUsage::Sha1:
                 $symmetric = SymmetricAlgorithm::from(ord($bytes[$offset++]));
-                $s2k = Key\S2K::fromBytes(substr($bytes, $offset));
+                $s2k = S2K::fromBytes(substr($bytes, $offset));
                 $offset += $s2k->getLength();
                 break;
             default:
@@ -93,7 +97,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         }
 
         $iv = '';
-        if ($s2k instanceof Key\S2K) {
+        if ($s2k instanceof S2K) {
             $iv = substr($bytes, $offset, $symmetric->blockSize());
             $offset += $symmetric->blockSize();
         }
@@ -163,7 +167,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
      */
     public function toBytes(): string
     {
-        if ($this->s2kUsage !== S2kUsage::None && $this->s2k instanceof Key\S2K) {
+        if ($this->s2kUsage !== S2kUsage::None && $this->s2k instanceof S2K) {
             return implode([
                 $this->publicKey->toBytes(),
                 chr($this->s2kUsage->value),
@@ -293,7 +297,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
      */
     public function isEncrypted(): bool
     {
-        return ($this->s2k instanceof Key\S2K) && ($this->s2kUsage !== S2kUsage::None);
+        return ($this->s2k instanceof S2K) && ($this->s2kUsage !== S2kUsage::None);
     }
 
     /**
@@ -316,12 +320,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             $this->getLogger()->debug(
                 'Encrypt secret key material with passphrase.'
             );
-            $s2k = new Key\S2K(
-                Random::string(Key\S2K::SALT_LENGTH),
-                S2kType::Iterated,
-                Config::getS2kHash(),
-                Config::getS2kItCount()
-            );
+            $s2k = Helper::stringToKey();
             $iv = Random::string($symmetric->blockSize());
             $cipher = $symmetric->cipherEngine();
             $cipher->setIV($iv);
@@ -418,9 +417,9 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     /**
      * Get string 2 key
      * 
-     * @return Key\S2K
+     * @return S2K
      */
-    public function getS2K(): ?Key\S2K
+    public function getS2K(): ?S2K
     {
         return $this->s2k;
     }
