@@ -10,7 +10,10 @@ namespace OpenPGP\Common;
 
 use phpseclib3\Crypt\Random;
 use phpseclib3\Math\BigInteger;
-use OpenPGP\Enum\SymmetricAlgorithm;
+use OpenPGP\Enum\{
+    S2kType,
+    SymmetricAlgorithm,
+};
 
 /**
  * Helper class
@@ -107,5 +110,20 @@ final class Helper
             $be ? 'n' : 'v', substr($bytes, $offset, 2)
         );
         return (int) array_pop($unpacked);
+    }
+
+    /**
+     * Get string 2 key
+     * 
+     * @return S2K
+     */
+    public static function stringToKey(): S2K
+    {
+        return new S2K(
+            Random::string(S2K::SALT_LENGTH),
+            S2kType::Iterated,
+            Config::getS2kHash(),
+            Config::getS2kItCount()
+        );
     }
 }
