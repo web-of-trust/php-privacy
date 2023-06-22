@@ -19,3 +19,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 1.0.3 - released 2023-06-15
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.0.2...1.0.3)
 - Add S2K hash configuration
+
+## 1.0.4 - released 2023-06-2
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.0.3...1.0.4)
+- Refactor checksum computing of session key
+- Refactor string to key
