@@ -96,11 +96,10 @@ class SessionKey implements SessionKeyInterface
      */
     public function computeChecksum(): string
     {
-        $sum = 0;
-        $keyLen = strlen($this->encryptionKey);
-        for ($i = 0; $i < $keyLen; $i++) {
-            $sum += ord($this->encryptionKey[$i]);
-        }
+        $sum = array_sum(array_map(
+            static fn ($char) => ord($char),
+            str_split($this->encryptionKey)
+        ));
         return pack('n', $sum & 0xffff);
     }
 
