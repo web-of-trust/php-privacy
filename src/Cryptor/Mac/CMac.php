@@ -35,6 +35,7 @@ final class CMac
     /**
      * Constructor
      *
+     * @param SymmetricAlgorithm $symmetric
      * @param int $macSize
      * @return self
      */
