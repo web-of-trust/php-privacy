@@ -45,7 +45,7 @@ enum SymmetricAlgorithm: int
     case Camellia256 = 13;
 
     /**
-     * Gets key size
+     * Get key size
      *
      * @return int
      */
@@ -71,7 +71,7 @@ enum SymmetricAlgorithm: int
     }
 
     /**
-     * Gets key size in byte
+     * Get key size in byte
      *
      * @return int
      */
@@ -81,7 +81,7 @@ enum SymmetricAlgorithm: int
     }
 
     /**
-     * Gets block size
+     * Get block size
      *
      * @return int
      */
@@ -89,11 +89,11 @@ enum SymmetricAlgorithm: int
     {
         return match($this) {
             self::Plaintext => 0,
+            self::Blowfish,
             self::Idea,
             self::TripleDes,
             self::Cast5
                 => 8,
-            self::Blowfish,
             self::Aes128,
             self::Aes192,
             self::Aes256,
@@ -106,7 +106,7 @@ enum SymmetricAlgorithm: int
     }
 
     /**
-     * Gets block cipher engine
+     * Get block cipher engine
      *
      * @return BlockCipher
      */
