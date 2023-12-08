@@ -24,7 +24,7 @@ use phpseclib3\Crypt\AES;
  */
 final class CMac
 {
-    const ZERO_CHAR = "\0";
+    const ZERO_CHAR = "\x0";
 
     private readonly BlockCipher $cipher;
 
@@ -54,7 +54,7 @@ final class CMac
         }
 
         if ($this->macSize > $this->blockSize) {
-            throw new \InvalidArgumentException(
+            throw new \LengthException(
                 'MAC size must be less or equal to ' . $this->blockSize
             );
         }
@@ -63,8 +63,8 @@ final class CMac
     /**
      * Generate the MAC using the supplied data
      *
-     * @param string $data The data to use to generate the MAC with
-     * @param string $key The key to generate the MAC
+     * @param string $data - The data to use to generate the MAC with
+     * @param string $key - The key to generate the MAC
      * @return string The generated MAC of the appropriate size
      */
     public function generate(string $data, string $key): string
@@ -99,7 +99,7 @@ final class CMac
     ): BlockCipher
     {
         return match($symmetric) {
-            SymmetricAlgorithm::Plaintext => throw new \RuntimeException(
+            SymmetricAlgorithm::Plaintext => throw new \InvalidArgumentException(
                 'Symmetric algorithm "Plaintext" is unsupported.'
             ),
             SymmetricAlgorithm::Idea => new class extends \OpenPGP\Cryptor\Symmetric\IDEA {
@@ -155,7 +155,7 @@ final class CMac
     /**
      * Get an RValue based upon the block size
      *
-     * @param int $size The size of the block in bytes
+     * @param int $size - The size of the block in bytes
      *
      * @see http://csrc.nist.gov/publications/nistpubs/800-38B/SP_800-38B.pdf
      * @return string A RValue of the appropriate block size
@@ -167,7 +167,9 @@ final class CMac
             case 128:
                 return str_repeat(self::ZERO_CHAR, 15) . "\x87";
             default:
-                throw new \RuntimeException('Unsupported block size for the cipher');
+                throw new \LengthException(
+                    'Unsupported block size for the cipher'
+                );
         }
     }
 
@@ -188,8 +190,8 @@ final class CMac
     /**
      * Split the data into appropriate block chunks, encoding with the kyes
      *
-     * @param string $data The data to split
-     * @param array $keys The keys to use for encoding
+     * @param string $data - The data to split
+     * @param array $keys - The keys to use for encoding
      * @return array The array of chunked and encoded data
      */
     private function splitData(string $data, array $keys): array
