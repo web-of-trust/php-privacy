@@ -82,12 +82,9 @@ final class EAX
 
         $ciphered = $this->ctr($plaintext, $omacNonce);
         $omacCiphered = $this->omac($this->twoBlock, $ciphered);
+        $tag = $omacCiphered ^ $omacAdata ^ $omacNonce;
 
-        $tagLength = $this->mac->getMacSize();
-        for ($i = 0; $i < $tagLength; $i++) {
-            $omacCiphered[$i] = $omacCiphered[$i] ^ $omacAdata[$i] ^ $omacNonce[$i];
-        }
-        return implode([$ciphered, $omacCiphered]);
+        return implode([$ciphered, $tag]);
     }
 
     /**
@@ -114,12 +111,9 @@ final class EAX
         $omacNonce = $this->omac($this->zeroBlock, $nonce);
         $omacAdata = $this->omac($this->oneBlock, $adata);
         $omacCiphered = $this->omac($this->twoBlock, $ciphered);
+        $tag = $omacCiphered ^ $omacAdata ^ $omacNonce;
 
-        for ($i = 0; $i < $tagLength; $i++) {
-            $omacCiphered[$i] = $omacCiphered[$i] ^ $omacAdata[$i] ^ $omacNonce[$i];
-        }
-
-        if ($ctTag !== $omacCiphered) {
+        if ($ctTag !== $tag) {
             throw new \UnexpectedValueException('Authentication tag mismatch');
         }
 
