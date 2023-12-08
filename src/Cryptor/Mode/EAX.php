@@ -80,7 +80,7 @@ final class EAX
         $omacNonce = $this->omac($this->zeroBlock, $nonce);
         $omacAdata = $this->omac($this->oneBlock, $adata);
 
-        $ciphered = $this->ctr($plaintext, $omacNonce);
+        $ciphered = $this->crypt($plaintext, $omacNonce);
         $omacCiphered = $this->omac($this->twoBlock, $ciphered);
         $tag = $omacCiphered ^ $omacAdata ^ $omacNonce;
 
@@ -117,7 +117,7 @@ final class EAX
             throw new \UnexpectedValueException('Authentication tag mismatch');
         }
 
-        return $this->ctr($ciphered, $omacNonce);
+        return $this->crypt($ciphered, $omacNonce);
     }
 
     private function omac(string $tag, string $message): string
@@ -127,7 +127,7 @@ final class EAX
         );
     }
 
-    private function ctr(string $plaintext, string $iv): string
+    private function crypt(string $plaintext, string $iv): string
     {
         $this->cipher->setIV($iv);
         return $this->cipher->encrypt($plaintext);
