@@ -59,13 +59,13 @@ class EAXTest extends OpenPGPTestCase
             'header' => 'd4482d1ca78dce0f',
             'cipher' => '835bb4f15d743e350e728414abb8644fd6ccb86947c5e10590210a4f',
         ],
-        // [
-        //     'msg'    => '8b0a79306c9ce7ed99dae4f87f8dd61636',
-        //     'key'    => '7c77d6e813bed5ac98baa417477a2e7d',
-        //     'nonce'  => '1a8c98dcd73d38393b2bf1569deefc19',
-        //     'header' => '65d2017990d62528',
-        //     'cipher' => '02083e3979da014812f59f11d52630da30137327d10649b0aa6e1c181db617d7f2',
-        // ],
+        [
+            'msg'    => '8b0a79306c9ce7ed99dae4f87f8dd61636',
+            'key'    => '7c77d6e813bed5ac98baa417477a2e7d',
+            'nonce'  => '1a8c98dcd73d38393b2bf1569deefc19',
+            'header' => '65d2017990d62528',
+            'cipher' => '02083e3979da014812f59f11d52630da30137327d10649b0aa6e1c181db617d7f2',
+        ],
         [
             'msg'    => '1bda122bce8a8dbaf1877d962b8592dd2d56',
             'key'    => '5fff20cafab119ca2fc73549e20f5b0d',
@@ -111,6 +111,11 @@ class EAXTest extends OpenPGPTestCase
             // testing without additional data
             $ct = $eax->encrypt($msg, $nonce);
             $pt = $eax->decrypt($ct, $nonce);
+            $this->assertSame(bin2hex($pt), bin2hex($msg));
+
+            // testing with multiple additional data
+            $ct = $eax->encrypt($msg, $nonce, implode([$header, $header, $header]));
+            $pt = $eax->decrypt($ct, $nonce, implode([$header, $header, $header]));
             $this->assertSame(bin2hex($pt), bin2hex($msg));
         }
     }

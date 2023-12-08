@@ -196,8 +196,11 @@ final class CMac
      */
     private function splitData(string $data, array $keys): array
     {
-        $data      = str_split($data, $this->blockSize);
-        $last      = end($data) ?: '';
+        $data = str_split($data, $this->blockSize);
+        $last = end($data);
+        if ($last === false) {
+            $last = '';
+        }
         if (strlen($last) != $this->blockSize) {
             //Pad the last element
             $last .= "\x80" . substr($this->zeroBlock, 0, $this->blockSize - 1 - strlen($last));
