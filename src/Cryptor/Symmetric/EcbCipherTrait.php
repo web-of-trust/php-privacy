@@ -6,16 +6,16 @@
  * file that was distributed with this source code.
  */
 
-namespace OpenPGP\Cryptor\Mac;
+namespace OpenPGP\Cryptor\Symmetric;
 
 /**
- * CMac cipher trait
+ * Ecb cipher trait
  * 
  * @package  OpenPGP
  * @category Cryptor
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-trait CMacCipherTrait
+trait EcbCipherTrait
 {
     /**
      * Constructor
@@ -23,7 +23,7 @@ trait CMacCipherTrait
      * @return self
      */
     public function __construct() {
-        parent::__construct('cbc');
+        parent::__construct('ecb');
         $this->setPreferredEngine('PHP');
     }
 

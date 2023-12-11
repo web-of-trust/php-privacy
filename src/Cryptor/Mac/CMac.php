@@ -10,6 +10,7 @@ namespace OpenPGP\Cryptor\Mac;
 
 use OpenPGP\Enum\SymmetricAlgorithm;
 use OpenPGP\Cryptor\Math\Bitwise;
+use OpenPGP\Cryptor\Symmetric\EcbCipherTrait;
 use phpseclib3\Crypt\Common\BlockCipher;
 use phpseclib3\Crypt\AES;
 
@@ -47,7 +48,6 @@ final class CMac
         $this->cipher = $this->cipherEngine($symmetric);
         $this->blockSize = $symmetric->blockSize();
         $this->zeroBlock = str_repeat(self::ZERO_CHAR, $this->blockSize);
-        $this->cipher->setIV($this->zeroBlock);
 
         if ($this->macSize == 0) {
             $this->macSize = $this->blockSize;
@@ -96,7 +96,7 @@ final class CMac
      * @return BlockCipher
      */
     private function cipherEngine(
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        SymmetricAlgorithm $symmetric
     ): BlockCipher
     {
         return match($symmetric) {
@@ -104,27 +104,27 @@ final class CMac
                 'Symmetric algorithm "Plaintext" is unsupported.'
             ),
             SymmetricAlgorithm::Idea => new class extends \OpenPGP\Cryptor\Symmetric\IDEA {
-                use CMacCipherTrait;
+                use EcbCipherTrait;
             },
             SymmetricAlgorithm::TripleDes => new class extends \phpseclib3\Crypt\TripleDES {
-                use CMacCipherTrait;
+                use EcbCipherTrait;
             },
             SymmetricAlgorithm::Cast5 => new class extends \OpenPGP\Cryptor\Symmetric\CAST5 {
-                use CMacCipherTrait;
+                use EcbCipherTrait;
             },
             SymmetricAlgorithm::Blowfish => new class extends \phpseclib3\Crypt\Blowfish {
-                use CMacCipherTrait;
+                use EcbCipherTrait;
             },
             SymmetricAlgorithm::Aes128, SymmetricAlgorithm::Aes192, SymmetricAlgorithm::Aes256
                 => new class extends \phpseclib3\Crypt\AES {
-                    use CMacCipherTrait;
+                    use EcbCipherTrait;
                 },
             SymmetricAlgorithm::Twofish => new class extends \phpseclib3\Crypt\Twofish {
-                use CMacCipherTrait;
+                use EcbCipherTrait;
             },
             SymmetricAlgorithm::Camellia128, SymmetricAlgorithm::Camellia192, SymmetricAlgorithm::Camellia256
                 => new class extends \OpenPGP\Cryptor\Symmetric\Camellia {
-                    use CMacCipherTrait;
+                    use EcbCipherTrait;
                 },
         };
     }
@@ -204,7 +204,9 @@ final class CMac
         }
         if (strlen($last) != $this->blockSize) {
             //Pad the last element
-            $last .= "\x80" . substr($this->zeroBlock, 0, $this->blockSize - 1 - strlen($last));
+            $last .= "\x80" . substr(
+                $this->zeroBlock, 0, $this->blockSize - 1 - strlen($last)
+            );
             $last  = $last ^ $keys[1];
         }
         else {
