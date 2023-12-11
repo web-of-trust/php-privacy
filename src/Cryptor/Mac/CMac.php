@@ -10,9 +10,7 @@ namespace OpenPGP\Cryptor\Mac;
 
 use OpenPGP\Enum\SymmetricAlgorithm;
 use OpenPGP\Cryptor\Math\Bitwise;
-use OpenPGP\Cryptor\Symmetric\EcbCipherTrait;
 use phpseclib3\Crypt\Common\BlockCipher;
-use phpseclib3\Crypt\AES;
 
 /**
  * CMac class
@@ -41,11 +39,11 @@ final class CMac
      * @return self
      */
     public function __construct(
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        SymmetricAlgorithm $symmetric,
         private int $macSize = 0
     )
     {
-        $this->cipher = $this->cipherEngine($symmetric);
+        $this->cipher = $symmetric->ecbCipherEngine();
         $this->blockSize = $symmetric->blockSize();
         $this->zeroBlock = str_repeat(self::ZERO_CHAR, $this->blockSize);
 
@@ -87,46 +85,6 @@ final class CMac
     public function getMacSize(): int
     {
         return $this->macSize;
-    }
-
-    /**
-     * Get block cipher engine
-     *
-     * @param SymmetricAlgorithm $symmetric
-     * @return BlockCipher
-     */
-    private function cipherEngine(
-        SymmetricAlgorithm $symmetric
-    ): BlockCipher
-    {
-        return match($symmetric) {
-            SymmetricAlgorithm::Plaintext => throw new \InvalidArgumentException(
-                'Symmetric algorithm "Plaintext" is unsupported.'
-            ),
-            SymmetricAlgorithm::Idea => new class extends \OpenPGP\Cryptor\Symmetric\IDEA {
-                use EcbCipherTrait;
-            },
-            SymmetricAlgorithm::TripleDes => new class extends \phpseclib3\Crypt\TripleDES {
-                use EcbCipherTrait;
-            },
-            SymmetricAlgorithm::Cast5 => new class extends \OpenPGP\Cryptor\Symmetric\CAST5 {
-                use EcbCipherTrait;
-            },
-            SymmetricAlgorithm::Blowfish => new class extends \phpseclib3\Crypt\Blowfish {
-                use EcbCipherTrait;
-            },
-            SymmetricAlgorithm::Aes128, SymmetricAlgorithm::Aes192, SymmetricAlgorithm::Aes256
-                => new class extends \phpseclib3\Crypt\AES {
-                    use EcbCipherTrait;
-                },
-            SymmetricAlgorithm::Twofish => new class extends \phpseclib3\Crypt\Twofish {
-                use EcbCipherTrait;
-            },
-            SymmetricAlgorithm::Camellia128, SymmetricAlgorithm::Camellia192, SymmetricAlgorithm::Camellia256
-                => new class extends \OpenPGP\Cryptor\Symmetric\Camellia {
-                    use EcbCipherTrait;
-                },
-        };
     }
 
     /**

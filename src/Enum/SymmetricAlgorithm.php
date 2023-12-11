@@ -8,6 +8,7 @@
 
 namespace OpenPGP\Enum;
 
+use OpenPGP\Cryptor\Symmetric\EcbCipherTrait;
 use phpseclib3\Crypt\Common\BlockCipher;
 
 /**
@@ -108,6 +109,7 @@ enum SymmetricAlgorithm: int
     /**
      * Get block cipher engine
      *
+     * @param string $mode - The cipher mode
      * @return BlockCipher
      */
     public function cipherEngine(string $mode = 'cfb'): BlockCipher
@@ -125,6 +127,43 @@ enum SymmetricAlgorithm: int
             self::Twofish => new \phpseclib3\Crypt\Twofish($mode),
             self::Camellia128, self::Camellia192, self::Camellia256
                 => new \OpenPGP\Cryptor\Symmetric\Camellia($mode),
+        };
+    }
+
+    /**
+     * Get ecb block cipher engine
+     *
+     * @return BlockCipher
+     */
+    public function ecbCipherEngine(): BlockCipher
+    {
+        return match($this) {
+            self::Plaintext => throw new \InvalidArgumentException(
+                'Symmetric algorithm "Plaintext" is unsupported.'
+            ),
+            self::Idea => new class extends \OpenPGP\Cryptor\Symmetric\IDEA {
+                use EcbCipherTrait;
+            },
+            self::TripleDes => new class extends \phpseclib3\Crypt\TripleDES {
+                use EcbCipherTrait;
+            },
+            self::Cast5 => new class extends \OpenPGP\Cryptor\Symmetric\CAST5 {
+                use EcbCipherTrait;
+            },
+            self::Blowfish => new class extends \phpseclib3\Crypt\Blowfish {
+                use EcbCipherTrait;
+            },
+            self::Aes128, self::Aes192, self::Aes256
+                => new class extends \phpseclib3\Crypt\AES {
+                    use EcbCipherTrait;
+                },
+            self::Twofish => new class extends \phpseclib3\Crypt\Twofish {
+                use EcbCipherTrait;
+            },
+            self::Camellia128, self::Camellia192, self::Camellia256
+                => new class extends \OpenPGP\Cryptor\Symmetric\Camellia {
+                    use EcbCipherTrait;
+                },
         };
     }
 }

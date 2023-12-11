@@ -89,7 +89,7 @@ class EAXTest extends OpenPGPTestCase
         ],
     ];
 
-    public function testAESEAX()
+    public function testAesEax()
     {
         foreach (self::$testVectors as $vector) {
             $msg = hex2bin($vector['msg']);

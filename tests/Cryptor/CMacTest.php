@@ -3,6 +3,7 @@
 namespace OpenPGP\Tests\Cryptor;
 
 use OpenPGP\Cryptor\Mac\CMac;
+use OpenPGP\Enum\SymmetricAlgorithm;
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
@@ -10,7 +11,7 @@ use OpenPGP\Tests\OpenPGPTestCase;
  */
 class CMacTest extends OpenPGPTestCase
 {
-    public function testCMacGeneration()
+    public function testAesCMac()
     {
         $input0 = '';
         $input16 = hex2bin('6bc1bee22e409f96e93d7e117393172a');
@@ -29,7 +30,7 @@ class CMacTest extends OpenPGPTestCase
         $key192 = hex2bin('8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b');
         $key256 = hex2bin('603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');
 
-        $cmac = new CMac();
+        $cmac = new CMac(SymmetricAlgorithm::Aes128);
 
         /// 128 bits test
         $output = $cmac->generate(
