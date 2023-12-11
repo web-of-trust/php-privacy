@@ -35,7 +35,7 @@ final class CMac
     /**
      * Constructor
      *
-     * @param SymmetricAlgorithm $symmetric
+     * @param SymmetricAlgorithm $symmetric - The symmetric cipher algorithm to use
      * @param int $macSize
      * @return self
      */
@@ -92,6 +92,7 @@ final class CMac
     /**
      * Get block cipher engine
      *
+     * @param SymmetricAlgorithm $symmetric
      * @return BlockCipher
      */
     private function cipherEngine(

@@ -110,21 +110,21 @@ enum SymmetricAlgorithm: int
      *
      * @return BlockCipher
      */
-    public function cipherEngine(): BlockCipher
+    public function cipherEngine(string $mode = 'cfb'): BlockCipher
     {
         return match($this) {
             self::Plaintext => throw new \RuntimeException(
                 'Symmetric algorithm "Plaintext" is unsupported.'
             ),
-            self::Idea => new \OpenPGP\Cryptor\Symmetric\IDEA('cfb'),
-            self::TripleDes => new \phpseclib3\Crypt\TripleDES('cfb'),
-            self::Cast5 => new \OpenPGP\Cryptor\Symmetric\CAST5('cfb'),
-            self::Blowfish => new \phpseclib3\Crypt\Blowfish('cfb'),
+            self::Idea => new \OpenPGP\Cryptor\Symmetric\IDEA($mode),
+            self::TripleDes => new \phpseclib3\Crypt\TripleDES($mode),
+            self::Cast5 => new \OpenPGP\Cryptor\Symmetric\CAST5($mode),
+            self::Blowfish => new \phpseclib3\Crypt\Blowfish($mode),
             self::Aes128, self::Aes192, self::Aes256
-                => new \phpseclib3\Crypt\AES('cfb'),
-            self::Twofish => new \phpseclib3\Crypt\Twofish('cfb'),
+                => new \phpseclib3\Crypt\AES($mode),
+            self::Twofish => new \phpseclib3\Crypt\Twofish($mode),
             self::Camellia128, self::Camellia192, self::Camellia256
-                => new \OpenPGP\Cryptor\Symmetric\Camellia('cfb'),
+                => new \OpenPGP\Cryptor\Symmetric\Camellia($mode),
         };
     }
 }

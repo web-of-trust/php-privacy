@@ -55,7 +55,7 @@ final class EAX
         private readonly string $key
     )
     {
-        $this->cipher = $this->cipherEngine($symmetric);
+        $this->cipher = $symmetric->cipherEngine(self::CTR_MODE);
         $this->cipher->setKey($key);
         $this->mac = new CMac($symmetric);
 
@@ -127,32 +127,9 @@ final class EAX
         );
     }
 
-    private function crypt(string $plaintext, string $iv): string
+    private function crypt(string $text, string $iv): string
     {
         $this->cipher->setIV($iv);
-        return $this->cipher->encrypt($plaintext);
-    }
-
-    /**
-     * Get block cipher engine
-     *
-     * @return BlockCipher
-     */
-    private function cipherEngine(SymmetricAlgorithm $symmetric): BlockCipher
-    {
-        return match($symmetric) {
-            SymmetricAlgorithm::Plaintext => throw new \InvalidArgumentException(
-                'Symmetric algorithm "Plaintext" is unsupported.'
-            ),
-            SymmetricAlgorithm::Idea => new \OpenPGP\Cryptor\Symmetric\IDEA(self::CTR_MODE),
-            SymmetricAlgorithm::TripleDes => new \phpseclib3\Crypt\TripleDES(self::CTR_MODE),
-            SymmetricAlgorithm::Cast5 => new \OpenPGP\Cryptor\Symmetric\CAST5(self::CTR_MODE),
-            SymmetricAlgorithm::Blowfish => new \phpseclib3\Crypt\Blowfish(self::CTR_MODE),
-            SymmetricAlgorithm::Aes128, SymmetricAlgorithm::Aes192, SymmetricAlgorithm::Aes256
-                => new \phpseclib3\Crypt\AES(self::CTR_MODE),
-            SymmetricAlgorithm::Twofish => new \phpseclib3\Crypt\Twofish(self::CTR_MODE),
-            SymmetricAlgorithm::Camellia128, SymmetricAlgorithm::Camellia192, SymmetricAlgorithm::Camellia256
-                => new \OpenPGP\Cryptor\Symmetric\Camellia(self::CTR_MODE),
-        };
+        return $this->cipher->encrypt($text);
     }
 }
