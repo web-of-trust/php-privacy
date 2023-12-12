@@ -57,6 +57,11 @@ final class OCB
         private readonly string $key
     )
     {
+        if ($symmetric->blockSize() !== self::BLOCK_LENGTH) {
+            throw new \InvalidArgumentException(
+                'Cipher must have a block size of ' . self::BLOCK_LENGTH
+            );
+        }
         $this->encipher = $symmetric->ecbCipherEngine();
         $this->decipher = $symmetric->ecbCipherEngine();
         $this->encipher->setKey($key);
