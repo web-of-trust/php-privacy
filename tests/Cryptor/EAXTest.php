@@ -2,7 +2,7 @@
 
 namespace OpenPGP\Tests\Cryptor;
 
-use OpenPGP\Cryptor\Mode\EAX;
+use OpenPGP\Cryptor\Aead\EAX;
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**

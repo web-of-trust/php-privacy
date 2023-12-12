@@ -2,7 +2,7 @@
 
 namespace OpenPGP\Tests\Cryptor;
 
-use OpenPGP\Cryptor\Mode\GCM;
+use OpenPGP\Cryptor\Aead\GCM;
 use OpenPGP\Tests\OpenPGPTestCase;
 use phpseclib3\Crypt\Random;
 

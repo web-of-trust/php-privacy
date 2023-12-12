@@ -2,7 +2,7 @@
 
 namespace OpenPGP\Tests\Cryptor;
 
-use OpenPGP\Cryptor\Mode\OCB;
+use OpenPGP\Cryptor\Aead\OCB;
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**

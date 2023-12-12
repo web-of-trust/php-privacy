@@ -9,6 +9,7 @@
 namespace OpenPGP\Common;
 
 use OpenPGP\Enum\{
+    AeadAlgorithm,
     CompressionAlgorithm,
     HashAlgorithm,
     SymmetricAlgorithm,
@@ -27,7 +28,7 @@ use Psr\Log\{
  */
 final class Config
 {
-    const VERSION = 'PHP Privacy v1.0.0';
+    const VERSION = 'PHP Privacy v1.1.0';
     const COMMENT = 'https://github.com/web-of-trust/php-privacy';
 
     private static HashAlgorithm $preferredHash = HashAlgorithm::Sha256;
@@ -40,7 +41,11 @@ final class Config
 
     private static HashAlgorithm $s2kHash = HashAlgorithm::Sha256;
 
+    private static AeadAlgorithm $preferredAEAD = AeadAlgorithm::Eax;
+
     private static int $s2kItCount = 224;
+
+    private static int $aeadChunkSize = 12;
 
     private static bool $allowUnauthenticated = false;
 
@@ -152,6 +157,28 @@ final class Config
     }
 
     /**
+     * Get preferred AEAD algorithm.
+     *
+     * @return AeadAlgorithm
+     */
+    public static function getPreferredAEAD(): AeadAlgorithm
+    {
+        return self::$preferredAEAD;
+    }
+
+    /**
+     * Set preferred AEAD algorithm.
+     *
+     * @param AeadAlgorithm $aead
+     */
+    public static function setPreferredAEAD(
+        AeadAlgorithm $aead
+    ): void
+    {
+        self::$preferredAEAD = $aead;
+    }
+
+    /**
      * Get S2K iteration count byte.
      *
      * @return int
@@ -169,6 +196,26 @@ final class Config
     public static function setS2kItCount(int $s2kItCount): void
     {
         self::$s2kItCount = $s2kItCount;
+    }
+
+    /**
+     * Get Chunk Size Byte for Authenticated Encryption with Additional Data (AEAD) mode.
+     *
+     * @return int
+     */
+    public static function getAeadChunkSize(): int
+    {
+        return self::$aeadChunkSize;
+    }
+
+    /**
+     * Set Chunk Size Byte for Authenticated Encryption with Additional Data (AEAD) mode.
+     *
+     * @param int $aeadChunkSize
+     */
+    public static function setAeadChunkSize(int $aeadChunkSize): void
+    {
+        self::$aeadChunkSize = $aeadChunkSize;
     }
 
     /**

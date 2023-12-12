@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace OpenPGP\Cryptor\Mode;
+namespace OpenPGP\Cryptor\Aead;
 
 use OpenPGP\Enum\SymmetricAlgorithm;
 use phpseclib3\Crypt\Common\BlockCipher;

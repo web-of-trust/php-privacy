@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace OpenPGP\Cryptor\Mode;
+namespace OpenPGP\Cryptor\Aead;
 
 use OpenPGP\Cryptor\Symmetric\EcbCipherTrait;
 use OpenPGP\Enum\SymmetricAlgorithm;
