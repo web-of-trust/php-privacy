@@ -13,7 +13,7 @@ use OpenPGP\Enum\SymmetricAlgorithm;
 use phpseclib3\Crypt\Common\BlockCipher;
 
 /**
- * EAX class
+ * EAX Authenticated-Encryption class
  * A Two-Pass Authenticated-Encryption Scheme Optimized for Simplicity and
  * Efficiency - by M. Bellare, P. Rogaway, D. Wagner.
  *

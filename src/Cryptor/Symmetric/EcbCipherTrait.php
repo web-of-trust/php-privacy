@@ -34,4 +34,12 @@ trait EcbCipherTrait
         $this->setup();
         return parent::encryptBlock($in);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function decryptBlock($in) {
+        $this->setup();
+        return parent::decryptBlock($in);
+    }
 }
