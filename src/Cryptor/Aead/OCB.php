@@ -24,7 +24,7 @@ use phpseclib3\Crypt\Common\BlockCipher;
  * @category Cryptor
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-final class OCB
+final class OCB implements AeadCipher
 {
     const ZERO_CHAR     = "\x0";
     const ONE_CHAR      = "\x1";

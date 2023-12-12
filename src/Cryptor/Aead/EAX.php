@@ -28,7 +28,7 @@ use phpseclib3\Crypt\Common\BlockCipher;
  * @category Cryptor
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-final class EAX
+final class EAX implements AeadCipher
 {
     const N_TAG = "\x0";
     const H_TAG = "\x1";

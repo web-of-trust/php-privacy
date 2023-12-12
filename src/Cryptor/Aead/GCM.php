@@ -19,7 +19,7 @@ use phpseclib3\Crypt\Common\BlockCipher;
  * @category Cryptor
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-final class GCM
+final class GCM implements AeadCipher
 {
     const CIPHER_MODE = 'gcm';
 
