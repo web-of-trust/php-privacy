@@ -42,6 +42,9 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
 {
     use EncryptedDataTrait;
 
+    const ZERO_CHAR   = "\x0";
+    const CIPHER_MODE = 'cfb';
+
     /**
      * Constructor
      *
@@ -79,9 +82,9 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self
     {
-        $cipher = $symmetric->cipherEngine();
+        $cipher = $symmetric->cipherEngine(self::CIPHER_MODE);
         $cipher->setKey($key);
-        $cipher->setIV(str_repeat("\x00", $symmetric->blockSize()));
+        $cipher->setIV(str_repeat(self::ZERO_CHAR, $symmetric->blockSize()));
         $prefix = $cipher->encrypt(Helper::generatePrefix($symmetric));
         $cipher->setIV(substr($prefix, 2));
 
@@ -134,7 +137,7 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
         }
         else {
             $blockSize = $symmetric->blockSize();
-            $cipher = $symmetric->cipherEngine();
+            $cipher = $symmetric->cipherEngine(self::CIPHER_MODE);
             $cipher->setKey($key);
             $cipher->setIV(substr($this->encrypted, 2, $blockSize));
 

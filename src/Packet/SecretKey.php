@@ -46,6 +46,10 @@ use OpenPGP\Type\{
  */
 class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 {
+    const HASH_ALGO     = 'sha1';
+    const ZERO_CHAR     = "\x0";
+    const CIPHER_MODE   = 'cfb';
+
     /**
      * Constructor
      *
@@ -322,7 +326,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             );
             $s2k = Helper::stringToKey();
             $iv = Random::string($symmetric->blockSize());
-            $cipher = $symmetric->cipherEngine();
+            $cipher = $symmetric->cipherEngine(self::CIPHER_MODE);
             $cipher->setIV($iv);
             $cipher->setKey($s2k->produceKey(
                 $passphrase,
@@ -332,7 +336,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             $clearText = $this->keyMaterial?->toBytes() ?? '';
             $encrypted = $cipher->encrypt(implode([
                 $clearText,
-                hash('sha1', $clearText, true),
+                hash(self::HASH_ALGO, $clearText, true),
             ]));
             return new self(
                 $this->publicKey,
@@ -361,19 +365,19 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             $this->getLogger()->debug(
                 'Decrypt secret key material with passphrase.'
             );
-            $cipher = $this->symmetric->cipherEngine();
+            $cipher = $this->symmetric->cipherEngine(self::CIPHER_MODE);
             $cipher->setIV($this->iv);
             $key = $this->s2k?->produceKey(
                 $passphrase,
                 $this->symmetric->keySizeInByte()
-            ) ?? str_repeat("\x00", $this->symmetric->keySizeInByte());
+            ) ?? str_repeat(self::ZERO_CHAR, $this->symmetric->keySizeInByte());
             $cipher->setKey($key);
             $decrypted = $cipher->decrypt($this->keyData);
 
             $length = strlen($decrypted) - HashAlgorithm::Sha1->digestSize();
             $clearText = substr($decrypted, 0, $length);
             $hashText = substr($decrypted, $length);
-            $hashed = hash('sha1', $clearText, true);
+            $hashed = hash(self::HASH_ALGO, $clearText, true);
             if ($hashed !== $hashText) {
                 throw new \UnexpectedValueException(
                     'Incorrect key passphrase.'

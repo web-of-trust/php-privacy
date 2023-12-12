@@ -51,7 +51,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 {
     const VERSION = 4;
 
-    private string $signatureData;
+    private readonly string $signatureData;
 
     private readonly array $hashedSubpackets;
 

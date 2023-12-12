@@ -24,7 +24,7 @@ use OpenPGP\Type\{
  * 
  * Implementation of the Symmetrically Encrypted Authenticated Encryption with
  * Additional Data (AEAD) Protected Data Packet(Tag 20)
- * See https://tools.ietf.org/html/draft-ford-openpgp-format-00#section-2.1
+ * See https://datatracker.ietf.org/doc/html/draft-ietf-openpgp-rfc4880bis#name-aead-encrypted-data-packet-
  * 
  * @package  OpenPGP
  * @category Packet
@@ -39,18 +39,18 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
     /**
      * Constructor
      *
-     * @param SymmetricAlgorithm $symmetricAlgorithm
-     * @param AeadAlgorithm $aeadAlgorithm
-     * @param int $chunkSizeByte
+     * @param SymmetricAlgorithm $symmetric
+     * @param AeadAlgorithm $aead
+     * @param int $chunkSize
      * @param string $iv
      * @param string $encrypted
      * @param PacketListInterface $packetList
      * @return self
      */
     public function __construct(
-        private readonly SymmetricAlgorithm $symmetricAlgorithm,
-        private readonly AeadAlgorithm $aeadAlgorithm,
-        private readonly int $chunkSizeByte,
+        private readonly SymmetricAlgorithm $symmetric,
+        private readonly AeadAlgorithm $aead,
+        private readonly int $chunkSize,
         private readonly string $iv,
         private readonly string $encrypted,
         private readonly ?PacketListInterface $packetList = null
@@ -74,17 +74,17 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
           );
         }
 
-        $symmetricAlgorithm = SymmetricAlgorithm::from(ord($bytes[$offset++]));
-        $aeadAlgorithm = AeadAlgorithm::from(ord($bytes[$offset++]));
-        $chunkSizeByte = ord($bytes[$offset++]);
-        $iv = substr($bytes, $offset, $aeadAlgorithm->ivLength());
-        $offset += $aeadAlgorithm->ivLength();
+        $symmetric = SymmetricAlgorithm::from(ord($bytes[$offset++]));
+        $aead = AeadAlgorithm::from(ord($bytes[$offset++]));
+        $chunkSize = ord($bytes[$offset++]);
+        $iv = substr($bytes, $offset, $aead->ivLength());
+        $offset += $aead->ivLength();
         $encrypted = substr($bytes, $offset);
 
         return new self(
-            $symmetricAlgorithm,
-            $aeadAlgorithm,
-            $chunkSizeByte,
+            $symmetric,
+            $aead,
+            $chunkSize,
             $iv,
             $encrypted
         );
@@ -96,16 +96,16 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
      * @param string $key
      * @param PacketListInterface $packetList
      * @param SymmetricAlgorithm $symmetric
-     * @param AeadAlgorithm $aeadAlgorithm
-     * @param int $chunkSizeByte
+     * @param AeadAlgorithm $aead
+     * @param int $chunkSize
      * @return self
      */
     public static function encryptPackets(
         string $key,
         PacketListInterface $packetList,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        AeadAlgorithm $aeadAlgorithm = AeadAlgorithm::Eax,
-        int $chunkSizeByte = 12
+        AeadAlgorithm $aead = AeadAlgorithm::Eax,
+        int $chunkSize = 12
     ): self
     {
         throw new \RuntimeException(
@@ -138,9 +138,9 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
     {
         return implode([
             chr(self::VERSION),
-            chr($this->symmetricAlgorithm->value),
-            chr($this->aeadAlgorithm->value),
-            chr($this->chunkSizeByte),
+            chr($this->symmetric->value),
+            chr($this->aead->value),
+            chr($this->chunkSize),
             $this->iv,
             $this->encrypted
         ]);
@@ -153,7 +153,7 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
      */
     public function getSymmetricAlgorithm(): SymmetricAlgorithm
     {
-        return $this->symmetricAlgorithm;
+        return $this->symmetric;
     }
 
     /**
@@ -163,7 +163,7 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
      */
     public function getAeadAlgorithm(): AeadAlgorithm
     {
-        return $this->aeadAlgorithm;
+        return $this->aead;
     }
 
     /**
@@ -171,9 +171,9 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
      *
      * @return int
      */
-    public function getChunkSizeByte(): int
+    public function getChunkSize(): int
     {
-        return $this->chunkSizeByte;
+        return $this->chunkSize;
     }
 
     /**

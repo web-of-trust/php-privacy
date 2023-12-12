@@ -38,7 +38,11 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
 {
     use EncryptedDataTrait;
 
-    const VERSION = 1;
+    const VERSION       = 1;
+    const HASH_ALGO     = 'sha1';
+    const ZERO_CHAR     = "\x0";
+    const CIPHER_MODE   = 'cfb';
+    const SUFFIX_OCTETS = "\xd3\x14";
 
     /**
      * Constructor
@@ -89,13 +93,13 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
         $toHash = implode([
             Helper::generatePrefix($symmetric),
             $packetList->encode(),
-            "\xd3\x14",
+            self::SUFFIX_OCTETS,
         ]);
-        $plainText = $toHash . hash('sha1', $toHash, true);
+        $plainText = $toHash . hash(self::HASH_ALGO, $toHash, true);
 
-        $cipher = $symmetric->cipherEngine();
+        $cipher = $symmetric->cipherEngine(self::CIPHER_MODE);
         $cipher->setKey($key);
-        $cipher->setIV(str_repeat("\x00", $symmetric->blockSize()));
+        $cipher->setIV(str_repeat(self::ZERO_CHAR, $symmetric->blockSize()));
 
         return new self(
             $cipher->encrypt($plainText), $packetList
@@ -144,15 +148,15 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
                 'Decrypt the encrypted data contained in the packet.'
             );
             $size = $symmetric->blockSize();
-            $cipher = $symmetric->cipherEngine();
+            $cipher = $symmetric->cipherEngine(self::CIPHER_MODE);
             $cipher->setKey($key);
-            $cipher->setIV(str_repeat("\x00", $size));
+            $cipher->setIV(str_repeat(self::ZERO_CHAR, $size));
 
             $decrypted = $cipher->decrypt($this->encrypted);
             $digestSize = strlen($decrypted) - HashAlgorithm::Sha1->digestSize();
             $realHash = substr($decrypted, $digestSize);
             $toHash = substr($decrypted, 0, $digestSize);
-            if ($realHash !== hash('sha1', $toHash, true)) {
+            if ($realHash !== hash(self::HASH_ALGO, $toHash, true)) {
                 throw new \UnexpectedValueException(
                     'Modification detected.'
                 );

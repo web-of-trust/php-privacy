@@ -42,7 +42,9 @@ use OpenPGP\Enum\{
  */
 class SymEncryptedSessionKey extends AbstractPacket
 {
-    const VERSION = 4;
+    const VERSION     = 4;
+    const ZERO_CHAR   = "\x0";
+    const CIPHER_MODE = 'cfb';
 
     /**
      * Constructor
@@ -106,14 +108,16 @@ class SymEncryptedSessionKey extends AbstractPacket
     ): self
     {
         $s2k = Helper::stringToKey();
-        $cipher = $symmetric->cipherEngine();
+        $cipher = $symmetric->cipherEngine(self::CIPHER_MODE);
         $key = $s2k->produceKey(
             $password,
             $symmetric->keySizeInByte()
         );
         if ($sessionKey instanceof Key\SessionKey) {
             $cipher->setKey($key);
-            $cipher->setIV(str_repeat("\x00", $symmetric->blockSize()));
+            $cipher->setIV(
+                str_repeat(self::ZERO_CHAR, $symmetric->blockSize())
+            );
             $encrypted = $cipher->encrypt($sessionKey->toBytes());
         }
         else {
@@ -191,10 +195,10 @@ class SymEncryptedSessionKey extends AbstractPacket
                 $sessionKey = new Key\SessionKey($key, $this->symmetric);
             }
             else {
-                $cipher = $this->symmetric->cipherEngine();
+                $cipher = $this->symmetric->cipherEngine(self::CIPHER_MODE);
                 $cipher->setKey($key);
                 $cipher->setIV(
-                    str_repeat("\x00", $this->symmetric->blockSize())
+                    str_repeat(self::ZERO_CHAR, $this->symmetric->blockSize())
                 );
                 $decrypted = $cipher->decrypt($this->encrypted);
                 $sessionKeySymmetric = SymmetricAlgorithm::from(
