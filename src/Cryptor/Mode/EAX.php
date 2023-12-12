@@ -34,7 +34,7 @@ final class EAX
     const H_TAG = "\x1";
     const C_TAG = "\x2";
 
-    const CTR_MODE = 'ctr';
+    const CIPHER_MODE = 'ctr';
 
     private readonly BlockCipher $cipher;
     private readonly CMac $mac;
@@ -55,7 +55,7 @@ final class EAX
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     )
     {
-        $this->cipher = $symmetric->cipherEngine(self::CTR_MODE);
+        $this->cipher = $symmetric->cipherEngine(self::CIPHER_MODE);
         $this->cipher->setKey($key);
         $this->mac = new CMac($symmetric);
 
@@ -90,8 +90,8 @@ final class EAX
     /**
      * Decrypt ciphertext input.
      *
-     * @param string $ciphertext - The cleartext input to be encrypted
-     * @param string $nonce - The ciphertext input to be decrypted
+     * @param string $ciphertext - The ciphertext input to be decrypted
+     * @param string $nonce - The nonce (16 bytes)
      * @param string $adata - Associated data to verify
      * @return string The plaintext output.
      */
@@ -118,6 +118,24 @@ final class EAX
         }
 
         return $this->crypt($ciphered, $omacNonce);
+    }
+
+    /**
+     * Get EAX nonce as defined by
+     * {@link https://tools.ietf.org/html/draft-ietf-openpgp-rfc4880bis-04#section-5.16.1|RFC4880bis-04,
+     * section 5.16.1}.
+     * 
+     * @param string $iv - The initialization vector (16 bytes)
+     * @param string $chunkIndex - The chunk index (8 bytes)
+     * @return string
+     */
+    public static function getNonce(string $iv, string $chunkIndex): string
+    {
+        $nonce = $iv;
+        for ($i = 0; $i < strlen($chunkIndex); $i++) {
+            $nonce[8 + $i] ^= $chunkIndex[$i];
+        }
+        return $nonce;
     }
 
     private function omac(string $tag, string $message): string

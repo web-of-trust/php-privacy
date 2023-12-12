@@ -142,7 +142,7 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
             chr($this->aead->value),
             chr($this->chunkSize),
             $this->iv,
-            $this->encrypted
+            $this->encrypted,
         ]);
     }
 
@@ -184,6 +184,17 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
     public function getIV(): string
     {
         return $this->iv;
+    }
+
+    public function getAAData(): string
+    {
+        return implode([
+            chr(0xC0 | $this->getTag()->value),
+            chr(self::VERSION),
+            chr($this->symmetric->value),
+            chr($this->aead->value),
+            chr($this->chunkSize),
+        ]);
     }
 
     /**

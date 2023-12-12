@@ -97,7 +97,7 @@ final class OCB
      * 
      * @param string $ciphertext - The ciphertext input to be decrypted
      * @param string $nonce - The nonce (15 bytes)
-     * @param string $adata - Associated data to sign
+     * @param string $adata - Associated data to verify
      * @return string The ciphertext output.
      */
     public function decrypt(
@@ -119,6 +119,24 @@ final class OCB
             return substr($crypted, 0, $length - self::TAG_LENGTH);
         }
         throw new \UnexpectedValueException('Authentication tag mismatch');
+    }
+
+    /**
+     * Get OCB nonce as defined by
+     * {@link https://tools.ietf.org/html/draft-ietf-openpgp-rfc4880bis-04#section-5.16.2|RFC4880bis-04,
+     * section 5.16.2}.
+     * 
+     * @param string $iv - The initialization vector (15 bytes)
+     * @param string $chunkIndex - The chunk index (8 bytes)
+     * @return string
+     */
+    public static function getNonce(string $iv, string $chunkIndex): string
+    {
+        $nonce = $iv;
+        for ($i = 0; $i < strlen($chunkIndex); $i++) {
+            $nonce[7 + $i] ^= $chunkIndex[$i];
+        }
+        return $nonce;
     }
 
     /**
