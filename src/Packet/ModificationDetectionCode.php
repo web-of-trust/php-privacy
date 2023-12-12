@@ -27,15 +27,20 @@ use OpenPGP\Enum\PacketTag;
  */
 class ModificationDetectionCode extends AbstractPacket
 {
+    const DIGEST_SIZE = 20;
+
+    private readonly string $digest;
+
     /**
      * Constructor
      *
-     * @param string $data
+     * @param string $bytes
      * @return self
      */
-    public function __construct(private readonly string $data)
+    public function __construct(string $bytes)
     {
         parent::__construct(PacketTag::ModificationDetectionCode);
+        $this->digest = substr($bytes, 0, self::DIGEST_SIZE);
     }
 
     /**
@@ -51,6 +56,6 @@ class ModificationDetectionCode extends AbstractPacket
      */
     public function toBytes(): string
     {
-        return $this->data;
+        return $this->digest;
     }
 }
