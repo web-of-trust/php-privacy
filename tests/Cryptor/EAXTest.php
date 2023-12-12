@@ -3,7 +3,6 @@
 namespace OpenPGP\Tests\Cryptor;
 
 use OpenPGP\Cryptor\Mode\EAX;
-use OpenPGP\Enum\SymmetricAlgorithm;
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
@@ -98,7 +97,7 @@ class EAXTest extends OpenPGPTestCase
             $header = hex2bin($vector['header']);
             $cipher = hex2bin($vector['cipher']);
 
-            $eax = new EAX(SymmetricAlgorithm::Aes128, $key);
+            $eax = new EAX($key);
 
             // encryption test
             $ct = $eax->encrypt($msg, $nonce, $header);

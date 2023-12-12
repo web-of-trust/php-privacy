@@ -3,7 +3,6 @@
 namespace OpenPGP\Tests\Cryptor;
 
 use OpenPGP\Cryptor\Mode\OCB;
-use OpenPGP\Enum\SymmetricAlgorithm;
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
@@ -120,7 +119,7 @@ class OCBTest extends OpenPGPTestCase
     public function testAesOcb()
     {
         $key = hex2bin(self::$key);
-        $ocb = new OCB(SymmetricAlgorithm::Aes128, $key);
+        $ocb = new OCB($key);
 
         foreach (self::$testVectors as $vector) {
             $msg = hex2bin($vector['P']);

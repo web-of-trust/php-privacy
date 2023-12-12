@@ -39,7 +39,7 @@ final class CMac
      * @return self
      */
     public function __construct(
-        SymmetricAlgorithm $symmetric,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         private int $macSize = 0
     )
     {

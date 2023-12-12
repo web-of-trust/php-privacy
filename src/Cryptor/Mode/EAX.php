@@ -46,13 +46,13 @@ final class EAX
     /**
      * Constructor
      *
-     * @param SymmetricAlgorithm $symmetric - The symmetric cipher algorithm to use
      * @param string $key - The encryption key
+     * @param SymmetricAlgorithm $symmetric - The symmetric cipher algorithm to use
      * @return self
      */
     public function __construct(
-        SymmetricAlgorithm $symmetric,
-        private readonly string $key
+        private readonly string $key,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     )
     {
         $this->cipher = $symmetric->cipherEngine(self::CTR_MODE);

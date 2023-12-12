@@ -48,13 +48,13 @@ final class OCB
     /**
      * Constructor
      *
+     * @param string $key - The encryption key
      * @param SymmetricAlgorithm $symmetric - The symmetric cipher algorithm to use
-     * @param string $key
      * @return self
      */
     public function __construct(
-        private readonly SymmetricAlgorithm $symmetric,
-        private readonly string $key
+        private readonly string $key,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     )
     {
         if ($symmetric->blockSize() !== self::BLOCK_LENGTH) {
