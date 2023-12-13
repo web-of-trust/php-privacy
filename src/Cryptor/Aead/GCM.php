@@ -42,12 +42,7 @@ final class GCM implements AeadCipher
     }
 
     /**
-     * Encrypt plaintext input.
-     *
-     * @param string $plaintext - The cleartext input to be encrypted
-     * @param string $nonce - The nonce (12 bytes)
-     * @param string $adata - Associated data to sign
-     * @return string The ciphertext output.
+     * {@inheritdoc}
      */
     public function encrypt(
         string $plaintext, string $nonce, string $adata = ''
@@ -59,12 +54,7 @@ final class GCM implements AeadCipher
     }
 
     /**
-     * Decrypt ciphertext input.
-     *
-     * @param string $ciphertext - The cleartext input to be encrypted
-     * @param string $nonce - The nonce (12 bytes)
-     * @param string $adata - Associated data to verify
-     * @return string The plaintext output.
+     * {@inheritdoc}
      */
     public function decrypt(
         string $ciphertext, string $nonce, string $adata = ''
@@ -80,11 +70,12 @@ final class GCM implements AeadCipher
      * A future version of the standard may define GCM mode differently,
      * hopefully under a different ID (we use Private/Experimental algorithm
      * ID 100) so that we can maintain backwards compatibility.
+     * 
      * @param string $iv - The initialization vector (12 bytes)
      * @param string $chunkIndex - The chunk index (8 bytes)
      * @return string
      */
-    public static function getNonce(string $iv, string $chunkIndex): string
+    public function getNonce(string $iv, string $chunkIndex): string
     {
         $nonce = $iv;
         for ($i = 0; $i < strlen($chunkIndex); $i++) {

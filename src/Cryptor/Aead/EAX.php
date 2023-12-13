@@ -66,12 +66,7 @@ final class EAX implements AeadCipher
     }
 
     /**
-     * Encrypt plaintext input.
-     *
-     * @param string $plaintext - The cleartext input to be encrypted
-     * @param string $nonce - The nonce (16 bytes)
-     * @param string $adata - Associated data to sign
-     * @return string The ciphertext output.
+     * {@inheritdoc}
      */
     public function encrypt(
         string $plaintext, string $nonce, string $adata = ''
@@ -88,12 +83,7 @@ final class EAX implements AeadCipher
     }
 
     /**
-     * Decrypt ciphertext input.
-     *
-     * @param string $ciphertext - The ciphertext input to be decrypted
-     * @param string $nonce - The nonce (16 bytes)
-     * @param string $adata - Associated data to verify
-     * @return string The plaintext output.
+     * {@inheritdoc}
      */
     public function decrypt(
         string $ciphertext, string $nonce, string $adata = ''
@@ -122,14 +112,14 @@ final class EAX implements AeadCipher
 
     /**
      * Get EAX nonce as defined by
-     * {@link https://tools.ietf.org/html/draft-ietf-openpgp-rfc4880bis-04#section-5.16.1|RFC4880bis-04,
+     * {@link https://tools.ietf.org/html/draft-ietf-openpgp-rfc4880bis-10#section-5.16.1|RFC4880bis-10,
      * section 5.16.1}.
      * 
      * @param string $iv - The initialization vector (16 bytes)
      * @param string $chunkIndex - The chunk index (8 bytes)
      * @return string
      */
-    public static function getNonce(string $iv, string $chunkIndex): string
+    public function getNonce(string $iv, string $chunkIndex): string
     {
         $nonce = $iv;
         for ($i = 0; $i < strlen($chunkIndex); $i++) {
