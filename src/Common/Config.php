@@ -41,11 +41,13 @@ final class Config
 
     private static HashAlgorithm $s2kHash = HashAlgorithm::Sha256;
 
-    private static AeadAlgorithm $preferredAEAD = AeadAlgorithm::Eax;
+    private static AeadAlgorithm $preferredAead = AeadAlgorithm::Eax;
 
     private static int $s2kItCount = 224;
 
     private static int $aeadChunkSize = 12;
+
+    private static bool $aeadProtect = false;
 
     private static bool $allowUnauthenticated = false;
 
@@ -161,21 +163,21 @@ final class Config
      *
      * @return AeadAlgorithm
      */
-    public static function getPreferredAEAD(): AeadAlgorithm
+    public static function getPreferredAead(): AeadAlgorithm
     {
-        return self::$preferredAEAD;
+        return self::$preferredAead;
     }
 
     /**
      * Set preferred AEAD algorithm.
      *
-     * @param AeadAlgorithm $aead
+     * @param AeadAlgorithm $algo
      */
-    public static function setPreferredAEAD(
-        AeadAlgorithm $aead
+    public static function setPreferredAead(
+        AeadAlgorithm $algo
     ): void
     {
-        self::$preferredAEAD = $aead;
+        self::$preferredAead = $algo;
     }
 
     /**
@@ -216,6 +218,27 @@ final class Config
     public static function setAeadChunkSize(int $aeadChunkSize): void
     {
         self::$aeadChunkSize = $aeadChunkSize;
+    }
+
+    /**
+     * Get AEAD protection.
+     * Use Authenticated Encryption with Additional Data (AEAD) protection for symmetric encryption.
+     *
+     * @return bool
+     */
+    public static function aeadProtect(): bool
+    {
+        return self::$aeadProtect;
+    }
+
+    /**
+     * Set AEAD protection.
+     *
+     * @param bool $protect
+     */
+    public static function setAeadProtect(bool $protect): void
+    {
+        self::$aeadProtect = $protect;
     }
 
     /**
