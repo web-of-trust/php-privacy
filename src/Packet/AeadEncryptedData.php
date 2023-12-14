@@ -279,8 +279,8 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
         $adataBuffer = substr_replace($adataBuffer, $aaData, 0, strlen($aaData));
 
         $adataTagBuffer = substr_replace($adataTagBuffer, $aaData, 0, strlen($aaData));
-        $pack = pack('N', $dataLength - $tagLength * (int) ceil($dataLength / $chunkSize));
-        $adataTagBuffer = substr_replace($adataTagBuffer, $pack, 13 + 4, strlen($pack));
+        $cryptedBytes = pack('N', $dataLength - $tagLength * (int) ceil($dataLength / $chunkSize));
+        $adataTagBuffer = substr_replace($adataTagBuffer, $cryptedBytes, 13 + 4, strlen($cryptedBytes));
 
         $crypted = [];
         for ($chunkIndex = 0; $chunkIndex === 0 || strlen($data);) {
@@ -292,8 +292,10 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
             );
             // We take a chunk of data, en/decrypt it, and shift `data` to the next chunk.
             $data = substr($data, $chunkSize);
-            $pack = pack('N', ++$chunkIndex);
-            $adataTagBuffer = substr_replace($adataTagBuffer, $pack, 5 + 4, strlen($pack));
+            $ciBytes = pack('N', ++$chunkIndex);
+            $adataTagBuffer = substr_replace(
+                $adataTagBuffer, $ciBytes, 5 + 4, strlen($ciBytes)
+            );
         }
 
         // After the final chunk, we either encrypt a final, empty data
