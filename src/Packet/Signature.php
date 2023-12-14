@@ -261,8 +261,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
                     chr(CompressionAlgorithm::BZip2->value),
                 ])
             ),
-            new Signature\Features(
-                chr(SupportFeature::ModificationDetection->value)
+            Signature\Features::fromFeatures(
+                SupportFeature::ModificationDetection->value |
+                SupportFeature::AeadEncryptedData->value
             ),
         ];
         if ($isPrimaryUser) {

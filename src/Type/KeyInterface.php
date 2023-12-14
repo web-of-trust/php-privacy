@@ -122,6 +122,13 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
     function isPrivate(): bool;
 
     /**
+     * Return AEAD supported
+     * 
+     * @return bool
+     */
+    function aeadSupported(): bool;
+
+    /**
      * The key is revoked
      *
      * @param KeyInterface $verifyKey

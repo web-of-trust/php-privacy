@@ -21,6 +21,7 @@ use OpenPGP\Packet\{
 };
 use OpenPGP\Packet\Signature\{
     EmbeddedSignature,
+    Features,
     KeyExpirationTime,
     KeyFlags,
     RevocationReason,
@@ -390,6 +391,19 @@ abstract class AbstractKey implements KeyInterface
     public function isPrivate(): bool
     {
         return $this->keyPacket->getTag() === PacketTag::SecretKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function aeadSupported(): bool
+    {
+        $primaryUser = $this->getPrimaryUser();
+        $features = $primaryUser->getLatestSelfCertification()?->getFeatures();
+        if (($features instanceof Features) && $features->supportAeadEncryptedData()) {
+            return true;
+        }
+        return false;
     }
 
     /**
