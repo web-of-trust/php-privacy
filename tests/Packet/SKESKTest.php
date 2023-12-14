@@ -15,7 +15,7 @@ use OpenPGP\Tests\OpenPGPTestCase;
 class SKESKTest extends OpenPGPTestCase
 {
     const PASSPHRASE = 'password';
-    const LITERAL_TEXT = 'Hello PHP PG';
+    const LITERAL_TEXT = 'Hello PHP Privacy';
 
     public function testEncryptNullSessionKey()
     {

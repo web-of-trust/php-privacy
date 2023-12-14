@@ -267,34 +267,42 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
     {
         $cipher = $this->aeadCipher($key);
 
+        $dataLength = strlen($data);
         $tagLength = $fn === 'decrypt' ? $this->aead->tagLength() : 0;
         $chunkSize = 2 ** ($this->chunkSize + 6) + $tagLength; // ((uint64_t)1 << (c + 6))
 
         $adataBuffer = str_repeat(self::ZERO_CHAR, 21);
         $adataArray = substr($adataBuffer, 0, 13);
         $adataTagArray = $adataBuffer;
-        $chunkIndexArray = substr($adataBuffer, 5, 8);
 
         $aaData = $this->getAAData();
         $adataArray = substr_replace($adataArray, $aaData, 0, strlen($aaData));
 
+        $adataTagArray = substr_replace($adataTagArray, $aaData, 0, strlen($aaData));
+        $pack = pack('N', $dataLength - $tagLength * (int) ceil($dataLength / $chunkSize));
+        $adataTagArray = substr_replace($adataTagArray, $pack, 13 + 4, strlen($pack));
+
         $crypted = [];
-        for ($chunkIndex = 0; $chunkIndex === 0 || strlen($data); $chunkIndex++) {
+        for ($chunkIndex = 0; $chunkIndex === 0 || strlen($data);) {
+            $chunkIndexData = substr($adataTagArray, 5, 8);
             $crypted[] = $cipher->$fn(
                 substr($data, 0, $chunkSize),
-                $cipher->getNonce($this->iv, $chunkIndexArray),
+                $cipher->getNonce($this->iv, $chunkIndexData),
                 $adataArray
             );
             // We take a chunk of data, en/decrypt it, and shift `data` to the next chunk.
             $data = substr($data, $chunkSize);
+            $pack = pack('N', ++$chunkIndex);
+            $adataTagArray = substr_replace($adataTagArray, $pack, 5 + 4, strlen($pack));
         }
 
         // After the final chunk, we either encrypt a final, empty data
         // chunk to get the final authentication tag or validate that final
         // authentication tag.
+        $chunkIndexData = substr($adataTagArray, 5, 8);
         $crypted[] = $cipher->$fn(
             $finalChunk,
-            $cipher->getNonce($this->iv, $chunkIndexArray),
+            $cipher->getNonce($this->iv, $chunkIndexData),
             $adataTagArray
         );
         return implode($crypted);

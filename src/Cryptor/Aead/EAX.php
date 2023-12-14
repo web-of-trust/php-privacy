@@ -123,7 +123,7 @@ final class EAX implements AeadCipher
     {
         $nonce = $iv;
         for ($i = 0; $i < strlen($chunkIndex); $i++) {
-            $nonce[8 + $i] ^= $chunkIndex[$i];
+            $nonce[8 + $i] = $nonce[8 + $i] ^ $chunkIndex[$i];
         }
         return $nonce;
     }

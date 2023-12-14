@@ -17,7 +17,6 @@ use OpenPGP\Tests\OpenPGPTestCase;
 class PKESKTest extends OpenPGPTestCase
 {
     const PASSPHRASE = 'password';
-    const LITERAL_TEXT = 'Hello PHP PG';
 
     private static $rsaSecretSubkey = <<<EOT
 BGRUrD4BCACyRTYWSBsXFtxLOmSp3RvaW13GRh8HJ4p7adVqJpDBsvo8iInDgBt542/aoWDGIESA

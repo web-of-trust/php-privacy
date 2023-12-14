@@ -124,7 +124,7 @@ final class OCB implements AeadCipher
     {
         $nonce = $iv;
         for ($i = 0; $i < strlen($chunkIndex); $i++) {
-            $nonce[7 + $i] ^= $chunkIndex[$i];
+            $nonce[7 + $i] = $nonce[7 + $i] ^ $chunkIndex[$i];
         }
         return $nonce;
     }

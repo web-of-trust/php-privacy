@@ -79,7 +79,7 @@ final class GCM implements AeadCipher
     {
         $nonce = $iv;
         for ($i = 0; $i < strlen($chunkIndex); $i++) {
-            $nonce[4 + $i] ^= $chunkIndex[i];
+            $nonce[4 + $i] = $nonce[4 + $i] ^ $chunkIndex[i];
         }
         return $nonce;
     }
