@@ -55,6 +55,17 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
     /**
      * {@inheritdoc}
      */
+    public function getEncryptedPacket(): EncryptedDataPacketInterface
+    {
+        $encryptedPackets = self::validatePacketList(
+            $this->getPacketList()
+        );
+        return array_pop($encryptedPackets);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function decrypt(
         array $decryptionKeys = [],
         array $passwords = []
@@ -70,8 +81,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
             );
         }
 
-        $encryptedPackets = self::validatePacketList($this->getPacketList());
-        $encryptedPacket = array_pop($encryptedPackets);
+        $encryptedPacket = $this->getEncryptedPacket();
         $sessionKey = $this->decryptSessionKey($decryptionKeys, $passwords);
         $decryptedPacket = $encryptedPacket->decryptWithSessionKey(
             $sessionKey

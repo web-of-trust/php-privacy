@@ -3,10 +3,11 @@
 namespace OpenPGP\Tests\Message;
 
 use phpseclib3\Crypt\Random;
+use OpenPGP\Common\Config;
 use OpenPGP\Enum\{CompressionAlgorithm, LiteralFormat};
 use OpenPGP\Key\{PrivateKey, PublicKey};
 use OpenPGP\Message\{LiteralMessage, Signature};
-use OpenPGP\Packet\{LiteralData, PacketList};
+use OpenPGP\Packet\{AeadEncryptedData, LiteralData, PacketList};
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
@@ -517,5 +518,77 @@ EOT;
         )->decrypt(self::PASSPHRASE);
         $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
         $this->assertSame($literalData, $decryptedMessage->getLiteralData()->getData());
+    }
+
+    public function testAeadEncryptWithCompressMessage()
+    {
+        Config::setAeadProtect(true);
+
+        $rsaPublicKey = PublicKey::fromArmored(
+            file_get_contents('tests/Data/RsaPublicKey.asc')
+        );
+        $dsaPublicKey = PublicKey::fromArmored(
+            file_get_contents('tests/Data/DsaPublicKey.asc')
+        );
+        $ecP384PublicKey = PublicKey::fromArmored(
+            file_get_contents('tests/Data/EcP384PublicKey.asc')
+        );
+        $ecBrainpoolPublicKey = PublicKey::fromArmored(
+            file_get_contents('tests/Data/EcBrainpoolPublicKey.asc')
+        );
+        $ecCurve25519PublicKey = PublicKey::fromArmored(
+            file_get_contents('tests/Data/EcCurve25519PublicKey.asc')
+        );
+
+        $literalData = Random::string(1024);
+        $message = new LiteralMessage(new PacketList([
+            new LiteralData($literalData, LiteralFormat::Binary)
+        ]));
+        $encryptedMessage = $message->compress(CompressionAlgorithm::BZip2)->encrypt(
+            [
+                $rsaPublicKey,
+                $dsaPublicKey,
+                $ecP384PublicKey,
+                $ecBrainpoolPublicKey,
+                $ecCurve25519PublicKey,
+            ],
+            [self::PASSPHRASE]
+        );
+        $this->assertTrue($encryptedMessage->getEncryptedPacket() instanceof AeadEncryptedData);
+
+        $decryptedMessage = $encryptedMessage->decrypt(passwords: [self::PASSPHRASE]);
+        $this->assertSame($literalData, $decryptedMessage->getLiteralData()->getData());
+
+        $privateKey = PrivateKey::fromArmored(
+            file_get_contents('tests/Data/RsaPrivateKey.asc')
+        )->decrypt(self::PASSPHRASE);
+        $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
+        $this->assertSame($literalData, $decryptedMessage->getLiteralData()->getData());
+
+        $privateKey = PrivateKey::fromArmored(
+            file_get_contents('tests/Data/DsaPrivateKey.asc')
+        )->decrypt(self::PASSPHRASE);
+        $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
+        $this->assertSame($literalData, $decryptedMessage->getLiteralData()->getData());
+
+        $privateKey = PrivateKey::fromArmored(
+            file_get_contents('tests/Data/EcP384PrivateKey.asc')
+        )->decrypt(self::PASSPHRASE);
+        $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
+        $this->assertSame($literalData, $decryptedMessage->getLiteralData()->getData());
+
+        $privateKey = PrivateKey::fromArmored(
+            file_get_contents('tests/Data/EcBrainpoolPrivateKey.asc')
+        )->decrypt(self::PASSPHRASE);
+        $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
+        $this->assertSame($literalData, $decryptedMessage->getLiteralData()->getData());
+
+        $privateKey = PrivateKey::fromArmored(
+            file_get_contents('tests/Data/EcCurve25519PrivateKey.asc')
+        )->decrypt(self::PASSPHRASE);
+        $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
+        $this->assertSame($literalData, $decryptedMessage->getLiteralData()->getData());
+
+        Config::setAeadProtect(false);
     }
 }

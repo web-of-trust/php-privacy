@@ -20,6 +20,13 @@ use OpenPGP\Enum\SymmetricAlgorithm;
 interface EncryptedMessageInterface
 {
     /**
+     * Return encrypted packet.
+     *
+     * @return EncryptedDataPacketInterface
+     */
+    function getEncryptedPacket(): EncryptedDataPacketInterface;
+
+    /**
      * Decrypt the message. One of `decryptionKeys` or `passwords` must be specified.
      * Return new message with decrypted content.
      *
