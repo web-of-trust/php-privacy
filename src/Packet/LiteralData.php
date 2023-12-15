@@ -125,13 +125,23 @@ class LiteralData extends AbstractPacket implements ForSigningInterface, Literal
     /**
      * {@inheritdoc}
      */
-    public function toBytes(): string
+    public function getHeader(): string
     {
         return implode([
             chr($this->format->value),
             chr(strlen($this->filename)),
             $this->filename,
             pack('N', $this->time->getTimestamp()),
+        ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toBytes(): string
+    {
+        return implode([
+            $this->getHeader(),
             $this->getSignBytes(),
         ]);
     }

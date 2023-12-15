@@ -47,4 +47,11 @@ interface LiteralDataInterface extends ForSigningInterface
      * @return string
      */
     function getData(): string;
+
+    /**
+     * Get jeader
+     *
+     * @return string
+     */
+    function getHeader(): string;
 }
