@@ -256,8 +256,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
                 $aeadSupported = false;
             }
         }
-        $aeadProtect = Config::aeadProtect() && $aeadSupported;
-        if ($aeadProtect) {
+        if ($aeadSupported && Config::aeadProtect()) {
             $encryptedPacket = AeadEncryptedData::encryptPacketsWithSessionKey(
                 $sessionKey, $this->getPacketList()
             );
