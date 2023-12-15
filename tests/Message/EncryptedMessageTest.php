@@ -87,4 +87,21 @@ EOT;
         $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
         $this->assertSame(self::LITERAL_DATA, $decryptedMessage->getLiteralData()->getData());
     }
+
+    public function testDecryptAeadMessage()
+    {
+        $encryptedMessageData = <<<EOT
+-----BEGIN PGP MESSAGE-----
+
+jD0FBwIDCPTU9TrcG/ef/xFWqji4GJrUyUl69Pv5jAx2Kqji9g4nBGu5RXlYoY/8
+cTHw+kww2UtrXVkeUDQI1EwBBwIQtSJxPQCq1Mg7/Ashm2BQxiCRO1DtO6TN/+sy
+58ZOoB5PVTW8IcABVZi/8mtZtqY02rYfTcXYiyVQP9Qx0gnqM1hCCQp/tZYX
+=id4U
+-----END PGP MESSAGE-----
+EOT;
+
+        $encryptedMessage = EncryptedMessage::fromArmored($encryptedMessageData);
+        $decryptedMessage = $encryptedMessage->decrypt(passwords: [self::PASSPHRASE]);
+        $this->assertSame(self::LITERAL_DATA, $decryptedMessage->getLiteralData()->getData());
+    }
 }

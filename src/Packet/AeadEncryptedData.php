@@ -9,12 +9,6 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Common\Config;
-use OpenPGP\Cryptor\Aead\{
-    AeadCipher,
-    EAX,
-    GCM,
-    OCB,
-};
 use OpenPGP\Enum\{
     AeadAlgorithm,
     PacketTag,
@@ -265,7 +259,7 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
         string $fn, string $key, string $data, string $finalChunk = ''
     ): string
     {
-        $cipher = $this->aeadCipher($key);
+        $cipher = $this->aead->cipherEngine($key, $this->symmetric);
 
         $dataLength = strlen($data);
         $tagLength = $fn === 'decrypt' ? $this->aead->tagLength() : 0;
@@ -308,14 +302,5 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
             $adataTagBuffer
         );
         return implode($crypted);
-    }
-
-    private function aeadCipher(string $key): AeadCipher
-    {
-        return match($this->aead) {
-            AeadAlgorithm::Eax => new EAX($key, $this->symmetric),
-            AeadAlgorithm::Ocb => new OCB($key, $this->symmetric),
-            AeadAlgorithm::Gcm => new GCM($key, $this->symmetric),
-        };
     }
 }
