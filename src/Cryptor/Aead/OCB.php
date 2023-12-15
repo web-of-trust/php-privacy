@@ -53,7 +53,7 @@ final class OCB implements AeadCipher
      * @return self
      */
     public function __construct(
-        private readonly string $key,
+        string $key,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     )
     {
@@ -133,7 +133,7 @@ final class OCB implements AeadCipher
      * Encrypt/decrypt data.
      * 
      * @param BlockCipher $cipher - Encryption/decryption block cipher function
-     * @param string $ciphertext - The cleartext or ciphertext (without tag) input
+     * @param string $text - The cleartext or ciphertext (without tag) input
      * @param string $nonce - The nonce (15 bytes)
      * @param string $adata - Associated data to sign
      * @return string The ciphertext or plaintext output, with tag appended in both cases.

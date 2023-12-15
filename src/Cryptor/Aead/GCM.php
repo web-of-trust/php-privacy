@@ -33,7 +33,7 @@ final class GCM implements AeadCipher
      * @return self
      */
     public function __construct(
-        private readonly string $key,
+        string $key,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     )
     {
@@ -79,7 +79,7 @@ final class GCM implements AeadCipher
     {
         $nonce = $iv;
         for ($i = 0; $i < strlen($chunkIndex); $i++) {
-            $nonce[4 + $i] = $nonce[4 + $i] ^ $chunkIndex[i];
+            $nonce[4 + $i] = $nonce[4 + $i] ^ $chunkIndex[$i];
         }
         return $nonce;
     }
