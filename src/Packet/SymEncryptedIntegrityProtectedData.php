@@ -133,6 +133,16 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
     }
 
     /**
+     * Get version
+     *
+     * @return int
+     */
+    public function getVersion(): int
+    {
+        return self::VERSION;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function decrypt(

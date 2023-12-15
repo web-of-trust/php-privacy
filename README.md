@@ -1,7 +1,7 @@
 PHP Privacy - The OpenPGP library in PHP language
 =================================================
 PHP Privacy is an implementation of the OpenPGP standard in PHP language.
-It implements [RFC4880](https://www.rfc-editor.org/rfc/rfc4880), [RFC6637](https://www.rfc-editor.org/rfc/rfc6637),
+It implements [RFC4880](https://www.rfc-editor.org/rfc/rfc4880), [RFC5581](https://www.rfc-editor.org/rfc/rfc5581), [RFC6637](https://www.rfc-editor.org/rfc/rfc6637),
 parts of [RFC4880bis](https://datatracker.ietf.org/doc/html/draft-ietf-openpgp-rfc4880bis).
 
 ## Requirement
@@ -21,6 +21,7 @@ parts of [RFC4880bis](https://datatracker.ietf.org/doc/html/draft-ietf-openpgp-r
 * Support symmetric ciphers: TripleDES, IDEA, CAST5, Blowfish, Twofish,
   [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard),
   [Camellia](https://en.wikipedia.org/wiki/Camellia_(cipher)).
+* Support AEAD algorithms: EAX, OCB, GCM.
 * Support hash algorithms: MD5, SHA-1, RIPEMD-160, SHA-256, SHA-384, SHA-512, SHA-224.
 * Support compression algorithms: Zip, Zlib, BZip2.
 * Support [ECC](https://en.wikipedia.org/wiki/Elliptic-curve_cryptography) curves:

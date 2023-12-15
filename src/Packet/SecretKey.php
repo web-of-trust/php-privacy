@@ -73,7 +73,8 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     )
     {
         parent::__construct(
-            $this instanceof SubkeyPacketInterface ? PacketTag::SecretSubkey : PacketTag::SecretKey
+            $this instanceof SubkeyPacketInterface ?
+            PacketTag::SecretSubkey : PacketTag::SecretKey
         );
     }
 
@@ -91,7 +92,9 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         switch ($s2kUsage) {
             case S2kUsage::Checksum:
             case S2kUsage::Sha1:
-                $symmetric = SymmetricAlgorithm::from(ord($bytes[$offset++]));
+                $symmetric = SymmetricAlgorithm::from(
+                    ord($bytes[$offset++])
+                );
                 $s2k = S2K::fromBytes(substr($bytes, $offset));
                 $offset += $s2k->getLength();
                 break;
@@ -146,17 +149,24 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             KeyAlgorithm::RsaEncrypt,
             KeyAlgorithm::RsaSign
                 => Key\RSASecretKeyMaterial::generate($rsaKeySize),
-            KeyAlgorithm::ElGamal => Key\ElGamalSecretKeyMaterial::generate($dhKeySize),
-            KeyAlgorithm::Dsa => Key\DSASecretKeyMaterial::generate($dhKeySize),
-            KeyAlgorithm::Ecdh => Key\ECDHSecretKeyMaterial::generate($curveOid),
-            KeyAlgorithm::EcDsa => Key\ECDSASecretKeyMaterial::generate($curveOid),
-            KeyAlgorithm::EdDsa => Key\EdDSASecretKeyMaterial::generate(),
+            KeyAlgorithm::ElGamal
+                => Key\ElGamalSecretKeyMaterial::generate($dhKeySize),
+            KeyAlgorithm::Dsa
+                => Key\DSASecretKeyMaterial::generate($dhKeySize),
+            KeyAlgorithm::Ecdh
+                => Key\ECDHSecretKeyMaterial::generate($curveOid),
+            KeyAlgorithm::EcDsa
+                => Key\ECDSASecretKeyMaterial::generate($curveOid),
+            KeyAlgorithm::EdDsa
+                => Key\EdDSASecretKeyMaterial::generate(),
             default => throw new \UnexpectedValueException(
-                "Unsupported PGP public key algorithm encountered",
+                'Unsupported PGP public key algorithm encountered'
             ),
         };
         return new self(
             new PublicKey(
+                Config::useV5Key() ?
+                PublicKey::VERSION_5 : PublicKey::VERSION_4,
                 $time ?? new \DateTime(),
                 $keyMaterial->getPublicMaterial(),
                 $keyAlgorithm
@@ -301,7 +311,8 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
      */
     public function isEncrypted(): bool
     {
-        return ($this->s2k instanceof S2K) && ($this->s2kUsage !== S2kUsage::None);
+        return ($this->s2k instanceof S2K) &&
+               ($this->s2kUsage !== S2kUsage::None);
     }
 
     /**
@@ -370,7 +381,8 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             $key = $this->s2k?->produceKey(
                 $passphrase,
                 $this->symmetric->keySizeInByte()
-            ) ?? str_repeat(self::ZERO_CHAR, $this->symmetric->keySizeInByte());
+            ) ??
+            str_repeat(self::ZERO_CHAR, $this->symmetric->keySizeInByte());
             $cipher->setKey($key);
             $decrypted = $cipher->decrypt($this->keyData);
 
@@ -384,7 +396,9 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 );
             }
 
-            $keyMaterial = self::readKeyMaterial($clearText, $this->publicKey);
+            $keyMaterial = self::readKeyMaterial(
+                $clearText, $this->publicKey
+            );
 
             return new self(
                 $this->publicKey,

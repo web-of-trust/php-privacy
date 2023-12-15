@@ -38,7 +38,8 @@ use OpenPGP\Type\{
  */
 class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
 {
-	const KEY_VERSION = 4;
+    const VERSION_4 = 4;
+    const VERSION_5 = 5;
 
     private readonly string $fingerprint;
 
@@ -47,22 +48,36 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
     /**
      * Constructor
      *
+     * @param int $version
      * @param DateTimeInterface $creationTime
      * @param KeyMaterialInterface $keyMaterial
      * @param KeyAlgorithm $keyAlgorithm
      * @return self
      */
     public function __construct(
+        private readonly int $version,
         private readonly DateTimeInterface $creationTime,
         private readonly KeyMaterialInterface $keyMaterial,
         private readonly KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
     )
     {
         parent::__construct(
-            $this instanceof SubkeyPacketInterface ? PacketTag::PublicSubkey : PacketTag::PublicKey
+            $this instanceof SubkeyPacketInterface ?
+            PacketTag::PublicSubkey : PacketTag::PublicKey
         );
-        $this->fingerprint = hash('sha1', $this->getSignBytes(), true);
-        $this->keyID = substr($this->fingerprint, 12, 8);
+        if ($version !== self::VERSION_4 && $version !== self::VERSION_5) {
+            throw new \UnexpectedValueException(
+                "Version $version of the key packet is unsupported.",
+            );
+        }
+
+        $isV5 = $version === self::VERSION_5;
+        $this->fingerprint = $isV5 ?
+            hash('sha256', $this->getSignBytes(), true) :
+            hash('sha1', $this->getSignBytes(), true);
+        $this->keyID = $isV5 ?
+            substr($this->fingerprint, 0, 8) :
+            substr($this->fingerprint, 12, 8);
     }
 
     /**
@@ -72,9 +87,9 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
     {
         $offset = 0;
 
-        // A one-octet version number (3 or 4 or 5).
+        // A one-octet version number.
         $version = ord($bytes[$offset++]);
-        if ($version !== self::KEY_VERSION) {
+        if ($version !== self::VERSION_4 && $version !== self::VERSION_5) {
             throw new \UnexpectedValueException(
                 "Version $version of the key packet is unsupported.",
             );
@@ -89,6 +104,11 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         // A one-octet number denoting the public-key algorithm of this key.
         $keyAlgorithm = KeyAlgorithm::from(ord($bytes[$offset++]));
 
+        if ($version === self::VERSION_5) {
+            // - A four-octet scalar octet count for the following key material.
+            $offset += 4;
+        }
+
         // A series of values comprising the key material.
         // This is algorithm-specific and described in section XXXX.
         $keyMaterial = self::readKeyMaterial(
@@ -96,6 +116,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         );
 
         return new self(
+            $version,
             $creationTime,
             $keyMaterial,
             $keyAlgorithm
@@ -107,11 +128,13 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
      */
     public function toBytes(): string
     {
+        $kmBytes = $this->keyMaterial->toBytes();
         return implode([
-            chr(self::KEY_VERSION),
+            chr($this->version),
             pack('N', $this->creationTime->getTimestamp()),
             chr($this->keyAlgorithm->value),
-            $this->keyMaterial->toBytes(),
+            ($this->version === self::VERSION_5) ? pack('N', strlen($kmBytes)) : '',
+            $kmBytes,
         ]);
     }
 
@@ -120,7 +143,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
      */
     public function getVersion(): int
     {
-        return self::KEY_VERSION;
+        return $this->version;
     }
 
     /**
@@ -198,8 +221,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
             KeyAlgorithm::ElGamal,
             KeyAlgorithm::Ecdh,
             KeyAlgorithm::DiffieHellman,
-            KeyAlgorithm::Aedh
-                => false,
+            KeyAlgorithm::Aedh => false,
             default => true,
         };
     }
@@ -214,8 +236,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
             KeyAlgorithm::Dsa,
             KeyAlgorithm::EcDsa,
             KeyAlgorithm::EdDsa,
-            KeyAlgorithm::AeDsa
-                => false,
+            KeyAlgorithm::AeDsa => false,
             default => true,
         };
     }
@@ -241,9 +262,10 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
     public function getSignBytes(): string
     {
         $bytes = $this->toBytes();
+        $isV5 = $this->version === self::VERSION_5;
         return implode([
-            "\x99",
-            pack('n', strlen($bytes)),
+            $isV5 ? "\x9A" : "\x99",
+            $isV5 ? pack('N', strlen($bytes)) : pack('n', strlen($bytes)),
             $bytes,
         ]);
     }

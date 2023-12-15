@@ -23,6 +23,7 @@ EOT;
         $publicKey = PublicKey::fromBytes(base64_decode($data));
         $this->assertSame('fc5004df9473277107eaa605184d0dc4f5c532b2', $publicKey->getFingerprint(true));
         $this->assertSame('184d0dc4f5c532b2', $publicKey->getKeyID(true));
+        $this->assertSame(PublicKey::VERSION_4, $publicKey->getVersion());
     }
 
     public function testRsaPublicSubkey()
@@ -37,6 +38,7 @@ EOT;
         $publicSubkey = PublicSubkey::fromBytes(base64_decode($data));
         $this->assertSame('42badbbe0f2acabacd6cac7c4be1b3a621ef906f', $publicSubkey->getFingerprint(true));
         $this->assertSame('4be1b3a621ef906f', $publicSubkey->getKeyID(true));
+        $this->assertSame(PublicKey::VERSION_4, $publicSubkey->getVersion());
     }
 
     public function testDsaPublicKey()
@@ -61,6 +63,7 @@ EOT;
         $publicKey = PublicKey::fromBytes(base64_decode($data));
         $this->assertSame('3e57913d5f6ccbdb9022f7dee3b11d642248a092', $publicKey->getFingerprint(true));
         $this->assertSame('e3b11d642248a092', $publicKey->getKeyID(true));
+        $this->assertSame(PublicKey::VERSION_4, $publicKey->getVersion());
     }
 
     public function testElGamalPublicSubkey()
@@ -80,6 +83,7 @@ EOT;
         $publicSubkey = PublicSubkey::fromBytes(base64_decode($data));
         $this->assertSame('420a452a98ea130c7747e0b2c0453c8aabe775db', $publicSubkey->getFingerprint(true));
         $this->assertSame('c0453c8aabe775db', $publicSubkey->getKeyID(true));
+        $this->assertSame(PublicKey::VERSION_4, $publicSubkey->getVersion());
     }
 
     public function testEcdsaP384PublicKey()
@@ -91,6 +95,7 @@ EOT;
         $publicKey = PublicKey::fromBytes(base64_decode($data));
         $this->assertSame('05c085492d14f90976e7c2b6b202d9e2eada440c', $publicKey->getFingerprint(true));
         $this->assertSame('b202d9e2eada440c', $publicKey->getKeyID(true));
+        $this->assertSame(PublicKey::VERSION_4, $publicKey->getVersion());
     }
 
     public function testEcdhP384PublicSubkey()
@@ -103,6 +108,7 @@ EOT;
         $publicSubkey = PublicSubkey::fromBytes(base64_decode($data));
         $this->assertSame('7d5bfac8919d26290b28ec56c0b7b9c6bf5824b6', $publicSubkey->getFingerprint(true));
         $this->assertSame('c0b7b9c6bf5824b6', $publicSubkey->getKeyID(true));
+        $this->assertSame(PublicKey::VERSION_4, $publicSubkey->getVersion());
     }
 
     public function testEcdsaBrainpoolP256PublicKey()
@@ -114,6 +120,7 @@ EOT;
         $publicKey = PublicKey::fromBytes(base64_decode($data));
         $this->assertSame('06fee3085d46dc007c0ec2f01cbcd043db44c5d6', $publicKey->getFingerprint(true));
         $this->assertSame('1cbcd043db44c5d6', $publicKey->getKeyID(true));
+        $this->assertSame(PublicKey::VERSION_4, $publicKey->getVersion());
     }
 
     public function testEcdhBrainpoolP256PublicSubkey()
@@ -125,6 +132,7 @@ EOT;
         $publicSubkey = PublicSubkey::fromBytes(base64_decode($data));
         $this->assertSame('457b5979545fba09be179db808a55bdb1d673d5d', $publicSubkey->getFingerprint(true));
         $this->assertSame('08a55bdb1d673d5d', $publicSubkey->getKeyID(true));
+        $this->assertSame(PublicKey::VERSION_4, $publicSubkey->getVersion());
     }
 
     public function testEddsaCurve25519PublicKey()
@@ -135,6 +143,7 @@ EOT;
         $publicKey = PublicKey::fromBytes(base64_decode($data));
         $this->assertSame('1c4116eb2b58cfa196c57ddbbdff135160c56a0b', $publicKey->getFingerprint(true));
         $this->assertSame('bdff135160c56a0b', $publicKey->getKeyID(true));
+        $this->assertSame(PublicKey::VERSION_4, $publicKey->getVersion());
     }
 
     public function testEcdhCurve25519PublicSubkey()
@@ -145,5 +154,6 @@ EOT;
         $publicSubkey = PublicSubkey::fromBytes(base64_decode($data));
         $this->assertSame('8efa53a375fc569aa9ca564a044eac93f0b69ea0', $publicSubkey->getFingerprint(true));
         $this->assertSame('044eac93f0b69ea0', $publicSubkey->getKeyID(true));
+        $this->assertSame(PublicKey::VERSION_4, $publicSubkey->getVersion());
     }
 }

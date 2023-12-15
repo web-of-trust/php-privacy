@@ -163,6 +163,16 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
     }
 
     /**
+     * Get version
+     *
+     * @return int
+     */
+    public function getVersion(): int
+    {
+        return self::VERSION;
+    }
+
+    /**
      * Get symmetric algorithm
      *
      * @return SymmetricAlgorithm

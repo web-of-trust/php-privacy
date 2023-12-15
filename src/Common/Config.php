@@ -49,6 +49,8 @@ final class Config
 
     private static bool $aeadProtect = false;
 
+    private static bool $useV5Key = false;
+
     private static bool $allowUnauthenticated = false;
 
     /**
@@ -239,6 +241,26 @@ final class Config
     public static function setAeadProtect(bool $protect): void
     {
         self::$aeadProtect = $protect;
+    }
+
+    /**
+     * Get use V5 key.
+     *
+     * @return bool
+     */
+    public static function useV5Key(): bool
+    {
+        return self::$useV5Key;
+    }
+
+    /**
+     * Set use V5 key.
+     *
+     * @param bool $useV5Key
+     */
+    public static function setUseV5Key(bool $useV5Key): void
+    {
+        self::$useV5Key = $useV5Key;
     }
 
     /**

@@ -144,6 +144,12 @@ class OCBTest extends OpenPGPTestCase
             $ct = $ocb->encrypt($msg, $nonce, implode([$header, $header, $header]));
             $pt = $ocb->decrypt($ct, $nonce, implode([$header, $header, $header]));
             $this->assertSame(bin2hex($pt), bin2hex($msg));
+
+            // tampering detection test
+            $ct = $ocb->encrypt($msg, $nonce, $header);
+            $ct[2] = $ct[2] & "\x8";
+            $this->expectException(\UnexpectedValueException::class);
+            $ocb->decrypt($ct, $nonce, $header);
         }
     }
 }

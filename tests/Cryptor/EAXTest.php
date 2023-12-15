@@ -116,6 +116,12 @@ class EAXTest extends OpenPGPTestCase
             $ct = $eax->encrypt($msg, $nonce, implode([$header, $header, $header]));
             $pt = $eax->decrypt($ct, $nonce, implode([$header, $header, $header]));
             $this->assertSame(bin2hex($pt), bin2hex($msg));
+
+            // tampering detection test
+            $ct = $eax->encrypt($msg, $nonce, $header);
+            $ct[2] = $ct[2] ^ "\x8";
+            $this->expectException(\UnexpectedValueException::class);
+            $eax->decrypt($ct, $nonce, $header);
         }
     }
 }

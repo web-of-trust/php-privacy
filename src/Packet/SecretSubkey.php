@@ -140,6 +140,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         $publicKey = $secretKey->getPublicKey();
         return new self(
             new PublicSubkey(
+                $publicKey->getVersion(),
                 $publicKey->getCreationTime(),
                 $publicKey->getKeyMaterial(),
                 $publicKey->getKeyAlgorithm()
