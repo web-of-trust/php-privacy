@@ -133,7 +133,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
                 static fn ($packet) => $packet instanceof SignaturePacketInterface
             ),
             ...$this->createSignature(
-                $signingKeys, $notationData, $time
+                $signingKeys, false, $notationData, $time
             )->getPackets(),
         ];
 
@@ -168,9 +168,9 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
     {
         return $this->createSignature(
             $signingKeys,
+            true,
             $notationData,
             $time,
-            true,
         );
     }
 
@@ -182,7 +182,10 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
     ): array
     {
         return $this->getSignature()->verify(
-            $verificationKeys, $this->getLiteralData(), $time
+            $verificationKeys,
+            $this->getLiteralData(),
+            false,
+            $time
         );
     }
 
@@ -196,7 +199,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
     ): array
     {
         return $signature->verify(
-            $verificationKeys, $this->getLiteralData(), $time
+            $verificationKeys, $this->getLiteralData(), true, $time
         );
     }
 
@@ -282,16 +285,16 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
      * Create literal signature.
      *
      * @param array $signingKeys
+     * @param bool $detached
      * @param NotationDataInterface $notationData
      * @param DateTimeInterface $time
-     * @param bool $detached
      * @return SignatureInterface
      */
     private function createSignature(
         array $signingKeys,
+        bool $detached = false,
         ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null,
-        bool $detached = false
+        ?DateTimeInterface $time = null
     ): SignatureInterface
     {
         $signingKeys = array_filter(

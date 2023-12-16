@@ -73,6 +73,7 @@ class CleartextMessage implements CleartextMessageInterface
             $this->getText(), $this->createSignature(
                 $signingKeys,
                 $notationData,
+                false,
                 $time
             )
         );
@@ -90,8 +91,8 @@ class CleartextMessage implements CleartextMessageInterface
         return $this->createSignature(
             $signingKeys,
             $notationData,
-            $time,
-            true
+            true,
+            $time
         );
     }
 
@@ -105,7 +106,7 @@ class CleartextMessage implements CleartextMessageInterface
     ): array
     {
         return $signature->verifyCleartext(
-            $verificationKeys, $this, $time
+            $verificationKeys, $this, true, $time
         );
     }
 
@@ -121,8 +122,8 @@ class CleartextMessage implements CleartextMessageInterface
     private function createSignature(
         array $signingKeys,
         ?NotationDataInterface $notationData = null,
+        bool $detached = false,
         ?DateTimeInterface $time = null,
-        bool $detached = false
     ): SignatureInterface
     {
         $signingKeys = array_filter(

@@ -98,7 +98,7 @@ class SignedMessage extends CleartextMessage implements SignedMessageInterface
     ): array
     {
         return $this->signature->verifyCleartext(
-            $verificationKeys, $this, $time
+            $verificationKeys, $this, false, $time
         );
     }
 

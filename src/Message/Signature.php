@@ -90,6 +90,7 @@ class Signature implements SignatureInterface
     public function verify(
         array $verificationKeys,
         LiteralDataInterface $literalData,
+        bool $detached = false,
         ?DateTimeInterface $time = null
     ): array
     {
@@ -109,13 +110,19 @@ class Signature implements SignatureInterface
                     $keyPacket = $key->toPublic()->getSigningKeyPacket(
                         $packet->getIssuerKeyID()
                     );
+                    $detachedDataHeader = '';
+                    if ($keyPacket->getVersion() === 5) {
+                        $detachedDataHeader = $detached ?
+                            str_repeat("\x00", 6) : $literalData->getHeader();
+                    }
                     $verifications[] = new Verification(
                         $keyPacket->getKeyID(),
                         $packet,
                         $packet->verify(
                             $keyPacket,
                             $literalData->getSignBytes(),
-                            $time
+                            $time,
+                            $detachedDataHeader
                         )
                     );
                 }
@@ -133,12 +140,14 @@ class Signature implements SignatureInterface
     public function verifyCleartext(
         array $verificationKeys,
         CleartextMessageInterface $cleartext,
+        bool $detached = false,
         ?DateTimeInterface $time = null
     ): array
     {
         return $this->verify(
             $verificationKeys,
             LiteralData::fromText($cleartext->getText()),
+            $detached,
             $time
         );
     }
