@@ -2,6 +2,7 @@
 
 namespace OpenPGP\Tests\Cryptor;
 
+use OpenPGP\Common\Config;
 use OpenPGP\Enum\{CurveOid, KeyAlgorithm, KeyType};
 use OpenPGP\Key\{PrivateKey, PublicKey};
 use OpenPGP\Type\SecretKeyPacketInterface;
@@ -588,6 +589,29 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertTrue($subkey->isRevoked());
         $user = $privateKey->revokeUser($userID)->getUsers()[0];
         $this->assertTrue($user->isRevoked());
+    }
+
+    public function testGenerateV5RSAKey()
+    {
+        Config::setUseV5Key(true);
+
+        $name = $this->faker->unique()->name();
+        $email = $this->faker->unique()->safeEmail();
+        $comment = $this->faker->unique()->sentence(1);
+        $passphrase = $this->faker->unique()->password();
+        $userID = implode([$name, "($comment)", "<$email>"]);
+
+        $privateKey = PrivateKey::generate(
+            [$userID],
+            $passphrase,
+            KeyType::Rsa
+        );
+        $this->assertSame(5, $privateKey->getVersion());
+
+        $user = $privateKey->getPrimaryUser();
+        $this->assertSame(5, $user->getLatestSelfCertification()->getVersion());
+
+        Config::setUseV5Key(false);
     }
 
     public function testCertifyKey()

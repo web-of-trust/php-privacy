@@ -2,6 +2,8 @@
 
 namespace OpenPGP\Tests\Message;
 
+use OpenPGP\Common\Config;
+use OpenPGP\Enum\KeyType;
 use OpenPGP\Key\{PrivateKey, PublicKey};
 use OpenPGP\Message\{CleartextMessage, Signature, SignedMessage};
 use OpenPGP\Packet\LiteralData;
@@ -271,5 +273,46 @@ EOT;
         $verification = $message->verifyDetached([$publicKey], Signature::fromArmored($signatureData))[0];
         $this->assertSame('bdff135160c56a0b', $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
+    }
+
+    public function testSignCleartextMessageWithV5Key()
+    {
+        Config::setUseV5Key(true);
+
+        $name = $this->faker->unique()->name();
+        $email = $this->faker->unique()->safeEmail();
+        $comment = $this->faker->unique()->sentence(1);
+        $passphrase = $this->faker->unique()->password();
+        $userID = implode([$name, "($comment)", "<$email>"]);
+        $privateKey = PrivateKey::generate(
+            [$userID],
+            $passphrase,
+            KeyType::Rsa
+        );
+        $publicKey = $privateKey->toPublic();
+        $message = new CleartextMessage(self::$literalText);
+
+        $signedMessage = $message->sign([$privateKey]);
+        $this->assertSame(
+            5,
+            $signedMessage->getSignature()->getPackets()[0]->getVersion()
+        );
+
+        $verification = $signedMessage->verify([$publicKey])[0];
+        $this->assertTrue($verification->isVerified());
+
+        $signature = $message->signDetached([$privateKey]);
+        $this->assertSame(
+            5,
+            $signature->getPackets()[0]->getVersion()
+        );
+
+        $verification = $message->verifyDetached([$publicKey], $signature)[0];
+        $this->assertTrue($verification->isVerified());
+
+        $verification = $signature->verifyCleartext([$publicKey], $message, true)[0];
+        $this->assertTrue($verification->isVerified());
+
+        Config::setUseV5Key(false);
     }
 }

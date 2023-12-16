@@ -348,6 +348,14 @@ abstract class AbstractKey implements KeyInterface
     /**
      * {@inheritdoc}
      */
+    public function getVersion(): int
+    {
+        return $this->keyPacket->getVersion();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getCreationTime(): DateTimeInterface
     {
         return $this->keyPacket->getCreationTime();

@@ -39,6 +39,13 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
     function toPublic(): KeyInterface;
 
     /**
+     * Return key version
+     *
+     * @return int
+     */
+    function getVersion(): int;
+
+    /**
      * Return the expiration time of the key or null if key does not expire.
      *
      * @return DateTimeInterface
