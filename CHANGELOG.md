@@ -24,3 +24,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.0.3...1.0.4)
 - Refactor checksum computing of session key
 - Refactor string to key
+
+## 1.1.0 - released 2023-12-16
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.0.4...1.1.0)
+- Support AEAD algorithms: EAX, OCB, GCM. 
+- Supporp key and signature version 5.
