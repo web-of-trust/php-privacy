@@ -4,7 +4,7 @@ namespace OpenPGP\Tests\Message;
 
 use phpseclib3\Crypt\Random;
 use OpenPGP\Common\Config;
-use OpenPGP\Enum\{CompressionAlgorithm, LiteralFormat};
+use OpenPGP\Enum\{CompressionAlgorithm, KeyType, LiteralFormat};
 use OpenPGP\Key\{PrivateKey, PublicKey};
 use OpenPGP\Message\{LiteralMessage, Signature};
 use OpenPGP\Packet\{AeadEncryptedData, LiteralData, PacketList};
@@ -590,5 +590,46 @@ EOT;
         $this->assertSame($literalData, $decryptedMessage->getLiteralData()->getData());
 
         Config::setAeadProtect(false);
+    }
+
+    public function testSignMessageWithV5Key()
+    {
+        Config::setUseV5Key(true);
+
+        $name = $this->faker->unique()->name();
+        $email = $this->faker->unique()->safeEmail();
+        $comment = $this->faker->unique()->sentence(1);
+        $passphrase = $this->faker->unique()->password();
+        $userID = implode([$name, "($comment)", "<$email>"]);
+        $literalData = Random::string(1024);
+
+        $privateKey = PrivateKey::generate(
+            [$userID],
+            $passphrase,
+            KeyType::Rsa
+        );
+        $publicKey = $privateKey->toPublic();
+        $message = new LiteralMessage(new PacketList([
+            new LiteralData($literalData, LiteralFormat::Binary)
+        ]));
+
+        $signedMessage = $message->sign([$privateKey]);
+        $this->assertSame(
+            5,
+            $signedMessage->getSignature()->getPackets()[0]->getVersion()
+        );
+
+        $verification = $signedMessage->verify([$publicKey])[0];
+        $this->assertTrue($verification->isVerified());
+
+        $signature = $message->signDetached([$privateKey]);
+        $this->assertSame(
+            5,
+            $signature->getPackets()[0]->getVersion()
+        );
+        $verification = $message->verifyDetached([$publicKey], $signature)[0];
+        $this->assertTrue($verification->isVerified());
+
+        Config::setUseV5Key(false);
     }
 }
