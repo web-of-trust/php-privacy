@@ -261,7 +261,8 @@ class SymEncryptedSessionKey extends AbstractPacket
     {
         if ($this->sessionKey instanceof Key\SessionKey) {
             return $this;
-        } else {
+        }
+        else {
             $this->getLogger()->debug(
                 'Decrypt symmetric key encrypted session key.'
             );
@@ -285,7 +286,8 @@ class SymEncryptedSessionKey extends AbstractPacket
                     $sessionKey = new Key\SessionKey(
                         $decrypted, $this->symmetric
                     );
-                } else {
+                }
+                else {
                     $cipher = $this->symmetric->cipherEngine(self::CIPHER_MODE);
                     $cipher->setKey($key);
                     $cipher->setIV(

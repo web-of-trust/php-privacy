@@ -84,14 +84,16 @@ class SignatureSubpacket implements SubpacketInterface
         else {
             if ($bodyLen < 192) {
                 $header = chr($bodyLen);
-            } else if ($bodyLen <= 8383) {
+            }
+            elseif ($bodyLen <= 8383) {
                 $header = implode([
                     chr(((($bodyLen - 192) >> 8) & 0xff) + 192),
                     chr($bodyLen - 192),
                 ]);
-            } else {
+            }
+            else {
                 $header = "\xff" . pack('N', $bodyLen);
-          }
+            }
         }
         
         return implode([
