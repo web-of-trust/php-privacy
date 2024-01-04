@@ -41,6 +41,7 @@ use OpenPGP\Type\{
 
 /**
  * OpenPGP class
+ * Export high level API for developers.
  *
  * @package OpenPGP
  * @author  Nguyen Van Nguyen - nguyennv1981@gmail.com
