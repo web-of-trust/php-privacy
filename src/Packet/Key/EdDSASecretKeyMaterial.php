@@ -62,8 +62,8 @@ class EdDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMat
         $curve = CurveOid::Ed25519;
         do {
             $privateKey = EC::createKey($curve->name);
-            $key = PKCS8::load($privateKey->toString('PKCS8'));
-            $d = Helper::bin2BigInt($key['secret']);
+            $params = PKCS8::load($privateKey->toString('PKCS8'));
+            $d = Helper::bin2BigInt($params['secret']);
         } while ($d->getLengthInBytes() !== self::ED25519_KEY_LENGTH);
         return new self(
             $d,

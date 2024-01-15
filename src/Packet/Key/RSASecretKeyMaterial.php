@@ -112,17 +112,17 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
     ): self
     {
         $privateKey = RSA::createKey($keySize->value);
-        $key = PKCS8::load($privateKey->toString('PKCS8'));
-        $primeP = $key['primes'][1];
-        $primeQ = $key['primes'][2];
+        $params = PKCS8::load($privateKey->toString('PKCS8'));
+        $primeP = $params['primes'][1];
+        $primeQ = $params['primes'][2];
         return new self(
-            $key['privateExponent'],
+            $params['privateExponent'],
             $primeP,
             $primeQ,
             $primeP->modInverse($primeQ),
             new RSAPublicKeyMaterial(
-                $key['modulus'],
-                $key['publicExponent'],
+                $params['modulus'],
+                $params['publicExponent'],
                 $privateKey->getPublicKey()
             ),
             $privateKey

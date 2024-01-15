@@ -65,9 +65,9 @@ class ECDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMat
                 );
             default:
                 $privateKey = EC::createKey($curveOid->name);
-                $key = PKCS8::load($privateKey->toString('PKCS8'));
+                $params = PKCS8::load($privateKey->toString('PKCS8'));
                 return new self(
-                    $key['dA'],
+                    $params['dA'],
                     new ECDSAPublicKeyMaterial(
                         ASN1::encodeOID($curveOid->value),
                         Helper::bin2BigInt(

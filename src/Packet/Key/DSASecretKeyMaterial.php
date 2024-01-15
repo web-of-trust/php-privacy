@@ -90,14 +90,14 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
         $privateKey = DSA::createKey(
             $keySize->lSize(), $keySize->nSize()
         );
-        $key = PKCS8::load($privateKey->toString('PKCS8'));
+        $params = PKCS8::load($privateKey->toString('PKCS8'));
         return new self(
-            $key['x'],
+            $params['x'],
             new DSAPublicKeyMaterial(
-                $key['p'],
-                $key['q'],
-                $key['g'],
-                $key['g']->powMod($key['x'], $key['p']),
+                $params['p'],
+                $params['q'],
+                $params['g'],
+                $params['g']->powMod($params['x'], $params['p']),
                 $privateKey->getPublicKey(),
             ),
             $privateKey

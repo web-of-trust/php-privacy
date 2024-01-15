@@ -69,8 +69,8 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
             }
             else {
                 $privateKey = EC::createKey($curveOid->name);
-                $key = PKCS8::load($privateKey->toString('PKCS8'));
-                $d = $key['dA'];
+                $params = PKCS8::load($privateKey->toString('PKCS8'));
+                $d = $params['dA'];
                 $q = Helper::bin2BigInt(
                     $privateKey->getEncodedCoordinates()
                 );
