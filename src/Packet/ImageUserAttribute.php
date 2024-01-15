@@ -44,7 +44,7 @@ class ImageUserAttribute extends UserAttributeSubpacket
         return new self(implode([
             "\x10\x00\x01",
             chr(self::JPEG),
-            str_repeat(chr(0), 12),
+            str_repeat("\x00", 12),
             $imageData,
         ]));
     }

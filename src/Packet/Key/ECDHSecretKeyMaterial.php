@@ -55,9 +55,9 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
             if ($curveOid === CurveOid::Curve25519) {
                 $secretKey = Random::string(self::CURVE25519_KEY_LENGTH);
                 // The highest bit must be 0 & the second highest bit must be 1
-                $secretKey[0] = ($secretKey[0] & chr(0x7f)) | chr(0x40);
+                $secretKey[0] = ($secretKey[0] & "\x7f") | "\x40";
                 /// The lowest three bits must be 0
-                $secretKey[31] = $secretKey[31] & chr(0xf8);
+                $secretKey[31] = $secretKey[31] & "\xf8";
                 $d = Helper::bin2BigInt($secretKey);
 
                 $privateKey = EC::loadPrivateKeyFormat(

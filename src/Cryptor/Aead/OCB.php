@@ -159,10 +159,10 @@ final class OCB implements AeadCipher
             $nonce,
         ]);
         // bottom = str2num(Nonce[123..128])
-        $bottom = ord($paddedNonce[self::BLOCK_LENGTH - 1]) & 0b111111;
+        $bottom = ord($paddedNonce[self::BLOCK_LENGTH - 1]) & 0x3f;
         // Ktop = ENCIPHER(K, Nonce[1..122] || zeros(6))
         $paddedNonce[self::BLOCK_LENGTH - 1] = chr(
-            ord($paddedNonce[self::BLOCK_LENGTH - 1]) & 0b11000000
+            ord($paddedNonce[self::BLOCK_LENGTH - 1]) & 0xc0
         );
         $kTop = $this->encipher->encryptBlock($paddedNonce);
         //  Stretch = Ktop || (Ktop[1..64] xor Ktop[9..72])
@@ -232,7 +232,7 @@ final class OCB implements AeadCipher
                 0,
                 strlen($input)
             );
-            $xorInput[$length] = chr(0b10000000);
+            $xorInput[$length] = "\x80";
             $checksum = self::xor($checksum, $xorInput);
             $pos += $length;
         }
@@ -287,7 +287,7 @@ final class OCB implements AeadCipher
             $offset = self::xor($offset, $this->mask[self::MASK_ASTERISK]);
 
             $cipherInput = substr_replace(self::ZERO_BLOCK, $adata, 0, strlen($adata));
-            $cipherInput[$length] = chr(0b10000000);
+            $cipherInput[$length] = "\x80";
             $cipherInput = self::xor($cipherInput, $offset);
 
             $sum = self::xor($sum, $this->encipher->encryptBlock($cipherInput));

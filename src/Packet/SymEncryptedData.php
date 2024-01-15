@@ -42,7 +42,7 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
 {
     use EncryptedDataTrait;
 
-    const ZERO_CHAR   = "\x0";
+    const ZERO_CHAR   = "\x00";
     const CIPHER_MODE = 'cfb';
 
     /**

@@ -65,7 +65,7 @@ abstract class ECPublicKeyMaterial implements KeyMaterialInterface
                     break;
                 default:
                     $point = ($this->curveOid === CurveOid::Ed25519) ?
-                             substr($q->toBytes(), 1) : "\x0" . $q->toBytes();
+                             substr($q->toBytes(), 1) : "\x00" . $q->toBytes();
                     $key = PKCS8::savePublicKey(
                         $curve,
                         PKCS8::extractPoint($point, $curve)

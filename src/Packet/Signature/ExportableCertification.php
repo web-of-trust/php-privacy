@@ -54,7 +54,7 @@ class ExportableCertification extends SignatureSubpacket
     ): self
     {
         return new self(
-            $exportable ? chr(1) : chr(0), $critical
+            $exportable ? "\x01" : "\x00", $critical
         );
     }
 }

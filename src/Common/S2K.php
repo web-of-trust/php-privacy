@@ -162,7 +162,7 @@ class S2K
             S2kType::GNU => implode([
                 chr($this->type->value),
                 'GNU',
-                chr(1),
+                "\x01",
             ]),
         };
     }

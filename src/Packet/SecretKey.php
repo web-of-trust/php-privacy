@@ -47,7 +47,7 @@ use OpenPGP\Type\{
 class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 {
     const HASH_ALGO     = 'sha1';
-    const ZERO_CHAR     = "\x0";
+    const ZERO_CHAR     = "\x00";
     const CIPHER_MODE   = 'cfb';
 
     /**

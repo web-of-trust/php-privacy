@@ -38,7 +38,7 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
 
     const VERSION = 1;
 
-    const ZERO_CHAR = "\x0";
+    const ZERO_CHAR = "\x00";
 
     /**
      * Constructor
@@ -215,7 +215,7 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
     private function getAAData(): string
     {
         return implode([
-            chr(0xC0 | $this->getTag()->value),
+            chr(0xc0 | $this->getTag()->value),
             chr(self::VERSION),
             chr($this->symmetric->value),
             chr($this->aead->value),

@@ -264,7 +264,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         $bytes = $this->toBytes();
         $isV5 = $this->version === self::VERSION_5;
         return implode([
-            $isV5 ? "\x9A" : "\x99",
+            $isV5 ? "\x9a" : "\x99",
             $isV5 ? pack('N', strlen($bytes)) : pack('n', strlen($bytes)),
             $bytes,
         ]);

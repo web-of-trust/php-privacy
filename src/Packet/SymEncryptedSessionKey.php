@@ -45,7 +45,7 @@ class SymEncryptedSessionKey extends AbstractPacket
 {
     const VERSION_4   = 4;
     const VERSION_5   = 5;
-    const ZERO_CHAR   = "\x0";
+    const ZERO_CHAR   = "\x00";
     const CIPHER_MODE = 'cfb';
 
     /**
@@ -148,7 +148,7 @@ class SymEncryptedSessionKey extends AbstractPacket
         if ($sessionKey instanceof Key\SessionKey) {
             if ($version === self::VERSION_5) {
                 $adata = implode([
-                    chr(0xC0 | PacketTag::SymEncryptedSessionKey->value),
+                    chr(0xc0 | PacketTag::SymEncryptedSessionKey->value),
                     chr($version),
                     chr($symmetric->value),
                     chr($aead->value),
@@ -276,7 +276,7 @@ class SymEncryptedSessionKey extends AbstractPacket
             else {
                 if (($this->version === self::VERSION_5)) {
                     $adata = implode([
-                        chr(0xC0 | $this->getTag()->value),
+                        chr(0xc0 | $this->getTag()->value),
                         chr($this->version),
                         chr($this->symmetric->value),
                         chr($this->aead->value),
