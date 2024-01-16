@@ -274,7 +274,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         $keyPackets = [];
         foreach ($subkeys as $subkey) {
             if (empty($keyID) || $keyID === $subkey->getKeyID()) {
-                if (!$subkey->isEncryptionKey()) {
+                if (!$subkey->isEncryptionKey() || !$subkey->verify($time)) {
                     continue;
                 }
                 $keyPackets[] = $subkey->getKeyPacket();

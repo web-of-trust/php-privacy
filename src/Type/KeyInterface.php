@@ -119,7 +119,7 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
      * @param DateTimeInterface $time
      * @return UserInterface
      */
-    function getPrimaryUser(?DateTimeInterface $time = null): UserInterface;
+    function getPrimaryUser(?DateTimeInterface $time = null): ?UserInterface;
 
     /**
      * Return key is private

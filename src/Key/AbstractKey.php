@@ -256,7 +256,7 @@ abstract class AbstractKey implements KeyInterface
         );
         foreach ($subkeys as $subkey) {
             if (empty($keyID) || $keyID === $subkey->getKeyID()) {
-                if (!$subkey->isSigningKey()) {
+                if (!$subkey->isSigningKey() || !$subkey->verify($time)) {
                     continue;
                 }
                 $signature = $subkey->getLatestBindingSignature()?->getEmbeddedSignature();
@@ -307,7 +307,7 @@ abstract class AbstractKey implements KeyInterface
         );
         foreach ($subkeys as $subkey) {
             if (empty($keyID) || $keyID === $subkey->getKeyID()) {
-                if (!$subkey->isEncryptionKey()) {
+                if (!$subkey->isEncryptionKey() || !$subkey->verify($time)) {
                     continue;
                 }
                 return $subkey->getKeyPacket();
@@ -407,7 +407,7 @@ abstract class AbstractKey implements KeyInterface
     public function aeadSupported(): bool
     {
         $primaryUser = $this->getPrimaryUser();
-        $features = $primaryUser->getLatestSelfCertification()?->getFeatures();
+        $features = $primaryUser?->getLatestSelfCertification()?->getFeatures();
         if (($features instanceof Features) && $features->supportAeadEncryptedData()) {
             return true;
         }
@@ -463,9 +463,13 @@ abstract class AbstractKey implements KeyInterface
         ?DateTimeInterface $time = null
     ): bool
     {
-        return $this->getPrimaryUser()->isCertified(
-            $verifyKey, $certificate, $time
-        );
+        $primaryUser = $this->getPrimaryUser();
+        if ($primaryUser instanceof UserInterface) {
+            return $primaryUser->isCertified(
+                $verifyKey, $certificate, $time
+            );
+        }
+        return false;
     }
 
     /**
@@ -508,25 +512,11 @@ abstract class AbstractKey implements KeyInterface
     /**
      * {@inheritdoc}
      */
-    public function getPrimaryUser(?DateTimeInterface $time = null): UserInterface
+    public function getPrimaryUser(?DateTimeInterface $time = null): ?UserInterface
     {
-        $users = $this->users;
-        usort(
-            $users,
-            static function ($a, $b) {
-                $aPrimary = (int) $a->isPrimary();
-                $bPrimary = (int) $b->isPrimary();
-                if ($aPrimary === $bPrimary) {
-                    $aTime = $a->getLatestSelfCertification()?->getSignatureCreationTime()
-                             ?? new \DateTime();
-                    $bTime = $b->getLatestSelfCertification()?->getSignatureCreationTime()
-                             ?? new \DateTime();
-                    return $aTime->getTimestamp() - $bTime->getTimestamp();
-                }
-                else {
-                    return $aPrimary - $bPrimary;
-                }
-            }
+        $users = array_filter(
+            $this->getSortedPrimaryUsers(),
+            static fn ($user) => $user->verify($time)
         );
         return array_pop($users);
     }
@@ -538,13 +528,17 @@ abstract class AbstractKey implements KeyInterface
         PrivateKeyInterface $signKey, ?DateTimeInterface $time = null
     ): self
     {
+        $users = [];
+        $certifedUserID = '';
         $self = $this->clone();
-        $certifedUser = $self->getPrimaryUser()->certifyBy($signKey, $time);
-        $users = [
-            $certifedUser,
-        ];
+        $primaryUser = $self->getPrimaryUser();
+        if ($primaryUser instanceof UserInterface) {
+            $certifedUser = $primaryUser->certifyBy($signKey, $time);
+            $certifedUserID = $certifedUser->getUserID();
+            $users[] = $certifedUser;
+        }
         foreach ($self->getUsers() as $user) {
-            if ($user->getUserID() !== $certifedUser->getUserID()) {
+            if ($user->getUserID() !== $certifedUserID) {
                 $users[] = $user;
             }
         }
@@ -571,44 +565,6 @@ abstract class AbstractKey implements KeyInterface
         );
 
         return $self;
-    }
-
-    /**
-     * Return the key is signing or verification key
-     * 
-     * @return bool
-     */
-    protected function isSigningKey(?DateTimeInterface $time = null): bool
-    {
-        if (!$this->keyPacket->isSigningKey()) {
-            return false;
-        }
-        $primaryUser = $this->getPrimaryUser($time);
-        $keyFlags = $primaryUser->getLatestSelfCertification()?->getKeyFlags();
-        if (($keyFlags instanceof KeyFlags) && !$keyFlags->isSignData()) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Return the key is encryption or decryption key
-     * 
-     * @return bool
-     */
-    protected function isEncryptionKey(?DateTimeInterface $time = null): bool
-    {
-        if (!$this->keyPacket->isEncryptionKey()) {
-            return false;
-        }
-        $primaryUser = $this->getPrimaryUser($time);
-        $keyFlags = $primaryUser->getLatestSelfCertification()?->getKeyFlags();
-        if (($keyFlags instanceof KeyFlags) &&
-           !($keyFlags->isEncryptCommunication() || $keyFlags->isEncryptStorage()))
-        {
-            return false;
-        }
-        return true;
     }
 
     /**
@@ -648,6 +604,74 @@ abstract class AbstractKey implements KeyInterface
             }
         }
         return null;
+    }
+
+    /**
+     * Return the key is signing or verification key
+     * 
+     * @return bool
+     */
+    protected function isSigningKey(): bool
+    {
+        if (!$this->keyPacket->isSigningKey()) {
+            return false;
+        }
+        $users = $this->getSortedPrimaryUsers();
+        $user = array_pop($users);
+        $keyFlags = $user?->getLatestSelfCertification()?->getKeyFlags();
+        if (($keyFlags instanceof KeyFlags) && !$keyFlags->isSignData()) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Return the key is encryption or decryption key
+     * 
+     * @return bool
+     */
+    protected function isEncryptionKey(): bool
+    {
+        if (!$this->keyPacket->isEncryptionKey()) {
+            return false;
+        }
+        $users = $this->getSortedPrimaryUsers();
+        $user = array_pop($users);
+        $keyFlags = $user?->getLatestSelfCertification()?->getKeyFlags();
+        if (($keyFlags instanceof KeyFlags) &&
+           !($keyFlags->isEncryptCommunication() || $keyFlags->isEncryptStorage()))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Get sorted primary users.
+     *
+     * @return array
+     */
+    protected function getSortedPrimaryUsers(): array
+    {
+        $users = $this->users;
+        usort(
+            $users,
+            static function ($a, $b) {
+                $aPrimary = (int) $a->isPrimary();
+                $bPrimary = (int) $b->isPrimary();
+                if ($aPrimary === $bPrimary) {
+                    $aTime = $a->getLatestSelfCertification()?->getSignatureCreationTime()
+                             ?? new \DateTime();
+                    $bTime = $b->getLatestSelfCertification()?->getSignatureCreationTime()
+                             ?? new \DateTime();
+                    return $aTime->getTimestamp() - $bTime->getTimestamp();
+                }
+                else {
+                    return $aPrimary - $bPrimary;
+                }
+            }
+        );
+        return $users;
     }
 
     /**
