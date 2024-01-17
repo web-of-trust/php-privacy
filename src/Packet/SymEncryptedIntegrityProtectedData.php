@@ -40,7 +40,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
 
     const VERSION       = 1;
     const HASH_ALGO     = 'sha1';
-    const ZERO_CHAR     = "\x0";
+    const ZERO_CHAR     = "\x00";
     const CIPHER_MODE   = 'cfb';
     const SUFFIX_OCTETS = "\xd3\x14";
 

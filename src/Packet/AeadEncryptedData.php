@@ -37,7 +37,6 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
     use EncryptedDataTrait;
 
     const VERSION = 1;
-
     const ZERO_CHAR = "\x00";
 
     /**
