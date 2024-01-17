@@ -466,8 +466,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         string $bytes, PublicKey $publicKey
     ): KeyMaterialInterface
     {
-        $keyAlgorithm = $publicKey->getKeyAlgorithm();
-        return match($keyAlgorithm) {
+        $keyMaterial = match($publicKey->getKeyAlgorithm()) {
             KeyAlgorithm::RsaEncryptSign,
             KeyAlgorithm::RsaEncrypt,
             KeyAlgorithm::RsaSign
@@ -493,5 +492,11 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 "Unsupported PGP public key algorithm encountered",
             ),
         };
+        if (!$keyMaterial->isValid()) {
+            throw new \UnexpectedValueException(
+                'The key material is not consistent.'
+            );
+        }
+        return $keyMaterial;
     }
 }

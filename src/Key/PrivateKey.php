@@ -355,11 +355,6 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             );
         }
         $secretKey = $this->secretKeyPacket->decrypt($passphrase);
-        if (!$secretKey->getKeyMaterial()->isValid()) {
-            throw new \UnexpectedValueException(
-                'The key material is not consistent.'
-            );
-        }
         $privateKey = new self(
             $secretKey,
             $this->getRevocationSignatures(),
@@ -382,11 +377,6 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             if ($keyPacket instanceof SecretKeyPacketInterface) {
                 $subkeyPassphrase = $subkeyPassphrases[$key] ?? $passphrase;
                 $keyPacket = $keyPacket->decrypt($subkeyPassphrase);
-                if (!$keyPacket->getKeyMaterial()->isValid()) {
-                    throw new \UnexpectedValueException(
-                        'The subkey material is not consistent.'
-                    );
-                }
             }
             $subkeys[] = new Subkey(
                 $privateKey,
