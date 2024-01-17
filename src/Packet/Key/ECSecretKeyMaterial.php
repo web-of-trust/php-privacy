@@ -173,8 +173,7 @@ abstract class ECSecretKeyMaterial implements KeyMaterialInterface
                     list($x, $y) = $curve->multiplyPoint(
                         $curve->getBasePoint(), $this->d
                     );
-                    return $x->toBigInteger()->equals($QA[0]->toBigInteger()) &&
-                           $y->toBigInteger()->equals($QA[1]->toBigInteger());
+                    return $x->equals($QA[0]) && $y->equals($QA[1]);
             }
         }
         return false;

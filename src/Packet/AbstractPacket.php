@@ -60,7 +60,7 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, 
         if ($bodyLen < 192) {
             $data = [chr($hdr), chr($bodyLen)];
         }
-        else if ($bodyLen <= 8383) {
+        elseif ($bodyLen <= 8383) {
             $data = [
               chr($hdr),
               chr(((($bodyLen - 192) >> 8) & 0xff) + 192),
