@@ -29,16 +29,16 @@ class PublicKey extends ElGamal
      */
     public function encrypt(string $plainText): string
     {
-        $one = new BigInteger(1);
         $prime = $this->getPrime();
         $input = Helper::bin2BigInt($plainText);
         if ($input->compare($prime) > 0) {
             throw new \InvalidArgumentException(
-                'input too large for ' . self::ALGORITHM . ' cipher.'
+                'plain text too large for ' . self::ALGORITHM . ' cipher.'
             );
         }
 
         $byteLength = ($this->getBitSize() + 7) >> 3;
+        $one = new BigInteger(1);
         do {
             $k = BigInteger::randomRange($one, $prime->subtract($one));
             $gamma = $this->getGenerator()->modPow($k, $prime);

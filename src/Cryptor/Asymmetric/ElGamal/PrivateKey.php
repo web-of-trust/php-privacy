@@ -68,10 +68,15 @@ class PrivateKey extends ElGamal
      */
     public function decrypt(string $cipherText): string
     {
-        $one = new BigInteger(1);
-        $outputSize = (int) (($this->getBitSize() - 1) / 8);
+        $inputSize = (($this->getBitSize() + 7) >> 3) * 2;
         $length = strlen($cipherText);
+        if ($length > $inputSize) {
+            throw new \InvalidArgumentException(
+                'cipher text too large for ' . self::ALGORITHM . ' cipher.'
+            );
+        }
 
+        $one = new BigInteger(1);
         $prime = $this->getPrime();
         $gamma = Helper::bin2BigInt(
             substr($cipherText, 0, (int) ($length / 2))
@@ -82,7 +87,9 @@ class PrivateKey extends ElGamal
         list(, $m) = $gamma->modPow(
             $prime->subtract($one->add($this->getX())), $prime
         )->multiply($phi)->divide($prime);
-        return $m->toBytes();
+
+        $outputSize = ($this->getBitSize() - 1) >> 3;
+        return substr($m->toBytes(), 0, $outputSize);
     }
 
     /**

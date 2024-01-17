@@ -54,7 +54,7 @@ class ElGamalTest extends OpenPGPTestCase
             $publicExponent->equals($generator->modPow($rqx, $prime))
         );
 
-        $plainText = Random::string($prime->getLengthInBytes() - 1);
+        $plainText = Random::string(($privateKey->getBitSize() - 1) >> 8);
         $publicKey = $privateKey->getPublicKey();
         $encrypted = $publicKey->encrypt($plainText);
         $this->assertSame($plainText, $privateKey->decrypt($encrypted));
