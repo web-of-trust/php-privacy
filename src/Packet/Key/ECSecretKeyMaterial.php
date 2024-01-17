@@ -168,7 +168,6 @@ abstract class ECSecretKeyMaterial implements KeyMaterialInterface
                 default:
                     $params = $this->publicMaterial->getParameters();
                     $QA = $params['QA'];
-
                     $curve = $params['curve'];
                     list($x, $y) = $curve->multiplyPoint(
                         $curve->getBasePoint(), $this->d
