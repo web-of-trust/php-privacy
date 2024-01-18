@@ -25,7 +25,7 @@ abstract class ElGamal extends AsymmetricKey
      */
     const ALGORITHM = 'ElGamal';
 
-    private int $bitSize;
+    private readonly int $bitSize;
 
     /**
      * Constructor
@@ -36,9 +36,9 @@ abstract class ElGamal extends AsymmetricKey
      * @return self
      */
     public function __construct(
-        private BigInteger $y,
-        private BigInteger $prime,
-        private BigInteger $generator
+        private readonly BigInteger $y,
+        private readonly BigInteger $prime,
+        private readonly BigInteger $generator
     )
     {
         $this->bitSize = $prime->getLength();

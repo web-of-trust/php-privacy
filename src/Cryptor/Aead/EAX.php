@@ -30,9 +30,9 @@ use phpseclib3\Crypt\Common\BlockCipher;
  */
 final class EAX implements AeadCipher
 {
-    const N_TAG = "\x0";
-    const H_TAG = "\x1";
-    const C_TAG = "\x2";
+    const N_TAG = "\x00";
+    const H_TAG = "\x01";
+    const C_TAG = "\x02";
 
     const CIPHER_MODE = 'ctr';
 

@@ -31,7 +31,7 @@ class PrivateKey extends ElGamal
      * @return self
      */
     public function __construct(
-        private BigInteger $x,
+        private readonly BigInteger $x,
         BigInteger $y,
         BigInteger $prime,
         BigInteger $generator,

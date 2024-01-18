@@ -26,8 +26,8 @@ use phpseclib3\Crypt\Common\BlockCipher;
  */
 final class OCB implements AeadCipher
 {
-    const ZERO_CHAR     = "\x0";
-    const ONE_CHAR      = "\x1";
+    const ZERO_CHAR     = "\x00";
+    const ONE_CHAR      = "\x01";
     const ZERO_BLOCK    = "\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0";
 
     const BLOCK_LENGTH  = 16;

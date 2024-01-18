@@ -34,3 +34,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.1.0...1.1.1)
 - Refactor user and subkey validate. 
 - Refactor key material validate.
+
+## 1.1.2 - released 2024-01-18
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.1.1...1.1.2)
+- Fix ElGamal input validation. 
