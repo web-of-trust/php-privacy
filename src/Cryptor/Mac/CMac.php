@@ -23,7 +23,7 @@ use phpseclib3\Crypt\Common\BlockCipher;
  */
 final class CMac
 {
-    const ZERO_CHAR = "\x0";
+    const ZERO_CHAR = "\x00";
 
     private readonly BlockCipher $cipher;
 
