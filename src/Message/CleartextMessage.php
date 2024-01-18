@@ -57,7 +57,7 @@ class CleartextMessage implements CleartextMessageInterface
      */
     public function getNormalizeText(): string
     {
-        return preg_replace('/\r\n/m', "\n", rtrim($this->text));
+        return preg_replace('/\r\n/m', "\n", $this->getText());
     }
 
     /**
@@ -72,8 +72,8 @@ class CleartextMessage implements CleartextMessageInterface
         return new SignedMessage(
             $this->getText(), $this->createSignature(
                 $signingKeys,
-                $notationData,
                 false,
+                $notationData,
                 $time
             )
         );
@@ -90,8 +90,8 @@ class CleartextMessage implements CleartextMessageInterface
     {
         return $this->createSignature(
             $signingKeys,
-            $notationData,
             true,
+            $notationData,
             $time
         );
     }
@@ -114,15 +114,15 @@ class CleartextMessage implements CleartextMessageInterface
      * Create literal signature.
      *
      * @param array $signingKeys
+     * @param bool $detached
      * @param NotationDataInterface $notationData
      * @param DateTimeInterface $time
-     * @param bool $detached
      * @return SignatureInterface
      */
     private function createSignature(
         array $signingKeys,
-        ?NotationDataInterface $notationData = null,
         bool $detached = false,
+        ?NotationDataInterface $notationData = null,
         ?DateTimeInterface $time = null,
     ): SignatureInterface
     {
