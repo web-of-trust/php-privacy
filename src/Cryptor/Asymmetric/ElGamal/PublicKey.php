@@ -37,7 +37,7 @@ class PublicKey extends ElGamal
             );
         }
 
-        $byteLength = ($this->getBitSize() + 7) >> 3;
+        $byteLength = Helper::bit2ByteLength($this->getBitSize());
         $one = new BigInteger(1);
         do {
             $k = BigInteger::randomRange($one, $prime->subtract($one));
