@@ -68,7 +68,7 @@ class PrivateKey extends ElGamal
      */
     public function decrypt(string $cipherText): string
     {
-        $byteLength = Helper::bit2ByteLength($this->getBitSize()) * 2;
+        $inputSize = Helper::bit2ByteLength($this->getBitSize()) * 2;
         $length = strlen($cipherText);
         if ($length > $inputSize) {
             throw new \InvalidArgumentException(
