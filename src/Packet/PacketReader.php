@@ -78,9 +78,9 @@ class PacketReader
         if (strlen($bytes) <= $offset
             || strlen(substr($bytes, $offset)) < 2
             || (ord($bytes[$offset]) & 0x80) == 0) {
-          throw new \UnexpectedValueException(
-            'Error during parsing. This data probably does not conform to a valid OpenPGP format.',
-          );
+            throw new \UnexpectedValueException(
+                'Error during parsing. This data probably does not conform to a valid OpenPGP format.',
+            );
         }
 
         $headerByte = ord($bytes[$offset++]);

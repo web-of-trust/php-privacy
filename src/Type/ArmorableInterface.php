@@ -22,5 +22,5 @@ interface ArmorableInterface extends \Stringable
      *
      * @return string
      */
-	function armor(): string;
+    function armor(): string;
 }

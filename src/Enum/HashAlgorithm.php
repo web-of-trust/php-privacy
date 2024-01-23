@@ -19,19 +19,19 @@ enum HashAlgorithm: int
 {
     case Unknown = 0;
 
-	case Md5 = 1;
+    case Md5 = 1;
 
-	case Sha1 = 2;
+    case Sha1 = 2;
 
-	case Ripemd160 = 3;
+    case Ripemd160 = 3;
 
-	case Sha256 = 8;
+    case Sha256 = 8;
 
-	case Sha384 = 9;
+    case Sha384 = 9;
 
-	case Sha512 = 10;
+    case Sha512 = 10;
 
-	case Sha224 = 11;
+    case Sha224 = 11;
 
     public function digestSize(): int
     {

@@ -23,19 +23,19 @@ interface VerificationInterface
      * @param bool $toHex
      * @return string
      */
-	function getKeyID(bool $toHex = false): string;
+    function getKeyID(bool $toHex = false): string;
 
     /**
      * Get signature packet
      *
      * @return SignaturePacketInterface
      */
-	function getSignaturePacket(): SignaturePacketInterface;
+    function getSignaturePacket(): SignaturePacketInterface;
 
     /**
      * Is verified
      *
      * @return bool
      */
-	function isVerified(): bool;
+    function isVerified(): bool;
 }

@@ -58,7 +58,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
     )
     {
         parent::__construct(
-        	$publicKey,
+            $publicKey,
             $keyData,
             $keyMaterial,
             $s2kUsage,

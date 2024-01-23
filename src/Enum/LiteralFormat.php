@@ -20,20 +20,20 @@ enum LiteralFormat: int
     /**
      * Binary data 'b'
      */
-	case Binary = 98;
+    case Binary = 98;
 
     /**
      * Text data 't'
      */
-	case Text = 116;
+    case Text = 116;
 
     /**
      * Utf8 data 'u'
      */
-	case Utf8 = 117;
+    case Utf8 = 117;
 
     /**
      * MIME message body part 'm'
      */
-	case Mime = 109;
+    case Mime = 109;
 }
