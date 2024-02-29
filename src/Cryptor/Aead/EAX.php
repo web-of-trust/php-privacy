@@ -122,7 +122,7 @@ final class EAX implements AeadCipher
     public function getNonce(string $iv, string $chunkIndex): string
     {
         $nonce = $iv;
-        for ($i = 0; $i < strlen($chunkIndex); $i++) {
+        for ($i = 0, $len = strlen($chunkIndex); $i < $len; $i++) {
             $nonce[8 + $i] = $nonce[8 + $i] ^ $chunkIndex[$i];
         }
         return $nonce;

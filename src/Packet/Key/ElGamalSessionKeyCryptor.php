@@ -175,8 +175,8 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
     {
         $offset = 2;
         $separatorNotFound = 1;
-        for ($j = $offset; $j < strlen($message); $j++) {
-            $separatorNotFound &= (ord($message[$j]) != 0) ? 1 : 0;
+        for ($i = $offset, $len = strlen($message); $i < $len; $i++) {
+            $separatorNotFound &= (ord($message[$i]) != 0) ? 1 : 0;
             $offset += $separatorNotFound;
         }
         return substr($message, $offset + 1);
@@ -188,8 +188,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
         $count = 0;
         while ($count < $length) {
             $bytes = Random::string($length - $count);
-            $strlen = strlen($bytes);
-            for ($i = 0; $i < $strlen; $i++) {
+            for ($i = 0, $len = strlen($bytes); $i < $len; $i++) {
                 if (ord($bytes[$i]) != 0) {
                     $result[$count++] = $bytes[$i];
                 }

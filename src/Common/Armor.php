@@ -307,7 +307,7 @@ final class Armor
     private static function crc24Checksum(string $data): string
     {
         $crc = 0xb704ce;
-        for ($i = 0; $i < strlen($data); $i++) {
+        for ($i = 0, $len = strlen($data); $i < $len; $i++) {
             $crc ^= (ord($data[$i]) & 255) << 16;
             for ($j = 0; $j < 8; $j++) {
                 $crc <<= 1;

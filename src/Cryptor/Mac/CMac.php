@@ -137,8 +137,7 @@ final class CMac
         $mask   = (Bitwise::MASK_8BITS << (8 - $bits)) & Bitwise::MASK_8BITS;
         $state  = 0;
         $result = '';
-        $length = strlen($data);
-        for ($i = $length - 1; $i >= 0; $i--) {
+        for ($i = strlen($data) - 1; $i >= 0; $i--) {
             $tmp     = ord($data[$i]);
             $result .= chr(($tmp << $bits) | $state);
             $state   = ($tmp & $mask) >> (8 - $bits);
