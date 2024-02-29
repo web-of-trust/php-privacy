@@ -137,7 +137,7 @@ final class Armor
                     if (preg_match(self::HEADER_PATTERN, $line)) {
                         $headers[] = $line;
                     }
-                    elseif (!$textDone && $type == ArmorType::SignedMessage) {
+                    elseif (!$textDone && $type === ArmorType::SignedMessage) {
                         if (!preg_match(self::SPLIT_PATTERN, $line)) {
                             $textLines[] = preg_replace('/^- /', '', $line);
                         }

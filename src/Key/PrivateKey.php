@@ -151,12 +151,12 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         $keyAlgorithm = KeyAlgorithm::RsaEncryptSign;
         $subkeyAlgorithm = KeyAlgorithm::RsaEncryptSign;
         $subkeyCurve = $curve;
-        if ($type == KeyType::Dsa) {
+        if ($type === KeyType::Dsa) {
             $keyAlgorithm = KeyAlgorithm::Dsa;
             $subkeyAlgorithm = KeyAlgorithm::ElGamal;
         }
-        elseif ($type == KeyType::Ecc) {
-            if ($curve == CurveOid::Ed25519 || $curve == CurveOid::Curve25519) {
+        elseif ($type === KeyType::Ecc) {
+            if ($curve === CurveOid::Ed25519 || $curve === CurveOid::Curve25519) {
                 $keyAlgorithm = KeyAlgorithm::EdDsa;
                 $curve = CurveOid::Ed25519;
                 $subkeyCurve = CurveOid::Curve25519;

@@ -47,7 +47,7 @@ final class CMac
         $this->blockSize = $symmetric->blockSize();
         $this->zeroBlock = str_repeat(self::ZERO_CHAR, $this->blockSize);
 
-        if ($this->macSize == 0) {
+        if ($this->macSize === 0) {
             $this->macSize = $this->blockSize;
         }
 

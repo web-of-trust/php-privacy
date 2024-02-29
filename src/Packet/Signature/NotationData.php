@@ -77,7 +77,7 @@ class NotationData extends SignatureSubpacket implements NotationDataInterface
      */
     public function isHumanReadable(): bool
     {
-        return ord($this->getData()[0]) == 0x80;
+        return ord($this->getData()[0]) === 0x80;
     }
 
     /**

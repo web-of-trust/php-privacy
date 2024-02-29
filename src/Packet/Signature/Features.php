@@ -67,7 +67,7 @@ class Features extends SignatureSubpacket
     public function supportModificationDetection(): bool
     {
         return (ord($this->getData()[0]) & SupportFeature::ModificationDetection->value)
-            == SupportFeature::ModificationDetection->value;
+            === SupportFeature::ModificationDetection->value;
     }
 
     /**
@@ -78,7 +78,7 @@ class Features extends SignatureSubpacket
     public function supportAeadEncryptedData(): bool
     {
         return (ord($this->getData()[0]) & SupportFeature::AeadEncryptedData->value)
-            == SupportFeature::AeadEncryptedData->value;
+            === SupportFeature::AeadEncryptedData->value;
     }
 
     /**
@@ -89,6 +89,6 @@ class Features extends SignatureSubpacket
     public function supportVersion5PublicKey(): bool
     {
         return (ord($this->getData()[0]) & SupportFeature::Version5PublicKey->value)
-            == SupportFeature::Version5PublicKey->value;
+            === SupportFeature::Version5PublicKey->value;
     }
 }

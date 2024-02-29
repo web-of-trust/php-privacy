@@ -83,7 +83,7 @@ class KeyFlags extends SignatureSubpacket
     public function isCertifyKeys(): bool
     {
         return ($this->getFlags() & KeyFlag::CertifyKeys->value)
-            == KeyFlag::CertifyKeys->value;
+            === KeyFlag::CertifyKeys->value;
     }
 
     /**
@@ -94,7 +94,7 @@ class KeyFlags extends SignatureSubpacket
     public function isSignData(): bool
     {
         return ($this->getFlags() & KeyFlag::SignData->value)
-            == KeyFlag::SignData->value;
+            === KeyFlag::SignData->value;
     }
 
     /**
@@ -105,7 +105,7 @@ class KeyFlags extends SignatureSubpacket
     public function isEncryptCommunication(): bool
     {
         return ($this->getFlags() & KeyFlag::EncryptCommunication->value)
-            == KeyFlag::EncryptCommunication->value;
+            === KeyFlag::EncryptCommunication->value;
     }
 
     /**
@@ -116,7 +116,7 @@ class KeyFlags extends SignatureSubpacket
     public function isEncryptStorage(): bool
     {
         return ($this->getFlags() & KeyFlag::EncryptStorage->value)
-            == KeyFlag::EncryptStorage->value;
+            === KeyFlag::EncryptStorage->value;
     }
 
     private static function flagsToBytes(int $flags): string

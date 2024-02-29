@@ -288,7 +288,7 @@ class SubpacketReader
         elseif ($header < 255) {
             $length = (($header - 192) << 8) + (ord($bytes[$offset++])) + 192;
         }
-        elseif ($header == 255) {
+        elseif ($header === 255) {
             $isLong = true;
             $length = Helper::bytesToLong($bytes, $offset);
             $offset += 4;
