@@ -37,4 +37,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## 1.1.2 - released 2024-01-18
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.1.1...1.1.2)
-- Fix ElGamal input validation. 
+- Fix ElGamal input validation.
+
+## 1.1.3 - released 2024-03-05
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.1.2...1.1.3)
+- Refactor comparisons & for loops.
+- Remove EOL after chunk split base64 string.
