@@ -48,3 +48,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.1.3...1.1.4)
 - Add OpenPGP readPublicKeys method.
 - Add RevocationReasonTag parameter to revoke methods.
+
+## 1.1.5 - released 2024-03-18
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.1.4...1.1.5)
+- Refactor isRevoked methods.
