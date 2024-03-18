@@ -217,6 +217,28 @@ class PacketList implements PacketListInterface
     /**
      * {@inheritdoc}
      */
+    public function slice(int $offset, ?int $length = null): self
+    {
+        return new self(array_slice($this->packets, $offset, $length));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function indexOfTags(...$tags): array
+    {
+        $indexes = [];
+        foreach ($this->packets as $index => $packet) {
+            if (in_array($packet->getTag(), $tags, true)) {
+                $indexes[] = $index;
+            }
+        }
+        return $indexes;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function offsetExists(mixed $offset): bool
     {
         return isset($this->packets[(int) $offset]);

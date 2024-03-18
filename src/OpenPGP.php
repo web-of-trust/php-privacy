@@ -115,6 +115,20 @@ final class OpenPGP
     }
 
     /**
+     * Read an armored OpenPGP public key list.
+     * Return array of public key objects.
+     *
+     * @param string $armoredPublicKeys
+     * @return array
+     */
+    public static function readPublicKeys(
+        string $armoredPublicKeys
+    ): array
+    {
+        return PublicKey::readPublicKeys($armoredPublicKeys);
+    }
+
+    /**
      * Lock a private key with the given passphrase.
      * The private key must be decrypted.
      *

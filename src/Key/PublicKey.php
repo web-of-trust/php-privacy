@@ -9,7 +9,10 @@
 namespace OpenPGP\Key;
 
 use OpenPGP\Common\Armor;
-use OpenPGP\Enum\ArmorType;
+use OpenPGP\Enum\{
+    ArmorType,
+    PacketTag,
+};
 use OpenPGP\Packet\PacketList;
 use OpenPGP\Type\{
     KeyInterface,
@@ -51,6 +54,36 @@ class PublicKey extends AbstractKey
             $users,
             $subkeys
         );
+    }
+
+    /**
+     * Read public keys from armored string
+     * Return one or multiple key objects.
+     *
+     * @param string $armored
+     * @return self
+     */
+    public static function readPublicKeys(string $armored): array
+    {
+        $armor = Armor::decode($armored);
+        if ($armor->getType() !== ArmorType::PublicKey) {
+            throw new \UnexpectedValueException(
+                'Armored text not of public key type.'
+            );
+        }
+
+        $publicKeys = [];
+        $packetList = PacketList::decode($armor->getData());
+        $indexes = $packetList->indexOfTags(PacketTag::PublicKey);
+        for ($i = 0, $count = count($indexes); $i < $count; $i++) {
+            if (!empty($indexes[$i + 1])) {
+                $length = $indexes[$i + 1] - $indexes[$i];
+                $publicKeys[] = self::fromPacketList(
+                    $packetList->slice($indexes[$i], $length)
+                );
+            }
+        }
+        return $publicKeys;
     }
 
     /**

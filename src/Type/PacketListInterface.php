@@ -48,4 +48,21 @@ interface PacketListInterface extends \ArrayAccess, \IteratorAggregate, \Countab
      * @return self
      */
     function whereType(string $type): self;
+
+    /**
+     * Extract a slice of the packets
+     * 
+     * @param int $offset
+     * @param int $length
+     * @return self
+     */
+    function slice(int $offset, ?int $length = null): self;
+
+    /**
+     * Returns array of found indices by tags
+     * 
+     * @param $tags
+     * @return array
+     */
+    function indexOfTags(...$tags): array;
 }
