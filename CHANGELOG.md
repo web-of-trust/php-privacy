@@ -43,3 +43,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.1.2...1.1.3)
 - Refactor comparisons & for loops.
 - Remove EOL after chunk split base64 string.
+
+## 1.1.4 - released 2024-03-18
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.1.3...1.1.4)
+- Add OpenPGP readPublicKeys method.
+- Add RevocationReasonTag parameter to revoke methods.
