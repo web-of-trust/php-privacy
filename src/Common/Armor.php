@@ -41,7 +41,7 @@ final class Armor
 
     const SPLIT_PATTERN      = '/^-----[^-]+-----$/';
     const EMPTY_LINE_PATTERN = '/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/';
-    const LIME_SPLIT_PATTERN = '/\r\n|\n|\r/';
+    const LINE_SPLIT_PATTERN = '/\r\n|\n|\r/';
     const HEADER_PATTERN     = '/^([^\s:]|[^\s:][^:]*[^\s:]): .+$/';
     const BEGIN_PATTERN      = '/^-----BEGIN PGP (MESSAGE, PART \d+\/\d+|MESSAGE, PART \d+|SIGNED MESSAGE|MESSAGE|PUBLIC KEY BLOCK|PRIVATE KEY BLOCK|SIGNATURE)-----$/';
 
@@ -127,7 +127,7 @@ final class Armor
         $textLines = [];
         $dataLines = [];
 
-        $lines = preg_split(self::LIME_SPLIT_PATTERN, $armoredText);
+        $lines = preg_split(self::LINE_SPLIT_PATTERN, $armoredText);
         if (!empty($lines)) {
             foreach ($lines as $line) {
                 if ($type === null && preg_match(self::SPLIT_PATTERN, $line)) {
