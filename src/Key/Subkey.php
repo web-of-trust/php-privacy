@@ -222,36 +222,41 @@ class Subkey implements SubkeyInterface
         ?DateTimeInterface $time = null
     ): bool
     {
-        $keyID = $certificate?->getIssuerKeyID();
-        $keyPacket = $verifyKey?->toPublic()->getSigningKeyPacket() ??
-                     $this->mainKey->toPublic()->getSigningKeyPacket();
-        foreach ($this->revocationSignatures as $signature) {
-            if (empty($keyID) || $keyID === $signature->getIssuerKeyID()) {
-                if ($signature->verify(
-                    $keyPacket,
-                    implode([
-                        $this->mainKey->getKeyPacket()->getSignBytes(),
-                        $this->keyPacket->getSignBytes(),
-                    ]),
-                    $time
-                )) {
-                    $reason = $signature->getRevocationReason();
-                    if ($reason instanceof RevocationReason) {
-                        $this->mainKey->getLogger()->warning(
-                            'Subkey is revoked. Reason: {reason}',
-                            [
-                                'reason' => $reason->getDescription(),
-                            ]
-                        );
+        if (!empty($this->revocationSignatures)) {
+            $revocationKeyIDs = [];
+            $keyID = $certificate?->getIssuerKeyID();
+            $keyPacket = $verifyKey?->toPublic()->getSigningKeyPacket() ??
+                         $this->mainKey->toPublic()->getSigningKeyPacket();
+            foreach ($this->revocationSignatures as $signature) {
+                if (empty($keyID) || $keyID === $signature->getIssuerKeyID()) {
+                    if ($signature->verify(
+                        $keyPacket,
+                        implode([
+                            $this->mainKey->getKeyPacket()->getSignBytes(),
+                            $this->keyPacket->getSignBytes(),
+                        ]),
+                        $time
+                    )) {
+                        $reason = $signature->getRevocationReason();
+                        if ($reason instanceof RevocationReason) {
+                            $this->mainKey->getLogger()->warning(
+                                'Subkey is revoked. Reason: {reason}',
+                                [
+                                    'reason' => $reason->getDescription(),
+                                ]
+                            );
+                        }
+                        else {
+                            $this->mainKey->getLogger()->warning(
+                                'Subkey is revoked.'
+                            );
+                        }
+                        return true;
                     }
-                    else {
-                        $this->mainKey->getLogger()->warning(
-                            'Subkey is revoked.'
-                        );
-                    }
-                    return true;
                 }
+                $revocationKeyIDs[] = $signature->getIssuerKeyID();
             }
+            return count($revocationKeyIDs) > 0;
         }
         return false;
     }

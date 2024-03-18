@@ -144,7 +144,7 @@ final class OCB implements AeadCipher
     {
         $length = strlen($text);
         // Consider P as a sequence of 128-bit blocks
-        $m = $length / self::BLOCK_LENGTH | 0;
+        $m = floor($length / self::BLOCK_LENGTH) | 0;
 
         // Key-dependent variables
         $this->extendKeyVariables($text, $adata);
@@ -254,7 +254,9 @@ final class OCB implements AeadCipher
 
     private function extendKeyVariables(string $text, string $adata): void
     {
-        $newMaxNtz = self::nbits(max(strlen($text), strlen($adata)) / self::BLOCK_LENGTH | 0) - 1;
+        $newMaxNtz = self::nbits(
+            floor(max(strlen($text), strlen($adata)) / self::BLOCK_LENGTH) | 0
+        ) - 1;
         for ($i = $this->maxNtz + 1; $i <= $newMaxNtz; $i++) {
           $this->mask[$i] = self::double($this->mask[$i - 1]);
         }
@@ -270,7 +272,7 @@ final class OCB implements AeadCipher
         }
 
         // Consider A as a sequence of 128-bit blocks
-        $m = $length / self::BLOCK_LENGTH | 0;
+        $m = floor($length / self::BLOCK_LENGTH) | 0;
         $offset = $sum = self::ZERO_BLOCK;
         for ($i = 0; $i < $m; $i++) {
             $offset = self::xor($offset, $this->mask[self::ntz($i + 1)]);

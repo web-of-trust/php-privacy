@@ -424,33 +424,38 @@ abstract class AbstractKey implements KeyInterface
         ?DateTimeInterface $time = null
     ): bool
     {
-        $keyID = $certificate?->getIssuerKeyID();
-        $keyPacket = $verifyKey?->toPublic()->getSigningKeyPacket() ??
-                     $this->toPublic()->getSigningKeyPacket();
-        foreach ($this->revocationSignatures as $signature) {
-            if (empty($keyID) || $keyID === $signature->getIssuerKeyID()) {
-                if ($signature->verify(
-                    $keyPacket,
-                    $this->keyPacket->getSignBytes(),
-                    $time
-                )) {
-                    $reason = $signature->getRevocationReason();
-                    if ($reason instanceof RevocationReason) {
-                        $this->getLogger()->warning(
-                            'Primary key is revoked. Reason: {reason}',
-                            [
-                                'reason' => $reason->getDescription(),
-                            ]
-                        );
+        if (!empty($this->revocationSignatures)) {
+            $revocationKeyIDs = [];
+            $keyID = $certificate?->getIssuerKeyID();
+            $keyPacket = $verifyKey?->toPublic()->getSigningKeyPacket() ??
+                         $this->toPublic()->getSigningKeyPacket();
+            foreach ($this->revocationSignatures as $signature) {
+                if (empty($keyID) || $keyID === $signature->getIssuerKeyID()) {
+                    if ($signature->verify(
+                        $keyPacket,
+                        $this->keyPacket->getSignBytes(),
+                        $time
+                    )) {
+                        $reason = $signature->getRevocationReason();
+                        if ($reason instanceof RevocationReason) {
+                            $this->getLogger()->warning(
+                                'Primary key is revoked. Reason: {reason}',
+                                [
+                                    'reason' => $reason->getDescription(),
+                                ]
+                            );
+                        }
+                        else {
+                            $this->getLogger()->warning(
+                                'Primary key is revoked.'
+                            );
+                        }
+                        return true;
                     }
-                    else {
-                        $this->getLogger()->warning(
-                            'Primary key is revoked.'
-                        );
-                    }
-                    return true;
                 }
+                $revocationKeyIDs[] = $signature->getIssuerKeyID();
             }
+            return count($revocationKeyIDs) > 0;
         }
         return false;
     }
