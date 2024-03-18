@@ -17,6 +17,7 @@ use OpenPGP\Enum\{
     KeyAlgorithm,
     KeyType,
     PacketTag,
+    RevocationReasonTag,
     RSAKeySize,
 };
 use OpenPGP\Packet\{
@@ -482,10 +483,13 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     public function revokeKey(
         KeyInterface $key,
         string $revocationReason = '',
+        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
         ?DateTimeInterface $time = null
     ): KeyInterface
     {
-        return $key->revokeBy($this, $revocationReason, $time);
+        return $key->revokeBy(
+            $this, $revocationReason, $reasonTag, $time
+        );
     }
 
     /**
@@ -494,6 +498,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     public function revokeUser(
         string $userID,
         string $revocationReason = '',
+        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
         ?DateTimeInterface $time = null
     ): self
     {
@@ -503,7 +508,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         foreach ($users as $key => $user) {
             if ($user->getUserID() === $userID) {
                 $users[$key] = $user->revokeBy(
-                    $self, $revocationReason, $time
+                    $self, $revocationReason, $reasonTag, $time
                 );
             }
         }
@@ -518,6 +523,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     public function revokeSubkey(
         string $keyID,
         string $revocationReason = '',
+        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
         ?DateTimeInterface $time = null
     ): self
     {
@@ -526,7 +532,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         foreach ($subkeys as $key => $subkey) {
             if ($subkey->getKeyID() === $keyID) {
                 $subkeys[$key] = $subkey->revokeBy(
-                    $self, $revocationReason, $time
+                    $self, $revocationReason, $reasonTag, $time
                 );
             }
         }

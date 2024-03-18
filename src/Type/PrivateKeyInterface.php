@@ -13,6 +13,7 @@ use OpenPGP\Enum\{
     CurveOid,
     DHKeySize,
     KeyAlgorithm,
+    RevocationReasonTag,
     RSAKeySize,
 };
 
@@ -129,11 +130,13 @@ interface PrivateKeyInterface extends KeyInterface
      * @param KeyInterface $key
      * @param string $revocationReason
      * @param DateTimeInterface $time
+     * @param RevocationReasonTag $reasonTag
      * @return KeyInterface
      */
     function revokeKey(
         KeyInterface $key,
         string $revocationReason = '',
+        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
         ?DateTimeInterface $time = null
     ): KeyInterface;
 
@@ -143,12 +146,14 @@ interface PrivateKeyInterface extends KeyInterface
      * 
      * @param string $userID
      * @param string $revocationReason
+     * @param RevocationReasonTag $reasonTag
      * @param DateTimeInterface $time
      * @return self
      */
     function revokeUser(
         string $userID,
         string $revocationReason = '',
+        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
         ?DateTimeInterface $time = null
     ): self;
 
@@ -157,12 +162,14 @@ interface PrivateKeyInterface extends KeyInterface
      * 
      * @param string $keyID
      * @param string $revocationReason
+     * @param RevocationReasonTag $reasonTag
      * @param DateTimeInterface $time
      * @return self
      */
     function revokeSubkey(
         string $keyID,
         string $revocationReason = '',
+        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
         ?DateTimeInterface $time = null
     ): self;
 }

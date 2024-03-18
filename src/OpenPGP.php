@@ -14,6 +14,7 @@ use OpenPGP\Enum\{
     CurveOid,
     DHKeySize,
     KeyType,
+    RevocationReasonTag,
     RSAKeySize,
     SymmetricAlgorithm,
 };
@@ -192,6 +193,7 @@ final class OpenPGP
      * @param PrivateKeyInterface $privateKey
      * @param KeyInterface $key
      * @param string $revocationReason
+     * @param RevocationReasonTag $reasonTag
      * @param DateTimeInterface $time
      * @return KeyInterface
      */
@@ -199,6 +201,7 @@ final class OpenPGP
         PrivateKeyInterface $privateKey,
         KeyInterface $key,
         string $revocationReason = '',
+        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
         ?DateTimeInterface $time = null
     ): KeyInterface
     {

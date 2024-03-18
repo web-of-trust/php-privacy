@@ -9,7 +9,10 @@
 namespace OpenPGP\Type;
 
 use DateTimeInterface;
-use OpenPGP\Enum\KeyAlgorithm;
+use OpenPGP\Enum\{
+    KeyAlgorithm,
+    RevocationReasonTag,
+};
 use Psr\Log\{
     LoggerAwareInterface,
     LoggerInterface,
@@ -191,12 +194,14 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
      * 
      * @param PrivateKeyInterface $signKey
      * @param string $revocationReason
+     * @param RevocationReasonTag $reasonTag
      * @param DateTimeInterface $time
      * @return self
      */
     function revokeBy(
         PrivateKeyInterface $signKey,
         string $revocationReason = '',
+        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
         ?DateTimeInterface $time = null
     ): self;
 

@@ -336,6 +336,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @param KeyPacketInterface $userKey
      * @param UserIDPacketInterface $userID
      * @param string $revocationReason
+     * @param RevocationReasonTag $reasonTag
      * @param DateTimeInterface $time
      * @return self
      */
@@ -344,6 +345,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         KeyPacketInterface $userKey,
         UserIDPacketInterface $userID,
         string $revocationReason = '',
+        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
         ?DateTimeInterface $time = null
     ): self
     {
@@ -357,7 +359,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             Config::getPreferredHash(),
             [
                 Signature\RevocationReason::fromRevocation(
-                    RevocationReasonTag::NoReason, $revocationReason
+                    $reasonTag, $revocationReason
                 )
             ],
             $time
@@ -370,6 +372,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @param KeyPacketInterface $signKey
      * @param KeyPacketInterface $keyPacket
      * @param string $revocationReason
+     * @param RevocationReasonTag $reasonTag
      * @param DateTimeInterface $time
      * @return self
      */
@@ -377,6 +380,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         KeyPacketInterface $signKey,
         KeyPacketInterface $keyPacket,
         string $revocationReason = '',
+        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
         ?DateTimeInterface $time = null
     ): self
     {
@@ -387,7 +391,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             Config::getPreferredHash(),
             [
                 Signature\RevocationReason::fromRevocation(
-                    RevocationReasonTag::NoReason, $revocationReason
+                    $reasonTag, $revocationReason
                 )
             ],
             $time
@@ -459,6 +463,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @param KeyPacketInterface $primaryKey
      * @param SubkeyPacketInterface $subkey
      * @param string $revocationReason
+     * @param RevocationReasonTag $reasonTag
      * @param DateTimeInterface $time
      * @return self
      */
@@ -467,6 +472,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         KeyPacketInterface $primaryKey,
         SubkeyPacketInterface $subkey,
         string $revocationReason = '',
+        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
         ?DateTimeInterface $time = null
     ): self
     {
@@ -480,7 +486,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             Config::getPreferredHash(),
             [
                 Signature\RevocationReason::fromRevocation(
-                    RevocationReasonTag::NoReason, $revocationReason
+                    $reasonTag, $revocationReason
                 )
             ],
             $time

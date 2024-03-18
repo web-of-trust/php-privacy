@@ -11,6 +11,7 @@ namespace OpenPGP\Key;
 use DateTimeInterface;
 use OpenPGP\Enum\{
     HashAlgorithm,
+    RevocationReasonTag,
     SignatureType,
 };
 use OpenPGP\Packet\{
@@ -297,6 +298,7 @@ class User implements UserInterface
     public function revokeBy(
         PrivateKeyInterface $signKey,
         string $revocationReason = '',
+        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
         ?DateTimeInterface $time = null
     ): self
     {
@@ -306,6 +308,7 @@ class User implements UserInterface
             $self->getMainKey()->getKeyPacket(),
             $self->getUserIDPacket(),
             $revocationReason,
+            $reasonTag,
             $time
         );
         return $self;

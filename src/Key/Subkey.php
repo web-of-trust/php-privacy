@@ -9,7 +9,10 @@
 namespace OpenPGP\Key;
 
 use DateTimeInterface;
-use OpenPGP\Enum\KeyAlgorithm;
+use OpenPGP\Enum\{
+    KeyAlgorithm,
+    RevocationReasonTag,
+};
 use OpenPGP\Packet\{
     PacketList,
     Signature,
@@ -283,6 +286,7 @@ class Subkey implements SubkeyInterface
     public function revokeBy(
         PrivateKeyInterface $signKey,
         string $revocationReason = '',
+        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
         ?DateTimeInterface $time = null
     ): self
     {
@@ -293,6 +297,7 @@ class Subkey implements SubkeyInterface
             $self->getMainKey()->getKeyPacket(),
             $self->getKeyPacket(),
             $revocationReason,
+            $reasonTag,
             $time
         );
         return $self;

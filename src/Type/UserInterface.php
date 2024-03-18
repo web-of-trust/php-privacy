@@ -9,6 +9,7 @@
 namespace OpenPGP\Type;
 
 use DateTimeInterface;
+use OpenPGP\Enum\RevocationReasonTag;
 
 /**
  * OpenPGP user interface
@@ -126,12 +127,14 @@ interface UserInterface extends PacketContainerInterface
      * 
      * @param PrivateKeyInterface $signKey
      * @param string $revocationReason
+     * @param RevocationReasonTag $reasonTag
      * @param DateTimeInterface $time
      * @return self
      */
     function revokeBy(
         PrivateKeyInterface $signKey,
         string $revocationReason = '',
+        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
         ?DateTimeInterface $time = null
     ): self;
 }

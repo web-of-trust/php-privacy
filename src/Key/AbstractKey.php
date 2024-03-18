@@ -13,6 +13,7 @@ use OpenPGP\Common\Config;
 use OpenPGP\Enum\{
     KeyAlgorithm,
     PacketTag,
+    RevocationReasonTag,
     SignatureType,
 };
 use OpenPGP\Packet\{
@@ -553,6 +554,7 @@ abstract class AbstractKey implements KeyInterface
     public function revokeBy(
         PrivateKeyInterface $signKey,
         string $revocationReason = '',
+        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
         ?DateTimeInterface $time = null
     ): self
     {
@@ -561,6 +563,7 @@ abstract class AbstractKey implements KeyInterface
             $signKey->getSigningKeyPacket(),
             $self->getKeyPacket(),
             $revocationReason,
+            $reasonTag,
             $time
         );
 
