@@ -137,6 +137,14 @@ abstract class ECSecretKeyMaterial implements KeyMaterialInterface
     /**
      * {@inheritdoc}
      */
+    public function getKeyLength(): int
+    {
+        return $this->publicMaterial->getKeyLength();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getParameters(): array
     {
         $params = $this->publicMaterial->getParameters();

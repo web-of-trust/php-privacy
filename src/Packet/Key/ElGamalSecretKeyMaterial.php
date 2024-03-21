@@ -145,6 +145,14 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
     /**
      * {@inheritdoc}
      */
+    public function getKeyLength(): int
+    {
+        return $this->publicMaterial->getKeyLength();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getParameters(): array
     {
         return [

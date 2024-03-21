@@ -149,6 +149,14 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
     /**
      * {@inheritdoc}
      */
+    public function getKeyLength(): int
+    {
+        return $this->publicMaterial->getKeyLength();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getParameters(): array
     {
         return PKCS8::load($this->privateKey->toString('PKCS8'));

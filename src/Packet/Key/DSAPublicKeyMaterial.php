@@ -133,6 +133,14 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
     /**
      * {@inheritdoc}
      */
+    public function getKeyLength(): int
+    {
+        return $this->prime->getLength();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getPublicKey(): PublicKey
     {
         return $this->publicKey;

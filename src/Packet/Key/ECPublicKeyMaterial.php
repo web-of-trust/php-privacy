@@ -97,16 +97,6 @@ abstract class ECPublicKeyMaterial implements KeyMaterialInterface
     }
 
     /**
-     * Get public key length
-     *
-     * @return int
-     */
-    public function getPublicKeyLength(): int
-    {
-        return $this->publicKey->getLength();
-    }
-
-    /**
      * Get EC public key
      *
      * @return ECPublicKey
@@ -114,6 +104,14 @@ abstract class ECPublicKeyMaterial implements KeyMaterialInterface
     public function getECPublicKey(): ECPublicKey
     {
         return $this->publicKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getKeyLength(): int
+    {
+        return $this->publicKey->getLength();
     }
 
     /**

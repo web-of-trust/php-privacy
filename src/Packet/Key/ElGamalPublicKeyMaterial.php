@@ -103,9 +103,15 @@ class ElGamalPublicKeyMaterial implements KeyMaterialInterface
     }
 
     /**
-     * Get public key
-     * 
-     * @return PublicKey
+     * {@inheritdoc}
+     */
+    public function getKeyLength(): int
+    {
+        return $this->prime->getLength();
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function getPublicKey(): PublicKey
     {

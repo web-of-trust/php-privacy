@@ -95,6 +95,14 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
     /**
      * {@inheritdoc}
      */
+    public function getKeyLength(): int
+    {
+        return $this->publicKey->getLength();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getPublicMaterial(): KeyMaterialInterface
     {
         return $this;

@@ -191,16 +191,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
      */
     public function getKeyStrength(): int
     {
-        return match (true) {
-            $this->keyMaterial instanceof Key\RSAPublicKeyMaterial
-                => $this->keyMaterial->getModulus()->getLength(),
-            $this->keyMaterial instanceof Key\DSAPublicKeyMaterial,
-            $this->keyMaterial instanceof Key\ElGamalPublicKeyMaterial
-                => $this->keyMaterial->getPrime()->getLength(),
-            $this->keyMaterial instanceof Key\ECPublicKeyMaterial
-                => $this->keyMaterial->getPublicKeyLength(),
-            default => 0,
-        };
+        return $this->keyMaterial->getKeyLength();
     }
 
     /**

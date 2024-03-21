@@ -34,6 +34,13 @@ interface KeyMaterialInterface
     function getAsymmetricKey(): AsymmetricKey;
 
     /**
+     * Get key length
+     * 
+     * @return int
+     */
+    function getKeyLength(): int;
+
+    /**
      * Get key material parameters
      * 
      * @return array<mixed>
