@@ -9,7 +9,10 @@
 namespace OpenPGP\Key;
 
 use DateTimeInterface;
-use OpenPGP\Common\Armor;
+use OpenPGP\Common\{
+    Armor,
+    Config,
+};
 use OpenPGP\Enum\{
     ArmorType,
     CurveOid,
@@ -174,14 +177,14 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $dhKeySize,
             $curve,
             $time,
-        )->encrypt($passphrase);
+        )->encrypt($passphrase, Config::getPreferredSymmetric());
         $secretSubkey = SecretSubkey::generate(
             $subkeyAlgorithm,
             $rsaKeySize,
             $dhKeySize,
             $subkeyCurve,
             $time,
-        )->encrypt($passphrase);
+        )->encrypt($passphrase, Config::getPreferredSymmetric());
 
         $packets = [$secretKey];
 
@@ -309,7 +312,9 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         }
 
         $privateKey = new self(
-            $this->secretKeyPacket->encrypt($passphrase),
+            $this->secretKeyPacket->encrypt(
+                $passphrase, Config::getPreferredSymmetric()
+            ),
             $this->getRevocationSignatures(),
             $this->getDirectSignatures(),
         );
@@ -329,7 +334,9 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $keyPacket = $subkey->getKeyPacket();
             if ($keyPacket instanceof SecretKeyPacketInterface) {
                 $subkeyPassphrase = $subkeyPassphrases[$key] ?? $passphrase;
-                $keyPacket = $keyPacket->encrypt($subkeyPassphrase);
+                $keyPacket = $keyPacket->encrypt(
+                    $subkeyPassphrase, Config::getPreferredSymmetric()
+                );
             }
             $subkeys[] = new Subkey(
                 $privateKey,
@@ -449,7 +456,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $dhKeySize,
             $curve,
             $time,
-        )->encrypt($passphrase);
+        )->encrypt($passphrase, Config::getPreferredSymmetric());
         $bindingSignature = Signature::createSubkeyBinding(
             $self->getSigningKeyPacket(),
             $secretSubkey,
