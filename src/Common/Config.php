@@ -28,7 +28,7 @@ use Psr\Log\{
  */
 final class Config
 {
-    const VERSION = 'PHP Privacy v1.1.5';
+    const VERSION = 'PHP Privacy v1.1.6';
     const COMMENT = 'https://github.com/web-of-trust/php-privacy';
 
     private static HashAlgorithm $preferredHash = HashAlgorithm::Sha256;

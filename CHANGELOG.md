@@ -52,3 +52,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 1.1.5 - released 2024-03-18
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.1.4...1.1.5)
 - Refactor isRevoked methods.
+
+## 1.1.6 - released 2024-03-22
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.1.5...1.1.6)
+- Refactor get key strength of key packet.
+- Pass preferred symmetric to secret key packet encrypt
