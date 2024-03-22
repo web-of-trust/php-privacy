@@ -61,7 +61,7 @@ class PublicKey extends AbstractKey
      * Return one or multiple key objects.
      *
      * @param string $armored
-     * @return self
+     * @return array
      */
     public static function readPublicKeys(string $armored): array
     {
