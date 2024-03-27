@@ -197,7 +197,7 @@ final class OpenPGP
      * @param DateTimeInterface $time
      * @return KeyInterface
      */
-    public function revokeKey(
+    public static function revokeKey(
         PrivateKeyInterface $privateKey,
         KeyInterface $key,
         string $revocationReason = '',
@@ -206,7 +206,7 @@ final class OpenPGP
     ): KeyInterface
     {
         return $privateKey->revokeKey(
-            $key, $revocationReason, $time
+            $key, $revocationReason, $reasonTag, $time
         );
     }
 
