@@ -58,6 +58,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Refactor get key strength of key packet.
 - Pass preferred symmetric to secret key packet encrypt
 
-## 1.1.7 - released 2024-03-22
+## 1.1.7 - released 2024-03-27
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.1.6...1.1.7)
 - Refactor OpenPGP revokeKey method.
