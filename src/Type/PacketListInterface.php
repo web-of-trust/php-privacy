@@ -59,7 +59,7 @@ interface PacketListInterface extends \ArrayAccess, \IteratorAggregate, \Countab
     function slice(int $offset, ?int $length = null): self;
 
     /**
-     * Returns array of found indices by tags
+     * Return array of found indices by tags
      * 
      * @param $tags
      * @return array
