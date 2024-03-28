@@ -49,7 +49,7 @@ interface LiteralDataInterface extends ForSigningInterface
     function getData(): string;
 
     /**
-     * Get jeader
+     * Get header
      *
      * @return string
      */
