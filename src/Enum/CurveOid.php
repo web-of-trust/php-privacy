@@ -20,6 +20,7 @@ use phpseclib3\Crypt\EC\Curves\{
     Ed25519,
     Curve25519,
 };
+use phpseclib3\File\ASN1;
 
 /**
  * Curve oid enum
@@ -47,6 +48,11 @@ enum CurveOid: string
     case Ed25519 = '1.3.6.1.4.1.11591.15.1';
 
     case Curve25519 = '1.3.6.1.4.1.3029.1.5.1';
+
+    public static function fromOid(string $oid): self
+    {
+        return self::from(ASN1::decodeOID($oid));
+    }
 
     public function getCurve(): BaseCurve
     {

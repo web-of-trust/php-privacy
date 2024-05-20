@@ -207,14 +207,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
      */
     public function isSigningKey(): bool
     {
-        return match ($this->keyAlgorithm) {
-            KeyAlgorithm::RsaEncrypt,
-            KeyAlgorithm::ElGamal,
-            KeyAlgorithm::Ecdh,
-            KeyAlgorithm::DiffieHellman,
-            KeyAlgorithm::Aedh => false,
-            default => true,
-        };
+        return $this->keyAlgorithm->forSigning();
     }
 
     /**
@@ -222,14 +215,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
      */
     public function isEncryptionKey(): bool
     {
-        return match ($this->keyAlgorithm) {
-            KeyAlgorithm::RsaSign,
-            KeyAlgorithm::Dsa,
-            KeyAlgorithm::EcDsa,
-            KeyAlgorithm::EdDsa,
-            KeyAlgorithm::AeDsa => false,
-            default => true,
-        };
+        return $this->keyAlgorithm->forEncryption();
     }
 
     /**

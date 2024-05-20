@@ -16,7 +16,6 @@ use phpseclib3\Crypt\EC;
 use phpseclib3\Crypt\EC\PublicKey as ECPublicKey;
 use phpseclib3\Crypt\EC\Formats\Keys\MontgomeryPublic;
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
-use phpseclib3\File\ASN1;
 use phpseclib3\Math\BigInteger;
 use OpenPGP\Enum\CurveOid;
 use OpenPGP\Type\KeyMaterialInterface;
@@ -51,7 +50,7 @@ abstract class ECPublicKeyMaterial implements KeyMaterialInterface
         ?ECPublicKey $publicKey = null
     )
     {
-        $this->curveOid = CurveOid::from(ASN1::decodeOID($oid));
+        $this->curveOid = CurveOid::fromOid($oid);
         if ($publicKey instanceof ECPublicKey) {
             $this->publicKey = $publicKey;
         }

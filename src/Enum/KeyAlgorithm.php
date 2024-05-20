@@ -42,4 +42,38 @@ enum KeyAlgorithm: int
     case Aedh = 23;
 
     case AeDsa = 24;
+
+    /**
+     * For signing
+     *
+     * @return bool
+     */
+    public function forSigning(): bool
+    {
+        return match ($this) {
+            self::RsaEncrypt,
+            self::ElGamal,
+            self::Ecdh,
+            self::DiffieHellman,
+            self::Aedh => false,
+            default => true,
+        };
+    }
+
+    /**
+     * For encryption
+     *
+     * @return bool
+     */
+    public function forEncryption(): bool
+    {
+        return match ($this) {
+            self::RsaSign,
+            self::Dsa,
+            self::EcDsa,
+            self::EdDsa,
+            self::AeDsa => false,
+            default => true,
+        };
+    }
 }

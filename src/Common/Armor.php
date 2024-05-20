@@ -43,7 +43,6 @@ final class Armor
     const EMPTY_LINE_PATTERN = '/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/';
     const LINE_SPLIT_PATTERN = '/\r\n|\n|\r/';
     const HEADER_PATTERN     = '/^([^\s:]|[^\s:][^:]*[^\s:]): .+$/';
-    const BEGIN_PATTERN      = '/^-----BEGIN PGP (MESSAGE, PART \d+\/\d+|MESSAGE, PART \d+|SIGNED MESSAGE|MESSAGE|PUBLIC KEY BLOCK|PRIVATE KEY BLOCK|SIGNATURE)-----$/';
 
     const EOL   = "\n";
     const CRLF  = "\r\n";
@@ -131,7 +130,7 @@ final class Armor
         if (!empty($lines)) {
             foreach ($lines as $line) {
                 if ($type === null && preg_match(self::SPLIT_PATTERN, $line)) {
-                    $type = self::parseType($line);
+                    $type = ArmorType::fromBegin($line);
                 }
                 else {
                     if (preg_match(self::HEADER_PATTERN, $line)) {
@@ -254,30 +253,6 @@ final class Armor
             ],
         };
         return implode($result);
-    }
-
-    /**
-     * Find out which ASCII armoring type is used.
-     * 
-     * @param string $armoredText
-     * @return ArmorType
-     */
-    private static function parseType(string $armoredText): ArmorType
-    {
-        preg_match(self::BEGIN_PATTERN, $armoredText, $matches);
-        if (empty($matches)) {
-            throw new \UnexpectedValueException('Unknown ASCII armor type');
-        }
-        return match (1) {
-            preg_match('/MESSAGE, PART \d+\/\d+/', $matches[0]) => ArmorType::MultipartSection,
-            preg_match('/MESSAGE, PART \d+/', $matches[0]) => ArmorType::MultipartLast,
-            preg_match('/SIGNED MESSAGE/', $matches[0]) => ArmorType::SignedMessage,
-            preg_match('/MESSAGE/', $matches[0]) => ArmorType::Message,
-            preg_match('/PUBLIC KEY BLOCK/', $matches[0]) => ArmorType::PublicKey,
-            preg_match('/PRIVATE KEY BLOCK/', $matches[0]) => ArmorType::PrivateKey,
-            preg_match('/SIGNATURE/', $matches[0]) => ArmorType::Signature,
-            default => ArmorType::MultipartSection,
-        };
     }
 
     /**
