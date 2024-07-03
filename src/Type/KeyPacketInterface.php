@@ -68,7 +68,7 @@ interface KeyPacketInterface extends ForSigningInterface, PacketInterface
     function getKeyStrength(): int;
 
     /**
-     * Return key packete is subkey
+     * Return key packet is subkey
      * 
      * @return bool
      */
