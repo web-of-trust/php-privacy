@@ -8,6 +8,8 @@
 
 namespace OpenPGP\Type;
 
+use OpenPGP\Enum\S2kType;
+
 /**
  * String-to-key interface
  * 
