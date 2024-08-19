@@ -9,11 +9,7 @@
 namespace OpenPGP\Key;
 
 use DateTimeInterface;
-use OpenPGP\Enum\{
-    HashAlgorithm,
-    RevocationReasonTag,
-    SignatureType,
-};
+use OpenPGP\Enum\RevocationReasonTag;
 use OpenPGP\Packet\{
     PacketList,
     Signature,
@@ -22,7 +18,6 @@ use OpenPGP\Packet\{
 use OpenPGP\Packet\Signature\RevocationReason;
 use OpenPGP\Type\{
     KeyInterface,
-    KeyPacketInterface,
     PacketListInterface,
     PrivateKeyInterface,
     SignaturePacketInterface,
