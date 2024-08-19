@@ -119,7 +119,8 @@ final class CMac
      * @see http://csrc.nist.gov/publications/nistpubs/800-38B/SP_800-38B.pdf
      * @return string A RValue of the appropriate block size
      */
-    protected function getRValue(int $size) {
+    protected function getRValue(int $size): string
+    {
         switch ($size * 8) {
             case 64:
                 return str_repeat(self::ZERO_CHAR, 7) . "\x1B";
