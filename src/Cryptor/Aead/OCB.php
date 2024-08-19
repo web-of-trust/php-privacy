@@ -8,7 +8,6 @@
 
 namespace OpenPGP\Cryptor\Aead;
 
-use OpenPGP\Cryptor\Symmetric\EcbCipherTrait;
 use OpenPGP\Enum\SymmetricAlgorithm;
 use phpseclib3\Crypt\Common\BlockCipher;
 
