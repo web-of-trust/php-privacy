@@ -12,6 +12,7 @@ use OpenPGP\Enum\{
     HashAlgorithm,
     S2kType,
 };
+use OpenPGP\Type\S2KInterface;
 
 /**
  * String-to-key class
@@ -27,7 +28,7 @@ use OpenPGP\Enum\{
  * @category Common
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class S2K
+class S2K implements S2KInterface
 {
     /**
      * Default salt length
@@ -49,6 +50,10 @@ class S2K
     /**
      * Constructor
      *
+     * @param string $salt
+     * @param S2kType $type
+     * @param HashAlgorithm $hash
+     * @param int $itCount
      * @return self
      */
     public function __construct(
@@ -112,6 +117,25 @@ class S2K
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function produceKey(
+        string $passphrase, int $keyLen
+    ): string
+    {
+        return match($this->type) {
+            S2kType::Simple => $this->hash($passphrase, $keyLen),
+            S2kType::Salted => $this->hash(
+                $this->salt . $passphrase, $keyLen
+            ),
+            S2kType::Iterated => $this->hash(
+                $this->iterate($this->salt . $passphrase), $keyLen
+            ),
+            S2kType::GNU => $this->hash($passphrase, $keyLen),
+        };
+    }
+
+    /**
      * Parsing function for a string-to-key specifier
      * 
      * @param string $bytes - Payload of string-to-key specifier
@@ -126,10 +150,10 @@ class S2K
         $hash = HashAlgorithm::from(ord($bytes[1]));
         switch ($type) {
             case S2kType::Salted:
-                $salt = substr($bytes, 2, 8);
+                $salt = substr($bytes, 2, self::SALT_LENGTH);
                 break;
             case S2kType::Iterated:
-                $salt = substr($bytes, 2, 8);
+                $salt = substr($bytes, 2, self::SALT_LENGTH);
                 $itCount = ord($bytes[10]);
                 break;
         }
@@ -164,29 +188,6 @@ class S2K
                 'GNU',
                 "\x01",
             ]),
-        };
-    }
-
-    /**
-     * Produce a key using the specified passphrase and the defined hash algorithm
-     * 
-     * @param string $passphrase
-     * @param int $keyLen
-     * @return string
-     */
-    public function produceKey(
-        string $passphrase, int $keyLen
-    ): string
-    {
-        return match($this->type) {
-            S2kType::Simple => $this->hash($passphrase, $keyLen),
-            S2kType::Salted => $this->hash(
-                $this->salt . $passphrase, $keyLen
-            ),
-            S2kType::Iterated => $this->hash(
-                $this->iterate($this->salt . $passphrase), $keyLen
-            ),
-            S2kType::GNU => $this->hash($passphrase, $keyLen),
         };
     }
 
