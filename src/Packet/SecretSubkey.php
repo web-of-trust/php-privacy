@@ -13,11 +13,8 @@ use OpenPGP\Common\S2K;
 use OpenPGP\Enum\{
     CurveOid,
     DHKeySize,
-    HashAlgorithm,
     KeyAlgorithm,
-    PacketTag,
     RSAKeySize,
-    S2kType,
     S2kUsage,
     SymmetricAlgorithm,
 };

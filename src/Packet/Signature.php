@@ -30,7 +30,6 @@ use OpenPGP\Type\{
     KeyPacketInterface,
     LiteralDataInterface,
     NotationDataInterface,
-    PublicKeyPacketInterface,
     SignaturePacketInterface,
     SecretKeyMaterialInterface,
     SubkeyPacketInterface,

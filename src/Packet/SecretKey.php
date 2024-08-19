@@ -22,12 +22,10 @@ use OpenPGP\Enum\{
     KeyAlgorithm,
     PacketTag,
     RSAKeySize,
-    S2kType,
     S2kUsage,
     SymmetricAlgorithm,
 };
 use OpenPGP\Type\{
-    KeyPacketInterface,
     KeyMaterialInterface,
     PublicKeyPacketInterface,
     SecretKeyPacketInterface,
