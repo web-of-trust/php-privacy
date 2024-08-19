@@ -45,6 +45,9 @@ class S2K implements S2KInterface
      */
     const DEFAULT_IT_COUNT = 224;
 
+    /**
+     * The number of resulting count
+     */
     private readonly int $count;
 
     /**
@@ -67,9 +70,7 @@ class S2K implements S2KInterface
     }
 
     /**
-     * Get S2K type
-     *
-     * @return S2kType
+     * {@inheritdoc}
      */
     public function getType(): S2kType
     {
@@ -77,19 +78,7 @@ class S2K implements S2KInterface
     }
 
     /**
-     * Get hash algorithm
-     *
-     * @return HashAlgorithm
-     */
-    public function getHashAlgorithm(): HashAlgorithm
-    {
-        return $this->hash;
-    }
-
-    /**
-     * Get salt
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getSalt(): string
     {
@@ -97,19 +86,7 @@ class S2K implements S2KInterface
     }
 
     /**
-     * Get iteration count
-     *
-     * @return int
-     */
-    public function getItCount(): int
-    {
-        return $this->itCount;
-    }
-
-    /**
-     * Get packet length
-     *
-     * @return int
+     * {@inheritdoc}
      */
     public function getLength(): int
     {
@@ -118,52 +95,6 @@ class S2K implements S2KInterface
 
     /**
      * {@inheritdoc}
-     */
-    public function produceKey(
-        string $passphrase, int $keyLen
-    ): string
-    {
-        return match($this->type) {
-            S2kType::Simple => $this->hash($passphrase, $keyLen),
-            S2kType::Salted => $this->hash(
-                $this->salt . $passphrase, $keyLen
-            ),
-            S2kType::Iterated => $this->hash(
-                $this->iterate($this->salt . $passphrase), $keyLen
-            ),
-            S2kType::GNU => $this->hash($passphrase, $keyLen),
-        };
-    }
-
-    /**
-     * Parsing function for a string-to-key specifier
-     * 
-     * @param string $bytes - Payload of string-to-key specifier
-     * @return self
-     */
-    public static function fromBytes(string $bytes): self
-    {
-        $salt = '';
-        $itCount = self::DEFAULT_IT_COUNT;
-
-        $type = S2kType::from(ord($bytes[0]));
-        $hash = HashAlgorithm::from(ord($bytes[1]));
-        switch ($type) {
-            case S2kType::Salted:
-                $salt = substr($bytes, 2, self::SALT_LENGTH);
-                break;
-            case S2kType::Iterated:
-                $salt = substr($bytes, 2, self::SALT_LENGTH);
-                $itCount = ord($bytes[10]);
-                break;
-        }
-        return new self($salt, $type, $hash, $itCount);
-    }
-
-    /**
-     * Serialize s2k information to binary string
-     * 
-     * @return string
      */
     public function toBytes(): string
     {
@@ -189,6 +120,70 @@ class S2K implements S2KInterface
                 "\x01",
             ]),
         };
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function produceKey(
+        string $passphrase, int $keyLen
+    ): string
+    {
+        return match($this->type) {
+            S2kType::Simple => $this->hash($passphrase, $keyLen),
+            S2kType::Salted => $this->hash(
+                $this->salt . $passphrase, $keyLen
+            ),
+            S2kType::Iterated => $this->hash(
+                $this->iterate($this->salt . $passphrase), $keyLen
+            ),
+            S2kType::GNU => $this->hash($passphrase, $keyLen),
+        };
+    }
+
+    /**
+     * Get hash algorithm
+     *
+     * @return HashAlgorithm
+     */
+    public function getHashAlgorithm(): HashAlgorithm
+    {
+        return $this->hash;
+    }
+
+    /**
+     * Get iteration count
+     *
+     * @return int
+     */
+    public function getItCount(): int
+    {
+        return $this->itCount;
+    }
+
+    /**
+     * Parsing function for a string-to-key specifier
+     * 
+     * @param string $bytes - Payload of string-to-key specifier
+     * @return self
+     */
+    public static function fromBytes(string $bytes): self
+    {
+        $salt = '';
+        $itCount = self::DEFAULT_IT_COUNT;
+
+        $type = S2kType::from(ord($bytes[0]));
+        $hash = HashAlgorithm::from(ord($bytes[1]));
+        switch ($type) {
+            case S2kType::Salted:
+                $salt = substr($bytes, 2, self::SALT_LENGTH);
+                break;
+            case S2kType::Iterated:
+                $salt = substr($bytes, 2, self::SALT_LENGTH);
+                $itCount = ord($bytes[10]);
+                break;
+        }
+        return new self($salt, $type, $hash, $itCount);
     }
 
     private function iterate(string $data): string

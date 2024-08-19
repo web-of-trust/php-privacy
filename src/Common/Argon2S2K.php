@@ -69,9 +69,7 @@ class Argon2S2K implements S2KInterface
     }
 
     /**
-     * Get S2K type
-     *
-     * @return S2kType
+     * {@inheritdoc}
      */
     public function getType(): S2kType
     {
@@ -79,9 +77,7 @@ class Argon2S2K implements S2KInterface
     }
 
     /**
-     * Get salt
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getSalt(): string
     {
@@ -89,13 +85,25 @@ class Argon2S2K implements S2KInterface
     }
 
     /**
-     * Get packet length
-     *
-     * @return int
+     * {@inheritdoc}
      */
     public function getLength(): int
     {
         return $this->getType()->packetLength();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toBytes(): string
+    {
+        return implode([
+            chr($this->getType()->value),
+            $this->salt,
+            chr($this->time),
+            chr($this->parallelism),
+            chr($this->memoryExponent),
+        ]);
     }
 
     /**
@@ -116,16 +124,6 @@ class Argon2S2K implements S2KInterface
     }
 
     /**
-     * Generate random salt string
-     * 
-     * @return string
-     */
-    public static function generateSalt(): string 
-    {
-        return Random::string(self::SALT_LENGTH);
-    }
-
-    /**
      * Parsing function for argon2 string-to-key specifier.
      * 
      * @param string $bytes - Payload of argon2 string-to-key specifier
@@ -143,18 +141,12 @@ class Argon2S2K implements S2KInterface
     }
 
     /**
-     * Serialize s2k information to binary string
+     * Generate random salt string
      * 
      * @return string
      */
-    public function toBytes(): string
+    public static function generateSalt(): string 
     {
-        return implode([
-            chr($this->getType()->value),
-            $this->salt,
-            chr($this->time),
-            chr($this->parallelism),
-            chr($this->memoryExponent),
-        ]);
+        return Random::string(self::SALT_LENGTH);
     }
 }

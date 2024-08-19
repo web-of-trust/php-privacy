@@ -18,6 +18,34 @@ namespace OpenPGP\Type;
 interface S2KInterface
 {
     /**
+     * Get S2K type
+     *
+     * @return S2kType
+     */
+    function getType(): S2kType;
+
+    /**
+     * Get salt
+     *
+     * @return string
+     */
+    function getSalt(): string;
+
+    /**
+     * Get packet length
+     *
+     * @return int
+     */
+    function getLength(): int;
+
+    /**
+     * Serialize s2k information to binary string
+     * 
+     * @return string
+     */
+    function toBytes(): string;
+
+    /**
      * Produce a key using the specified passphrase and the defined hash algorithm
      * 
      * @param string $passphrase
