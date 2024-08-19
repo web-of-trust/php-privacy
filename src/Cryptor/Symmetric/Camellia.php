@@ -276,7 +276,7 @@ class Camellia extends BlockCipher
     /**
      * {@inheritdoc}
      */
-    public function encrypt($plaintext)
+    public function encrypt($plaintext): string
     {
         return parent::encrypt($plaintext);
     }
@@ -284,7 +284,7 @@ class Camellia extends BlockCipher
     /**
      * {@inheritdoc}
      */
-    public function decrypt($ciphertext)
+    public function decrypt($ciphertext): string
     {
         return parent::decrypt($ciphertext);
     }
@@ -292,7 +292,7 @@ class Camellia extends BlockCipher
     /**
      * {@inheritdoc}
      */
-    protected function isValidEngineHelper($engine)
+    protected function isValidEngineHelper($engine): bool
     {
         switch ($engine) {
             case self::ENGINE_OPENSSL:
@@ -309,7 +309,7 @@ class Camellia extends BlockCipher
     /**
      * {@inheritdoc}
      */
-    protected function encryptBlock($input)
+    protected function encryptBlock($input): string
     {
         $this->reset();
         $k = $this->computeK();
@@ -385,7 +385,7 @@ class Camellia extends BlockCipher
     /**
      * {@inheritdoc}
      */
-    protected function decryptBlock($input)
+    protected function decryptBlock($input): string
     {
         $this->reset();
         $k = $this->computeK();
