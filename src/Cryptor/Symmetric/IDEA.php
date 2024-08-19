@@ -56,7 +56,7 @@ class IDEA extends BlockCipher
     /**
      * {@inheritdoc}
      */
-    protected function encryptBlock($input)
+    protected function encryptBlock($input): string
     {
         return self::ideaFunc(
             self::generateWorkingKey(true, $this->key), $input
@@ -66,7 +66,7 @@ class IDEA extends BlockCipher
     /**
      * {@inheritdoc}
      */
-    protected function decryptBlock($input)
+    protected function decryptBlock($input): string
     {
         return self::ideaFunc(
             self::generateWorkingKey(false, $this->key), $input
