@@ -8,12 +8,7 @@
 
 namespace OpenPGP\Type;
 
-use OpenPGP\Enum\{
-    HashAlgorithm,
-    S2kType,
-    S2kUsage,
-    SymmetricAlgorithm,
-};
+use OpenPGP\Enum\SymmetricAlgorithm;
 
 /**
  * Secret key packet interface
