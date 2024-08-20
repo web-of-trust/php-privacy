@@ -143,6 +143,11 @@ class PacketList implements PacketListInterface
                         $reader->getData()
                     );
                     break;
+                case PacketTag::Padding:
+                    $packets[] = Padding::fromBytes(
+                        $reader->getData()
+                    );
+                    break;
                 default:
                     break;
             }
