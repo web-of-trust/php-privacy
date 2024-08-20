@@ -51,8 +51,8 @@ class Argon2S2K implements S2KInterface
      * Constructor
      *
      * @param string $salt - Salt value
-     * @param int $time - Number of passes time
-     * @param int $parallelism - Degree of parallelism
+     * @param int $time - Number of iterations
+     * @param int $parallelism - Number of parallel threads
      * @param int $memoryExponent - The exponent of the memory size
      * @return self
      */
@@ -75,7 +75,7 @@ class Argon2S2K implements S2KInterface
         }
         if ($parallelism !== self::ARGON2_PARALLELISM) {
             throw new \InvalidArgumentException(
-                'Degree of parallelism only support ' . self::ARGON2_PARALLELISM,
+                'Parallelism only support ' . self::ARGON2_PARALLELISM,
             );
         }
         $this->memLimit = 2 << ($this->memoryExponent + 9);
