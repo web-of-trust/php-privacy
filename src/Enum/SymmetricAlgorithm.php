@@ -21,28 +21,64 @@ use phpseclib3\Crypt\Common\BlockCipher;
  */
 enum SymmetricAlgorithm: int
 {
+    /**
+     * Plaintext or unencrypted data
+     */
     case Plaintext = 0;
 
+    /**
+     * IDEA
+     */
     case Idea = 1;
 
+    /**
+     * TripleDES (or DES-EDE) with 168-bit key derived from 192
+     */
     case TripleDes = 2;
 
+    /**
+     * CAST5 with 128-bit key
+     */
     case Cast5 = 3;
 
+    /**
+     * Blowfish with 128-bit key, 16 rounds
+     */
     case Blowfish = 4;
 
+    /**
+     * AES with 256-bit key
+     */
     case Aes128 = 7;
 
+    /**
+     * AES with 256-bit key
+     */
     case Aes192 = 8;
 
+    /**
+     * AES with 256-bit key
+     */
     case Aes256 = 9;
 
+    /**
+     * Twofish with 256-bit key
+     */
     case Twofish = 10;
 
+    /**
+     * Camellia with 128-bit key
+     */
     case Camellia128 = 11;
 
+    /**
+     * Camellia with 192-bit key
+     */
     case Camellia192 = 12;
 
+    /**
+     * Camellia with 256-bit key
+     */
     case Camellia256 = 13;
 
     /**
