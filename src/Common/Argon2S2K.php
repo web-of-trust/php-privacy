@@ -15,7 +15,10 @@ use phpseclib3\Crypt\Random;
 /**
  * Argon2 string-to-key class
  * 
- *
+ * Implementation of the Argon2 string-to-key specifier.
+ * This S2K method hashes the passphrase using Argon2, as specified in RFC9106.
+ * This provides memory hardness, further protecting the passphrase against brute-force attacks.
+ * 
  * @package  OpenPGP
  * @category Common
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -60,9 +63,7 @@ class Argon2S2K implements S2KInterface
         private readonly int $memoryExponent = 16,
     )
     {
-        if (!function_exists('sodium_crypto_pwhash') ||
-            !defined('SODIUM_CRYPTO_PWHASH_ALG_ARGON2ID13')
-        ) {
+        if (!function_exists('sodium_crypto_pwhash')) {
             throw new \UnexpectedValueException(
                 'Argon2 string to key is unsupported',
             );
@@ -102,8 +103,7 @@ class Argon2S2K implements S2KInterface
             $passphrase,
             $this->salt,
             $this->time,
-            $this->memLimit,
-            SODIUM_CRYPTO_PWHASH_ALG_ARGON2ID13
+            $this->memLimit
         );
     }
 
