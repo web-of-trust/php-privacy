@@ -10,8 +10,9 @@ namespace OpenPGP\Enum;
 
 /**
  * Key algorithm enum
- * Public-Key Algorithms
- * See https://tools.ietf.org/html/draft-ietf-openpgp-rfc4880bis-04#section-9.1
+ * 
+ * Public Key Algorithms
+ * See https://www.rfc-editor.org/rfc/rfc9580#section-9.1
  *
  * @package  OpenPGP
  * @category Enum
@@ -33,7 +34,7 @@ enum KeyAlgorithm: int
 
     case EcDsa = 19;
 
-    case ElgamalEncryptSign = 20;
+    case ElGamalEncryptSign = 20;
 
     case DiffieHellman = 21;
 
@@ -42,6 +43,14 @@ enum KeyAlgorithm: int
     case Aedh = 23;
 
     case AeDsa = 24;
+
+    case X25519 = 25;
+
+    case X448 = 26;
+
+    case Ed25519 = 27;
+
+    case Ed448 = 28;
 
     /**
      * For signing
@@ -55,7 +64,9 @@ enum KeyAlgorithm: int
             self::ElGamal,
             self::Ecdh,
             self::DiffieHellman,
-            self::Aedh => false,
+            self::Aedh,
+            self::X25519,
+            self::X448 => false,
             default => true,
         };
     }
@@ -72,7 +83,9 @@ enum KeyAlgorithm: int
             self::Dsa,
             self::EcDsa,
             self::EdDsa,
-            self::AeDsa => false,
+            self::AeDsa,
+            self::Ed25519,
+            self::Ed448 => false,
             default => true,
         };
     }
