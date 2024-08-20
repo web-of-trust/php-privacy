@@ -24,11 +24,20 @@ use OpenPGP\Cryptor\Aead\{
  */
 enum AeadAlgorithm: int
 {
+    /**
+     * A Conventional Authenticated-Encryption Mod
+     */
     case Eax = 1;
 
+    /**
+     * The OCB Authenticated-Encryption Algorithm
+     */
     case Ocb = 2;
 
-    case Gcm = 100;
+    /**
+     * Galois/Counter Mode (GCM) and GMAC
+     */
+    case Gcm = 3;
 
     /**
      * Get block length
