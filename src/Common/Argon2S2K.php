@@ -38,14 +38,14 @@ class Argon2S2K implements S2KInterface
     const ARGON2_PARALLELISM = 1;
 
     /**
-     * String-to-key type
-     */
-    private readonly S2kType $type;
-
-    /**
      * The maximum amount of RAM that the function will use, in bytes
      */
     private readonly int $memLimit;
+
+    /**
+     * String-to-key type
+     */
+    private readonly S2kType $type;
 
     /**
      * Constructor
