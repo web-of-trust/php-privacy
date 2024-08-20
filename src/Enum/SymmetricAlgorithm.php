@@ -8,12 +8,14 @@
 
 namespace OpenPGP\Enum;
 
-use OpenPGP\Cryptor\Symmetric\EcbCipherTrait;
+use OpenPGP\Cryptor\Symmetric;
+use phpseclib3\Crypt;
 use phpseclib3\Crypt\Common\BlockCipher;
 
 /**
- * Symmetric algorithm enum
- * See https://tools.ietf.org/html/rfc4880#section-9.2
+ * Symmetric Key Algorithms Enum
+ * 
+ * See https://www.rfc-editor.org/rfc/rfc9580#name-symmetric-key-algorithms
  *
  * @package  OpenPGP
  * @category Enum
@@ -154,15 +156,15 @@ enum SymmetricAlgorithm: int
             self::Plaintext => throw new \RuntimeException(
                 'Symmetric algorithm "Plaintext" is unsupported.'
             ),
-            self::Idea => new \OpenPGP\Cryptor\Symmetric\IDEA($mode),
-            self::TripleDes => new \phpseclib3\Crypt\TripleDES($mode),
-            self::Cast5 => new \OpenPGP\Cryptor\Symmetric\CAST5($mode),
-            self::Blowfish => new \phpseclib3\Crypt\Blowfish($mode),
+            self::Idea => new Symmetric\IDEA($mode),
+            self::TripleDes => new Crypt\TripleDES($mode),
+            self::Cast5 => new Symmetric\CAST5($mode),
+            self::Blowfish => new Crypt\Blowfish($mode),
             self::Aes128, self::Aes192, self::Aes256
-                => new \phpseclib3\Crypt\AES($mode),
-            self::Twofish => new \phpseclib3\Crypt\Twofish($mode),
+                => new Crypt\AES($mode),
+            self::Twofish => new Crypt\Twofish($mode),
             self::Camellia128, self::Camellia192, self::Camellia256
-                => new \OpenPGP\Cryptor\Symmetric\Camellia($mode),
+                => new Symmetric\Camellia($mode),
         };
     }
 
@@ -177,28 +179,28 @@ enum SymmetricAlgorithm: int
             self::Plaintext => throw new \InvalidArgumentException(
                 'Symmetric algorithm "Plaintext" is unsupported.'
             ),
-            self::Idea => new class extends \OpenPGP\Cryptor\Symmetric\IDEA {
-                use EcbCipherTrait;
+            self::Idea => new class extends Symmetric\IDEA {
+                use Symmetric\EcbCipherTrait;
             },
-            self::TripleDes => new class extends \phpseclib3\Crypt\TripleDES {
-                use EcbCipherTrait;
+            self::TripleDes => new class extends Crypt\TripleDES {
+                use Symmetric\EcbCipherTrait;
             },
-            self::Cast5 => new class extends \OpenPGP\Cryptor\Symmetric\CAST5 {
-                use EcbCipherTrait;
+            self::Cast5 => new class extends Symmetric\CAST5 {
+                use Symmetric\EcbCipherTrait;
             },
-            self::Blowfish => new class extends \phpseclib3\Crypt\Blowfish {
-                use EcbCipherTrait;
+            self::Blowfish => new class extends Crypt\Blowfish {
+                use Symmetric\EcbCipherTrait;
             },
             self::Aes128, self::Aes192, self::Aes256
-                => new class extends \phpseclib3\Crypt\AES {
-                    use EcbCipherTrait;
+                => new class extends Crypt\AES {
+                    use Symmetric\EcbCipherTrait;
                 },
-            self::Twofish => new class extends \phpseclib3\Crypt\Twofish {
-                use EcbCipherTrait;
+            self::Twofish => new class extends Crypt\Twofish {
+                use Symmetric\EcbCipherTrait;
             },
             self::Camellia128, self::Camellia192, self::Camellia256
-                => new class extends \OpenPGP\Cryptor\Symmetric\Camellia {
-                    use EcbCipherTrait;
+                => new class extends Symmetric\Camellia {
+                    use Symmetric\EcbCipherTrait;
                 },
         };
     }
