@@ -22,14 +22,14 @@ enum SignatureType: int
      * 
      * This means the signer owns it, created it, or certifies that it has not been modified.
      */
-    case Binary = 0;
+    case Binary = 0x00;
 
     /**
      * Text Signature of a Canonical Document.
      * 
      * Canonicalyzing the document by converting line endings.
      */
-    case Text = 1;
+    case Text = 0x01;
 
     /**
      * Standalone Signature.
@@ -38,7 +38,7 @@ enum SignatureType: int
      * It is calculated identically to a signature over a zero-length binary document.
      * Version 3 Standalone signatures MUST NOT be generated and MUST be ignored.
      */
-    case Standalone = 2;
+    case Standalone = 0x02;
 
     /**
      * Generic Certification Signature of a User ID and Public Key Packet.
@@ -47,7 +47,7 @@ enum SignatureType: int
      * as to how well the certifier has checked that the owner of the key is
      * in fact the person described by the User ID
      */
-    case CertGeneric = 16;
+    case CertGeneric = 0x10;
 
     /**
      * Persona Certification Signature of a User ID and Public Key Packet.
@@ -55,14 +55,14 @@ enum SignatureType: int
      * The issuer of this certification has not done any verification of
      * the claim that the owner of this key is the User ID specified.
      */
-    case CertPersona = 17;
+    case CertPersona = 0x11;
 
     /**
      * Casual Certification Signature of a User ID and Public Key Packet.
      * 
      * The issuer of this certification has done some casual verification of the claim of identity.
      */
-    case CertCasual = 18;
+    case CertCasual = 0x12;
 
     /**
      * Positive Certification Signature of a User ID and Public Key Packet.
@@ -71,7 +71,7 @@ enum SignatureType: int
      * Most OpenPGP implementations make their "key signatures" as generic (Type ID 0x10) certifications.
      * Some implementations can issue 0x11-0x13 certifications, but few differentiate between the types.
      */
-    case CertPositive = 19;
+    case CertPositive = 0x13;
 
     /**
      * Subkey Binding Signature.
@@ -81,7 +81,7 @@ enum SignatureType: int
      * A signature that binds a signing subkey MUST have an Embedded Signature subpacket in this binding signature
      * that contains a 0x19 signature made by the signing subkey on the primary key and subkey.
      */
-    case SubkeyBinding = 24;
+    case SubkeyBinding = 0x18;
 
     /**
      * Primary Key Binding Signature.
@@ -90,7 +90,7 @@ enum SignatureType: int
      * This signature is calculated the same way as a Subkey Binding signature (Type ID 0x18):
      * directly on the primary key and subkey, and not on any User ID or other packets.
      */
-    case KeyBinding = 25;
+    case KeyBinding = 0x19;
 
     /**
      * Direct Key Signature.
@@ -102,7 +102,7 @@ enum SignatureType: int
      * for statements that non-self certifiers want to make about the key itself rather
      * than the binding between a key and a name.
      */
-    case DirectKey = 31;
+    case DirectKey = 0x1f;
 
     /**
      * Key Revocation Signature.
@@ -112,7 +112,7 @@ enum SignatureType: int
      * the key being revoked, or by a (deprecated) Revocation Key,
      * should be considered valid Revocation Signatures.
      */
-    case KeyRevocation = 32;
+    case KeyRevocation = 0x20;
 
     /**
      * Subkey Revocation Signature.
@@ -122,7 +122,7 @@ enum SignatureType: int
      * that is bound to this subkey, or by a (deprecated) Revocation Key,
      * should be considered valid Revocation Signatures.
      */
-    case SubkeyRevocation = 40;
+    case SubkeyRevocation = 0x28;
 
     /**
      * Certification Revocation Signature.
@@ -134,14 +134,14 @@ enum SignatureType: int
      * the same data as the certification that it revokes, and it should have
      * a later creation date than that certification.
      */
-    case CertRevocation = 48;
+    case CertRevocation = 0x30;
 
     /**
      * Timestamp Signature.
      * 
      * This signature is only meaningful for the timestamp contained in it.
      */
-    case Timestamp = 64;
+    case Timestamp = 0x40;
 
     /**
      * Third-Party Confirmation Signature.
@@ -151,5 +151,10 @@ enum SignatureType: int
      * A Third-Party Confirmation signature SHOULD include a Signature Target
      * subpacket that identifies the confirmed signature.
      */
-    case ThirdParty = 80;
+    case ThirdParty = 0x50;
+
+    /**
+     * Reserved.
+     */
+    case Reserved = 0xff;
 }
