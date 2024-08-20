@@ -18,39 +18,93 @@ namespace OpenPGP\Enum;
  */
 enum PacketTag: int
 {
+    /**
+     * PKESK - Public Key Encrypted Session Key Packet
+     */
     case PublicKeyEncryptedSessionKey = 1;
 
+    /**
+     * SIG - Signature Packet
+     */
     case Signature = 2;
 
+    /**
+     * SKESK - Symmetric Key Encrypted Session Key Packet
+     */
     case SymEncryptedSessionKey = 3;
 
+    /**
+     * OPS - One-Pass Signature Packet
+     */
     case OnePassSignature = 4;
 
+    /**
+     * SECKEY - Secret Key Packet
+     */
     case SecretKey = 5;
 
+    /**
+     * PUBKEY - Public Key Packet
+     */
     case PublicKey = 6;
 
+    /**
+     * SECSUBKEY - Secret Subkey Packet
+     */
     case SecretSubkey = 7;
 
+    /**
+     * COMP - Compressed Data Packet
+     */
     case CompressedData = 8;
 
+    /**
+     * SED - Symmetrically Encrypted Data Packet
+     */
     case SymEncryptedData = 9;
 
+    /**
+     * MARKER - Marker Packet
+     */
     case Marker = 10;
 
+    /**
+     * LIT - Literal Data Packet
+     */
     case LiteralData = 11;
 
+    /**
+     * TRUST - Trust Packet
+     */
     case Trust = 12;
 
+    /**
+     * UID - User ID Packet
+     */
     case UserID = 13;
 
+    /**
+     * PUBSUBKEY - Public Subkey Packet
+     */
     case PublicSubkey = 14;
 
+    /**
+     * UAT - User Attribute Packet
+     */
     case UserAttribute = 17;
 
+    /**
+     * SEIPD - Symmetrically Encrypted and Integrity Protected Data Packet
+     */
     case SymEncryptedIntegrityProtectedData = 18;
 
-    case ModificationDetectionCode = 19;
-
+    /**
+     * AEAD - Aead Encrypted Protected Data Packet
+     */
     case AeadEncryptedData = 20;
+
+    /**
+     * PADDING - Padding Packet
+     */
+    case Padding = 21;
 }

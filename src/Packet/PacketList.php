@@ -138,11 +138,6 @@ class PacketList implements PacketListInterface
                         $reader->getData()
                     );
                     break;
-                case PacketTag::ModificationDetectionCode:
-                    $packets[] = ModificationDetectionCode::fromBytes(
-                        $reader->getData()
-                    );
-                    break;
                 case PacketTag::AeadEncryptedData:
                     $packets[] = AeadEncryptedData::fromBytes(
                         $reader->getData()
