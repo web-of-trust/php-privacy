@@ -249,8 +249,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
             $sharedKey,
             $param,
         ]);
-        $hash = hash(strtolower($hash->name), $toHash, true);
-        return substr($hash, 0, $keySize);
+        return substr($hash->hash($toHash), 0, $keySize);
     }
 
     /**

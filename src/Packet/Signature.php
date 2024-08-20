@@ -220,9 +220,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             $signatureType,
             $keyAlgorithm,
             $hashAlgorithm,
-            substr(hash(
-                strtolower($hashAlgorithm->name), $message, true
-            ), 0, 2),
+            substr($hashAlgorithm->hash($message), 0, 2),
             self::signMessage($signKey, $hashAlgorithm, $message),
             $hashedSubpackets,
         );
@@ -609,9 +607,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             $this->signatureData,
             $trailer,
         ]);
-        $hash = hash(
-            strtolower($this->hashAlgorithm->name), $message, true
-        );
+        $hash = $this->hashAlgorithm->hash($message);
         if ($this->signedHashValue !== substr($hash, 0, 2)) {
             $this->getLogger()->warning(
                 'Signed digest did not match.'

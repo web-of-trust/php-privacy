@@ -91,4 +91,18 @@ enum HashAlgorithm: int
             self::Sha3_512 => '2.16.840.1.101.3.4.2.10',
         };
     }
+
+    /**
+     * Generate a hash value (message digest)
+     *
+     * @param string $message
+     * @param bool $binary
+     * @return string
+     */
+    public function hash(string $message, bool $binary = true): string
+    {
+        return hash(
+            strtolower(str_replace('_', '-', $this->name)), $message, $binary
+        );
+    }
 }

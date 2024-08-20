@@ -84,7 +84,7 @@ class EdDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMat
     public function sign(HashAlgorithm $hash, string $message): string
     {
         $signature = $this->getPrivateKey()->sign(
-            hash(strtolower($hash->name), $message, true)
+            $hash->hash($message)
         );
         $length = intval(self::SIGNATURE_LENGTH / 2);
         return implode([
