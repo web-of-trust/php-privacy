@@ -163,7 +163,7 @@ enum SignatureSubpacketType: int
     case KeyBlock = 38;
 
     /**
-     * Preferred AEAD Ciphersuites
+     * Preferred AEAD Ciphers
      */
-    case PreferredAEADCiphersuites = 39;
+    case PreferredAEADCiphers = 39;
 }

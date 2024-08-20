@@ -222,8 +222,8 @@ class SubpacketReader
                             $data, $critical, $reader->isLong()
                         );
                         break;
-                    case SignatureSubpacketType::PreferredAEADCiphersuites:
-                        $subpackets[] = new Signature\PreferredAEADCiphersuites(
+                    case SignatureSubpacketType::PreferredAEADCiphers:
+                        $subpackets[] = new Signature\PreferredAEADCiphers(
                             $data, $critical, $reader->isLong()
                         );
                         break;
