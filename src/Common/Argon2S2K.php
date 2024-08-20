@@ -68,7 +68,12 @@ class Argon2S2K implements S2KInterface
                 'Argon2 string to key is unsupported',
             );
         }
-        if ($parallelism != self::ARGON2_PARALLELISM) {
+        if (strlen($salt) !== self::SALT_LENGTH) {
+            throw new \InvalidArgumentException(
+                'Salt size must be ' . self::SALT_LENGTH . ' bytes.',
+            );
+        }
+        if ($parallelism !== self::ARGON2_PARALLELISM) {
             throw new \InvalidArgumentException(
                 'Degree of parallelism only support ' . self::ARGON2_PARALLELISM,
             );
