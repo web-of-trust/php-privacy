@@ -33,16 +33,62 @@ enum HashAlgorithm: int
 
     case Sha224 = 11;
 
+    case Sha3_256 = 12;
+
+    case Sha3_512 = 14;
+
+    /**
+     * Digest Size
+     *
+     * @return int
+     */
     public function digestSize(): int
     {
         return match($this) {
             self::Unknown => 0,
             self::Md5 => 16,
             self::Sha1, self::Ripemd160 => 20,
-            self::Sha256 => 32,
+            self::Sha256, self::Sha3_256 => 32,
             self::Sha384 => 48,
-            self::Sha512 => 64,
+            self::Sha512, self::Sha3_512 => 64,
             self::Sha224 => 28,
+        };
+    }
+
+    /**
+     * V6 Signature Salt Size
+     *
+     * @return int
+     */
+    public function saltSize(): int
+    {
+        return match($this) {
+            self::Unknown, self::Md5, self::Sha1, self::Ripemd160 => 0,
+            self::Sha224, self::Sha256, self::Sha3_256 => 16,
+            self::Sha384 => 24,
+            self::Sha512, self::Sha3_512 => 32,
+        };
+    }
+
+    /**
+     * Identifiers for RSA Signatures
+     * Use of EMSA‑PKCS1‑v1_5 Padding Registry
+     *
+     * @return string
+     */
+    public function oid(): string
+    {
+        return match($this) {
+            self::Unknown => '',
+            self::Md5 => '1.2.840.113549.2.5',
+            self::Sha1 => '1.3.14.3.2.26',
+            self::Ripemd160 => '1.3.36.3.2.1',
+            self::Sha256 => '2.16.840.1.101.3.4.2.1',
+            self::Sha384 => '2.16.840.1.101.3.4.2.2',
+            self::Sha512 => '2.16.840.1.101.3.4.2.3',
+            self::Sha224 => '2.16.840.1.101.3.4.2.4',
+            self::Sha3_256 => '2.16.840.1.101.3.4.2.8',
+            self::Sha3_512 => '2.16.840.1.101.3.4.2.10',
         };
     }
 }
