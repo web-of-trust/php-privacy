@@ -99,6 +99,11 @@ enum PacketTag: int
     case SymEncryptedIntegrityProtectedData = 18;
 
     /**
+     * MDC - Modification Detection Code Packet
+     */
+    case ModificationDetectionCode = 19;
+
+    /**
      * AEAD - Aead Encrypted Protected Data Packet
      */
     case AeadEncryptedData = 20;
