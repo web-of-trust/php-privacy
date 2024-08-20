@@ -22,6 +22,8 @@ use phpseclib3\Crypt\Random;
  */
 class Argon2S2K implements S2KInterface
 {
+    use S2KTrait;
+
     /**
      * Default salt length
      */
@@ -31,6 +33,11 @@ class Argon2S2K implements S2KInterface
      * Argon2 parallelism
      */
     const ARGON2_PARALLELISM = 1;
+
+    /**
+     * String-to-key type
+     */
+    private readonly S2kType $type;
 
     /**
      * The maximum amount of RAM that the function will use, in bytes
@@ -66,30 +73,7 @@ class Argon2S2K implements S2KInterface
             );
         }
         $this->memLimit = 2 << ($this->memoryExponent + 9);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getType(): S2kType
-    {
-        return S2kType::Argon2;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSalt(): string
-    {
-        return $this->salt;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getLength(): int
-    {
-        return $this->getType()->packetLength();
+        $this->type = S2kType::Argon2;
     }
 
     /**
@@ -98,7 +82,7 @@ class Argon2S2K implements S2KInterface
     public function toBytes(): string
     {
         return implode([
-            chr($this->getType()->value),
+            chr($this->type->value),
             $this->salt,
             chr($this->time),
             chr($this->parallelism),
@@ -138,15 +122,5 @@ class Argon2S2K implements S2KInterface
         $parallelism = ord($bytes[$offset++]);
         $memoryExponent = ord($bytes[$offset++]);
         return new self($salt, $time, $parallelism, $memoryExponent);
-    }
-
-    /**
-     * Generate random salt string
-     * 
-     * @return string
-     */
-    public static function generateSalt(): string 
-    {
-        return Random::string(self::SALT_LENGTH);
     }
 }

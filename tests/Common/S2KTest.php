@@ -2,6 +2,7 @@
 
 namespace OpenPGP\Tests\Packet;
 
+use OpenPGP\Common\Argon2S2K;
 use OpenPGP\Common\S2K;
 use OpenPGP\Enum\HashAlgorithm;
 use OpenPGP\Enum\S2kType;
@@ -174,5 +175,15 @@ class S2KTest extends OpenPGPTestCase
         $s2k = new S2K($salt, $s2k->getType(), $s2k->getHashAlgorithm(), $s2k->getItCount());
         $key = $s2k->produceKey($passphrase, $skesk->getSymmetric()->keySizeInByte());
         $this->assertSame(bin2hex($key), 'f3d0ce52ed6143637443e3399437fd0f');
+    }
+
+    public function testArgon2S2K()
+    {
+        $password = 'password';
+        $salt = '3c231fac71d107aa8e274fa3fa4ff914';
+        $hash = '8b77c734c5ab3aaec00d327b8a9871e029a55372b5c4807cec2f9dbcbe70f485';
+
+        $s2k = new Argon2S2K(hex2bin($salt), 4, 1, 16);
+        $this->assertSame(bin2hex($s2k->produceKey($password, 32)), $hash);
     }
 }

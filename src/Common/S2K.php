@@ -30,6 +30,8 @@ use OpenPGP\Type\S2KInterface;
  */
 class S2K implements S2KInterface
 {
+    use S2KTrait;
+
     /**
      * Default salt length
      */
@@ -67,30 +69,6 @@ class S2K implements S2KInterface
     )
     {
         $this->count = (16 + ($itCount & 15)) << (($itCount >> 4) + self::EXPBIAS);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getType(): S2kType
-    {
-        return $this->type;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSalt(): string
-    {
-        return $this->salt;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getLength(): int
-    {
-        return $this->type->packetLength();
     }
 
     /**
