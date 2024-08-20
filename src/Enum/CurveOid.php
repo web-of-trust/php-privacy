@@ -10,8 +10,7 @@ namespace OpenPGP\Enum;
 
 use phpseclib3\Crypt\EC\BaseCurves\Base as BaseCurve;
 use phpseclib3\Crypt\EC\Curves\{
-    prime256v1,
-    secp256k1,
+    secp256r1,
     secp384r1,
     secp521r1,
     brainpoolP256r1,
@@ -31,9 +30,7 @@ use phpseclib3\File\ASN1;
  */
 enum CurveOid: string
 {
-    case Prime256v1 = '1.2.840.10045.3.1.7';
-
-    case Secp256k1 = '1.3.132.0.10';
+    case Secp256r1 = '1.2.840.10045.3.1.7';
 
     case Secp384r1 = '1.3.132.0.34';
 
@@ -57,8 +54,7 @@ enum CurveOid: string
     public function getCurve(): BaseCurve
     {
         return match($this) {
-            self::Prime256v1 => new prime256v1(),
-            self::Secp256k1 => new secp256k1(),
+            self::Secp256r1 => new secp256r1(),
             self::Secp384r1 => new secp384r1,
             self::Secp521r1 => new secp521r1(),
             self::BrainpoolP256r1 => new brainpoolP256r1(),
@@ -72,8 +68,7 @@ enum CurveOid: string
     public function hashAlgorithm(): HashAlgorithm
     {
         return match($this) {
-            self::Prime256v1,
-            self::Secp256k1,
+            self::Secp256r1,
             self::BrainpoolP256r1,
             self::Curve25519
                 => HashAlgorithm::Sha256,
@@ -90,8 +85,7 @@ enum CurveOid: string
     public function symmetricAlgorithm(): SymmetricAlgorithm
     {
         return match($this) {
-            self::Prime256v1,
-            self::Secp256k1,
+            self::Secp256r1,
             self::Secp384r1,
             self::Ed25519,
             self::Curve25519

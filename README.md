@@ -24,10 +24,9 @@ It implements [RFC9580](https://www.rfc-editor.org/rfc/rfc9580).
 * Support hash algorithms: MD5, SHA-1, RIPEMD-160, SHA-256, SHA-384, SHA-512, SHA-224.
 * Support compression algorithms: Zip, Zlib, BZip2.
 * Support [ECC](https://en.wikipedia.org/wiki/Elliptic-curve_cryptography) curves:
-  [secP256k1, secP384r1, secP521r1](https://www.rfc-editor.org/rfc/rfc6090),
+  [secP256r1, secP384r1, secP521r1](https://www.rfc-editor.org/rfc/rfc6090),
   [brainpoolP256r1, brainpoolP384r1, brainpoolP512r1](https://www.rfc-editor.org/rfc/rfc5639),
-  [curve25519](https://www.rfc-editor.org/rfc/rfc7748), [ed25519](https://www.rfc-editor.org/rfc/rfc8032),
-  [prime256v1](https://www.secg.org/sec2-v2.pdf).
+  [curve25519](https://www.rfc-editor.org/rfc/rfc7748), [ed25519](https://www.rfc-editor.org/rfc/rfc8032).
 
 ## Installation
 Via [Composer](https://getcomposer.org)
