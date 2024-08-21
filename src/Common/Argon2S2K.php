@@ -80,7 +80,7 @@ class Argon2S2K implements S2KInterface
             }
             elseif ($parallelism > self::PHP_PARALLELISM) {
                 throw new \InvalidArgumentException(
-                    'Parallelism only support ' . self::PHP_PARALLELISM,
+                    'PHP Argon2 only support 1 parallelism',
                 );
             }
         }
