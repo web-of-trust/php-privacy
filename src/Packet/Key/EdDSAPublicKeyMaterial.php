@@ -8,9 +8,16 @@
 
 namespace OpenPGP\Packet\Key;
 
-use OpenPGP\Common\Helper;
+use OpenPGP\Enum\EdDsaCurve;
 use OpenPGP\Enum\HashAlgorithm;
 use OpenPGP\Type\PublicKeyMaterialInterface;
+use phpseclib3\Crypt\Common\{
+    AsymmetricKey,
+    PublicKey,
+};
+use phpseclib3\Crypt\EC\PublicKey as ECPublicKey;
+use phpseclib3\Crypt\EC\BaseCurves\TwistedEdwards;
+use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
 
 /**
  * EdDSA public key material class
@@ -19,21 +26,110 @@ use OpenPGP\Type\PublicKeyMaterialInterface;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class EdDSAPublicKeyMaterial extends ECPublicKeyMaterial implements PublicKeyMaterialInterface
+class EdDSAPublicKeyMaterial implements PublicKeyMaterialInterface
 {
+    /**
+     * phpseclib3 EC public key
+     */
+    private readonly ECPublicKey $publicKey;
+
+    /**
+     * Constructor
+     *
+     * @param string $a
+     * @param TwistedEdwards $curve
+     * @param ECPublicKey $publicKey
+     * @return self
+     */
+    public function __construct(
+        private readonly string $a,
+        TwistedEdwards $curve,
+        ?ECPublicKey $publicKey = null
+    )
+    {
+        if ($publicKey instanceof ECPublicKey) {
+            $this->publicKey = $publicKey;
+        }
+        else {
+            $key = PKCS8::savePublicKey(
+                $curve,
+                PKCS8::extractPoint($a, $curve)
+            );
+            $this->publicKey = EC::loadPublicKeyFormat('PKCS8', $key);
+        }
+    }
+
     /**
      * Read key material from bytes
      *
      * @param string $bytes
+     * @param EdDsaCurve $curve
      * @return self
      */
-    public static function fromBytes(string $bytes): self
+    public static function fromBytes(
+        string $bytes, EdDsaCurve $curve = EdDsaCurve::Ed25519
+    ): self
     {
-        $length = ord($bytes[0]);
         return new self(
-            substr($bytes, 1, $length),
-            Helper::readMPI(substr($bytes, $length + 1))
+            substr($bytes, 0, $curve->payloadSize()),
+            $curve->getCurve(),
         );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getKeyLength(): int
+    {
+        return $this->publicKey->getLength();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPublicKey(): PublicKey
+    {
+        return $this->publicKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPublicMaterial(): KeyMaterialInterface
+    {
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAsymmetricKey(): AsymmetricKey
+    {
+        return $this->publicKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParameters(): array
+    {
+        return PKCS8::load($this->publicKey->toString('PKCS8'));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isValid(): bool
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toBytes(): string
+    {
+        return $this->a;
     }
 
     /**
@@ -45,21 +141,9 @@ class EdDSAPublicKeyMaterial extends ECPublicKeyMaterial implements PublicKeyMat
         string $signature
     ): bool
     {
-        $bitLength = Helper::bytesToShort($signature);
-        $r = substr(
-            $signature, 2, Helper::bit2ByteLength($bitLength)
-        );
-
-        $bitLength = Helper::bytesToShort(
-            substr($signature, strlen($r) + 2)
-        );
-        $s = substr(
-            $signature, strlen($r) + 4,
-            Helper::bit2ByteLength($bitLength)
-        );
-        return $this->getPublicKey()->verify(
+        return $this->publicKey->verify(
             $hash->hash($message),
-            implode([$r, $s])
+            $signature
         );
     }
 }

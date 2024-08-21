@@ -8,14 +8,16 @@
 
 namespace OpenPGP\Packet\Key;
 
+use phpseclib3\Crypt\Common\{
+    AsymmetricKey,
+    PrivateKey,
+    PublicKey,
+};
 use phpseclib3\Crypt\EC;
-use phpseclib3\Crypt\EC\PrivateKey;
+use phpseclib3\Crypt\EC\PrivateKey as ECPrivateKey;
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
-use phpseclib3\File\ASN1;
-use phpseclib3\Math\BigInteger;
-use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{
-    CurveOid,
+    EdDsaCurve,
     HashAlgorithm,
 };
 use OpenPGP\Type\{
@@ -30,24 +32,57 @@ use OpenPGP\Type\{
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class EdDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMaterialInterface
+class EdDSASecretKeyMaterial implements SecretKeyMaterialInterface
 {
-    const ED25519_KEY_LENGTH = 32;
-    const SIGNATURE_LENGTH   = 64;
+    /**
+     * phpseclib3 EC private key
+     */
+    private readonly ECPrivateKey $privateKey;
+
+    /**
+     * Constructor
+     *
+     * @param string $secret
+     * @param KeyMaterialInterface $publicMaterial
+     * @param ECPrivateKey $privateKey
+     * @return self
+     */
+    public function __construct(
+        private readonly string $secret,
+        private readonly KeyMaterialInterface $publicMaterial,
+        ?ECPrivateKey $privateKey = null
+    )
+    {
+        if ($privateKey instanceof ECPrivateKey) {
+            $this->privateKey = $privateKey;
+        }
+        else {
+            $params = $publicMaterial->getParameters();
+            $curve = $params['curve'];
+            $arr = $curve->extractSecret($secret);
+            $key = PKCS8::savePrivateKey(
+                $arr['dA'], $curve, $params['QA'], $arr['secret']
+            );
+            $this->privateKey = EC::loadPrivateKeyFormat('PKCS8', $key);
+        }
+    }
 
     /**
      * Read key material from bytes
      *
      * @param string $bytes
      * @param KeyMaterialInterface $publicMaterial
+     * @param EdDsaCurve $curve
      * @return self
      */
     public static function fromBytes(
-        string $bytes, KeyMaterialInterface $publicMaterial
+        string $bytes,
+        KeyMaterialInterface $publicMaterial,
+        EdDsaCurve $curve = EdDsaCurve::Ed25519
     ): self
     {
         return new self(
-            Helper::readMPI($bytes),
+            substr($bytes, 0, $curve->payloadSize()),
             $publicMaterial
         );
     }
@@ -55,23 +90,24 @@ class EdDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMat
     /**
      * Generate key material by using EC create key
      *
+     * @param EdDsaCurve $curve
      * @return self
      */
-    public static function generate(): self
+    public static function generate(
+        EdDsaCurve $curve = EdDsaCurve::Ed25519
+    ): self
     {
-        $curve = CurveOid::Ed25519;
+        $size = $curve->payloadSize();
         do {
             $privateKey = EC::createKey($curve->name);
             $params = PKCS8::load($privateKey->toString('PKCS8'));
-            $d = Helper::bin2BigInt($params['secret']);
-        } while ($d->getLengthInBytes() !== self::ED25519_KEY_LENGTH);
+            $secret = $params['secret'];
+        } while (strlen($secret) !== $size);
         return new self(
-            $d,
+            $secret,
             new EdDSAPublicKeyMaterial(
-                ASN1::encodeOID($curve->value),
-                Helper::bin2BigInt(
-                    "\x40" . $privateKey->getEncodedCoordinates()
-                ),
+                $privateKey->getEncodedCoordinates(),
+                $params['curve'],
                 $privateKey->getPublicKey()
             ),
             $privateKey,
@@ -81,17 +117,80 @@ class EdDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMat
     /**
      * {@inheritdoc}
      */
+    public function getPrivateKey(): PrivateKey
+    {
+        return $this->privateKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPublicKey(): PublicKey
+    {
+        return $this->privateKey->getPublicKey();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPublicMaterial(): KeyMaterialInterface
+    {
+        return $this->publicMaterial;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAsymmetricKey(): AsymmetricKey
+    {
+        return $this->privateKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getKeyLength(): int
+    {
+        return $this->publicMaterial->getKeyLength();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParameters(): array
+    {
+        return PKCS8::load($this->privateKey->toString('PKCS8'));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isValid(): bool
+    {
+        if ($this->publicMaterial instanceof EdDSAPublicKeyMaterial) {
+            return strcmp(
+                $this->privateKey->getEncodedCoordinates(),
+                $this->publicMaterial->toBytes(),
+            ) === 0;
+        }
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toBytes(): string
+    {
+        return $this->secret;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function sign(HashAlgorithm $hash, string $message): string
     {
-        $signature = $this->getPrivateKey()->sign(
+        return $this->privateKey->sign(
             $hash->hash($message)
         );
-        $length = intval(self::SIGNATURE_LENGTH / 2);
-        return implode([
-            pack('n', $length * 8), // r bit length
-            substr($signature, 0, $length), // r
-            pack('n', $length * 8), // s bit length
-            substr($signature, $length, $length), // s
-        ]);
     }
 }
