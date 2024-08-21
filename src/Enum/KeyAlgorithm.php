@@ -68,7 +68,7 @@ enum KeyAlgorithm: int
     /**
      * EdDSA (Sign only) - deprecated by rfc9580 (replaced by `ed25519` identifier below)
      */
-    case EdDsa = 22;
+    case EdDsaLegacy = 22;
 
     /**
      * Reserved for AEDH
