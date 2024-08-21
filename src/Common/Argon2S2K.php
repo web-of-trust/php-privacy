@@ -11,7 +11,9 @@ namespace OpenPGP\Common;
 use OpenPGP\Enum\S2kType;
 use OpenPGP\Type\S2KInterface;
 use phpseclib3\Crypt\Random;
-use Symfony\Component\Process;
+use Symfony\Component\Process\ExecutableFinder;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 /**
  * Argon2 string-to-key class
@@ -69,7 +71,7 @@ class Argon2S2K implements S2KInterface
         private readonly int $memoryExponent = 16,
     )
     {
-        $finder = new Process\ExecutableFinder();
+        $finder = new ExecutableFinder();
         if (empty($this->argon2Path = $finder->find(self::ARGON2_COMMAND))) {
             if (!function_exists('sodium_crypto_pwhash')) {
                 throw new \UnexpectedValueException(
@@ -122,7 +124,7 @@ class Argon2S2K implements S2KInterface
             );
         }
         else {
-            $process = new Process\Process([
+            $process = new Process([
                 $this->argon2Path, $this->salt, '-id', '-r',
                 '-l', $keyLen,
                 '-t', $this->time,
@@ -130,11 +132,13 @@ class Argon2S2K implements S2KInterface
                 '-m', $this->memoryExponent,
             ]);
             $process->setInput($passphrase);
-            $process->run();
-            if (!$process->isSuccessful()) {
-                throw new Process\Exception\ProcessFailedException($process);
+            try {
+                $process->mustRun();
+                return hex2bin(trim($process->getOutput()));
             }
-            return hex2bin(trim($process->getOutput()));
+            catch (ProcessFailedException $ex) {
+                throw $ex;
+            }
         }
     }
 
