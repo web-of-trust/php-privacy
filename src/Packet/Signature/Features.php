@@ -60,35 +60,35 @@ class Features extends SignatureSubpacket
     }
 
     /**
-     * Support modification detection
+     * Support version 1 SEIPD
      *
      * @return bool
      */
-    public function supportModificationDetection(): bool
+    public function supportVersion1SEIPD(): bool
     {
-        return (ord($this->getData()[0]) & SupportFeature::ModificationDetection->value)
-            === SupportFeature::ModificationDetection->value;
+        return (ord($this->getData()[0]) & SupportFeature::Version1SEIPD->value)
+            === SupportFeature::Version1SEIPD->value;
     }
 
     /**
-     * Support aead encrypted data
+     * Support version 6 public key
      *
      * @return bool
      */
-    public function supportAeadEncryptedData(): bool
+    public function supportVersion6PublicKey(): bool
     {
-        return (ord($this->getData()[0]) & SupportFeature::AeadEncryptedData->value)
-            === SupportFeature::AeadEncryptedData->value;
+        return (ord($this->getData()[0]) & SupportFeature::Version6PublicKey->value)
+            === SupportFeature::Version6PublicKey->value;
     }
 
     /**
-     * Support version 5 public key
+     * Support version 2 SEIPD
      *
      * @return bool
      */
-    public function supportVersion5PublicKey(): bool
+    public function supportVersion2SEIPD(): bool
     {
-        return (ord($this->getData()[0]) & SupportFeature::Version5PublicKey->value)
-            === SupportFeature::Version5PublicKey->value;
+        return (ord($this->getData()[0]) & SupportFeature::Version2SEIPD->value)
+            === SupportFeature::Version2SEIPD->value;
     }
 }

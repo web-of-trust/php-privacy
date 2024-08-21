@@ -10,7 +10,8 @@ namespace OpenPGP\Enum;
 
 /**
  * Support feature enum
- * See https://tools.ietf.org/html/draft-ietf-openpgp-rfc4880bis-04#section-5.2.3.25
+ * 
+ * See https://www.rfc-editor.org/rfc/rfc9580#name-features
  *
  * @package  OpenPGP
  * @category Enum
@@ -18,9 +19,18 @@ namespace OpenPGP\Enum;
  */
 enum SupportFeature: int
 {
-    case ModificationDetection = 1;
+    /**
+     * Version 1 Symmetrically Encrypted and Integrity Protected Data packet
+     */
+    case Version1SEIPD = 1;
 
-    case AeadEncryptedData = 2;
+    /**
+     * Version 6 Public-Key Packet format and corresponding new fingerprint format
+     */
+    case Version6PublicKey = 2;
 
-    case Version5PublicKey = 3;
+    /**
+     * Version 2 Symmetrically Encrypted and Integrity Protected Data packet
+     */
+    case Version2SEIPD = 8;
 }

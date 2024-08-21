@@ -20,36 +20,84 @@ namespace OpenPGP\Enum;
  */
 enum KeyAlgorithm: int
 {
+    /**
+     * RSA (Encrypt or Sign) [HAC]
+     */
     case RsaEncryptSign = 1;
 
+    /**
+     * RSA (Encrypt only) [HAC]
+     */
     case RsaEncrypt = 2;
 
+    /**
+     * RSA (Sign only) [HAC]
+     */
     case RsaSign = 3;
 
+    /**
+     * Elgamal (Encrypt only) [ELGAMAL] [HAC]
+     */
     case ElGamal = 16;
 
+    /**
+     * DSA (Sign only) [FIPS186] [HAC]
+     */
     case Dsa = 17;
 
+    /**
+     * ECDH (Encrypt only) [RFC6637]
+     */
     case Ecdh = 18;
 
+    /**
+     * ECDSA (Sign only) [RFC6637]
+     */
     case EcDsa = 19;
 
+    /**
+     * ECDSA (Sign only) [RFC6637]
+     */
     case ElGamalEncryptSign = 20;
 
+    /**
+     * Diffie Hellman
+     */
     case DiffieHellman = 21;
 
+    /**
+     * EdDSA (Sign only) - deprecated by rfc9580 (replaced by `ed25519` identifier below)
+     */
     case EdDsa = 22;
 
+    /**
+     * Reserved for AEDH
+     */
     case Aedh = 23;
 
+    /**
+     * Reserved for AEDSA
+     */
     case AeDsa = 24;
 
+    /**
+     * X25519 (Encrypt only)
+     */
     case X25519 = 25;
 
+    /**
+     * X448 (Encrypt only)
+     */
     case X448 = 26;
 
+    /**
+     * Ed25519 (Sign only)
+     */
     case Ed25519 = 27;
 
+    /**
+     * Ed448 (Sign only)
+     */
     case Ed448 = 28;
 
     /**

@@ -10,6 +10,8 @@ namespace OpenPGP\Enum;
 
 /**
  * Key flag enum
+ * 
+ * @see https://www.rfc-editor.org/rfc/rfc9580#name-key-flags
  *
  * @package  OpenPGP
  * @category Enum
@@ -18,37 +20,39 @@ namespace OpenPGP\Enum;
 enum KeyFlag: int
 {
     /**
-     * 0x01 - This key may be used to certify other keys.
+     * This key may be used to make User ID certifications
+     * (Signature Type IDs 0x10-0x13) or Direct Key signatures
+     * (Signature Type ID 0x1F) over other keys.
      */
-    case CertifyKeys = 1;
+    case CertifyKeys = 0x01;
 
     /**
-     * 0x02 - This key may be used to sign data.
+     * This key may be used to sign data.
      */
-    case SignData = 2;
+    case SignData = 0x02;
 
     /**
-     * 0x04 - This key may be used to encrypt communications.
+     * This key may be used to encrypt communications.
      */
-    case EncryptCommunication = 4;
+    case EncryptCommunication = 0x04;
 
     /**
-     * 0x08 - This key may be used to encrypt storage.
+     * This key may be used to encrypt storage.
      */
-    case EncryptStorage = 8;
+    case EncryptStorage = 0x08;
 
     /**
-     * 0x10 - The private component of this key may have been split by a secret-sharing mechanism.
+     * The private component of this key may have been split by a secret-sharing mechanism.
      */
-    case SplitPrivateKey = 16;
+    case SplitPrivateKey = 0x10;
 
     /**
-     * 0x20 - This key may be used for authentication.
+     * This key may be used for authentication.
      */
-    case Authentication = 32;
+    case Authentication = 0x20;
 
     /**
-     * 0x80 - The private component of this key may be in the possession of more than one person.
+     * The private component of this key may be in the possession of more than one person.
      */
-    case SharedPrivateKey = 128;
+    case SharedPrivateKey = 0x80;
 }

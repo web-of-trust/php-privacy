@@ -276,13 +276,13 @@ EOT;
     public function testFeatures()
     {
         $features = Features::fromFeatures(
-            SupportFeature::ModificationDetection->value |
-            SupportFeature::AeadEncryptedData->value |
-            SupportFeature::Version5PublicKey->value
+            SupportFeature::Version2SEIPD->value |
+            SupportFeature::Version6PublicKey->value |
+            SupportFeature::Version2SEIPD->value
         );
-        $this->assertTrue($features->supportModificationDetection());
-        $this->assertTrue($features->supportAeadEncryptedData());
-        $this->assertTrue($features->supportVersion5PublicKey());
+        $this->assertTrue($features->supportVersion2SEIPD());
+        $this->assertTrue($features->supportVersion6PublicKey());
+        $this->assertTrue($features->supportVersion2SEIPD());
     }
 
     public function testKeyFlag()
