@@ -110,12 +110,12 @@ class Argon2S2K implements S2KInterface
      * {@inheritdoc}
      */
     public function produceKey(
-        string $passphrase, int $keyLen
+        string $passphrase, int $length
     ): string
     {
         if (empty($this->argon2Path)) {
             return sodium_crypto_pwhash(
-                $keyLen,
+                $length,
                 $passphrase,
                 $this->salt,
                 $this->time,
@@ -125,7 +125,7 @@ class Argon2S2K implements S2KInterface
         else {
             $process = new Process([
                 $this->argon2Path, $this->salt, '-id', '-r',
-                '-l', $keyLen,
+                '-l', $length,
                 '-t', $this->time,
                 '-p', $this->parallelism,
                 '-m', $this->memoryExponent,

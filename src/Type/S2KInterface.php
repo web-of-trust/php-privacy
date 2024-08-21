@@ -51,8 +51,8 @@ interface S2KInterface
      * Produce a key using the specified passphrase and the defined hash algorithm
      * 
      * @param string $passphrase
-     * @param int $keyLen
+     * @param int $length
      * @return string
      */
-    function produceKey(string $passphrase, int $keyLen): string;
+    function produceKey(string $passphrase, int $length): string;
 }

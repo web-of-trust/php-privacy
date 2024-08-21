@@ -104,18 +104,18 @@ class S2K implements S2KInterface
      * {@inheritdoc}
      */
     public function produceKey(
-        string $passphrase, int $keyLen
+        string $passphrase, int $length
     ): string
     {
         return match($this->type) {
-            S2kType::Simple => $this->hash($passphrase, $keyLen),
+            S2kType::Simple => $this->hash($passphrase, $length),
             S2kType::Salted => $this->hash(
-                $this->salt . $passphrase, $keyLen
+                $this->salt . $passphrase, $length
             ),
             S2kType::Iterated => $this->hash(
-                $this->iterate($this->salt . $passphrase), $keyLen
+                $this->iterate($this->salt . $passphrase), $length
             ),
-            S2kType::GNU => $this->hash($passphrase, $keyLen),
+            S2kType::GNU => $this->hash($passphrase, $length),
         };
     }
 
