@@ -114,13 +114,12 @@ class Argon2S2K implements S2KInterface
     ): string
     {
         if (empty($this->argon2Path)) {
-            $memLimit = 2 << ($this->memoryExponent + 9);
             return sodium_crypto_pwhash(
                 $keyLen,
                 $passphrase,
                 $this->salt,
                 $this->time,
-                $memLimit
+                1 << ($this->memoryExponent + 10)
             );
         }
         else {
