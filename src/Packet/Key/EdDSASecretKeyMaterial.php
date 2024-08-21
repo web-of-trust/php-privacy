@@ -8,14 +8,6 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\Common\{
-    AsymmetricKey,
-    PrivateKey,
-    PublicKey,
-};
-use phpseclib3\Crypt\EC;
-use phpseclib3\Crypt\EC\PrivateKey as ECPrivateKey;
-use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
 use OpenPGP\Enum\{
     EdDsaCurve,
     HashAlgorithm,
@@ -24,6 +16,14 @@ use OpenPGP\Type\{
     KeyMaterialInterface,
     SecretKeyMaterialInterface,
 };
+use phpseclib3\Crypt\Common\{
+    AsymmetricKey,
+    PrivateKey,
+    PublicKey,
+};
+use phpseclib3\Crypt\EC;
+use phpseclib3\Crypt\EC\PrivateKey as ECPrivateKey;
+use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
 
 /**
  * EdDSA secret key material class
