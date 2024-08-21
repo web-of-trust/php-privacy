@@ -11,6 +11,7 @@ namespace OpenPGP\Common;
 use OpenPGP\Enum\S2kType;
 use OpenPGP\Type\S2KInterface;
 use phpseclib3\Crypt\Random;
+use Symfony\Component\Process;
 
 /**
  * Argon2 string-to-key class
@@ -33,14 +34,19 @@ class Argon2S2K implements S2KInterface
     const SALT_LENGTH = 16;
 
     /**
-     * Argon2 parallelism
+     * PHP parallelism
      */
-    const ARGON2_PARALLELISM = 1;
+    const PHP_PARALLELISM = 1;
 
     /**
-     * The maximum amount of RAM that the function will use, in bytes
+     * argon2 command
      */
-    private readonly int $memLimit;
+    const ARGON2_COMMAND = 'argon2';
+
+    /**
+     * Argon2 command path
+     */
+    private readonly string $argon2Path;
 
     /**
      * String-to-key type
@@ -58,27 +64,29 @@ class Argon2S2K implements S2KInterface
      */
     public function __construct(
         private readonly string $salt,
-        private readonly int $time = 4,
+        private readonly int $time = 3,
         private readonly int $parallelism = 1,
         private readonly int $memoryExponent = 16,
     )
     {
-        if (!function_exists('sodium_crypto_pwhash')) {
-            throw new \UnexpectedValueException(
-                'Argon2 string to key is unsupported',
-            );
+        $finder = new Process\ExecutableFinder();
+        if (empty($this->argon2Path = $finder->find(self::ARGON2_COMMAND))) {
+            if (!function_exists('sodium_crypto_pwhash')) {
+                throw new \UnexpectedValueException(
+                    'Argon2 string to key is unsupported',
+                );
+            }
+            elseif ($parallelism > self::PHP_PARALLELISM) {
+                throw new \InvalidArgumentException(
+                    'Parallelism only support ' . self::PHP_PARALLELISM,
+                );
+            }
         }
         if (strlen($salt) !== self::SALT_LENGTH) {
             throw new \InvalidArgumentException(
                 'Salt size must be ' . self::SALT_LENGTH . ' bytes.',
             );
         }
-        if ($parallelism !== self::ARGON2_PARALLELISM) {
-            throw new \InvalidArgumentException(
-                'Parallelism only support ' . self::ARGON2_PARALLELISM,
-            );
-        }
-        $this->memLimit = 2 << ($this->memoryExponent + 9);
         $this->type = S2kType::Argon2;
     }
 
@@ -103,13 +111,31 @@ class Argon2S2K implements S2KInterface
         string $passphrase, int $keyLen
     ): string
     {
-        return sodium_crypto_pwhash(
-            $keyLen,
-            $passphrase,
-            $this->salt,
-            $this->time,
-            $this->memLimit
-        );
+        if (empty($this->argon2Path)) {
+            $memLimit = 2 << ($this->memoryExponent + 9);
+            return sodium_crypto_pwhash(
+                $keyLen,
+                $passphrase,
+                $this->salt,
+                $this->time,
+                $memLimit
+            );
+        }
+        else {
+            $process = new Process\Process([
+                $this->argon2Path, $this->salt, '-id', '-r',
+                '-l', $keyLen,
+                '-t', $this->time,
+                '-p', $this->parallelism,
+                '-m', $this->memoryExponent,
+            ]);
+            $process->setInput($passphrase);
+            $process->run();
+            if (!$process->isSuccessful()) {
+                throw new Process\Exception\ProcessFailedException($process);
+            }
+            return hex2bin(trim($process->getOutput()));
+        }
     }
 
     /**
