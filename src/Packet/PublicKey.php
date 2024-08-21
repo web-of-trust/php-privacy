@@ -39,7 +39,7 @@ use OpenPGP\Type\{
 class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
 {
     const VERSION_4 = 4;
-    const VERSION_5 = 5;
+    const VERSION_6 = 6;
 
     private readonly string $fingerprint;
 
@@ -65,17 +65,17 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
             $this instanceof SubkeyPacketInterface ?
             PacketTag::PublicSubkey : PacketTag::PublicKey
         );
-        if ($version !== self::VERSION_4 && $version !== self::VERSION_5) {
+        if ($version !== self::VERSION_4 && $version !== self::VERSION_6) {
             throw new \UnexpectedValueException(
                 "Version $version of the key packet is unsupported.",
             );
         }
 
-        $isV5 = $version === self::VERSION_5;
-        $this->fingerprint = $isV5 ?
+        $isV6 = $version === self::VERSION_6;
+        $this->fingerprint = $isV6 ?
             hash('sha256', $this->getSignBytes(), true) :
             hash('sha1', $this->getSignBytes(), true);
-        $this->keyID = $isV5 ?
+        $this->keyID = $isV6 ?
             substr($this->fingerprint, 0, 8) :
             substr($this->fingerprint, 12, 8);
     }
@@ -89,7 +89,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
 
         // A one-octet version number.
         $version = ord($bytes[$offset++]);
-        if ($version !== self::VERSION_4 && $version !== self::VERSION_5) {
+        if ($version !== self::VERSION_4 && $version !== self::VERSION_6) {
             throw new \UnexpectedValueException(
                 "Version $version of the key packet is unsupported.",
             );
@@ -104,7 +104,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         // A one-octet number denoting the public-key algorithm of this key.
         $keyAlgorithm = KeyAlgorithm::from(ord($bytes[$offset++]));
 
-        if ($version === self::VERSION_5) {
+        if ($version === self::VERSION_6) {
             // - A four-octet scalar octet count for the following key material.
             $offset += 4;
         }
@@ -133,7 +133,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
             chr($this->version),
             pack('N', $this->creationTime->getTimestamp()),
             chr($this->keyAlgorithm->value),
-            ($this->version === self::VERSION_5) ? pack('N', strlen($kmBytes)) : '',
+            ($this->version === self::VERSION_6) ? pack('N', strlen($kmBytes)) : '',
             $kmBytes,
         ]);
     }
@@ -239,10 +239,10 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
     public function getSignBytes(): string
     {
         $bytes = $this->toBytes();
-        $isV5 = $this->version === self::VERSION_5;
+        $format = ($this->version === self::VERSION_6) ? 'N' : 'n';
         return implode([
-            $isV5 ? "\x9a" : "\x99",
-            $isV5 ? pack('N', strlen($bytes)) : pack('n', strlen($bytes)),
+            chr(0x95 + $this->version),
+            pack($format, strlen($bytes)),
             $bytes,
         ]);
     }
