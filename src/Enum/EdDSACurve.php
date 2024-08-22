@@ -21,7 +21,7 @@ use phpseclib3\Crypt\EC\Curves\{
  * @category Enum
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-enum EdDsaCurve
+enum EdDSACurve
 {
     case Ed25519;
 

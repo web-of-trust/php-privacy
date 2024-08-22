@@ -15,17 +15,17 @@ use phpseclib3\Crypt\EC\Curves\{
 };
 
 /**
- * Ecdh X Curve enum
+ * Montgomery Curve Enum
  * 
  * @package  OpenPGP
  * @category Enum
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-enum EcdhXCurve
+enum MontgomeryCurve
 {
-    case X25519;
+    case Curve25519;
 
-    case X448;
+    case Curve448;
 
     /**
      * Get curve
@@ -35,8 +35,8 @@ enum EcdhXCurve
     public function getCurve(): Montgomery
     {
         return match($this) {
-            self::X25519 => new Curve25519(),
-            self::X448   => new Curve448(),
+            self::Curve25519 => new Curve25519(),
+            self::Curve448   => new Curve448(),
         };
     }
 
@@ -48,8 +48,8 @@ enum EcdhXCurve
     public function payloadSize(): int
     {
         return match ($this) {
-            self::X25519 => 32,
-            self::X448   => 56,
+            self::Curve25519 => 32,
+            self::Curve448   => 56,
         };
     }
 }

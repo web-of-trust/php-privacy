@@ -8,7 +8,7 @@
 
 namespace OpenPGP\Packet\Key;
 
-use OpenPGP\Enum\EdDsaCurve;
+use OpenPGP\Enum\EdDSACurve;
 use OpenPGP\Enum\HashAlgorithm;
 use OpenPGP\Type\PublicKeyMaterialInterface;
 use phpseclib3\Crypt\Common\{
@@ -63,11 +63,11 @@ class EdDSAPublicKeyMaterial implements PublicKeyMaterialInterface
      * Read key material from bytes
      *
      * @param string $bytes
-     * @param EdDsaCurve $curve
+     * @param EdDSACurve $curve
      * @return self
      */
     public static function fromBytes(
-        string $bytes, EdDsaCurve $curve = EdDsaCurve::Ed25519
+        string $bytes, EdDSACurve $curve = EdDSACurve::Ed25519
     ): self
     {
         return new self(
