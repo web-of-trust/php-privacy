@@ -400,7 +400,7 @@ EOT;
         );
     }
 
-    public function testGenerateV5Key()
+    public function testGenerateV6Key()
     {
         Config::setUseV6Key(true);
 
@@ -408,7 +408,7 @@ EOT;
         $this->assertFalse($secretKey->isEncrypted());
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
         $this->assertSame(2048, $secretKey->getKeyStrength());
-        $this->assertSame(5, $secretKey->getVersion());
+        $this->assertSame(6, $secretKey->getVersion());
 
         Config::setUseV6Key(false);
     }
