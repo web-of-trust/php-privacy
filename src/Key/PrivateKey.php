@@ -161,7 +161,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         }
         elseif ($type === KeyType::Ecc) {
             if ($curve === CurveOid::Ed25519 || $curve === CurveOid::Curve25519) {
-                $keyAlgorithm = KeyAlgorithm::EdDsa;
+                $keyAlgorithm = KeyAlgorithm::EdDsaLegacy;
                 $curve = CurveOid::Ed25519;
                 $subkeyCurve = CurveOid::Curve25519;
             }
