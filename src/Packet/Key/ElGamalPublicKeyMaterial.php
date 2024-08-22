@@ -8,11 +8,11 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\Common\AsymmetricKey;
-use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Cryptor\Asymmetric\ElGamal\PublicKey;
 use OpenPGP\Type\KeyMaterialInterface;
+use phpseclib3\Crypt\Common\AsymmetricKey;
+use phpseclib3\Math\BigInteger;
 
 /**
  * ElGamal public key material class

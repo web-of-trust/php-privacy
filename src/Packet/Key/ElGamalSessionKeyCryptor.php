@@ -8,15 +8,15 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\Common\AsymmetricKey;
-use phpseclib3\Crypt\Random;
-use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Cryptor\Asymmetric\ElGamal\{
     PrivateKey,
     PublicKey,
 };
 use OpenPGP\Type\SessionKeyInterface;
+use phpseclib3\Crypt\Common\AsymmetricKey;
+use phpseclib3\Crypt\Random;
+use phpseclib3\Math\BigInteger;
 
 /**
  * ElGamal session key cryptor class.

@@ -8,8 +8,8 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\Common\BlockCipher;
 use OpenPGP\Enum\KekSize;
+use phpseclib3\Crypt\Common\BlockCipher;
 
 /**
  * KeyWrapper class

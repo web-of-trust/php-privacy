@@ -8,6 +8,8 @@
 
 namespace OpenPGP\Packet\Key;
 
+use OpenPGP\Common\Helper;
+use OpenPGP\Type\SessionKeyInterface;
 use phpseclib3\Crypt\Common\AsymmetricKey;
 use phpseclib3\Crypt\RSA;
 use phpseclib3\Crypt\RSA\{
@@ -15,8 +17,6 @@ use phpseclib3\Crypt\RSA\{
     PublicKey,
 };
 use phpseclib3\Math\BigInteger;
-use OpenPGP\Common\Helper;
-use OpenPGP\Type\SessionKeyInterface;
 
 /**
  * RSA session key cryptor class.

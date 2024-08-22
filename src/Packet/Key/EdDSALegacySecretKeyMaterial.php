@@ -8,11 +8,6 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\EC;
-use phpseclib3\Crypt\EC\PrivateKey;
-use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
-use phpseclib3\File\ASN1;
-use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{
     CurveOid,
@@ -22,6 +17,11 @@ use OpenPGP\Type\{
     KeyMaterialInterface,
     SecretKeyMaterialInterface,
 };
+use phpseclib3\Crypt\EC;
+use phpseclib3\Crypt\EC\PrivateKey;
+use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
+use phpseclib3\File\ASN1;
+use phpseclib3\Math\BigInteger;
 
 /**
  * EdDSALegacy secret key material class

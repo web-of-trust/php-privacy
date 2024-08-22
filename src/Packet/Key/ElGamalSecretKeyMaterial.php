@@ -8,8 +8,6 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\Common\AsymmetricKey;
-use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Cryptor\Asymmetric\ElGamal;
 use OpenPGP\Cryptor\Asymmetric\ElGamal\{
@@ -18,6 +16,8 @@ use OpenPGP\Cryptor\Asymmetric\ElGamal\{
 };
 use OpenPGP\Enum\DHKeySize;
 use OpenPGP\Type\KeyMaterialInterface;
+use phpseclib3\Crypt\Common\AsymmetricKey;
+use phpseclib3\Math\BigInteger;
 
 /**
  * ElGamal secret key material class

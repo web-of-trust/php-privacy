@@ -8,15 +8,6 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\Common\{
-    AsymmetricKey,
-    PrivateKey,
-    PublicKey,
-};
-use phpseclib3\Crypt\DSA;
-use phpseclib3\Crypt\DSA\PrivateKey as DSAPrivateKey;
-use phpseclib3\Crypt\DSA\Formats\Keys\PKCS8;
-use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{
     DHKeySize,
@@ -26,6 +17,15 @@ use OpenPGP\Type\{
     KeyMaterialInterface,
     SecretKeyMaterialInterface,
 };
+use phpseclib3\Crypt\Common\{
+    AsymmetricKey,
+    PrivateKey,
+    PublicKey,
+};
+use phpseclib3\Crypt\DSA;
+use phpseclib3\Crypt\DSA\PrivateKey as DSAPrivateKey;
+use phpseclib3\Crypt\DSA\Formats\Keys\PKCS8;
+use phpseclib3\Math\BigInteger;
 
 /**
  * DSA secret key material class

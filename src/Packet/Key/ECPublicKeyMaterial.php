@@ -8,6 +8,8 @@
 
 namespace OpenPGP\Packet\Key;
 
+use OpenPGP\Enum\CurveOid;
+use OpenPGP\Type\KeyMaterialInterface;
 use phpseclib3\Crypt\Common\{
     AsymmetricKey,
     PublicKey,
@@ -17,8 +19,6 @@ use phpseclib3\Crypt\EC\PublicKey as ECPublicKey;
 use phpseclib3\Crypt\EC\Formats\Keys\MontgomeryPublic;
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
 use phpseclib3\Math\BigInteger;
-use OpenPGP\Enum\CurveOid;
-use OpenPGP\Type\KeyMaterialInterface;
 
 /**
  * EC public key material class

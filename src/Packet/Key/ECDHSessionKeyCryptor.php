@@ -8,13 +8,6 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\{
-    DH,
-    EC,
-};
-use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
-use phpseclib3\File\ASN1;
-use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{
     CurveOid,
@@ -29,6 +22,13 @@ use OpenPGP\Type\{
     SessionKeyCryptorInterface,
     SessionKeyInterface,
 };
+use phpseclib3\Crypt\{
+    DH,
+    EC,
+};
+use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
+use phpseclib3\File\ASN1;
+use phpseclib3\Math\BigInteger;
 
 /**
  * ECDH session key cryptor class.

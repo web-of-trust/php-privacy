@@ -8,9 +8,9 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\Random;
 use OpenPGP\Enum\SymmetricAlgorithm as Symmetric;
 use OpenPGP\Type\SessionKeyInterface;
+use phpseclib3\Crypt\Random;
 
 /**
  * Session key class

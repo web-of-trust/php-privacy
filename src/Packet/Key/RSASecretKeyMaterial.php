@@ -8,15 +8,6 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\Common\{
-    AsymmetricKey,
-    PrivateKey,
-    PublicKey,
-};
-use phpseclib3\Crypt\RSA;
-use phpseclib3\Crypt\RSA\PrivateKey as RSAPrivateKey;
-use phpseclib3\Crypt\RSA\Formats\Keys\PKCS8;
-use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{
     HashAlgorithm,
@@ -26,6 +17,15 @@ use OpenPGP\Type\{
     KeyMaterialInterface,
     SecretKeyMaterialInterface,
 };
+use phpseclib3\Crypt\Common\{
+    AsymmetricKey,
+    PrivateKey,
+    PublicKey,
+};
+use phpseclib3\Crypt\RSA;
+use phpseclib3\Crypt\RSA\PrivateKey as RSAPrivateKey;
+use phpseclib3\Crypt\RSA\Formats\Keys\PKCS8;
+use phpseclib3\Math\BigInteger;
 
 /**
  * RSA secret key material class
