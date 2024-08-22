@@ -591,7 +591,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertTrue($user->isRevoked());
     }
 
-    public function testGenerateV5RSAKey()
+    public function testGenerateV6RSAKey()
     {
         Config::setUseV6Key(true);
 
@@ -606,10 +606,10 @@ class PrivateKeyTest extends OpenPGPTestCase
             $passphrase,
             KeyType::Rsa
         );
-        $this->assertSame(5, $privateKey->getVersion());
+        $this->assertSame(6, $privateKey->getVersion());
 
         $user = $privateKey->getPrimaryUser();
-        $this->assertSame(5, $user->getLatestSelfCertification()->getVersion());
+        $this->assertSame(6, $user->getLatestSelfCertification()->getVersion());
 
         Config::setUseV6Key(false);
     }
