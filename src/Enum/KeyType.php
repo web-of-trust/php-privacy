@@ -21,4 +21,8 @@ enum KeyType {
     case Dsa;
 
     case Ecc;
+
+    case Curve25519;
+
+    case Curve448;
 }
