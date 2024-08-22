@@ -10,10 +10,14 @@ namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Enum\MontgomeryCurve;
 use OpenPGP\Type\KeyMaterialInterface;
+use phpseclib3\Crypt\Common\{
+    AsymmetricKey,
+    PrivateKey,
+    PublicKey,
+};
 use phpseclib3\Crypt\EC;
 use phpseclib3\Crypt\EC\PrivateKey as ECPrivateKey;
 use phpseclib3\Crypt\EC\Formats\Keys\MontgomeryPrivate;
-use phpseclib3\Crypt\Random;
 
 /**
  * Montgomery secret key material class

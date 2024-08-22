@@ -61,7 +61,8 @@ class MontgomeryPublicKeyMaterial implements KeyMaterialInterface
      * @return self
      */
     public static function fromBytes(
-        string $bytes, MontgomeryCurve $curve = MontgomeryCurve::Curve25519
+        string $bytes,
+        MontgomeryCurve $curve = MontgomeryCurve::Curve25519
     ): self
     {
         return new self(
