@@ -32,8 +32,8 @@ use phpseclib3\Math\BigInteger;
  */
 class EdDSALegacySecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMaterialInterface
 {
-    const ED25519_KEY_LENGTH = 32;
-    const SIGNATURE_LENGTH   = 64;
+    const KEY_LENGTH  = 32;
+    const SIGN_LENGTH = 64;
 
     /**
      * Read key material from bytes
@@ -59,12 +59,12 @@ class EdDSALegacySecretKeyMaterial extends ECSecretKeyMaterial implements Secret
      */
     public static function generate(): self
     {
-        $curve = CurveOid::EdDSALegacy;
+        $curve = CurveOid::Ed25519;
         do {
             $privateKey = EC::createKey($curve->name);
             $params = PKCS8::load($privateKey->toString('PKCS8'));
             $d = Helper::bin2BigInt($params['secret']);
-        } while ($d->getLengthInBytes() !== self::ED25519_KEY_LENGTH);
+        } while ($d->getLengthInBytes() !== self::KEY_LENGTH);
         return new self(
             $d,
             new EdDSALegacyPublicKeyMaterial(
@@ -86,7 +86,7 @@ class EdDSALegacySecretKeyMaterial extends ECSecretKeyMaterial implements Secret
         $signature = $this->getPrivateKey()->sign(
             $hash->hash($message)
         );
-        $length = intval(self::SIGNATURE_LENGTH / 2);
+        $length = intval(self::SIGN_LENGTH / 2);
         return implode([
             pack('n', $length * 8), // r bit length
             substr($signature, 0, $length), // r
