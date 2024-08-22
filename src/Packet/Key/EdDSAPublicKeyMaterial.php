@@ -36,13 +36,13 @@ class EdDSAPublicKeyMaterial implements PublicKeyMaterialInterface
     /**
      * Constructor
      *
-     * @param string $a
+     * @param string $public
      * @param TwistedEdwards $curve
      * @param ECPublicKey $publicKey
      * @return self
      */
     public function __construct(
-        private readonly string $a,
+        private readonly string $public,
         TwistedEdwards $curve,
         ?ECPublicKey $publicKey = null
     )
@@ -53,7 +53,7 @@ class EdDSAPublicKeyMaterial implements PublicKeyMaterialInterface
         else {
             $key = PKCS8::savePublicKey(
                 $curve,
-                PKCS8::extractPoint($a, $curve)
+                PKCS8::extractPoint($public, $curve)
             );
             $this->publicKey = EC::loadPublicKeyFormat('PKCS8', $key);
         }
@@ -129,7 +129,7 @@ class EdDSAPublicKeyMaterial implements PublicKeyMaterialInterface
      */
     public function toBytes(): string
     {
-        return $this->a;
+        return $this->public;
     }
 
     /**
