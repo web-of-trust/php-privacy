@@ -277,7 +277,7 @@ EOT;
 
     public function testSignCleartextMessageWithV5Key()
     {
-        Config::setUseV5Key(true);
+        Config::setUseV6Key(true);
 
         $name = $this->faker->unique()->name();
         $email = $this->faker->unique()->safeEmail();
@@ -313,6 +313,6 @@ EOT;
         $verification = $signature->verifyCleartext([$publicKey], $message, true)[0];
         $this->assertTrue($verification->isVerified());
 
-        Config::setUseV5Key(false);
+        Config::setUseV6Key(false);
     }
 }

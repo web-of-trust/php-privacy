@@ -594,7 +594,7 @@ EOT;
 
     public function testSignMessageWithV5Key()
     {
-        Config::setUseV5Key(true);
+        Config::setUseV6Key(true);
 
         $name = $this->faker->unique()->name();
         $email = $this->faker->unique()->safeEmail();
@@ -630,6 +630,6 @@ EOT;
         $verification = $message->verifyDetached([$publicKey], $signature)[0];
         $this->assertTrue($verification->isVerified());
 
-        Config::setUseV5Key(false);
+        Config::setUseV6Key(false);
     }
 }

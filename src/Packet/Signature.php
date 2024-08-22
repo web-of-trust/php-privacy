@@ -1012,7 +1012,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             case KeyAlgorithm::RsaSign:
             case KeyAlgorithm::Dsa:
             case KeyAlgorithm::EcDsa:
-            case KeyAlgorithm::EdDsa:
+            case KeyAlgorithm::EdDsaLegacy:
                 $keyMaterial = $signKey->getKeyMaterial();
                 if ($keyMaterial instanceof SecretKeyMaterialInterface) {
                     return $keyMaterial->sign($hash, $message);

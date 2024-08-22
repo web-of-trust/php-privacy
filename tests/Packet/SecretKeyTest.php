@@ -402,7 +402,7 @@ EOT;
 
     public function testGenerateV5Key()
     {
-        Config::setUseV5Key(true);
+        Config::setUseV6Key(true);
 
         $secretKey = SecretKey::generate(KeyAlgorithm::RsaEncryptSign);
         $this->assertFalse($secretKey->isEncrypted());
@@ -410,7 +410,7 @@ EOT;
         $this->assertSame(2048, $secretKey->getKeyStrength());
         $this->assertSame(5, $secretKey->getVersion());
 
-        Config::setUseV5Key(false);
+        Config::setUseV6Key(false);
     }
 
     public function testGenerateEcDsaSecretKeyException()

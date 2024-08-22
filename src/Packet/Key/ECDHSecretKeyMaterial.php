@@ -25,6 +25,8 @@ use phpseclib3\File\ASN1;
  */
 class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
 {
+    const CURVE25519_KEY_LENGTH = 32;
+
     /**
      * Read key material from bytes
      *

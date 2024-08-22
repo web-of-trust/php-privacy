@@ -593,7 +593,7 @@ class PrivateKeyTest extends OpenPGPTestCase
 
     public function testGenerateV5RSAKey()
     {
-        Config::setUseV5Key(true);
+        Config::setUseV6Key(true);
 
         $name = $this->faker->unique()->name();
         $email = $this->faker->unique()->safeEmail();
@@ -611,7 +611,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         $user = $privateKey->getPrimaryUser();
         $this->assertSame(5, $user->getLatestSelfCertification()->getVersion());
 
-        Config::setUseV5Key(false);
+        Config::setUseV6Key(false);
     }
 
     public function testCertifyKey()
