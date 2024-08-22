@@ -130,7 +130,7 @@ enum KeyAlgorithm: int
             self::RsaSign,
             self::Dsa,
             self::EcDsa,
-            self::EdDsa,
+            self::EdDsaLegacy,
             self::AeDsa,
             self::Ed25519,
             self::Ed448 => false,

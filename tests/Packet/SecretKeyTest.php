@@ -312,10 +312,10 @@ EOT;
         );
     }
 
-    public function testGenerateEdDsaSecretKeyEd25519()
+    public function testGenerateEdDsaLegacySecretKeyEd25519()
     {
         $secretKey = SecretKey::generate(
-            KeyAlgorithm::EdDsa,
+            KeyAlgorithm::EdDsaLegacy,
             curveOid: CurveOid::Ed25519
         );
         $this->assertFalse($secretKey->isEncrypted());
