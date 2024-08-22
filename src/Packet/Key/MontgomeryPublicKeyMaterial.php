@@ -48,7 +48,7 @@ class MontgomeryPublicKeyMaterial implements KeyMaterialInterface
         }
         else {
             $this->publicKey = EC::loadPublicKeyFormat(
-                'MontgomeryPublic', strrev($public)
+                'MontgomeryPublic', $public
             );
         }
     }
