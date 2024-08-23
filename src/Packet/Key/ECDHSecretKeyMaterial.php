@@ -50,8 +50,8 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
     public static function generate(CurveOid $curveOid): self
     {
         if ($curveOid !== CurveOid::Ed25519) {
+            $privateKey = EC::createKey($curveOid->name);
             if ($curveOid === CurveOid::Curve25519) {
-                $privateKey = EC::createKey($curveOid->name);
                 $d = Helper::bin2BigInt(
                     strrev($privateKey->toString('MontgomeryPrivate'))
                 );
@@ -60,7 +60,6 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
                 );
             }
             else {
-                $privateKey = EC::createKey($curveOid->name);
                 $params = PKCS8::load($privateKey->toString('PKCS8'));
                 $d = $params['dA'];
                 $q = Helper::bin2BigInt(
