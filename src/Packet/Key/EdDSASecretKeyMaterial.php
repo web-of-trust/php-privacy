@@ -9,7 +9,7 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Enum\{
-    EdDsaCurve,
+    EdDSACurve,
     HashAlgorithm,
 };
 use OpenPGP\Type\{
@@ -72,13 +72,13 @@ class EdDSASecretKeyMaterial implements SecretKeyMaterialInterface
      *
      * @param string $bytes
      * @param KeyMaterialInterface $publicMaterial
-     * @param EdDsaCurve $curve
+     * @param EdDSACurve $curve
      * @return self
      */
     public static function fromBytes(
         string $bytes,
         KeyMaterialInterface $publicMaterial,
-        EdDsaCurve $curve = EdDsaCurve::Ed25519
+        EdDSACurve $curve = EdDSACurve::Ed25519
     ): self
     {
         return new self(
@@ -90,11 +90,11 @@ class EdDSASecretKeyMaterial implements SecretKeyMaterialInterface
     /**
      * Generate key material by using EC create key
      *
-     * @param EdDsaCurve $curve
+     * @param EdDSACurve $curve
      * @return self
      */
     public static function generate(
-        EdDsaCurve $curve = EdDsaCurve::Ed25519
+        EdDSACurve $curve = EdDSACurve::Ed25519
     ): self
     {
         $size = $curve->payloadSize();

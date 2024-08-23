@@ -8,13 +8,19 @@
 
 namespace OpenPGP\Packet\Key;
 
-use OpenPGP\Enum\EdDSACurve;
-use OpenPGP\Enum\HashAlgorithm;
-use OpenPGP\Type\PublicKeyMaterialInterface;
+use OpenPGP\Enum\{
+    EdDSACurve,
+    HashAlgorithm,
+};
+use OpenPGP\Type\{
+    KeyMaterialInterface,
+    PublicKeyMaterialInterface,
+};
 use phpseclib3\Crypt\Common\{
     AsymmetricKey,
     PublicKey,
 };
+use phpseclib3\Crypt\EC;
 use phpseclib3\Crypt\EC\PublicKey as ECPublicKey;
 use phpseclib3\Crypt\EC\BaseCurves\TwistedEdwards;
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;

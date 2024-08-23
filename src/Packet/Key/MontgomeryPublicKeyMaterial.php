@@ -14,6 +14,7 @@ use phpseclib3\Crypt\Common\{
     AsymmetricKey,
     PublicKey,
 };
+use phpseclib3\Crypt\EC;
 use phpseclib3\Crypt\EC\PublicKey as ECPublicKey;
 use phpseclib3\Crypt\EC\Formats\Keys\MontgomeryPublic;
 
