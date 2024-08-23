@@ -72,7 +72,7 @@ class PrivateKey extends ElGamal
         $length = strlen($cipherText);
         if ($length > $inputSize) {
             throw new \InvalidArgumentException(
-                'cipher text too large for ' . self::ALGORITHM . ' cipher.'
+                'Cipher text too large for ' . self::ALGORITHM . ' cipher.'
             );
         }
 

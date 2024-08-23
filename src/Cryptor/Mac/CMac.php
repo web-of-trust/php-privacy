@@ -53,7 +53,7 @@ final class CMac
 
         if ($this->macSize > $this->blockSize) {
             throw new \LengthException(
-                'MAC size must be less or equal to ' . $this->blockSize
+                "MAC size must be less or equal to {$this->blockSize}"
             );
         }
     }
@@ -128,7 +128,7 @@ final class CMac
                 return str_repeat(self::ZERO_CHAR, 15) . "\x87";
             default:
                 throw new \LengthException(
-                    'Unsupported block size for the cipher'
+                    'Unsupported block size for the cipher.'
                 );
         }
     }

@@ -33,7 +33,7 @@ class PublicKey extends ElGamal
         $input = Helper::bin2BigInt($plainText);
         if ($input->compare($prime) > 0) {
             throw new \InvalidArgumentException(
-                'plain text too large for ' . self::ALGORITHM . ' cipher.'
+                'Plain text too large for ' . self::ALGORITHM . ' cipher.'
             );
         }
 
