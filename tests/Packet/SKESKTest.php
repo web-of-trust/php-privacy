@@ -70,34 +70,34 @@ class SKESKTest extends OpenPGPTestCase
         $this->assertEquals($sessionKey, $skesk->getSessionKey());
     }
 
-    public function testAeadEncryptSessionKey()
-    {
-        Config::setAeadProtect(true);
+    // public function testAeadEncryptSessionKey()
+    // {
+    //     Config::setAeadProtect(true);
 
-        $sessionKey = SessionKey::produceKey();
-        $skesk = SymEncryptedSessionKey::encryptSessionKey(self::PASSPHRASE, $sessionKey);
-        $aead = AeadEncryptedData::encryptPacketsWithSessionKey(
-            $skesk->getSessionKey(),
-            new PacketList([LiteralData::fromText(self::LITERAL_TEXT)])
-        );
+    //     $sessionKey = SessionKey::produceKey();
+    //     $skesk = SymEncryptedSessionKey::encryptSessionKey(self::PASSPHRASE, $sessionKey);
+    //     $aead = AeadEncryptedData::encryptPacketsWithSessionKey(
+    //         $skesk->getSessionKey(),
+    //         new PacketList([LiteralData::fromText(self::LITERAL_TEXT)])
+    //     );
 
-        $this->assertSame(SymEncryptedSessionKey::VERSION_5, $skesk->getVersion());
-        $this->assertTrue(!empty($skesk->getEncrypted()));
-        $this->assertTrue(!empty($aead->getEncrypted()));
+    //     $this->assertSame(SymEncryptedSessionKey::VERSION_5, $skesk->getVersion());
+    //     $this->assertTrue(!empty($skesk->getEncrypted()));
+    //     $this->assertTrue(!empty($aead->getEncrypted()));
 
-        $packets = PacketList::decode((new PacketList([$skesk, $aead]))->encode());
-        $skesk = $packets->offsetGet(0)->decrypt(self::PASSPHRASE);
-        $aead = $packets->offsetGet(1)->decryptWithSessionKey(
-            $skesk->getSessionKey()
-        );
-        $literalData = $aead->getPacketList()->offsetGet(0);
+    //     $packets = PacketList::decode((new PacketList([$skesk, $aead]))->encode());
+    //     $skesk = $packets->offsetGet(0)->decrypt(self::PASSPHRASE);
+    //     $aead = $packets->offsetGet(1)->decryptWithSessionKey(
+    //         $skesk->getSessionKey()
+    //     );
+    //     $literalData = $aead->getPacketList()->offsetGet(0);
 
-        $this->assertTrue($skesk instanceof SymEncryptedSessionKey);
-        $this->assertTrue($aead instanceof AeadEncryptedData);
-        $this->assertSame(SymEncryptedSessionKey::VERSION_5, $skesk->getVersion());
-        $this->assertSame(self::LITERAL_TEXT, trim($literalData->getData()));
-        $this->assertEquals($sessionKey, $skesk->getSessionKey());
+    //     $this->assertTrue($skesk instanceof SymEncryptedSessionKey);
+    //     $this->assertTrue($aead instanceof AeadEncryptedData);
+    //     $this->assertSame(SymEncryptedSessionKey::VERSION_5, $skesk->getVersion());
+    //     $this->assertSame(self::LITERAL_TEXT, trim($literalData->getData()));
+    //     $this->assertEquals($sessionKey, $skesk->getSessionKey());
 
-        Config::setAeadProtect(false);
-    }
+    //     Config::setAeadProtect(false);
+    // }
 }

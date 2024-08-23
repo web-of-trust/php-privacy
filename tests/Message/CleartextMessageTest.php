@@ -275,7 +275,7 @@ EOT;
         $this->assertTrue($verification->isVerified());
     }
 
-    public function testSignCleartextMessageWithV5Key()
+    public function testSignCleartextMessageWithV6Key()
     {
         Config::setUseV6Key(true);
 
@@ -294,7 +294,7 @@ EOT;
 
         $signedMessage = $message->sign([$privateKey]);
         $this->assertSame(
-            5,
+            6,
             $signedMessage->getSignature()->getPackets()[0]->getVersion()
         );
 
@@ -303,7 +303,7 @@ EOT;
 
         $signature = $message->signDetached([$privateKey]);
         $this->assertSame(
-            5,
+            6,
             $signature->getPackets()[0]->getVersion()
         );
 

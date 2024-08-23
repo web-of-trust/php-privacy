@@ -25,8 +25,6 @@ use phpseclib3\File\ASN1;
  */
 class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
 {
-    const CURVE25519_KEY_LENGTH = 32;
-
     /**
      * Read key material from bytes
      *
@@ -53,10 +51,9 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
     {
         if ($curveOid !== CurveOid::Ed25519) {
             if ($curveOid === CurveOid::Curve25519) {
-                $secretKey = Random::string(self::CURVE25519_KEY_LENGTH);
                 $privateKey = EC::createKey($curveOid->name);
                 $d = Helper::bin2BigInt(
-                    $privateKey->toString('MontgomeryPrivate')
+                    strrev($privateKey->toString('MontgomeryPrivate'))
                 );
                 $q = Helper::bin2BigInt(
                     "\x40" . $privateKey->getEncodedCoordinates()
