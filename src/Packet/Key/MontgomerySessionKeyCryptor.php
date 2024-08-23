@@ -8,16 +8,8 @@
 
 namespace OpenPGP\Packet\Key;
 
-use OpenPGP\Common\Helper;
-use OpenPGP\Enum\{
-    MontgomeryCurve,
-    HashAlgorithm,
-    KekSize,
-    KeyAlgorithm,
-    SymmetricAlgorithm,
-};
+use OpenPGP\Enum\MontgomeryCurve;
 use OpenPGP\Type\{
-    KeyMaterialInterface,
     SecretKeyPacketInterface,
     SessionKeyCryptorInterface,
     SessionKeyInterface,
@@ -26,9 +18,10 @@ use phpseclib3\Crypt\{
     DH,
     EC,
 };
-use phpseclib3\Crypt\EC\PrivateKey
-use phpseclib3\Crypt\EC\PublicKey;
-use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
+use phpseclib3\Crypt\EC\{
+    PrivateKey,
+    PublicKey,
+};
 
 /**
  * Montgomery session key cryptor class.
