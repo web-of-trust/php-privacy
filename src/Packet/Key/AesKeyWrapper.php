@@ -26,7 +26,7 @@ class AesKeyWrapper extends KeyWrapper
      * @param KekSize $kekSize
      * @return self
      */
-    public function __construct(KekSize $kekSize = KekSize::S32)
+    public function __construct(KekSize $kekSize = KekSize::Normal)
     {
         parent::__construct(new \phpseclib3\Crypt\AES('ecb'), $kekSize);
     }

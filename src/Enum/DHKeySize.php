@@ -17,31 +17,31 @@ namespace OpenPGP\Enum;
  */
 enum DHKeySize
 {
-    case L1024_N160;
+    case Normal;
 
-    case L2048_N224;
+    case Medium;
 
-    case L2048_N256;
+    case High;
 
-    case L3072_N256;
+    case VeryHigh;
 
     public function lSize(): int
     {
         return match($this) {
-            self::L1024_N160 => 1024,
-            self::L2048_N224 => 2048,
-            self::L2048_N256 => 2048,
-            self::L3072_N256 => 3072,
+            self::Normal => 1024,
+            self::Medium => 2048,
+            self::High => 2048,
+            self::VeryHigh => 3072,
         };
     }
 
     public function nSize(): int
     {
         return match($this) {
-            self::L1024_N160 => 160,
-            self::L2048_N224 => 224,
-            self::L2048_N256 => 256,
-            self::L3072_N256 => 256,
+            self::Normal => 160,
+            self::Medium => 224,
+            self::High => 256,
+            self::VeryHigh => 256,
         };
     }
 }

@@ -17,13 +17,13 @@ namespace OpenPGP\Enum;
  */
 enum RSAKeySize: int
 {
-    case S2048 = 2048;
+    case Normal = 2048;
 
-    case S2560 = 2560;
+    case Medium = 2560;
 
-    case S3072 = 3072;
+    case High = 3072;
 
-    case S3584 = 3584;
+    case VeryHigh = 3584;
 
-    case S4096 = 4096;
+    case UltraHigh = 4096;
 }

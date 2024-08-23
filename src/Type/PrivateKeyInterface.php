@@ -102,8 +102,8 @@ interface PrivateKeyInterface extends KeyInterface
     function addSubkey(
         string $passphrase,
         KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
-        RSAKeySize $rsaKeySize = RSAKeySize::S4096,
-        DHKeySize $dhKeySize = DHKeySize::L2048_N224,
+        RSAKeySize $rsaKeySize = RSAKeySize::Normal,
+        DHKeySize $dhKeySize = DHKeySize::Normal,
         CurveOid $curve = CurveOid::Secp521r1,
         int $keyExpiry = 0,
         bool $subkeySign = false,

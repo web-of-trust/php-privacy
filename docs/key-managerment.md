@@ -11,7 +11,7 @@ $privateKey = OpenPGP::generateKey(
     [USER_ID],
     PASSPHRASE,
     type: KeyType::Rsa,
-    rsaKeySize: RSAKeySize::S4096,
+    rsaKeySize: RSAKeySize::Normal,
 );
 file_put_contents('privateKey.asc', $privateKey->armor());
 $publicKey = $privateKey->toPublic();
@@ -26,7 +26,7 @@ $privateKey = OpenPGP::generateKey(
     [USER_ID],
     PASSPHRASE,
     type: KeyType::Dsa,
-    dhKeySize: RSAKeySize::L2048_N224,
+    dhKeySize: RSAKeySize::Normal,
 );
 file_put_contents('privateKey.asc', $privateKey->armor());
 $publicKey = $privateKey->toPublic();

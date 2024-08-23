@@ -115,14 +115,13 @@ abstract class KeyWrapper
     private function validateKeySize(string $kek, string $key): void
     {
         if (strlen($kek) != $this->kekSize->value) {
-            $size = $this->kekSize->value;
             throw new \LengthException(
-                "Key encryption key size must be $size bytes."
+                "Key encryption key size must be {$this->kekSize->value} bytes."
             );
         }
-        if (strlen($key) < 16) {
+        if (strlen($key) < KekSize::Normal->value) {
             throw new \LengthException(
-                'Key length must be at least 16 octets.'
+                'Key length must be at least ' . KekSize::Normal->value . ' octets.'
             );
         }
         if (strlen($key) % 8 != 0) {

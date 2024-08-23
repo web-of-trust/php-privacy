@@ -22,9 +22,9 @@ parts of [RFC4880bis](https://datatracker.ietf.org/doc/html/draft-ietf-openpgp-r
 6. Support hash algorithms: MD5, SHA-1, RIPEMD-160, SHA-256, SHA-384, SHA-512, SHA-224, SHA3-256, SHA3-512.
 7. Support compression algorithms: Zip, Zlib, BZip2.
 8. Support [ECC](https://en.wikipedia.org/wiki/Elliptic-curve_cryptography) curves:
-  [secP256r1, secP384r1, secP521r1](https://www.rfc-editor.org/rfc/rfc6090),
+  [secp256r1, secp384r1, secp521r1](https://www.rfc-editor.org/rfc/rfc6090),
   [brainpoolP256r1, brainpoolP384r1, brainpoolP512r1](https://www.rfc-editor.org/rfc/rfc5639),
-  [curve25519](https://www.rfc-editor.org/rfc/rfc7748), [ed25519](https://www.rfc-editor.org/rfc/rfc8032).
+  [Curve25519, Curve448](https://www.rfc-editor.org/rfc/rfc7748), [Ed25519, Ed448](https://www.rfc-editor.org/rfc/rfc8032).
 
 ## Documentation
 1. [Installation](installation.md)

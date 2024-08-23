@@ -6,8 +6,6 @@ use OpenPGP\Common\Config;
 use OpenPGP\Enum\{
     CurveOid,
     KeyAlgorithm,
-    DHKeySize,
-    RSAKeySize,
 };
 use OpenPGP\Packet\SecretKey;
 use OpenPGP\Packet\SecretSubkey;
@@ -235,7 +233,7 @@ EOT;
         $secretKey = SecretKey::generate(KeyAlgorithm::Dsa);
         $this->assertFalse($secretKey->isEncrypted());
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
-        $this->assertSame(2048, $secretKey->getKeyStrength());
+        $this->assertSame(1024, $secretKey->getKeyStrength());
         $this->assertSame(4, $secretKey->getVersion());
 
         $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
@@ -254,7 +252,7 @@ EOT;
         $secretKey = SecretKey::generate(KeyAlgorithm::ElGamal);
         $this->assertFalse($secretKey->isEncrypted());
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
-        $this->assertSame(2048, $secretKey->getKeyStrength());
+        $this->assertSame(1024, $secretKey->getKeyStrength());
         $this->assertSame(4, $secretKey->getVersion());
 
         $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);

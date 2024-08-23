@@ -140,8 +140,8 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         array $userIDs,
         string $passphrase,
         KeyType $type = KeyType::Rsa,
-        RSAKeySize $rsaKeySize = RSAKeySize::S2048,
-        DHKeySize $dhKeySize = DHKeySize::L2048_N224,
+        RSAKeySize $rsaKeySize = RSAKeySize::Normal,
+        DHKeySize $dhKeySize = DHKeySize::Normal,
         CurveOid $curve = CurveOid::Ed25519,
         int $keyExpiry = 0,
         ?DateTimeInterface $time = null
@@ -434,8 +434,8 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     public function addSubkey(
         string $passphrase,
         KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
-        RSAKeySize $rsaKeySize = RSAKeySize::S2048,
-        DHKeySize $dhKeySize = DHKeySize::L2048_N224,
+        RSAKeySize $rsaKeySize = RSAKeySize::Normal,
+        DHKeySize $dhKeySize = DHKeySize::Normal,
         CurveOid $curve = CurveOid::Ed25519,
         int $keyExpiry = 0,
         bool $subkeySign = false,

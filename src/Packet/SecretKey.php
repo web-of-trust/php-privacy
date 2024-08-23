@@ -136,8 +136,8 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
      */
     public static function generate(
         KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
-        RSAKeySize $rsaKeySize = RSAKeySize::S2048,
-        DHKeySize $dhKeySize = DHKeySize::L2048_N224,
+        RSAKeySize $rsaKeySize = RSAKeySize::Normal,
+        DHKeySize $dhKeySize = DHKeySize::Normal,
         CurveOid $curveOid = CurveOid::Ed25519,
         ?DateTimeInterface $time = null
     ): self

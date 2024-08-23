@@ -366,10 +366,10 @@ class PrivateKeyTest extends OpenPGPTestCase
         );
         $this->assertTrue($privateKey->isEncrypted());
         $this->assertTrue($privateKey->isDecrypted());
-        $this->assertSame(2048, $privateKey->getKeyStrength());
+        $this->assertSame(1024, $privateKey->getKeyStrength());
 
         $subkey = $privateKey->getSubKeys()[0];
-        $this->assertSame(2048, $subkey->getKeyStrength());
+        $this->assertSame(1024, $subkey->getKeyStrength());
         $this->assertTrue($subkey->verify());
 
         $user = $privateKey->getUsers()[0];

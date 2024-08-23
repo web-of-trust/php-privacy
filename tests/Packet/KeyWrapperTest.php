@@ -23,7 +23,7 @@ class KeyWrapperTest extends OpenPGPTestCase
 
     public function testAes128()
     {
-        $aes = new AesKeyWrapper(KekSize::S16);
+        $aes = new AesKeyWrapper(KekSize::Normal);
         $wrappedKey128128 = "\x1f\xa6\x8b\x0a\x81\x12\xb4\x47\xae\xf3\x4b\xd8\xfb\x5a\x7b\x82\x9d\x3e\x86\x23\x71\xd2\xcf\xe5";
 
         $wrappedKey128 = $aes->wrap($this->key128, $this->keyData128);
@@ -40,7 +40,7 @@ class KeyWrapperTest extends OpenPGPTestCase
 
     public function testAes192()
     {
-        $aes = new AesKeyWrapper(KekSize::S24);
+        $aes = new AesKeyWrapper(KekSize::Medium);
         $wrappedKey128192 = "\x96\x77\x8b\x25\xae\x6c\xa4\x35\xf9\x2b\x5b\x97\xc0\x50\xae\xd2\x46\x8a\xb8\xa1\x7a\xd8\x4e\x5d";
         $wrappedKey192192 = "\x03\x1d\x33\x26\x4e\x15\xd3\x32\x68\xf2\x4e\xc2\x60\x74\x3e\xdc\xe1\xc6\xc7\xdd\xee\x72\x5a\x93\x6b\xa8\x14\x91\x5c\x67\x62\xd2";
 
@@ -63,7 +63,7 @@ class KeyWrapperTest extends OpenPGPTestCase
 
     public function testAes256()
     {
-        $aes = new AesKeyWrapper(KekSize::S32);
+        $aes = new AesKeyWrapper(KekSize::High);
         $wrappedKey128256 = "\x64\xe8\xc3\xf9\xce\x0f\x5b\xa2\x63\xe9\x77\x79\x05\x81\x8a\x2a\x93\xc8\x19\x1e\x7d\x6e\x8a\xe7";
         $wrappedKey192256 = "\xa8\xf9\xbc\x16\x12\xc6\x8b\x3f\xf6\xe6\xf4\xfb\xe3\x0e\x71\xe4\x76\x9c\x8b\x80\xa3\x2c\xb8\x95\x8c\xd5\xd1\x7d\x6b\x25\x4d\xa1";
         $wrappedKey256256 = "\x28\xc9\xf4\x04\xc4\xb8\x10\xf4\xcb\xcc\xb3\x5c\xfb\x87\xf8\x26\x3f\x57\x86\xe2\xd8\x0e\xd3\x26\xcb\xc7\xf0\xe7\x1a\x99\xf4\x3b\xfb\x98\x8b\x9b\x7a\x02\xdd\x21";
@@ -92,7 +92,7 @@ class KeyWrapperTest extends OpenPGPTestCase
 
     public function testCamellia128()
     {
-        $camellia = new CamelliaKeyWrapper(KekSize::S16);
+        $camellia = new CamelliaKeyWrapper(KekSize::Normal);
         $wrappedKey128 = $camellia->wrap($this->key128, $this->keyData128);
         $unwrappedKey128 = $camellia->unwrap($this->key128, $wrappedKey128);
         $this->assertSame($unwrappedKey128, $this->keyData128);
@@ -106,7 +106,7 @@ class KeyWrapperTest extends OpenPGPTestCase
 
     public function testCamellia192()
     {
-        $camellia = new CamelliaKeyWrapper(KekSize::S24);
+        $camellia = new CamelliaKeyWrapper(KekSize::Medium);
         $wrappedKey192 = $camellia->wrap($this->key192, $this->keyData192);
         $unwrappedKey192 = $camellia->unwrap($this->key192, $wrappedKey192);
         $this->assertSame($unwrappedKey192, $this->keyData192);
@@ -120,7 +120,7 @@ class KeyWrapperTest extends OpenPGPTestCase
 
     public function testCamellia256()
     {
-        $camellia = new CamelliaKeyWrapper(KekSize::S32);
+        $camellia = new CamelliaKeyWrapper(KekSize::High);
         $wrappedKey256 = $camellia->wrap($this->key256, $this->keyData256);
         $unwrappedKey256 = $camellia->unwrap($this->key256, $wrappedKey256);
         $this->assertSame($unwrappedKey256, $this->keyData256);
