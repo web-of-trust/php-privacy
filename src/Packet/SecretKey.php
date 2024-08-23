@@ -487,7 +487,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $bytes, $publicKey->getKeyMaterial()
             ),
             default => throw new \UnexpectedValueException(
-                "Unsupported PGP public key algorithm encountered",
+                'Unsupported PGP public key algorithm encountered',
             ),
         };
         if (!$keyMaterial->isValid()) {

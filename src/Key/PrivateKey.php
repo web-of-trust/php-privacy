@@ -405,7 +405,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     {
         if (empty($userIDs)) {
             throw new \InvalidArgumentException(
-                'UserIDs are required.',
+                'User IDs are required.',
             );
         }
 
