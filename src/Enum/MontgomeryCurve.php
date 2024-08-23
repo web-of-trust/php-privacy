@@ -54,6 +54,19 @@ enum MontgomeryCurve
     }
 
     /**
+     * Get kek size
+     *
+     * @return KekSize
+     */
+    public function kekSize(): KekSize
+    {
+        return match ($this) {
+            self::Curve25519 => KekSize::Normal,
+            self::Curve448   => KekSize::High,
+        };
+    }
+
+    /**
      * Get hash algorithm name
      *
      * @return string
@@ -76,19 +89,6 @@ enum MontgomeryCurve
         return match($this) {
             self::Curve25519 => 'OpenPGP X25519',
             self::Curve448   => 'OpenPGP X448',
-        };
-    }
-
-    /**
-     * Get symmetric algorithm
-     *
-     * @return SymmetricAlgorithm
-     */
-    public function symmetricAlgorithm(): SymmetricAlgorithm
-    {
-        return match($this) {
-            self::Curve25519 => SymmetricAlgorithm::Aes128,
-            self::Curve448   => SymmetricAlgorithm::Aes256,
         };
     }
 }

@@ -103,11 +103,11 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
                 $publicKey->getEncodedCoordinates(),
                 $sharedSecret,
             ]),
-            $curve->symmetricAlgorithm()->keySizeInByte(),
+            $curve->kekSize()->value,
             $curve->hkdfInfo()
         );
-        $keyWrapper = self::selectKeyWrapper(
-            $curve->symmetricAlgorithm()
+        $keyWrapper = new AesKeyWrapper(
+            $curve->kekSize()
         );
 
         return new self(
@@ -185,21 +185,12 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
                 $privateKey->getEncodedCoordinates(),
                 $sharedSecret,
             ]),
-            $this->curve->symmetricAlgorithm()->keySizeInByte(),
+            $this->curve->kekSize()->value,
             $this->curve->hkdfInfo()
         );
-        $keyWrapper = self::selectKeyWrapper(
-            $this->curve->symmetricAlgorithm()
+        $keyWrapper = new AesKeyWrapper(
+            $this->curve->kekSize()
         );
         return $keyWrapper->unwrap($kek, $this->wrappedKey);
-    }
-
-    private static function selectKeyWrapper(
-        SymmetricAlgorithm $symmetric
-    ): KeyWrapper
-    {
-        return new AesKeyWrapper(
-            KekSize::from($symmetric->keySizeInByte())
-        );
     }
 }
