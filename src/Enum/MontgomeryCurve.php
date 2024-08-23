@@ -67,19 +67,6 @@ enum MontgomeryCurve
     }
 
     /**
-     * Get symmetric algorithm
-     *
-     * @return SymmetricAlgorithm
-     */
-    public function symmetricAlgorithm(): SymmetricAlgorithm
-    {
-        return match($this) {
-            self::Curve25519 => SymmetricAlgorithm::Aes128,
-            self::Curve448   => SymmetricAlgorithm::Aes256,
-        };
-    }
-
-    /**
      * Get hkdf info
      *
      * @return string
@@ -89,6 +76,19 @@ enum MontgomeryCurve
         return match($this) {
             self::Curve25519 => 'OpenPGP X25519',
             self::Curve448   => 'OpenPGP X448',
+        };
+    }
+
+    /**
+     * Get symmetric algorithm
+     *
+     * @return SymmetricAlgorithm
+     */
+    public function symmetricAlgorithm(): SymmetricAlgorithm
+    {
+        return match($this) {
+            self::Curve25519 => SymmetricAlgorithm::Aes128,
+            self::Curve448   => SymmetricAlgorithm::Aes256,
         };
     }
 }
