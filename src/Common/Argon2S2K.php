@@ -48,7 +48,7 @@ class Argon2S2K implements S2KInterface
     /**
      * Argon2 command path
      */
-    private readonly string $argon2Path;
+    private readonly ?string $argon2Path;
 
     /**
      * String-to-key type
