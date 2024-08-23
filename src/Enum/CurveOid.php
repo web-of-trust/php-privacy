@@ -51,6 +51,11 @@ enum CurveOid: string
         return self::from(ASN1::decodeOID($oid));
     }
 
+    /**
+     * Get curve
+     *
+     * @return BaseCurve
+     */
     public function getCurve(): BaseCurve
     {
         return match($this) {
@@ -65,6 +70,11 @@ enum CurveOid: string
         };
     }
 
+    /**
+     * Get hash algorithm
+     *
+     * @return HashAlgorithm
+     */
     public function hashAlgorithm(): HashAlgorithm
     {
         return match($this) {
@@ -82,6 +92,11 @@ enum CurveOid: string
         };
     }
 
+    /**
+     * Get symmetric algorithm
+     *
+     * @return SymmetricAlgorithm
+     */
     public function symmetricAlgorithm(): SymmetricAlgorithm
     {
         return match($this) {

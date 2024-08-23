@@ -102,6 +102,16 @@ class MontgomerySecretKeyMaterial implements KeyMaterialInterface
     }
 
     /**
+     * Get EC private key
+     *
+     * @return ECPrivateKey
+     */
+    public function getECPrivateKey(): ECPrivateKey
+    {
+        return $this->privateKey;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getPrivateKey(): PrivateKey

@@ -16,8 +16,10 @@ use OpenPGP\Common\{
 };
 use OpenPGP\Enum\{
     CurveOid,
+    EdDSACurve,
     HashAlgorithm,
     KeyAlgorithm,
+    MontgomeryCurve,
     PacketTag,
 };
 use OpenPGP\Type\{
@@ -38,11 +40,18 @@ use OpenPGP\Type\{
  */
 class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
 {
-    const VERSION_4 = 4;
-    const VERSION_6 = 6;
+    const VERSION_4   = 4;
+    const VERSION_6   = 6;
+    const KEY_ID_SIZE = 8;
 
+    /**
+     * Fingerprint bytes
+     */
     private readonly string $fingerprint;
 
+    /**
+     * Key ID bytes
+     */
     private readonly string $keyID;
 
     /**
@@ -50,15 +59,15 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
      *
      * @param int $version
      * @param DateTimeInterface $creationTime
-     * @param KeyMaterialInterface $keyMaterial
      * @param KeyAlgorithm $keyAlgorithm
+     * @param KeyMaterialInterface $keyMaterial
      * @return self
      */
     public function __construct(
         private readonly int $version,
         private readonly DateTimeInterface $creationTime,
+        private readonly KeyAlgorithm $keyAlgorithm,
         private readonly KeyMaterialInterface $keyMaterial,
-        private readonly KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
     )
     {
         parent::__construct(
@@ -70,14 +79,25 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
                 "Version $version of the key packet is unsupported.",
             );
         }
-
         $isV6 = $version === self::VERSION_6;
+
+        if ($isV6 && ($keyMaterial instanceof Key\ECPublicKeyMaterial)) {
+            $curveOid = $keyMaterial->getCurveOid();
+            if (($curveOid === CurveOid::Ed25519) ||
+               ($curveOid === CurveOid::Curve25519)
+            ) {
+                throw new \UnexpectedValueException(
+                    'Legacy curve25519 cannot be used with version 6 keys',
+                );
+            }
+        }
+
         $this->fingerprint = $isV6 ?
             hash('sha256', $this->getSignBytes(), true) :
             hash('sha1', $this->getSignBytes(), true);
         $this->keyID = $isV6 ?
-            substr($this->fingerprint, 0, 8) :
-            substr($this->fingerprint, 12, 8);
+            substr($this->fingerprint, 0, self::KEY_ID_SIZE) :
+            substr($this->fingerprint, 12, self::KEY_ID_SIZE);
     }
 
     /**
@@ -110,7 +130,6 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         }
 
         // A series of values comprising the key material.
-        // This is algorithm-specific and described in section XXXX.
         $keyMaterial = self::readKeyMaterial(
             substr($bytes, $offset), $keyAlgorithm
         );
@@ -118,8 +137,8 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         return new self(
             $version,
             $creationTime,
+            $keyAlgorithm,
             $keyMaterial,
-            $keyAlgorithm
         );
     }
 
@@ -228,6 +247,12 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         if ($this->keyMaterial instanceof Key\ECPublicKeyMaterial) {
             return $this->keyMaterial->getCurveOid()->hashAlgorithm();
         }
+        elseif ($this->keyAlgorithm instanceof KeyAlgorithm::Ed25519) {
+            return EdDSACurve::Ed25519->hashAlgorithm();
+        }
+        elseif ($this->keyAlgorithm instanceof KeyAlgorithm::Ed448) {
+            return EdDSACurve::Ed448->hashAlgorithm();
+        }
         else {
             return $preferredHash ?? Config::getPreferredHash();
         }
@@ -261,8 +286,24 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
             KeyAlgorithm::Ecdh => Key\ECDHPublicKeyMaterial::fromBytes($bytes),
             KeyAlgorithm::EcDsa => Key\ECDSAPublicKeyMaterial::fromBytes($bytes),
             KeyAlgorithm::EdDsaLegacy => Key\EdDSALegacyPublicKeyMaterial::fromBytes($bytes),
+            KeyAlgorithm::X25519
+                => Key\MontgomeryPublicKeyMaterial::fromBytes(
+                    $bytes, MontgomeryCurve::Curve25519
+                ),
+            KeyAlgorithm::X448
+                => Key\MontgomeryPublicKeyMaterial::fromBytes(
+                    $bytes, MontgomeryCurve::Curve448
+                ),
+            KeyAlgorithm::Ed25519
+                => Key\EdDSAPublicKeyMaterial::fromBytes(
+                    $bytes, EdDSACurve::Ed25519
+                ),
+            KeyAlgorithm::Ed448
+                => Key\EdDSAPublicKeyMaterial::fromBytes(
+                    $bytes, EdDSACurve::Ed448
+                ),
             default => throw new \UnexpectedValueException(
-                "Unsupported PGP public key algorithm encountered",
+                "Unsupported OpenPGP public key algorithm encountered",
             ),
         };
     }

@@ -54,11 +54,11 @@ enum EdDSACurve
     }
 
     /**
-     * Get preferred hash algo
+     * Get hash algorithm
      *
      * @return HashAlgorithm
      */
-    public function preferredHashAlgo(): HashAlgorithm
+    public function hashAlgorithm(): HashAlgorithm
     {
         return match ($this) {
             self::Ed25519 => HashAlgorithm::Sha256,

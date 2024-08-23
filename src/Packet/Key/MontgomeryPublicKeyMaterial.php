@@ -72,6 +72,16 @@ class MontgomeryPublicKeyMaterial implements KeyMaterialInterface
     }
 
     /**
+     * Get EC public key
+     *
+     * @return ECPublicKey
+     */
+    public function getECPublicKey(): ECPublicKey
+    {
+        return $this->publicKey;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getKeyLength(): int

@@ -57,11 +57,13 @@ class EdDSAPublicKeyMaterial implements PublicKeyMaterialInterface
             $this->publicKey = $publicKey;
         }
         else {
-            $key = PKCS8::savePublicKey(
-                $curve,
-                PKCS8::extractPoint($public, $curve)
+            $this->publicKey = EC::loadPublicKeyFormat(
+                'PKCS8',
+                PKCS8::savePublicKey(
+                    $curve,
+                    PKCS8::extractPoint($public, $curve)
+                )
             );
-            $this->publicKey = EC::loadPublicKeyFormat('PKCS8', $key);
         }
     }
 
@@ -77,9 +79,19 @@ class EdDSAPublicKeyMaterial implements PublicKeyMaterialInterface
     ): self
     {
         return new self(
-            substr($bytes, 0, $curve->payloadSize()),
+            substr($bytes, 0, $payloadSize),
             $curve->getCurve(),
         );
+    }
+
+    /**
+     * Get EC public key
+     *
+     * @return ECPublicKey
+     */
+    public function getECPublicKey(): ECPublicKey
+    {
+        return $this->publicKey;
     }
 
     /**

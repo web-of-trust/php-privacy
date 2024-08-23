@@ -12,6 +12,7 @@ use phpseclib3\Common\Functions\Strings;
 use phpseclib3\Crypt\Random;
 use OpenPGP\Enum\{
     KeyAlgorithm,
+    MontgomeryCurve,
     PacketTag,
     SymmetricAlgorithm,
 };
@@ -23,18 +24,8 @@ use OpenPGP\Type\{
 };
 
 /**
- * PublicKeyEncryptedSessionKey represents a Public-Key Encrypted Session Key packet.
- * See RFC 4880, section 5.1.
- * 
- * A Public-Key Encrypted Session Key packet holds the session key used to encrypt a message.
- * Zero or more Public-Key Encrypted Session Key packets and/or Symmetric-Key Encrypted Session Key
- * packets may precede a Symmetrically Encrypted Data Packet, which holds an encrypted message.
- * The message is encrypted with the session key, and the session key is itself
- * encrypted and stored in the Encrypted Session Key packet(s).
- * The Symmetrically Encrypted Data Packet is preceded by one Public-Key Encrypted
- * Session Key packet for each OpenPGP key to which the message is encrypted.
- * The recipient of the message finds a session key that is encrypted to their public key,
- * decrypts the session key, and then uses the session key to decrypt the message.
+ * PublicKeyEncryptedSessionKey represents a Public-Key Encrypted Session Key (PKESK) packet.
+ * See RFC 9580, section 5.1.
  * 
  * @package  OpenPGP
  * @category Packet
@@ -42,24 +33,36 @@ use OpenPGP\Type\{
  */
 class PublicKeyEncryptedSessionKey extends AbstractPacket
 {
-    const VERSION = 3;
+    const VERSION_3   = 3;
+    const VERSION_6   = 6;
+    const KEY_ID_SIZE = 8;
 
     /**
      * Constructor
      *
      * @param string $publicKeyID
+     * @param int $publicKeyVersion
+     * @param string $publicKeyFingerprint
      * @param KeyAlgorithm $publicKeyAlgorithm
      * @param SessionKeyCryptorInterface $sessionKeyCryptor
      * @param SessionKeyInterface $sessionKey
      * @return self
      */
     public function __construct(
+        private readonly int $version,
         private readonly string $publicKeyID,
+        private readonly int $publicKeyVersion,
+        private readonly string $publicKeyFingerprint,
         private readonly KeyAlgorithm $publicKeyAlgorithm,
         private readonly SessionKeyCryptorInterface $sessionKeyCryptor,
         private readonly ?SessionKeyInterface $sessionKey = null
     )
     {
+        if ($version !== self::VERSION_3 || $version !== self::VERSION_6) {
+            throw new \UnexpectedValueException(
+                "Version $version of the PKESK packet is unsupported.",
+            );
+        }
         parent::__construct(PacketTag::PublicKeyEncryptedSessionKey);
     }
 
@@ -70,18 +73,35 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     {
         $offset = 0;
         $version = ord($bytes[$offset++]);
-        if ($version !== self::VERSION) {
+        if ($version !== self::VERSION_3 || $version !== self::VERSION_6) {
             throw new \UnexpectedValueException(
                 "Version $version of the PKESK packet is unsupported.",
             );
         }
 
-        $keyID = substr($bytes, $offset, 8);
-        $offset += 8;
+        if ($version === self::VERSION_6) {
+            $length = ord($bytes[$offset++]);
+            $keyVersion = ord($bytes[$offset++]);
+            $keyFingerprint = substr($bytes, $offset, $length - 1);
+            $offset += $length - 1;
+            $keyV6 = $keyVersion === PublicKey::VERSION_6;
+            $keyID = $keyV6 ?
+                substr($keyFingerprint, 0, self::KEY_ID_SIZE) :
+                substr($keyFingerprint, 12, self::KEY_ID_SIZE);
+        }
+        else {
+            $keyID = substr($bytes, $offset, self::KEY_ID_SIZE);
+            $offset += self::KEY_ID_SIZE;
+            $keyVersion = 0;
+            $keyFingerprint = '';
+        }
         $keyAlgorithm = KeyAlgorithm::from(ord($bytes[$offset++]));
 
         return new self(
+            $version,
             $keyID,
+            $keyVersion,
+            $keyFingerprint,
             $keyAlgorithm,
             self::readMaterial(
                 substr($bytes, $offset), $keyAlgorithm
@@ -114,23 +134,66 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
      */
     public function toBytes(): string
     {
-        return implode([
-            chr(self::VERSION),
-            $this->publicKeyID,
-            chr($this->publicKeyAlgorithm->value),
-            $this->sessionKeyCryptor->toBytes(),
-        ]);
+        $bytes = [
+            chr($this->version),
+        ];
+        if ($this->version === self::VERSION_6) {
+            $bytes[] = chr(strlen($this->publicKeyFingerprint) + 1);
+            $bytes[] = chr($this->publicKeyVersion);
+            $bytes[] = $this->publicKeyFingerprint;
+        }
+        else {
+            $bytes[] = $this->publicKeyID;
+        }
+        $bytes[] = chr($this->publicKeyAlgorithm->value);
+        $bytes[] = $this->sessionKeyCryptor->toBytes();
+        return implode($bytes);
     }
 
     /**
-     * Get public key ID
+     * Get version
+     *
+     * @return int
+     */
+    public function getVersion(): int
+    {
+        return $this->version;
+    }
+
+    /**
+     * Get public key id
      *
      * @param bool $toHex
      * @return string
      */
     public function getPublicKeyID(bool $toHex = false): string
     {
-        return $toHex ? Strings::bin2hex($this->publicKeyID) : $this->publicKeyID;
+        return $toHex ?
+            Strings::bin2hex($this->publicKeyID) :
+            $this->publicKeyID;
+    }
+
+    /**
+     * Get public key version
+     *
+     * @return int
+     */
+    public function getPublicKeyVersion(): int
+    {
+        return $this->publicKeyVersion;
+    }
+
+    /**
+     * Get public key fingerprint
+     *
+     * @param bool $toHex
+     * @return string
+     */
+    public function getPublicKeyFingerprint(bool $toHex = false): string
+    {
+        return $toHex ?
+            Strings::bin2hex($this->publicKeyFingerprint) :
+            $this->publicKeyFingerprint;
     }
 
     /**
@@ -196,6 +259,8 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
             case KeyAlgorithm::RsaEncrypt:
             case KeyAlgorithm::ElGamal:
             case KeyAlgorithm::Ecdh:
+            case KeyAlgorithm::X25519:
+            case KeyAlgorithm::X448:
                 return $this->sessionKeyCryptor->decryptSessionKey(
                     $secretKey
                 );
@@ -221,6 +286,16 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
             KeyAlgorithm::Ecdh => Key\ECDHSessionKeyCryptor::encryptSessionKey(
                 $sessionKey, $keyPacket->getKeyMaterial(), $keyPacket->getFingerprint()
             ),
+            KeyAlgorithm::X25519 => Key\MontgomerySessionKeyCryptor::encryptSessionKey(
+                $sessionKey,
+                $keyPacket->getKeyMaterial()->getECPublicKey(),
+                MontgomeryCurve::Curve25519
+            ),
+            KeyAlgorithm::X448 => Key\MontgomerySessionKeyCryptor::encryptSessionKey(
+                $sessionKey,
+                $keyPacket->getKeyMaterial()->getECPublicKey(),
+                MontgomeryCurve::Curve448
+            ),
             default => throw new \UnexpectedValueException(
                 "Public key algorithm {$keyPacket->getKeyAlgorithm()->name} of the PKESK packet is unsupported."
             ),
@@ -236,6 +311,12 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
             => Key\RSASessionKeyCryptor::fromBytes($bytes),
             KeyAlgorithm::ElGamal => Key\ElGamalSessionKeyCryptor::fromBytes($bytes),
             KeyAlgorithm::Ecdh => Key\ECDHSessionKeyCryptor::fromBytes($bytes),
+            KeyAlgorithm::X25519 => Key\MontgomerySessionKeyCryptor::fromBytes(
+                $bytes, MontgomeryCurve::Curve25519
+            ),
+            KeyAlgorithm::X448 => Key\MontgomerySessionKeyCryptor::fromBytes(
+                $bytes, MontgomeryCurve::Curve448
+            ),
             default => throw new \UnexpectedValueException(
                 "Public key algorithm {$keyAlgorithm->name} of the PKESK packet is unsupported."
             ),

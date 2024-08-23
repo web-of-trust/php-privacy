@@ -89,7 +89,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
     {
         if ($keyMaterial instanceof ECDHPublicKeyMaterial) {
             $privateKey = EC::createKey(
-                $keyMaterial->getCurveOid()->name
+                $keyMaterial->getECPublicKey()->getCurve()
             );
             $sharedKey = DH::computeSecret(
                 $privateKey,

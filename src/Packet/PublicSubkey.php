@@ -29,22 +29,22 @@ class PublicSubkey extends PublicKey implements SubkeyPacketInterface
      *
      * @param int $version
      * @param DateTimeInterface $creationTime
-     * @param KeyMaterialInterface $keyMaterial
      * @param KeyAlgorithm $algorithm
+     * @param KeyMaterialInterface $keyMaterial
      * @return self
      */
     public function __construct(
         int $version,
         DateTimeInterface $creationTime,
+        KeyAlgorithm $algorithm,
         KeyMaterialInterface $keyMaterial,
-        KeyAlgorithm $algorithm = KeyAlgorithm::RsaEncryptSign
     )
     {
         parent::__construct(
             $version,
             $creationTime,
+            $algorithm,
             $keyMaterial,
-            $algorithm
         );
     }
 
@@ -57,8 +57,8 @@ class PublicSubkey extends PublicKey implements SubkeyPacketInterface
         return new self(
             $publicKey->getVersion(),
             $publicKey->getCreationTime(),
+            $publicKey->getKeyAlgorithm(),
             $publicKey->getKeyMaterial(),
-            $publicKey->getKeyAlgorithm()
         );
     }
 }

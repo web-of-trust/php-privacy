@@ -30,7 +30,7 @@ enum MontgomeryCurve
     /**
      * Get curve
      *
-     * @return int
+     * @return Montgomery
      */
     public function getCurve(): Montgomery
     {
@@ -50,6 +50,45 @@ enum MontgomeryCurve
         return match ($this) {
             self::Curve25519 => 32,
             self::Curve448   => 56,
+        };
+    }
+
+    /**
+     * Get hash algorithm name
+     *
+     * @return string
+     */
+    public function hashAlgorithm(): string
+    {
+        return match ($this) {
+            self::Curve25519 => 'sha256',
+            self::Curve448   => 'sha512',
+        };
+    }
+
+    /**
+     * Get symmetric algorithm
+     *
+     * @return SymmetricAlgorithm
+     */
+    public function symmetricAlgorithm(): SymmetricAlgorithm
+    {
+        return match($this) {
+            self::Curve25519 => SymmetricAlgorithm::Aes128,
+            self::Curve448   => SymmetricAlgorithm::Aes256,
+        };
+    }
+
+    /**
+     * Get hkdf info
+     *
+     * @return string
+     */
+    public function hkdfInfo(): string
+    {
+        return match($this) {
+            self::Curve25519 => 'OpenPGP X25519',
+            self::Curve448   => 'OpenPGP X448',
         };
     }
 }

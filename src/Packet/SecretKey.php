@@ -11,6 +11,7 @@ namespace OpenPGP\Packet;
 use DateTimeInterface;
 use phpseclib3\Crypt\Random;
 use OpenPGP\Common\{
+    Argon2S2K,
     Config,
     Helper,
     S2K,
@@ -18,8 +19,10 @@ use OpenPGP\Common\{
 use OpenPGP\Enum\{
     CurveOid,
     DHKeySize,
+    EdDSACurve,
     HashAlgorithm,
     KeyAlgorithm,
+    MontgomeryCurve,
     PacketTag,
     RSAKeySize,
     S2kUsage,
@@ -28,6 +31,7 @@ use OpenPGP\Enum\{
 use OpenPGP\Type\{
     KeyMaterialInterface,
     PublicKeyPacketInterface,
+    S2KInterface,
     SecretKeyPacketInterface,
     SubkeyPacketInterface,
 };
@@ -56,7 +60,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
      * @param string $keyData
      * @param KeyMaterialInterface $keyMaterial
      * @param SymmetricAlgorithm $symmetric
-     * @param S2K $s2k
+     * @param S2KInterface $s2k
      * @param string $iv
      * @return self
      */
@@ -66,7 +70,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         private readonly ?KeyMaterialInterface $keyMaterial = null,
         private readonly S2kUsage $s2kUsage = S2kUsage::Sha1,
         private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        private readonly ?S2K $s2k = null,
+        private readonly ?S2KInterface $s2k = null,
         private readonly string $iv = ''
     )
     {
@@ -102,7 +106,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         }
 
         $iv = '';
-        if ($s2k instanceof S2K) {
+        if ($s2k instanceof S2KInterface) {
             $iv = substr($bytes, $offset, $symmetric->blockSize());
             $offset += $symmetric->blockSize();
         }
@@ -157,6 +161,18 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 => Key\ECDSASecretKeyMaterial::generate($curveOid),
             KeyAlgorithm::EdDsaLegacy
                 => Key\EdDSALegacySecretKeyMaterial::generate(),
+            KeyAlgorithm::X25519
+                => Key\MontgomerySecretKeyMaterial::generate(
+                    MontgomeryCurve::Curve25519
+                ),
+            KeyAlgorithm::X448
+                => Key\MontgomerySecretKeyMaterial::generate(
+                    MontgomeryCurve::Curve448
+                ),
+            KeyAlgorithm::Ed25519
+                => Key\EdDSASecretKeyMaterial::generate(EdDSACurve::Ed25519),
+            KeyAlgorithm::Ed448
+                => Key\EdDSASecretKeyMaterial::generate(EdDSACurve::Ed448),
             default => throw new \UnexpectedValueException(
                 'Unsupported PGP public key algorithm encountered'
             ),
@@ -179,7 +195,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
      */
     public function toBytes(): string
     {
-        if ($this->s2kUsage !== S2kUsage::None && $this->s2k instanceof S2K) {
+        if ($this->s2kUsage !== S2kUsage::None && $this->s2k instanceof S2KInterface) {
             return implode([
                 $this->publicKey->toBytes(),
                 chr($this->s2kUsage->value),
@@ -309,7 +325,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
      */
     public function isEncrypted(): bool
     {
-        return ($this->s2k instanceof S2K) &&
+        return ($this->s2k instanceof S2KInterface) &&
                ($this->s2kUsage !== S2kUsage::None);
     }
 
@@ -433,9 +449,9 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     /**
      * Get string 2 key
      * 
-     * @return S2K
+     * @return S2KInterface
      */
-    public function getS2K(): ?S2K
+    public function getS2K(): ?S2KInterface
     {
         return $this->s2k;
     }
@@ -486,6 +502,22 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             KeyAlgorithm::EdDsaLegacy => Key\EdDSALegacySecretKeyMaterial::fromBytes(
                 $bytes, $publicKey->getKeyMaterial()
             ),
+            KeyAlgorithm::X25519
+                => Key\MontgomerySecretKeyMaterial::fromBytes(
+                    $bytes, $publicKey->getKeyMaterial(), MontgomeryCurve::Curve25519
+                ),
+            KeyAlgorithm::X448
+                => Key\MontgomerySecretKeyMaterial::fromBytes(
+                    $bytes, $publicKey->getKeyMaterial(), MontgomeryCurve::Curve448
+                ),
+            KeyAlgorithm::Ed25519
+                => Key\EdDSASecretKeyMaterial::fromBytes(
+                    $bytes, $publicKey->getKeyMaterial(), EdDSACurve::Ed25519
+                ),
+            KeyAlgorithm::Ed448
+                => Key\EdDSASecretKeyMaterial::fromBytes(
+                    $bytes, $publicKey->getKeyMaterial(), EdDSACurve::Ed448
+                ),
             default => throw new \UnexpectedValueException(
                 'Unsupported PGP public key algorithm encountered',
             ),
