@@ -25,6 +25,11 @@ enum DHKeySize
 
     case VeryHigh;
 
+    /**
+     * The size of prime p
+     *
+     * @return int
+     */
     public function lSize(): int
     {
         return match($this) {
@@ -35,6 +40,11 @@ enum DHKeySize
         };
     }
 
+    /**
+     * The size of group order q
+     *
+     * @return int
+     */
     public function nSize(): int
     {
         return match($this) {
