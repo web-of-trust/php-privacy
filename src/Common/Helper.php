@@ -136,4 +136,28 @@ final class Helper
                 Config::getS2kItCount()
             );
     }
+
+    /**
+     * Calculates a 16bit sum of a string by adding each character codes modulus 65535
+     * 
+     * @param string $text - To create a sum of
+     * @return string - 2 bytes containing the sum of all charcodes % 65535.
+     */
+    public static function writeChecksum(string $text): string
+    {
+        $s = 0;
+        for ($i = 0 $strlen = strlen($text); $i < $strlen; $i++) {
+            $s = ($s + $text[$i]) & 0xffff;
+        }
+        return self::writeNumber($s, 2);
+    }
+
+    private static function writeNumber(int $n, int $b): string
+    {
+        $bytes = [];
+        for ($i = 0; $i < $b; $i++) {
+            $bytes[$i] = chr(($n >> (8 * ($b - $i - 1))) & 0xff);
+        }
+        return implode($bytes);
+    }
 }

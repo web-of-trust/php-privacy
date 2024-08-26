@@ -110,12 +110,9 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                     $offset++;
                 }
                 $s2kType = S2kType::from(ord($bytes[$offset]));
-                if ($s2kType === S2kType::Argon2) {
-                    $s2k = Argon2S2K::fromBytes(substr($bytes, $offset));
-                }
-                else {
-                    $s2k = S2K::fromBytes(substr($bytes, $offset));
-                }
+                $s2k = ($s2kType === S2kType::Argon2) ?
+                    Argon2S2K::fromBytes(substr($bytes, $offset)) : 
+                    S2K::fromBytes(substr($bytes, $offset));
                 $offset += $s2kType->packetLength();
                 break;
             default:
@@ -135,6 +132,11 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         $keyMaterial = null;
         $keyData = substr($bytes, $offset);
         if ($s2kUsage === S2kUsage::None) {
+            $checksum = substr($keyData, strlen($keyData) - 2);
+            $keyData = substr($keyData, 0, strlen($keyData) - 2);
+            if (strcmp(Helper::writeChecksum($keyData), $checksum) !== 0) {
+                throw new \UnexpectedValueException('Key checksum mismatch');
+            }
             $keyMaterial = self::readKeyMaterial($keyData, $publicKey);
         }
 
@@ -223,7 +225,9 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $this->publicKey->toBytes(),
                 chr($this->s2kUsage->value),
                 chr($this->symmetric->value),
+                !empty($this->aead) ? chr($this->aead->value) : '',
                 $this->s2k->toBytes(),
+                $this->getVersion() === PublicKey::VERSION_6 ? chr($this->s2k->getLength()) : '',
                 $this->iv,
                 $this->keyData,
             ]);
@@ -233,6 +237,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $this->publicKey->toBytes(),
                 chr(S2kUsage::None->value),
                 $this->keyData,
+                Helper::writeChecksum($this->keyData),
             ]);
         }
     }
@@ -381,9 +386,11 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                     );
                 }
                 $s2k = Helper::stringToKey(S2kType::Argon2);
+                $iv = Random::string($aead->ivLength());
             }
             else {
                 $s2k = Helper::stringToKey(S2kType::Iterated);
+                $iv = Random::string($symmetric->blockSize());
             }
 
             $packetTag = chr(0xc0 | $this->getTag()->value);
@@ -395,7 +402,6 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $packetTag
             );
             $clearText = $this->keyMaterial?->toBytes() ?? '';
-            $iv = Random::string($symmetric->blockSize());
 
             if ($aead instanceof AeadAlgorithm) {
                 $cipher = $aead->cipherEngine($key, $this->symmetric);
@@ -411,7 +417,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             else {
                 $cipher = $symmetric->cipherEngine(self::CIPHER_MODE);
                 $cipher->setIV($iv);
-                $cipher->setKey($$key);
+                $cipher->setKey($key);
 
                 $encrypted = $cipher->encrypt(implode([
                     $clearText,
