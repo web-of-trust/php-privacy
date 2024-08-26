@@ -143,21 +143,12 @@ final class Helper
      * @param string $text - To create a sum of
      * @return string - 2 bytes containing the sum of all charcodes % 65535.
      */
-    public static function writeChecksum(string $text): string
+    public static function computeChecksum(string $text): string
     {
-        $s = 0;
-        for ($i = 0 $strlen = strlen($text); $i < $strlen; $i++) {
-            $s = ($s + $text[$i]) & 0xffff;
-        }
-        return self::writeNumber($s, 2);
-    }
-
-    private static function writeNumber(int $n, int $b): string
-    {
-        $bytes = [];
-        for ($i = 0; $i < $b; $i++) {
-            $bytes[$i] = chr(($n >> (8 * ($b - $i - 1))) & 0xff);
-        }
-        return implode($bytes);
+        $sum = array_sum(array_map(
+            static fn ($char) => ord($char),
+            str_split($text)
+        ));
+        return pack('n', $sum & 0xffff);
     }
 }
