@@ -32,7 +32,7 @@ use OpenPGP\Type\{
  * Public key packet class
  * 
  * PublicKey represents an OpenPGP public key packet.
- * See RFC 4880, section 5.5.2.
+ * See RFC rfc9580, section 5.5.2.
  * 
  * @package  OpenPGP
  * @category Packet

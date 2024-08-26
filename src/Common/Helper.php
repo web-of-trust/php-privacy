@@ -8,12 +8,13 @@
 
 namespace OpenPGP\Common;
 
-use phpseclib3\Crypt\Random;
-use phpseclib3\Math\BigInteger;
 use OpenPGP\Enum\{
     S2kType,
     SymmetricAlgorithm,
 };
+use OpenPGP\Type\S2KInterface;
+use phpseclib3\Crypt\Random;
+use phpseclib3\Math\BigInteger;
 
 /**
  * Helper class
@@ -115,15 +116,24 @@ final class Helper
     /**
      * Get string 2 key
      * 
-     * @return S2K
+     * @param S2kType $type
+     * @return S2KInterface
      */
-    public static function stringToKey(): S2K
+    public static function stringToKey(
+        S2kType $type = S2kType::Iterated
+    ): S2KInterface
     {
-        return new S2K(
-            Random::string(S2K::SALT_LENGTH),
-            S2kType::Iterated,
-            Config::getS2kHash(),
-            Config::getS2kItCount()
-        );
+        return $type === S2kType::Argon2 ? 
+            new Argon2S2K(
+                Random::string(Argon2S2K::SALT_LENGTH),
+                Config::getArgon2Iteration(),
+                Config::getArgon2Parallelism()
+                Config::getArgon2MemoryExponent()
+            ) ? new S2K(
+                Random::string(S2K::SALT_LENGTH),
+                $type,
+                Config::getS2kHash(),
+                Config::getS2kItCount()
+            );
     }
 }

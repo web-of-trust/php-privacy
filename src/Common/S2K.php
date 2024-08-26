@@ -68,6 +68,11 @@ class S2K implements S2KInterface
         private readonly int $itCount = self::DEFAULT_IT_COUNT
     )
     {
+        if ($type === S2kType::Argon2) {
+            throw new \InvalidArgumentException(
+                'Argon2 string to key is unsupported',
+            );
+        }
         $this->count = (16 + ($itCount & 15)) << (($itCount >> 4) + self::EXPBIAS);
     }
 

@@ -58,14 +58,14 @@ class Argon2S2K implements S2KInterface
      * Constructor
      *
      * @param string $salt - Salt value
-     * @param int $time - Number of iterations
+     * @param int $iteration - Number of iterations
      * @param int $parallelism - Number of parallel threads
      * @param int $memoryExponent - The exponent of the memory size
      * @return self
      */
     public function __construct(
         private readonly string $salt,
-        private readonly int $time = 3,
+        private readonly int $iteration = 3,
         private readonly int $parallelism = 1,
         private readonly int $memoryExponent = 16,
     )
@@ -99,7 +99,7 @@ class Argon2S2K implements S2KInterface
         return implode([
             chr($this->type->value),
             $this->salt,
-            chr($this->time),
+            chr($this->iteration),
             chr($this->parallelism),
             chr($this->memoryExponent),
         ]);
@@ -117,7 +117,7 @@ class Argon2S2K implements S2KInterface
                 $length,
                 $passphrase,
                 $this->salt,
-                $this->time,
+                $this->iteration,
                 1 << ($this->memoryExponent + 10)
             );
         }
@@ -125,7 +125,7 @@ class Argon2S2K implements S2KInterface
             $process = new Process([
                 $this->argon2Path, $this->salt, '-id', '-r',
                 '-l', $length,
-                '-t', $this->time,
+                '-t', $this->iteration,
                 '-p', $this->parallelism,
                 '-m', $this->memoryExponent,
             ]);
@@ -151,9 +151,11 @@ class Argon2S2K implements S2KInterface
         $offset = 1;
         $salt = substr($bytes, $offset, self::SALT_LENGTH);
         $offset += self::SALT_LENGTH;
-        $time = ord($bytes[$offset++]);
+        $iteration = ord($bytes[$offset++]);
         $parallelism = ord($bytes[$offset++]);
         $memoryExponent = ord($bytes[$offset++]);
-        return new self($salt, $time, $parallelism, $memoryExponent);
+        return new self(
+            $salt, $iteration, $parallelism, $memoryExponent
+        );
     }
 }

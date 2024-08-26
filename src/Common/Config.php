@@ -45,6 +45,12 @@ final class Config
 
     private static int $s2kItCount = 224;
 
+    private static int $argon2Iteration = 4;
+
+    private static int $argon2Parallelism = 1;
+
+    private static int $argon2MemoryExponent = 16;
+
     private static int $aeadChunkSize = 12;
 
     private static bool $aeadProtect = false;
@@ -200,6 +206,66 @@ final class Config
     public static function setS2kItCount(int $s2kItCount): void
     {
         self::$s2kItCount = $s2kItCount;
+    }
+
+    /**
+     * Get Argon2 iteration count.
+     *
+     * @return int
+     */
+    public static function getArgon2Iteration(): int
+    {
+        return self::$argon2Iteration;
+    }
+
+    /**
+     * Set Argon2 iteration count.
+     *
+     * @param int $argon2Iteration
+     */
+    public static function setArgon2Iteration(int $argon2Iteration): void
+    {
+        self::$argon2Iteration = $argon2Iteration;
+    }
+
+    /**
+     * Get Argon2 parallelismt.
+     *
+     * @return int
+     */
+    public static function getArgon2Parallelism(): int
+    {
+        return self::$argon2Parallelism;
+    }
+
+    /**
+     * Set Argon2 parallelismt.
+     *
+     * @param int $argon2Parallelism
+     */
+    public static function setArgon2Parallelism(int $argon2Parallelism): void
+    {
+        self::$argon2Parallelism = $argon2Parallelism;
+    }
+
+    /**
+     * Get Argon2 memory exponent.
+     *
+     * @return int
+     */
+    public static function getArgon2MemoryExponent(): int
+    {
+        return self::$argon2MemoryExponent;
+    }
+
+    /**
+     * Set Argon2 memory exponent.
+     *
+     * @param int $argon2MemoryExponent
+     */
+    public static function setArgon2MemoryExponent(int $argon2MemoryExponent): void
+    {
+        self::$argon2MemoryExponent = $argon2MemoryExponent;
     }
 
     /**

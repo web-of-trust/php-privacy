@@ -135,7 +135,7 @@ class S2KTest extends OpenPGPTestCase
         $this->assertSame(bin2hex($key), '915e96fc694e7f90a6850b740125ea005199c725f3bd27e3');
     }
 
-    public function testMode3TwofishPassword13Times0123456789()
+    public function testMode3TwofishPassword13Iterations0123456789()
     {
         $data = 'BAoDAlHt/BVFQGWs7g==';
         $passphrase = '0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789';
@@ -156,7 +156,7 @@ class S2KTest extends OpenPGPTestCase
         $this->assertSame(bin2hex($key), 'ea264fada5a859c40d88a159b344ecf1f51ff327fdb3c558b0a7dc299777173e');
     }
 
-    public function testMode3Aes128Password13Times0123456789()
+    public function testMode3Aes128Password13Iterations0123456789()
     {
         $data = 'BAcDAgbkYVykSPnd7g==';
         $passphrase = '0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789';
@@ -177,7 +177,7 @@ class S2KTest extends OpenPGPTestCase
         $this->assertSame(bin2hex($key), 'f3d0ce52ed6143637443e3399437fd0f');
     }
 
-    public function test4Time1MB16KeyLengthArgon2S2K()
+    public function test4Iterations1MB16KeyLengthArgon2S2K()
     {
         $password = 'password';
         $salt = 'dH3Z8hGL7bBUyp1i';
@@ -187,7 +187,7 @@ class S2KTest extends OpenPGPTestCase
         $this->assertSame(bin2hex($s2k->produceKey($password, 16)), $hash);
     }
 
-    public function test4Time64MB16KeyLengthArgon2S2K()
+    public function test4Iterations64MB16KeyLengthArgon2S2K()
     {
         $password = 'password';
         $salt = 'IeCBTBvkzbmxT87I';
@@ -197,7 +197,7 @@ class S2KTest extends OpenPGPTestCase
         $this->assertSame(bin2hex($s2k->produceKey($password, 16)), $hash);
     }
 
-    public function test4Time10MB32KeyLengthArgon2S2K()
+    public function test4Iterations10MB32KeyLengthArgon2S2K()
     {
         $password = 'password';
         $salt = 'KtPeAgudgN7xrgUK';
@@ -207,7 +207,7 @@ class S2KTest extends OpenPGPTestCase
         $this->assertSame(bin2hex($s2k->produceKey($password, 32)), $hash);
     }
 
-    public function test4Time64MB32KeyLengthArgon2S2K()
+    public function test4Iterations64MB32KeyLengthArgon2S2K()
     {
         $password = 'password';
         $salt = 'D85Euo8RwvlkUxb5';

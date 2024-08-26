@@ -8,7 +8,10 @@
 
 namespace OpenPGP\Type;
 
-use OpenPGP\Enum\SymmetricAlgorithm;
+use OpenPGP\Enum\{
+    AeadAlgorithm,
+    SymmetricAlgorithm,
+};
 
 /**
  * Secret key packet interface
@@ -45,11 +48,13 @@ interface SecretKeyPacketInterface extends KeyPacketInterface
      *
      * @param string $passphrase
      * @param SymmetricAlgorithm $symmetric
+     * @param AeadAlgorithm $aead
      * @return self
      */
     function encrypt(
         string $passphrase,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        ?AeadAlgorithm $aead = null,
     ): self;
 
     /**

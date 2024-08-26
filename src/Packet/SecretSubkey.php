@@ -9,8 +9,8 @@
 namespace OpenPGP\Packet;
 
 use DateTimeInterface;
-use OpenPGP\Common\S2K;
 use OpenPGP\Enum\{
+    AeadAlgorithm,
     CurveOid,
     DHKeySize,
     KeyAlgorithm,
@@ -20,6 +20,7 @@ use OpenPGP\Enum\{
 };
 use OpenPGP\Type\{
     KeyMaterialInterface,
+    S2KInterface,
     SubkeyPacketInterface,
 };
 
@@ -40,7 +41,8 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
      * @param KeyMaterialInterface $keyMaterial
      * @param S2kUsage $s2kUsage
      * @param SymmetricAlgorithm $symmetric
-     * @param S2K $s2k
+     * @param S2KInterface $s2k
+     * @param AeadAlgorithm $aead
      * @param string $iv
      * @return self
      */
@@ -50,7 +52,8 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         ?KeyMaterialInterface $keyMaterial = null,
         S2kUsage $s2kUsage = S2kUsage::Sha1,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        ?S2K $s2k = null,
+        ?S2KInterface $s2k = null,
+        ?AeadAlgorithm $aead = null,
         string $iv = ''
     )
     {
@@ -61,6 +64,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
             $s2kUsage,
             $symmetric,
             $s2k,
+            $aead,
             $iv
         );
     }
@@ -105,12 +109,13 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
      */
     public function encrypt(
         string $passphrase,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        ?AeadAlgorithm $aead = null,
     ): self
     {
         if ($this->getKeyMaterial() instanceof KeyMaterialInterface) {
             $secretKey = parent::encrypt(
-                $passphrase, $symmetric
+                $passphrase, $symmetric, $aead
             );
             return self::fromSecretKey($secretKey);
         }
