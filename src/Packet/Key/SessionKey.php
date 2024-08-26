@@ -8,9 +8,10 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\Random;
+use OpenPGP\Common\Helper;
 use OpenPGP\Enum\SymmetricAlgorithm as Symmetric;
 use OpenPGP\Type\SessionKeyInterface;
+use phpseclib3\Crypt\Random;
 
 /**
  * Session key class
@@ -49,10 +50,9 @@ class SessionKey implements SessionKeyInterface
         );
 
         $checksum = substr($bytes, strlen($bytes) - 2);
-        $computedChecksum = $sessionKey->computeChecksum();
-        if ($computedChecksum !== $checksum) {
+        if (strcmp($sessionKey->computeChecksum(), $checksum) !== 0) {
             throw new \UnexpectedValueException(
-                'Session key decryption error'
+                'Session key checksum mismatch!'
             );
         }
 
@@ -96,11 +96,7 @@ class SessionKey implements SessionKeyInterface
      */
     public function computeChecksum(): string
     {
-        $sum = array_sum(array_map(
-            static fn ($char) => ord($char),
-            str_split($this->encryptionKey)
-        ));
-        return pack('n', $sum & 0xffff);
+        return Helper::computeChecksum($this->encryptionKey);
     }
 
     /**
