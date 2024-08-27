@@ -75,6 +75,11 @@ class SymEncryptedSessionKey extends AbstractPacket
     )
     {
         parent::__construct(PacketTag::SymEncryptedSessionKey);
+        if ($aead instanceof AeadAlgorithm && $version !== PublicKey::VERSION_6) {
+            throw new \UnexpectedValueException(
+                "Using AEAD with version {$version} of the SKESK packet is not allowed."
+            );
+        }
     }
 
     /**
@@ -294,7 +299,7 @@ class SymEncryptedSessionKey extends AbstractPacket
                 $sessionKey = new Key\SessionKey($key, $this->symmetric);
             }
             else {
-                if (($this->version === self::VERSION_6)) {
+                if ($this->aead instanceof AeadAlgorithm) {
                     $adata = implode([
                         chr(0xc0 | $this->getTag()->value),
                         chr($this->version),

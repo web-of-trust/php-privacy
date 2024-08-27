@@ -380,7 +380,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             if ($aead instanceof AeadAlgorithm) {
                 if ($this->getVersion() !== PublicKey::VERSION_6) {
                     throw new \UnexpectedValueException(
-                        "Using AEAD with version {$this->getVersion()} keys is not allowed"
+                        "Using AEAD with version {$this->getVersion()} of the key packet is not allowed."
                     );
                 }
                 $s2k = Helper::stringToKey(S2kType::Argon2);
@@ -481,7 +481,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $clearText = substr($decrypted, 0, $length);
                 $hashText = substr($decrypted, $length);
                 $hashed = hash(self::HASH_ALGO, $clearText, true);
-                if ($hashed !== $hashText) {
+                if (strcmp($hashed, $hashText) !== 0) {
                     throw new \UnexpectedValueException(
                         'Incorrect key passphrase.'
                     );

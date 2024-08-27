@@ -37,11 +37,11 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
 {
     use EncryptedDataTrait;
 
-    const VERSION_1     = 1;
-    const VERSION_2     = 1;
-    const HASH_ALGO     = 'sha1';
-    const ZERO_CHAR     = "\x00";
-    const SUFFIX_OCTETS = "\xd3\x14";
+    const VERSION_1 = 1;
+    const VERSION_2 = 2;
+    const HASH_ALGO = 'sha1';
+    const ZERO_CHAR = "\x00";
+    const SUFFIXES  = "\xd3\x14";
     const SALT_SIZE = 32;
 
     /**
@@ -60,13 +60,18 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
         private readonly int $version,
         private readonly string $encrypted,
         private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        private readonly AeadAlgorithm $aead = AeadAlgorithm::Gcm,
+        private readonly ?AeadAlgorithm $aead = null,
         private readonly int $chunkSize = 12,
         private readonly string $salt = '',
         private readonly ?PacketListInterface $packetList = null
     )
     {
         parent::__construct(PacketTag::SymEncryptedIntegrityProtectedData);
+        if ($aead instanceof AeadAlgorithm && $version !== PublicKey::VERSION_2) {
+            throw new \UnexpectedValueException(
+                "Using AEAD with version {$version} of the SEIPD packet is not allowed."
+            );
+        }
         if (!empty($salt) && strlen($salt) !== self::SALT_SIZE) {
             throw new \LengthException(
                 'Salt size must be ' . self::SALT_SIZE . ' bytes.'
@@ -130,14 +135,15 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
         string $key,
         PacketListInterface $packetList,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        AeadAlgorithm $aead = SymmetricAlgorithm::Gcm,
+        ?AeadAlgorithm $aead = null,
     ): self
     {
-        $version = Config::aeadProtect() ? self::VERSION_2 : self::VERSION_1;
+        $aeadProtect = $aead instanceof AeadAlgorithm;
+        $version = $aeadProtect ? self::VERSION_2 : self::VERSION_1;
 
         $salt = '';
         $chunkSize = Config::getAeadChunkSize();
-        if ($version === self::VERSION_2) {
+        if ($aeadProtect) {
             $salt = Random::string(self::SALT_SIZE);
             $cryptor = new self(
                 $version,
@@ -153,7 +159,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
             $toHash = implode([
                 Helper::generatePrefix($symmetric),
                 $packetList->encode(),
-                self::SUFFIX_OCTETS,
+                self::SUFFIXES,
             ]);
             $plainText = $toHash . hash(self::HASH_ALGO, $toHash, true);
 
@@ -185,7 +191,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
     public static function encryptPacketsWithSessionKey(
         SessionKeyInterface $sessionKey,
         PacketListInterface $packetList,
-        AeadAlgorithm $aead = SymmetricAlgorithm::Gcm,
+        ?AeadAlgorithm $aead = null,
     ): self
     {
         return self::encryptPackets(
@@ -285,26 +291,36 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
             $this->getLogger()->debug(
                 'Decrypt the encrypted data contained in the packet.'
             );
-            $size = $symmetric->blockSize();
-            $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
-            $cipher->setKey($key);
-            $cipher->setIV(str_repeat(self::ZERO_CHAR, $size));
+            if ($this->aead instanceof AeadAlgorithm) {
+                $packetBytes = $this->aeadCrypt('decrypt', $key, $this->encrypted);
+            }
+            else {
+                $size = $symmetric->blockSize();
+                $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
+                $cipher->setKey($key);
+                $cipher->setIV(str_repeat(self::ZERO_CHAR, $size));
 
-            $decrypted = $cipher->decrypt($this->encrypted);
-            $digestSize = strlen($decrypted) - HashAlgorithm::Sha1->digestSize();
-            $realHash = substr($decrypted, $digestSize);
-            $toHash = substr($decrypted, 0, $digestSize);
-            if (strcmp($realHash, hash(self::HASH_ALGO, $toHash, true)) !== 0) {
-                throw new \UnexpectedValueException(
-                    'Modification detected.'
-                );
+                $decrypted = $cipher->decrypt($this->encrypted);
+                $digestSize = strlen($decrypted) - HashAlgorithm::Sha1->digestSize();
+                $realHash = substr($decrypted, $digestSize);
+                $toHash = substr($decrypted, 0, $digestSize);
+                if (strcmp($realHash, hash(self::HASH_ALGO, $toHash, true)) !== 0) {
+                    throw new \UnexpectedValueException(
+                        'Modification detected.'
+                    );
+                }
+                // Remove random prefix & MDC packet
+                $packetBytes = substr($toHash, $size + 2, strlen($toHash) - $size - 2);
             }
 
             return new self(
+                $this->version,
                 $this->encrypted,
-                PacketList::decode(
-                    substr($toHash, $size + 2, strlen($toHash) - $size - 2)
-                )
+                $this->symmetric,
+                $this->aead,
+                $this->chunkSize,
+                $this->salt,
+                PacketList::decode($packetBytes)
             );
         }
     }
