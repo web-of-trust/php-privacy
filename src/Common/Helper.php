@@ -133,7 +133,7 @@ final class Helper
      * @param string $text - To create a sum of
      * @return string - 2 bytes containing the sum of all charcodes % 65535.
      */
-    public function computeChecksum(string $text): string
+    public static function computeChecksum(string $text): string
     {
         $sum = array_sum(array_map(
             static fn ($char) => ord($char),
