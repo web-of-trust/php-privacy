@@ -111,7 +111,7 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
         $chunkSize = Config::getAeadChunkSize();
         $iv = Random::string($aead->ivLength());
 
-        $encryptor = new self(
+        $cryptor = new self(
             $symmetric,
             $aead,
             $chunkSize,
@@ -123,7 +123,7 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
             $aead,
             $chunkSize,
             $iv,
-            $encryptor->crypt('encrypt', $key, $packetList->encode()),
+            $cryptor->crypt('encrypt', $key, $packetList->encode()),
             $packetList
         );
     }

@@ -147,7 +147,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             $s2k,
             $aead,
             $iv
-        );
+        );version
     }
 
     /**
@@ -380,7 +380,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             if ($aead instanceof AeadAlgorithm) {
                 if ($this->getVersion() !== PublicKey::VERSION_6) {
                     throw new \UnexpectedValueException(
-                        'Using AEAD with version ' . PublicKey::VERSION_6 . ' keys is not allowed'
+                        "Using AEAD with version {$this->getVersion()} keys is not allowed"
                     );
                 }
                 $s2k = Helper::stringToKey(S2kType::Argon2);

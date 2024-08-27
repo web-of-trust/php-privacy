@@ -68,7 +68,7 @@ class SymEncryptedSessionKey extends AbstractPacket
         private readonly int $version,
         private readonly S2KInterface $s2k,
         private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        private readonly AeadAlgorithm $aead = AeadAlgorithm::Gcm,
+        private readonly ?AeadAlgorithm $aead = null,
         private readonly string $iv = '',
         private readonly string $encrypted = '',
         private readonly ?SessionKeyInterface $sessionKey = null
@@ -91,8 +91,9 @@ class SymEncryptedSessionKey extends AbstractPacket
                 "Version $version of the SKESK packet is unsupported."
             );
         }
+        $isV6 = $version === self::VERSION_6;
 
-        if ($version === self::VERSION_6) {
+        if ($isV6) {
             // A one-octet scalar octet count of the following 5 fields.
             $offset++;
         }
@@ -100,10 +101,12 @@ class SymEncryptedSessionKey extends AbstractPacket
         // A one-octet number describing the symmetric algorithm used.
         $symmetric = SymmetricAlgorithm::from(ord($bytes[$offset++]));
 
-        $aead = Config::getPreferredAead();
-        if ($version === self::VERSION_6) {
+        $aead = null;
+        $ivLength = 0;
+        if ($isV6) {
             // A one-octet AEAD algorithm identifier.
             $aead = AeadAlgorithm::from(ord($bytes[$offset++]));
+            $ivLength = $aead->ivLength();
         }
 
         // A string-to-key (S2K) specifier, length as defined above.
@@ -113,13 +116,9 @@ class SymEncryptedSessionKey extends AbstractPacket
             S2K::fromBytes(substr($bytes, $offset));
         $offset += $s2kType->packetLength();
 
-        $iv = '';
-        if ($version === self::VERSION_6) {
-            // A starting initialization vector of size specified by the AEAD algorithm.
-            $iv = substr($bytes, $offset, $aead->ivLength());
-            $offset += $aead->ivLength();
-        }
-        $encrypted = substr($bytes, $offset);
+        // A starting initialization vector of size specified by the AEAD algorithm.
+        $iv = substr($bytes, $offset, $ivLength);
+        $offset += $ivLength;
 
         return new self(
             $version,
@@ -127,7 +126,7 @@ class SymEncryptedSessionKey extends AbstractPacket
             $symmetric,
             $aead,
             $iv,
-            $encrypted
+            substr($bytes, $offset)
         );
     }
 
@@ -144,11 +143,12 @@ class SymEncryptedSessionKey extends AbstractPacket
         string $password,
         ?SessionKeyInterface $sessionKey = null,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        AeadAlgorithm $aead = AeadAlgorithm::Gcm,
+        ?AeadAlgorithm $aead = null,
     ): self
     {
-        $version = Config::aeadProtect() ? self::VERSION_6 : self::VERSION_4;
-        $s2k = $version === self::VERSION_6 ?
+        $aeadProtect = $aead instanceof AeadAlgorithm;
+        $version = $aeadProtect ? self::VERSION_6 : self::VERSION_4;
+        $s2k = $aeadProtect ?
             Helper::stringToKey(S2kType::Argon2) :
             Helper::stringToKey(S2kType::Iterated);
 
@@ -162,7 +162,7 @@ class SymEncryptedSessionKey extends AbstractPacket
         $encrypted = '';
 
         if ($sessionKey instanceof SessionKeyInterface) {
-            if ($version === self::VERSION_6) {
+            if ($aeadProtect) {
                 $adata = implode([
                     chr(0xc0 | PacketTag::SymEncryptedSessionKey->value),
                     chr($version),
@@ -235,7 +235,7 @@ class SymEncryptedSessionKey extends AbstractPacket
      *
      * @return AeadAlgorithm
      */
-    public function getAead(): AeadAlgorithm
+    public function getAead(): ?AeadAlgorithm
     {
         return $this->aead;
     }
