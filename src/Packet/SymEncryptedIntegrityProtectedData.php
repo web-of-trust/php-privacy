@@ -8,7 +8,10 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Common\Helper;
+use OpenPGP\Common\{
+    Config,
+    Helper,
+};
 use OpenPGP\Enum\{
     HashAlgorithm,
     PacketTag,
@@ -39,9 +42,9 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
     use EncryptedDataTrait;
 
     const VERSION       = 1;
+    const VERSION_2     = 1;
     const HASH_ALGO     = 'sha1';
     const ZERO_CHAR     = "\x00";
-    const CIPHER_MODE   = 'cfb';
     const SUFFIX_OCTETS = "\xd3\x14";
 
     /**
@@ -97,7 +100,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
         ]);
         $plainText = $toHash . hash(self::HASH_ALGO, $toHash, true);
 
-        $cipher = $symmetric->cipherEngine(self::CIPHER_MODE);
+        $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
         $cipher->setKey($key);
         $cipher->setIV(str_repeat(self::ZERO_CHAR, $symmetric->blockSize()));
 
@@ -158,7 +161,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
                 'Decrypt the encrypted data contained in the packet.'
             );
             $size = $symmetric->blockSize();
-            $cipher = $symmetric->cipherEngine(self::CIPHER_MODE);
+            $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
             $cipher->setKey($key);
             $cipher->setIV(str_repeat(self::ZERO_CHAR, $size));
 

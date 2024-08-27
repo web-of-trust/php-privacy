@@ -31,6 +31,8 @@ final class Config
     const VERSION = 'PHP Privacy v2.0.0';
     const COMMENT = 'https://github.com/web-of-trust/php-privacy';
 
+    const CIPHER_MODE = 'cfb';
+
     private static HashAlgorithm $preferredHash = HashAlgorithm::Sha256;
 
     private static SymmetricAlgorithm $preferredSymmetric = SymmetricAlgorithm::Aes128;
@@ -41,7 +43,7 @@ final class Config
 
     private static HashAlgorithm $s2kHash = HashAlgorithm::Sha256;
 
-    private static AeadAlgorithm $preferredAead = AeadAlgorithm::Eax;
+    private static AeadAlgorithm $preferredAead = AeadAlgorithm::Gcm;
 
     private static int $s2kItCount = 224;
 

@@ -50,10 +50,9 @@ use OpenPGP\Type\{
  */
 class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 {
-    const CIPHER_MODE = 'cfb';
-    const HASH_ALGO   = 'sha1';
-    const HKDF_ALGO   = 'sha256';
-    const ZERO_CHAR   = "\x00";
+    const HASH_ALGO = 'sha1';
+    const HKDF_ALGO = 'sha256';
+    const ZERO_CHAR = "\x00";
 
     /**
      * Constructor
@@ -415,7 +414,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 );
             }
             else {
-                $cipher = $symmetric->cipherEngine(self::CIPHER_MODE);
+                $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
                 $cipher->setIV($iv);
                 $cipher->setKey($key);
 
@@ -475,7 +474,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 );
             }
             else {
-                $cipher = $this->symmetric->cipherEngine(self::CIPHER_MODE);
+                $cipher = $this->symmetric->cipherEngine(Config::CIPHER_MODE);
                 $cipher->setIV($this->iv);
                 $cipher->setKey($key);
                 $decrypted = $cipher->decrypt($this->keyData);

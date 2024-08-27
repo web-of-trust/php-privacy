@@ -48,11 +48,10 @@ use phpseclib3\Crypt\Random;
  */
 class SymEncryptedSessionKey extends AbstractPacket
 {
-    const VERSION_4   = 4;
-    const VERSION_6   = 6;
-    const ZERO_CHAR   = "\x00";
-    const CIPHER_MODE = 'cfb';
-    const HKDF_ALGO   = 'sha256';
+    const VERSION_4 = 4;
+    const VERSION_6 = 6;
+    const ZERO_CHAR = "\x00";
+    const HKDF_ALGO = 'sha256';
 
     /**
      * Constructor
@@ -63,14 +62,14 @@ class SymEncryptedSessionKey extends AbstractPacket
      * @param AeadAlgorithm $aead
      * @param string $iv
      * @param string $encrypted
-     * @param Key\SessionKey $sessionKey
+     * @param SessionKeyInterface $sessionKey
      * @return self
      */
     public function __construct(
         private readonly int $version,
         private readonly S2KInterface $s2k,
         private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        private readonly AeadAlgorithm $aead = AeadAlgorithm::Eax,
+        private readonly AeadAlgorithm $aead = AeadAlgorithm::Gcm,
         private readonly string $iv = '',
         private readonly string $encrypted = '',
         private readonly ?SessionKeyInterface $sessionKey = null
@@ -146,7 +145,7 @@ class SymEncryptedSessionKey extends AbstractPacket
         string $password,
         ?SessionKeyInterface $sessionKey = null,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        AeadAlgorithm $aead = AeadAlgorithm::Eax,
+        AeadAlgorithm $aead = AeadAlgorithm::Gcm,
     ): self
     {
         $version = Config::aeadProtect() ? self::VERSION_6 : self::VERSION_4;
@@ -179,7 +178,7 @@ class SymEncryptedSessionKey extends AbstractPacket
                 $encrypted = $cipher->encrypt($sessionKey->getEncryptionKey(), $iv, $adata);
             }
             else {
-                $cipher = $symmetric->cipherEngine(self::CIPHER_MODE);
+                $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
                 $cipher->setKey($key);
                 $cipher->setIV(
                     str_repeat(self::ZERO_CHAR, $symmetric->blockSize())
@@ -313,7 +312,7 @@ class SymEncryptedSessionKey extends AbstractPacket
                     );
                 }
                 else {
-                    $cipher = $this->symmetric->cipherEngine(self::CIPHER_MODE);
+                    $cipher = $this->symmetric->cipherEngine(Config::CIPHER_MODE);
                     $cipher->setKey($key);
                     $cipher->setIV(
                         str_repeat(self::ZERO_CHAR, $this->symmetric->blockSize())
