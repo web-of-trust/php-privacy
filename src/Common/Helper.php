@@ -138,21 +138,6 @@ final class Helper
     }
 
     /**
-     * Calculates a 16bit sum of a string by adding each character codes modulus 65535
-     * 
-     * @param string $text - To create a sum of
-     * @return string - 2 bytes containing the sum of all charcodes % 65535.
-     */
-    public static function computeChecksum(string $text): string
-    {
-        $sum = array_sum(array_map(
-            static fn ($char) => ord($char),
-            str_split($text)
-        ));
-        return pack('n', $sum & 0xffff);
-    }
-
-    /**
      * Calculate a 16bit sum of a string by adding each character codes modulus 65535
      * 
      * @param string $text - To create a sum of
