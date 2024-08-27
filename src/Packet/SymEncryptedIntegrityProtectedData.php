@@ -250,7 +250,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
      *
      * @return AeadAlgorithm
      */
-    public function getAeadAlgorithm(): AeadAlgorithm
+    public function getAeadAlgorithm(): ?AeadAlgorithm
     {
         return $this->aead;
     }
@@ -334,7 +334,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
      * @param string $finalChunk - For encryption: empty final chunk; for decryption: final authentication tag
      * @return string
      */
-    private function aeadCrypt(
+    protected function aeadCrypt(
         string $fn, string $key, string $data, string $finalChunk = ''
     ): string
     {
