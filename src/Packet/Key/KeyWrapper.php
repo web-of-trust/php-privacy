@@ -103,7 +103,7 @@ abstract class KeyWrapper
             }
         }
 
-        if (self::IV !== $a) {
+        if (strcmp(self::IV, $a) !== 0) {
             throw new \UnexpectedValueException(
                 'Integrity check failed.'
             );
@@ -114,7 +114,7 @@ abstract class KeyWrapper
 
     private function validateKeySize(string $kek, string $key): void
     {
-        if (strlen($kek) != $this->kekSize->value) {
+        if (strlen($kek) !== $this->kekSize->value) {
             throw new \LengthException(
                 "Key encryption key size must be {$this->kekSize->value} bytes."
             );
@@ -124,7 +124,7 @@ abstract class KeyWrapper
                 'Key length must be at least ' . KekSize::Normal->value . ' octets.'
             );
         }
-        if (strlen($key) % 8 != 0) {
+        if (strlen($key) % 8 !== 0) {
             throw new \LengthException(
                 'Key length must be a multiple of 64 bits.'
             );

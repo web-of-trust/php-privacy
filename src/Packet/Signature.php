@@ -608,10 +608,11 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             $this->signatureData,
             $trailer,
         ]);
+
         $hash = $this->hashAlgorithm->hash($message);
-        if ($this->signedHashValue !== substr($hash, 0, 2)) {
+        if (strcmp($this->signedHashValue, substr($hash, 0, 2)) !== 0) {
             $this->getLogger()->warning(
-                'Signed digest did not match.'
+                'Signed digest mismatch!'
             );
             return false;
         }
