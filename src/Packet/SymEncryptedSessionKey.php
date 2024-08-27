@@ -9,6 +9,7 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Common\{
+    Argon2S2K,
     Config,
     Helper,
     S2K,
@@ -19,6 +20,10 @@ use OpenPGP\Enum\{
     PacketTag,
     S2kType,
     SymmetricAlgorithm,
+};
+use OpenPGP\Type\{
+    S2KInterface,
+    SessionKeyInterface,
 };
 use phpseclib3\Crypt\Random;
 
@@ -44,15 +49,16 @@ use phpseclib3\Crypt\Random;
 class SymEncryptedSessionKey extends AbstractPacket
 {
     const VERSION_4   = 4;
-    const VERSION_5   = 5;
+    const VERSION_6   = 6;
     const ZERO_CHAR   = "\x00";
     const CIPHER_MODE = 'cfb';
+    const HKDF_ALGO   = 'sha256';
 
     /**
      * Constructor
      *
      * @param int $version
-     * @param S2K $s2k
+     * @param S2KInterface $s2k
      * @param SymmetricAlgorithm $symmetric
      * @param AeadAlgorithm $aead
      * @param string $iv
@@ -62,12 +68,12 @@ class SymEncryptedSessionKey extends AbstractPacket
      */
     public function __construct(
         private readonly int $version,
-        private readonly S2K $s2k,
+        private readonly S2KInterface $s2k,
         private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         private readonly AeadAlgorithm $aead = AeadAlgorithm::Eax,
         private readonly string $iv = '',
         private readonly string $encrypted = '',
-        private readonly ?Key\SessionKey $sessionKey = null
+        private readonly ?SessionKeyInterface $sessionKey = null
     )
     {
         parent::__construct(PacketTag::SymEncryptedSessionKey);
@@ -82,27 +88,35 @@ class SymEncryptedSessionKey extends AbstractPacket
 
         // A one-octet version number. The only currently defined version is 4.
         $version = ord($bytes[$offset++]);
-        if ($version != self::VERSION_4 && $version != self::VERSION_5) {
+        if ($version != self::VERSION_4 && $version != self::VERSION_6) {
             throw new \UnexpectedValueException(
                 "Version $version of the SKESK packet is unsupported."
             );
+        }
+
+        if ($version === self::VERSION_6) {
+            // A one-octet scalar octet count of the following 5 fields.
+            $offset++;
         }
 
         // A one-octet number describing the symmetric algorithm used.
         $symmetric = SymmetricAlgorithm::from(ord($bytes[$offset++]));
 
         $aead = Config::getPreferredAead();
-        if ($version === self::VERSION_5) {
-            // A one-octet AEAD algorithm.
+        if ($version === self::VERSION_6) {
+            // A one-octet AEAD algorithm identifier.
             $aead = AeadAlgorithm::from(ord($bytes[$offset++]));
         }
 
         // A string-to-key (S2K) specifier, length as defined above.
-        $s2k = S2K::fromBytes(substr($bytes, $offset));
-        $offset += $s2k->getLength();
+        $s2kType = S2kType::from(ord($bytes[$offset]));
+        $s2k = ($s2kType === S2kType::Argon2) ?
+            Argon2S2K::fromBytes(substr($bytes, $offset)) : 
+            S2K::fromBytes(substr($bytes, $offset));
+        $offset += $s2kType->packetLength();
 
         $iv = '';
-        if ($version === self::VERSION_5) {
+        if ($version === self::VERSION_6) {
             // A starting initialization vector of size specified by the AEAD algorithm.
             $iv = substr($bytes, $offset, $aead->ivLength());
             $offset += $aead->ivLength();
@@ -123,30 +137,34 @@ class SymEncryptedSessionKey extends AbstractPacket
      * Encrypt session key
      *
      * @param string $password
-     * @param Key\SessionKey $sessionKey
+     * @param SessionKeyInterface $sessionKey
      * @param SymmetricAlgorithm $symmetric
+     * @param AeadAlgorithm $aead
      * @return self
      */
     public static function encryptSessionKey(
         string $password,
-        ?Key\SessionKey $sessionKey = null,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        ?SessionKeyInterface $sessionKey = null,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        AeadAlgorithm $aead = AeadAlgorithm::Eax,
     ): self
     {
-        $version = Config::aeadProtect() ? self::VERSION_5 : self::VERSION_4;
-        $s2k = Helper::stringToKey();
-        $aead = Config::getPreferredAead();
+        $version = Config::aeadProtect() ? self::VERSION_6 : self::VERSION_4;
+        $s2k = $version === self::VERSION_6 ?
+            Helper::stringToKey(S2kType::Argon2) :
+            Helper::stringToKey(S2kType::Iterated);
 
+        $keySize = $symmetric->keySizeInByte();
         $key = $s2k->produceKey(
             $password,
-            $symmetric->keySizeInByte()
+            $keySize
         );
 
         $iv = '';
         $encrypted = '';
 
-        if ($sessionKey instanceof Key\SessionKey) {
-            if ($version === self::VERSION_5) {
+        if ($sessionKey instanceof SessionKeyInterface) {
+            if ($version === self::VERSION_6) {
                 $adata = implode([
                     chr(0xc0 | PacketTag::SymEncryptedSessionKey->value),
                     chr($version),
@@ -154,7 +172,10 @@ class SymEncryptedSessionKey extends AbstractPacket
                     chr($aead->value),
                 ]);
                 $iv = Random::string($aead->ivLength());
-                $cipher = $aead->cipherEngine($key, $symmetric);
+                $encryptionKey = hash_hkdf(
+                    self::HKDF_ALGO, $key, $keySize, $adata
+                );
+                $cipher = $aead->cipherEngine($encryptionKey, $symmetric);
                 $encrypted = $cipher->encrypt($sessionKey->getEncryptionKey(), $iv, $adata);
             }
             else {
@@ -194,9 +215,9 @@ class SymEncryptedSessionKey extends AbstractPacket
     /**
      * Get string 2 key
      *
-     * @return S2K
+     * @return S2KInterface
      */
-    public function getS2K(): S2K
+    public function getS2K(): S2KInterface
     {
         return $this->s2k;
     }
@@ -244,9 +265,9 @@ class SymEncryptedSessionKey extends AbstractPacket
     /**
      * Get session key
      *
-     * @return Key\SessionKey
+     * @return SessionKeyInterface
      */
-    public function getSessionKey(): ?Key\SessionKey
+    public function getSessionKey(): ?SessionKeyInterface
     {
         return $this->sessionKey;
     }
@@ -259,29 +280,33 @@ class SymEncryptedSessionKey extends AbstractPacket
      */
     public function decrypt(string $password): self
     {
-        if ($this->sessionKey instanceof Key\SessionKey) {
+        if ($this->sessionKey instanceof SessionKeyInterface) {
             return $this;
         }
         else {
             $this->getLogger()->debug(
                 'Decrypt symmetric key encrypted session key.'
             );
+            $keySize = $this->symmetric->keySizeInByte();
             $key = $this->s2k->produceKey(
                 $password,
-                $this->symmetric->keySizeInByte()
+                $keySize
             );
             if (empty($this->encrypted)) {
                 $sessionKey = new Key\SessionKey($key, $this->symmetric);
             }
             else {
-                if (($this->version === self::VERSION_5)) {
+                if (($this->version === self::VERSION_6)) {
                     $adata = implode([
                         chr(0xc0 | $this->getTag()->value),
                         chr($this->version),
                         chr($this->symmetric->value),
                         chr($this->aead->value),
                     ]);
-                    $cipher = $this->aead->cipherEngine($key, $this->symmetric);
+                    $encryptionKey = hash_hkdf(
+                        self::HKDF_ALGO, $key, $keySize, $adata
+                    );
+                    $cipher = $this->aead->cipherEngine($encryptionKey, $this->symmetric);
                     $decrypted = $cipher->decrypt($this->encrypted, $this->iv, $adata);
                     $sessionKey = new Key\SessionKey(
                         $decrypted, $this->symmetric
@@ -319,20 +344,19 @@ class SymEncryptedSessionKey extends AbstractPacket
      */
     public function toBytes(): string
     {
-        return ($this->version === self::VERSION_5) ?
-        implode([
-            chr($this->version),
-            chr($this->symmetric->value),
-            chr($this->aead->value),
-            $this->s2k->toBytes(),
-            $this->iv,
-            $this->encrypted,
-        ]) :
-        implode([
-            chr($this->version),
-            chr($this->symmetric->value),
-            $this->s2k->toBytes(),
-            $this->encrypted,
-        ]);
+        return ($this->version === self::VERSION_6) ?
+            implode([
+                chr($this->version),
+                chr($this->symmetric->value),
+                chr($this->aead->value),
+                $this->s2k->toBytes(),
+                $this->iv,
+                $this->encrypted,
+            ]) : implode([
+                chr($this->version),
+                chr($this->symmetric->value),
+                $this->s2k->toBytes(),
+                $this->encrypted,
+            ]);
     }
 }
