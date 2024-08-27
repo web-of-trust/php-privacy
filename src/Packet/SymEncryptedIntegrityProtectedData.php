@@ -142,9 +142,10 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
         $version = $aeadProtect ? self::VERSION_2 : self::VERSION_1;
 
         $salt = '';
-        $chunkSize = Config::getAeadChunkSize();
+        $chunkSize = 0;
         if ($aeadProtect) {
             $salt = Random::string(self::SALT_SIZE);
+            $chunkSize = Config::getAeadChunkSize();
             $cryptor = new self(
                 $version,
                 '',
@@ -176,7 +177,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
             $aead,
             $chunkSize,
             $salt,
-            $packetList
+            $packetList,
         );
     }
 
