@@ -51,7 +51,6 @@ class SymEncryptedSessionKey extends AbstractPacket
     const VERSION_4 = 4;
     const VERSION_6 = 6;
     const ZERO_CHAR = "\x00";
-    const HKDF_ALGO = 'sha256';
 
     /**
      * Constructor
@@ -172,7 +171,7 @@ class SymEncryptedSessionKey extends AbstractPacket
                 ]);
                 $iv = Random::string($aead->ivLength());
                 $encryptionKey = hash_hkdf(
-                    self::HKDF_ALGO, $key, $keySize, $adata
+                    Config::HKDF_ALGO, $key, $keySize, $adata
                 );
                 $cipher = $aead->cipherEngine($encryptionKey, $symmetric);
                 $encrypted = $cipher->encrypt($sessionKey->getEncryptionKey(), $iv, $adata);
@@ -303,7 +302,7 @@ class SymEncryptedSessionKey extends AbstractPacket
                         chr($this->aead->value),
                     ]);
                     $encryptionKey = hash_hkdf(
-                        self::HKDF_ALGO, $key, $keySize, $adata
+                        Config::HKDF_ALGO, $key, $keySize, $adata
                     );
                     $cipher = $this->aead->cipherEngine($encryptionKey, $this->symmetric);
                     $decrypted = $cipher->decrypt($this->encrypted, $this->iv, $adata);

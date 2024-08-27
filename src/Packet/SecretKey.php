@@ -51,7 +51,6 @@ use OpenPGP\Type\{
 class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 {
     const HASH_ALGO = 'sha1';
-    const HKDF_ALGO = 'sha256';
     const ZERO_CHAR = "\x00";
 
     /**
@@ -584,7 +583,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         ) ?? str_repeat(self::ZERO_CHAR, $symmetric->keySizeInByte());
         if ($aead instanceof AeadAlgorithm) {
             return hash_hkdf(
-                self::HKDF_ALGO,
+                Config::HKDF_ALGO,
                 $derivedKey,
                 $symmetric->keySizeInByte(),
                 implode([

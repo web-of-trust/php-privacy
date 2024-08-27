@@ -32,6 +32,7 @@ final class Config
     const COMMENT = 'https://github.com/web-of-trust/php-privacy';
 
     const CIPHER_MODE = 'cfb';
+    const HKDF_ALGO   = 'sha256';
 
     private static HashAlgorithm $preferredHash = HashAlgorithm::Sha256;
 
