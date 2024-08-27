@@ -563,7 +563,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         string $detachedDataHeader = ''
     ): bool
     {
-        if ($this->getIssuerKeyID() !== $verifyKey->getKeyID()) {
+        if (strcmp($this->getIssuerKeyID(), $verifyKey->getKeyID()) !== 0) {
             $this->getLogger()->warning(
                 'Signature was not issued by the given public key.'
             );

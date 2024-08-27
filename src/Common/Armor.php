@@ -160,11 +160,11 @@ final class Armor
         }
 
         $data = Strings::base64_decode(implode($dataLines));
-        if (($checksum != self::crc24Checksum($data)) &&
+        if (strcmp($checksum, $self::crc24Checksum($data)) !== 0 &&
            (!empty($checksum) || $checksumRequired))
         {
             throw new \UnexpectedValueException(
-                'Ascii armor integrity check failed'
+                'Ascii armor integrity check failed!'
             );
         }
 

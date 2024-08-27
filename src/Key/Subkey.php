@@ -228,7 +228,7 @@ class Subkey implements SubkeyInterface
             $keyPacket = $verifyKey?->toPublic()->getSigningKeyPacket() ??
                          $this->mainKey->toPublic()->getSigningKeyPacket();
             foreach ($this->revocationSignatures as $signature) {
-                if (empty($keyID) || $keyID === $signature->getIssuerKeyID()) {
+                if (empty($keyID) || strcmp($keyID, $signature->getIssuerKeyID()) === 0) {
                     if ($signature->verify(
                         $keyPacket,
                         implode([

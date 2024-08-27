@@ -74,7 +74,7 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
         }
         else {
             throw new \InvalidArgumentException(
-                'Public key is not instance of RSA key'
+                'Public key is not instance of RSA key.'
             );
         }
     }
@@ -113,7 +113,7 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
         }
         else {
             throw new \InvalidArgumentException(
-                'Private key is not instance of RSA key'
+                'Private key is not instance of RSA key.'
             );
         }
     }

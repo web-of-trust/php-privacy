@@ -104,10 +104,10 @@ final class OCB implements AeadCipher
         $crypted = $this->crypt($this->decipher, $ciphertext, $nonce, $adata);
         $length = strlen($crypted);
         // if (Tag[1..TAGLEN] == T)
-        if ($tag === substr($crypted, $length - self::TAG_LENGTH)) {
+        if (strcmp($tag, substr($crypted, $length - self::TAG_LENGTH)) === 0) {
             return substr($crypted, 0, $length - self::TAG_LENGTH);
         }
-        throw new \UnexpectedValueException('Authentication tag mismatch');
+        throw new \UnexpectedValueException('Authentication tag mismatch!');
     }
 
     /**
@@ -186,7 +186,7 @@ final class OCB implements AeadCipher
             $offset = self::xor($offset, $this->mask[self::ntz($i + 1)]);
             // C_i = Offset_i xor ENCIPHER(K, P_i xor Offset_i)
             // P_i = Offset_i xor DECIPHER(K, C_i xor Offset_i)
-            if ($cipher === $this->encipher) {
+            if (strcmp($cipher, $this->encipher) === 0) {
                 $encrypted = self::xor($cipher->encryptBlock(self::xor($offset, $text)), $offset);
             }
             else {

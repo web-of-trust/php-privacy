@@ -181,7 +181,7 @@ class User implements UserInterface
             $keyPacket = $verifyKey?->toPublic()->getSigningKeyPacket() ??
                          $this->mainKey->toPublic()->getSigningKeyPacket();
             foreach ($this->revocationSignatures as $signature) {
-                if (empty($keyID) || $keyID === $signature->getIssuerKeyID()) {
+                if (empty($keyID) || strcmp($keyID, $signature->getIssuerKeyID()) === 0) {
                     if ($signature->verify(
                         $keyPacket,
                         implode([
@@ -230,7 +230,7 @@ class User implements UserInterface
         $keyPacket = $verifyKey?->toPublic()->getSigningKeyPacket() ??
                      $this->mainKey->toPublic()->getSigningKeyPacket();
         foreach ($this->otherCertifications as $signature) {
-            if (empty($keyID) || $keyID === $signature->getIssuerKeyID()) {
+            if (empty($keyID) || strcmp($keyID, $signature->getIssuerKeyID()) === 0) {
                 if ($signature->verify(
                     $keyPacket,
                     implode([
@@ -277,7 +277,7 @@ class User implements UserInterface
         PrivateKeyInterface $signKey, ?DateTimeInterface $time = null
     ): self
     {
-        if ($signKey->getFingerprint() === $this->mainKey->getFingerprint()) {
+        if (strcmp($signKey->getFingerprint(), $this->mainKey->getFingerprint()) === 0) {
             throw new \InvalidArgumentException(
                 'The user\'s own key can only be used for self-certifications.'
             );

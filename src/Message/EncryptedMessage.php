@@ -134,7 +134,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
                 foreach ($decryptionKeys as $key) {
                     $keyPacket = $key->getEncryptionKeyPacket();
                     if ($pkesk->getPublicKeyAlgorithm() === $keyPacket->getKeyAlgorithm() &&
-                        $pkesk->getPublicKeyID() === $keyPacket->getKeyID()) {
+                        strcmp($pkesk->getPublicKeyID(), $keyPacket->getKeyID()) === 0) {
                         try {
                             $sessionKeys[] = $pkesk->decrypt($keyPacket)->getSessionKey();
                             break;

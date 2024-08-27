@@ -103,8 +103,8 @@ final class EAX implements AeadCipher
         $omacCiphered = $this->omac($this->twoBlock, $ciphered);
         $tag = $omacCiphered ^ $omacAdata ^ $omacNonce;
 
-        if ($ctTag !== $tag) {
-            throw new \UnexpectedValueException('Authentication tag mismatch');
+        if (strcmp($ctTag, $tag) !== 0) {
+            throw new \UnexpectedValueException('Authentication tag mismatch!');
         }
 
         return $this->crypt($ciphered, $omacNonce);
