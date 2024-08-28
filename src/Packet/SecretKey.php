@@ -377,7 +377,8 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 'Encrypt secret key material with passphrase.'
             );
 
-            if ($aead instanceof AeadAlgorithm) {
+            $aeadProtect = $aead instanceof AeadAlgorithm;
+            if ($aeadProtect) {
                 if ($this->getVersion() !== PublicKey::VERSION_6) {
                     throw new \UnexpectedValueException(
                         "Using AEAD with version {$this->getVersion()} of the key packet is not allowed."
@@ -401,7 +402,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             );
             $clearText = $this->keyMaterial?->toBytes() ?? '';
 
-            if ($aead instanceof AeadAlgorithm) {
+            if ($aeadProtect) {
                 $cipher = $aead->cipherEngine($key, $this->symmetric);
                 $encrypted = $cipher->encrypt(
                     $clearText,
@@ -426,7 +427,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $this->publicKey,
                 $encrypted,
                 $this->keyMaterial,
-                empty($aead) ? S2kUsage::Sha1 : S2kUsage::AeadProtect,
+                $aeadProtect ? S2kUsage::AeadProtect : S2kUsage::Sha1,
                 $symmetric,
                 $s2k,
                 $aead,
@@ -533,6 +534,16 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     public function getS2K(): ?S2KInterface
     {
         return $this->s2k;
+    }
+
+    /**
+     * Get AEAD algorithm
+     * 
+     * @return AeadAlgorithm
+     */
+    public function getAead(): ?AeadAlgorithm
+    {
+        return $this->aead;
     }
 
     /**
