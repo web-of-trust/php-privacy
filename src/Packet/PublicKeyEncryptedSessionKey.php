@@ -58,12 +58,12 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
         private readonly ?SessionKeyInterface $sessionKey = null
     )
     {
-        if ($version !== self::VERSION_3 || $version !== self::VERSION_6) {
+        parent::__construct(PacketTag::PublicKeyEncryptedSessionKey);
+        if ($version !== self::VERSION_3 && $version !== self::VERSION_6) {
             throw new \UnexpectedValueException(
                 "Version $version of the PKESK packet is unsupported.",
             );
         }
-        parent::__construct(PacketTag::PublicKeyEncryptedSessionKey);
     }
 
     /**
@@ -73,11 +73,6 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     {
         $offset = 0;
         $version = ord($bytes[$offset++]);
-        if ($version !== self::VERSION_3 || $version !== self::VERSION_6) {
-            throw new \UnexpectedValueException(
-                "Version $version of the PKESK packet is unsupported.",
-            );
-        }
 
         if ($version === self::VERSION_6) {
             $length = ord($bytes[$offset++]);
@@ -121,11 +116,18 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
         SessionKeyInterface $sessionKey
     ): self
     {
+        $version = $keyPacket->getVersion();
+        if ($version !== self::VERSION_6) {
+            $version = self::VERSION_3;
+        }
         return new self(
+            $version,
             $keyPacket->getKeyID(),
+            $keyPacket->getVersion(),
+            $keyPacket->getFingerprint(),
             $keyPacket->getKeyAlgorithm(),
             self::produceSessionKeyCryptor($sessionKey, $keyPacket),
-            $sessionKey
+            $sessionKey,
         );
     }
 

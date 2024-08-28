@@ -67,6 +67,11 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
     )
     {
         parent::__construct(PacketTag::SymEncryptedIntegrityProtectedData);
+        if ($version !== self::VERSION_1 && $version !== self::VERSION_2) {
+            throw new \UnexpectedValueException(
+                "Version $version of the SEIPD packet is unsupported.",
+            );
+        }
         if ($aead instanceof AeadAlgorithm && $version !== PublicKey::VERSION_2) {
             throw new \UnexpectedValueException(
                 "Using AEAD with version {$version} of the SEIPD packet is not allowed."
@@ -87,11 +92,6 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
         $offset = 0;
         // A one-octet version number.
         $version = ord($bytes[$offset++]);
-        if ($version !== self::VERSION_1 || $version !== self::VERSION_2) {
-            throw new \UnexpectedValueException(
-                "Version $version of the SEIPD packet is unsupported.",
-            );
-        }
 
         if ($version === self::VERSION_2) {
             // - A one-octet cipher algorithm.

@@ -109,11 +109,6 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
 
         // A one-octet version number.
         $version = ord($bytes[$offset++]);
-        if ($version !== self::VERSION_4 && $version !== self::VERSION_6) {
-            throw new \UnexpectedValueException(
-                "Version $version of the key packet is unsupported.",
-            );
-        }
 
         // A four-octet number denoting the time that the key was created.
         $creationTime = (new \DateTime())->setTimestamp(

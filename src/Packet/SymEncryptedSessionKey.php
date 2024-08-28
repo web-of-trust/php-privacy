@@ -75,6 +75,11 @@ class SymEncryptedSessionKey extends AbstractPacket
     )
     {
         parent::__construct(PacketTag::SymEncryptedSessionKey);
+        if ($version != self::VERSION_4 && $version != self::VERSION_6) {
+            throw new \UnexpectedValueException(
+                "Version $version of the SKESK packet is unsupported."
+            );
+        }
         if ($aead instanceof AeadAlgorithm && $version !== PublicKey::VERSION_6) {
             throw new \UnexpectedValueException(
                 "Using AEAD with version {$version} of the SKESK packet is not allowed."
@@ -91,11 +96,6 @@ class SymEncryptedSessionKey extends AbstractPacket
 
         // A one-octet version number. The only currently defined version is 4.
         $version = ord($bytes[$offset++]);
-        if ($version != self::VERSION_4 && $version != self::VERSION_6) {
-            throw new \UnexpectedValueException(
-                "Version $version of the SKESK packet is unsupported."
-            );
-        }
         $isV6 = $version === self::VERSION_6;
 
         if ($isV6) {
