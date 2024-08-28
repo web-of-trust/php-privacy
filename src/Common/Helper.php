@@ -114,7 +114,7 @@ final class Helper
     }
 
     /**
-     * Get string 2 key
+     * Create string 2 key instance
      * 
      * @param S2kType $type
      * @return S2KInterface
@@ -125,12 +125,12 @@ final class Helper
     {
         return $type === S2kType::Argon2 ? 
             new Argon2S2K(
-                Random::string(Argon2S2K::SALT_LENGTH),
+                Argon2S2K::generateSalt(),
                 Config::getArgon2Iteration(),
                 Config::getArgon2Parallelism(),
                 Config::getArgon2MemoryExponent(),
             ) : new S2K(
-                Random::string(S2K::SALT_LENGTH),
+                S2K::generateSalt(),
                 $type,
                 Config::getS2kHash(),
                 Config::getS2kItCount(),
