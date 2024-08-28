@@ -226,6 +226,24 @@ EOT;
         $this->assertSame(6, $secretSubkey->getVersion());
     }
 
+    public function testLockedVersion6SecretKey()
+    {
+        $passphrase = 'correct horse battery staple';
+        $data = <<<EOT
+BmOHf+MbAAAAIPlNp7tI1gph5WdwamWH0DMZmbudiRoIJC6thFQ9+JWj/SYJAhQEXW/XHJ4JbR62kXtubh7srgEEFbSoqSdPq+Yy+HWnBlkgIXglj6SE2Isn8iDj0t4CA8oPH+7La3dTgePi2bFIXCIzjKVR4JomPyLrSZLpZ3qAWA==
+EOT;
+        $secretKey = SecretKey::fromBytes(base64_decode($data))->decrypt($passphrase);
+        $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $secretKey->getFingerprint(true));
+        $this->assertSame(6, $secretKey->getVersion());
+
+        $data = <<<EOT
+BmOHf+MZAAAAIIaTJINn+eUBXbki+PSAld2nhJh/LVmFsS+60WyvXkQ1/SYJAhQEDmGEaCnahpq+DqYVRdwUzAEEFS4Typ/05yT7HC6x34YCCUGvktXKv+W6nfHFC8dcVKOMDaFpd+g3rFQZF0MQcjr6568qNVG/mgDGC7t4mlpc2A==
+EOT;
+        $secretSubkey = SecretSubkey::fromBytes(base64_decode($data))->decrypt($passphrase);
+        $this->assertSame('12c83f1e706f6308fe151a417743a1f033790e93e9978488d1db378da9930885', $secretSubkey->getFingerprint(true));
+        $this->assertSame(6, $secretSubkey->getVersion());
+    }
+
     public function testGenerateRSASecretKey()
     {
         $secretKey = SecretKey::generate(KeyAlgorithm::RsaEncryptSign);

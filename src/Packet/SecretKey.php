@@ -89,8 +89,13 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     {
         $publicKey = PublicKey::fromBytes($bytes);
         $offset = strlen($publicKey->toBytes());
-
+        $isV6 = $publicKey->getVersion() === PublicKey::VERSION_6;
         $s2kUsage = S2kUsage::from(ord($bytes[$offset++]));
+
+        // Only for a version 6 packet where the secret key material encrypted
+        if ($isV6 && $s2kUsage !== S2kUsage::None) {
+            $offset++;
+        }
 
         $s2k = null;
         $aead = null;
@@ -98,15 +103,22 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             case S2kUsage::Checksum:
             case S2kUsage::Sha1:
             case S2kUsage::AeadProtect:
+                // one-octet symmetric encryption algorithm.
                 $symmetric = SymmetricAlgorithm::from(
                     ord($bytes[$offset++])
                 );
+
+                // If s2k usage octet was 253, a one-octet AEAD algorithm.
                 if ($s2kUsage === S2kUsage::AeadProtect) {
                     $aead = AeadAlgorithm::from(ord($bytes[$offset++]));
                 }
-                if ($publicKey->getVersion() === PublicKey::VERSION_6) {
+
+                // Only for a version 6 packet, and if string-to-key usage
+                // octet was 255, 254, or 253, an one-octet count of the following field.
+                if ($isV6) {
                     $offset++;
                 }
+
                 $s2kType = S2kType::from(ord($bytes[$offset]));
                 $s2k = ($s2kType === S2kType::Argon2) ?
                     Argon2S2K::fromBytes(substr($bytes, $offset)) : 
@@ -130,7 +142,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         $keyMaterial = null;
         $keyData = substr($bytes, $offset);
         if ($s2kUsage === S2kUsage::None) {
-            if ($publicKey->getVersion() === PublicKey::VERSION_4) {
+            if (!$isV6) {
                 $checksum = substr($keyData, strlen($keyData) - 2);
                 $keyData = substr($keyData, 0, strlen($keyData) - 2);
                 if (strcmp(Helper::computeChecksum($keyData), $checksum) !== 0) {
@@ -219,16 +231,20 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
      */
     public function toBytes(): string
     {
-        if ($this->s2kUsage !== S2kUsage::None &&
-            $this->s2k instanceof S2KInterface) {
+        $isV6 = $this->getVersion() === PublicKey::VERSION_6;
+        if ($this->isEncrypted()) {
+            $optBytes = implode([
+                chr($this->symmetric->value),
+                !empty($this->aead) ? chr($this->aead->value) : '',
+                $isV6 ? chr($this->s2k->getLength()) : '',
+                $this->s2k->toBytes(),
+                $this->iv,
+            ]);
             return implode([
                 $this->publicKey->toBytes(),
                 chr($this->s2kUsage->value),
-                chr($this->symmetric->value),
-                !empty($this->aead) ? chr($this->aead->value) : '',
-                $this->s2k->toBytes(),
-                $this->getVersion() === PublicKey::VERSION_6 ? chr($this->s2k->getLength()) : '',
-                $this->iv,
+                $isV6 ? chr(strlen($optBytes)) : '',
+                $optBytes,
                 $this->keyData,
             ]);
         }
@@ -237,7 +253,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $this->publicKey->toBytes(),
                 chr(S2kUsage::None->value),
                 $this->keyData,
-                Helper::computeChecksum($this->keyData),
+                $isV6 ? '' : Helper::computeChecksum($this->keyData),
             ]);
         }
     }
