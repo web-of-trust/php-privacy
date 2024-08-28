@@ -2,6 +2,7 @@
 
 namespace OpenPGP\Tests\Packet;
 
+use OpenPGP\Enum\KeyAlgorithm;
 use OpenPGP\Packet\PublicKey;
 use OpenPGP\Packet\PublicSubkey;
 use OpenPGP\Tests\OpenPGPTestCase;
@@ -155,5 +156,35 @@ EOT;
         $this->assertSame('8efa53a375fc569aa9ca564a044eac93f0b69ea0', $publicSubkey->getFingerprint(true));
         $this->assertSame('044eac93f0b69ea0', $publicSubkey->getKeyID(true));
         $this->assertSame(PublicKey::VERSION_4, $publicSubkey->getVersion());
+    }
+
+    public function testVersion4Ed25519LegacyPublicKey()
+    {
+        $data = <<<EOT
+BFPzXwsWCSsGAQQB2kcPAQEHQD8JiZS92RbtQFMZeTTkqHyAczoSgNYvgBCZLkPuOyQG
+EOT;
+        $publicKey = PublicKey::fromBytes(base64_decode($data));
+        $this->assertSame(PublicKey::VERSION_4, $publicKey->getVersion());
+        $this->assertSame(KeyAlgorithm::EdDsaLegacy, $publicKey->getKeyAlgorithm());
+        $this->assertSame('c959bdbafa32a2f89a153b678cfde12197965a9a', $publicKey->getFingerprint(true));
+    }
+
+    public function testVersion6PublicKey()
+    {
+        $data = <<<EOT
+BmOHf+MbAAAAIPlNp7tI1gph5WdwamWH0DMZmbudiRoIJC6thFQ9+JWj
+EOT;
+        $publicKey = PublicKey::fromBytes(base64_decode($data));
+        $this->assertSame(PublicKey::VERSION_6, $publicKey->getVersion());
+        $this->assertSame(KeyAlgorithm::Ed25519, $publicKey->getKeyAlgorithm());
+        $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $publicKey->getFingerprint(true));
+
+        $data = <<<EOT
+BmOHf+MZAAAAIIaTJINn+eUBXbki+PSAld2nhJh/LVmFsS+60WyvXkQ1
+EOT;
+        $publicSubkey = PublicSubkey::fromBytes(base64_decode($data));
+        $this->assertSame(PublicKey::VERSION_6, $publicSubkey->getVersion());
+        $this->assertSame(KeyAlgorithm::X25519, $publicSubkey->getKeyAlgorithm());
+        $this->assertSame('12c83f1e706f6308fe151a417743a1f033790e93e9978488d1db378da9930885', $publicSubkey->getFingerprint(true));
     }
 }
