@@ -33,11 +33,6 @@ class S2K implements S2KInterface
     use S2KTrait;
 
     /**
-     * Default salt length
-     */
-    const SALT_LENGTH = 8;
-
-    /**
      * Exponent bias, defined in RFC4880
      */
     const EXPBIAS = 6;

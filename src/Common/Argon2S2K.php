@@ -30,7 +30,7 @@ class Argon2S2K implements S2KInterface
     use S2KTrait;
 
     /**
-     * Default salt length
+     * Argon2 salt length
      */
     const SALT_LENGTH = 16;
 
@@ -83,9 +83,9 @@ class Argon2S2K implements S2KInterface
                 );
             }
         }
-        if (strlen($salt) !== self::SALT_LENGTH) {
+        if (strlen($salt) !== static::SALT_LENGTH) {
             throw new \InvalidArgumentException(
-                'Salt size must be ' . self::SALT_LENGTH . ' bytes.',
+                'Salt size must be ' . static::SALT_LENGTH . ' bytes.',
             );
         }
         $this->type = S2kType::Argon2;
