@@ -291,10 +291,7 @@ class SymEncryptedSessionKey extends AbstractPacket
                 'Decrypt symmetric key encrypted session key.'
             );
             $keySize = $this->symmetric->keySizeInByte();
-            $key = $this->s2k->produceKey(
-                $password,
-                $keySize
-            );
+            $key = $this->s2k->produceKey($password, $keySize);
             if (empty($this->encrypted)) {
                 $sessionKey = new Key\SessionKey($key, $this->symmetric);
             }
@@ -309,8 +306,12 @@ class SymEncryptedSessionKey extends AbstractPacket
                     $encryptionKey = hash_hkdf(
                         Config::HKDF_ALGO, $key, $keySize, $adata
                     );
-                    $cipher = $this->aead->cipherEngine($encryptionKey, $this->symmetric);
-                    $decrypted = $cipher->decrypt($this->encrypted, $this->iv, $adata);
+                    $cipher = $this->aead->cipherEngine(
+                        $encryptionKey, $this->symmetric
+                    );
+                    $decrypted = $cipher->decrypt(
+                        $this->encrypted, $this->iv, $adata
+                    );
                     $sessionKey = new Key\SessionKey(
                         $decrypted, $this->symmetric
                     );

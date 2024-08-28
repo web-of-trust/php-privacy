@@ -37,12 +37,12 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
 {
     use EncryptedDataTrait;
 
-    const VERSION_1 = 1;
-    const VERSION_2 = 2;
-    const HASH_ALGO = 'sha1';
-    const ZERO_CHAR = "\x00";
-    const SUFFIXES  = "\xd3\x14";
-    const SALT_SIZE = 32;
+    const VERSION_1  = 1;
+    const VERSION_2  = 2;
+    const HASH_ALGO  = 'sha1';
+    const ZERO_CHAR  = "\x00";
+    const MDC_SUFFIX = "\xd3\x14";
+    const SALT_SIZE  = 32;
 
     /**
      * Constructor
@@ -160,7 +160,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
             $toHash = implode([
                 Helper::generatePrefix($symmetric),
                 $packetList->encode(),
-                self::SUFFIXES,
+                self::MDC_SUFFIX,
             ]);
             $plainText = $toHash . hash(self::HASH_ALGO, $toHash, true);
 
@@ -293,7 +293,9 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
                 'Decrypt the encrypted data contained in the packet.'
             );
             if ($this->aead instanceof AeadAlgorithm) {
-                $packetBytes = $this->aeadCrypt('decrypt', $key, $this->encrypted);
+                $packetBytes = $this->aeadCrypt(
+                    'decrypt', $key, $this->encrypted
+                );
             }
             else {
                 $size = $symmetric->blockSize();
@@ -311,7 +313,9 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
                     );
                 }
                 // Remove random prefix & MDC packet
-                $packetBytes = substr($toHash, $size + 2, strlen($toHash) - $size - 2);
+                $packetBytes = substr(
+                    $toHash, $size + 2, strlen($toHash) - $size - 2
+                );
             }
 
             return new self(
