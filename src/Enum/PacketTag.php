@@ -99,6 +99,11 @@ enum PacketTag: int
     case SymEncryptedIntegrityProtectedData = 18;
 
     /**
+     * AEAD - Aead Encrypted Protected Data Packet
+     */
+    case AeadEncryptedData = 20;
+
+    /**
      * PADDING - Padding Packet
      */
     case Padding = 21;
