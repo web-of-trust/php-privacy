@@ -147,7 +147,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             $s2k,
             $aead,
             $iv
-        );version
+        );
     }
 
     /**
@@ -204,8 +204,8 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 Config::useV6Key() ?
                 PublicKey::VERSION_6 : PublicKey::VERSION_4,
                 $time ?? new \DateTime(),
+                $keyAlgorithm,
                 $keyMaterial->getPublicMaterial(),
-                $keyAlgorithm
             ),
             $keyMaterial->toBytes(),
             $keyMaterial

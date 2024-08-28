@@ -127,13 +127,13 @@ final class Helper
             new Argon2S2K(
                 Random::string(Argon2S2K::SALT_LENGTH),
                 Config::getArgon2Iteration(),
-                Config::getArgon2Parallelism()
-                Config::getArgon2MemoryExponent()
-            ) ? new S2K(
+                Config::getArgon2Parallelism(),
+                Config::getArgon2MemoryExponent(),
+            ) : new S2K(
                 Random::string(S2K::SALT_LENGTH),
                 $type,
                 Config::getS2kHash(),
-                Config::getS2kItCount()
+                Config::getS2kItCount(),
             );
     }
 

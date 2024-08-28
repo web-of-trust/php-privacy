@@ -247,10 +247,10 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         if ($this->keyMaterial instanceof Key\ECPublicKeyMaterial) {
             return $this->keyMaterial->getCurveOid()->hashAlgorithm();
         }
-        elseif ($this->keyAlgorithm instanceof KeyAlgorithm::Ed25519) {
+        elseif ($this->keyAlgorithm === KeyAlgorithm::Ed25519) {
             return EdDSACurve::Ed25519->hashAlgorithm();
         }
-        elseif ($this->keyAlgorithm instanceof KeyAlgorithm::Ed448) {
+        elseif ($this->keyAlgorithm === KeyAlgorithm::Ed448) {
             return EdDSACurve::Ed448->hashAlgorithm();
         }
         else {

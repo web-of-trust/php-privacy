@@ -144,15 +144,16 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
             new PublicSubkey(
                 $publicKey->getVersion(),
                 $publicKey->getCreationTime(),
+                $publicKey->getKeyAlgorithm(),
                 $publicKey->getKeyMaterial(),
-                $publicKey->getKeyAlgorithm()
             ),
             $secretKey->getKeyData(),
             $secretKey->getKeyMaterial(),
             $secretKey->getS2kUsage(),
             $secretKey->getSymmetric(),
             $secretKey->getS2K(),
-            $secretKey->getIV()
+            $secretKey->getAead(),
+            $secretKey->getIV(),
         );
     }
 }
