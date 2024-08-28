@@ -825,7 +825,7 @@ abstract class AbstractKey implements KeyInterface
                                     $subkeys[] = $subkey;
                                 }
                                 break;
-                            case SignatureType::Key:
+                            case SignatureType::DirectKey:
                                 $directSignatures[] = $packet;
                                 break;
                             case SignatureType::KeyRevocation:
