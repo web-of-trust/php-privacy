@@ -40,7 +40,7 @@ QdjujszGY2uSv1iTik/46DAEf0yJ7/7Fwt9gSgTLEbh0NIGE21Z11BKY+ovITfgrmJOhP9kQ6oIX
 RfZglUaCOkOPtqPMQNOpZiV3VY6IOay+r7y9Rx2xT03WrnSowNZQXSCksonthXUZAXoGSeFO
 EOT;
         $secretKey = SecretKey::fromBytes(base64_decode($data))->decrypt(self::PASSPHRASE);
-        $this->assertSame('fc5004df9473277107eaa605184d0dc4f5c532b2', bin2hex($secretKey->getFingerprint()));
+        $this->assertSame('fc5004df9473277107eaa605184d0dc4f5c532b2', $secretKey->getFingerprint(true));
         $this->assertSame('184d0dc4f5c532b2', bin2hex($secretKey->getKeyID()));
         $this->assertSame(4, $secretKey->getVersion());
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
@@ -68,8 +68,8 @@ o630OHhhneEQ7blqGQKnBdrXtFKTVwGXA8EkCwgl4IK5OJrs9W+SkwBgfhxDCHprfFyH1ARSzjK1
 TBGwJ0VVxJEtKxd0eQnmvNDYdo2kbGriXFcTyCzMGz/KKfqlsu3kPf/NCNgr+zxx8Z+xyDtG
 EOT;
         $secretSubkey = SecretSubkey::fromBytes(base64_decode($data))->decrypt(self::PASSPHRASE);
-        $this->assertSame('42badbbe0f2acabacd6cac7c4be1b3a621ef906f', bin2hex($secretSubkey->getFingerprint()));
-        $this->assertSame('4be1b3a621ef906f', bin2hex($secretSubkey->getKeyID()));
+        $this->assertSame('42badbbe0f2acabacd6cac7c4be1b3a621ef906f', $secretSubkey->getFingerprint(true));
+        $this->assertSame('4be1b3a621ef906f', $secretSubkey->getKeyID(true));
         $this->assertSame(4, $secretSubkey->getVersion());
         $this->assertTrue($secretSubkey->getKeyMaterial()->isValid());
     }
@@ -95,8 +95,8 @@ JN3kg8cu61aYn2FKiZDRQEDbHFVHJ52e34OZAmmWZLvzUk11E7dQdnpItffEwp8aGro7pUwGo79k
 KtquoXIM7ith6WK8iUzZ9jyXcWv+iFDE8cDpLEGvR7x3NEt0SfCtN0SL
 EOT;
         $secretKey = SecretKey::fromBytes(base64_decode($data))->decrypt(self::PASSPHRASE);
-        $this->assertSame('3e57913d5f6ccbdb9022f7dee3b11d642248a092', bin2hex($secretKey->getFingerprint()));
-        $this->assertSame('e3b11d642248a092', bin2hex($secretKey->getKeyID()));
+        $this->assertSame('3e57913d5f6ccbdb9022f7dee3b11d642248a092', $secretKey->getFingerprint(true));
+        $this->assertSame('e3b11d642248a092', $secretKey->getKeyID(true));
         $this->assertSame(4, $secretKey->getVersion());
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
     }
@@ -117,8 +117,8 @@ ZSgDj7aW2N0nvDT5/gcDAs4nuOmbg4AW/52mifokiOaqZ9PXjv0J5asUJIfurNPn9JOPjLrwBpIq
 3Lc5u6tOtzUTB8ynz2AE/17z1wotF/ENP8FryZQ84NJ4QiiYK0Joc95MXj+5uZYpNA==
 EOT;
         $secretSubkey = SecretSubkey::fromBytes(base64_decode($data))->decrypt(self::PASSPHRASE);
-        $this->assertSame('420a452a98ea130c7747e0b2c0453c8aabe775db', bin2hex($secretSubkey->getFingerprint()));
-        $this->assertSame('c0453c8aabe775db', bin2hex($secretSubkey->getKeyID()));
+        $this->assertSame('420a452a98ea130c7747e0b2c0453c8aabe775db', $secretSubkey->getFingerprint(true));
+        $this->assertSame('c0453c8aabe775db', $secretSubkey->getKeyID(true));
         $this->assertSame(4, $secretSubkey->getVersion());
         $this->assertTrue($secretSubkey->getKeyMaterial()->isValid());
     }
@@ -132,8 +132,8 @@ AjbYiI4QU+mo/woxqTXpIZE1wzaaNJ5+iRA7vvc6rdJZSjQUkXTJ3/zOyI4970a4UDTJ948+jiUt
 aJrhbMr17UySI58IyBvTxA3hFy63JRJWy5dhJU7kQ3PljGTlqOGB
 EOT;
         $secretKey = SecretKey::fromBytes(base64_decode($data))->decrypt(self::PASSPHRASE);
-        $this->assertSame('05c085492d14f90976e7c2b6b202d9e2eada440c', bin2hex($secretKey->getFingerprint()));
-        $this->assertSame('b202d9e2eada440c', bin2hex($secretKey->getKeyID()));
+        $this->assertSame('05c085492d14f90976e7c2b6b202d9e2eada440c', $secretKey->getFingerprint(true));
+        $this->assertSame('b202d9e2eada440c', $secretKey->getKeyID(true));
         $this->assertSame(4, $secretKey->getVersion());
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
     }
@@ -147,8 +147,8 @@ Cf4HAwIcyJh6Un3tq/+P7HrG3HYoS3MBHwEHsYbsogsXCJyutYSZ3yn4Fuyk8FJnH9GGDJatBxkp
 HjhNl+M7wpWyEyjh9WWJHFrC7Zgbx1RZbFHtM/aCtvqUQHqGwiR7uY9b0w==
 EOT;
         $secretSubkey = SecretSubkey::fromBytes(base64_decode($data))->decrypt(self::PASSPHRASE);
-        $this->assertSame('7d5bfac8919d26290b28ec56c0b7b9c6bf5824b6', bin2hex($secretSubkey->getFingerprint()));
-        $this->assertSame('c0b7b9c6bf5824b6', bin2hex($secretSubkey->getKeyID()));
+        $this->assertSame('7d5bfac8919d26290b28ec56c0b7b9c6bf5824b6', $secretSubkey->getFingerprint(true));
+        $this->assertSame('c0b7b9c6bf5824b6', $secretSubkey->getKeyID(true));
         $this->assertSame(4, $secretSubkey->getVersion());
         $this->assertTrue($secretSubkey->getKeyMaterial()->isValid());
     }
@@ -161,8 +161,8 @@ BGRYXMETCSskAwMCCAEBBwIDBHKh5xdXoTfino6vulZBw4fl5lMtKgzXIeG9zhJuBInpE7gOlxes
 u5aHJEwxtiXZFAHUTxoHgr3yd0IewonQL4Xxz25Zmp1iNL2VSyfPE5v8EDwgWcxCT9m1pQ==
 EOT;
         $secretKey = SecretKey::fromBytes(base64_decode($data))->decrypt(self::PASSPHRASE);
-        $this->assertSame('06fee3085d46dc007c0ec2f01cbcd043db44c5d6', bin2hex($secretKey->getFingerprint()));
-        $this->assertSame('1cbcd043db44c5d6', bin2hex($secretKey->getKeyID()));
+        $this->assertSame('06fee3085d46dc007c0ec2f01cbcd043db44c5d6', $secretKey->getFingerprint(true));
+        $this->assertSame('1cbcd043db44c5d6', $secretKey->getKeyID(true));
         $this->assertSame(4, $secretKey->getVersion());
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
     }
@@ -175,8 +175,8 @@ B3ZgWmrx1NRoT2pQfD2qqYo8jQJK8XlgyqIDAQgH/gcDApz0MLgF17Br/2e17kAJ360GEHYrfgn6
 dstKPfglOcNKt8PdckwiF6g8gGm3WSPKU/7MkR2C+lKMOJWFxY0G9U77H35I+Vv9W9828ybAmxM=
 EOT;
         $secretSubkey = SecretSubkey::fromBytes(base64_decode($data))->decrypt(self::PASSPHRASE);
-        $this->assertSame('457b5979545fba09be179db808a55bdb1d673d5d', bin2hex($secretSubkey->getFingerprint()));
-        $this->assertSame('08a55bdb1d673d5d', bin2hex($secretSubkey->getKeyID()));
+        $this->assertSame('457b5979545fba09be179db808a55bdb1d673d5d', $secretSubkey->getFingerprint(true));
+        $this->assertSame('08a55bdb1d673d5d', $secretSubkey->getKeyID(true));
         $this->assertSame(4, $secretSubkey->getVersion());
         $this->assertTrue($secretSubkey->getKeyMaterial()->isValid());
     }
@@ -189,8 +189,8 @@ LOtx/PSU/9E+PgO1Rd79U+hHRifxAcg+kLq3aoLBbA7RmrVdDTeQvoFl3C+WCC1WleUW21FsUpce
 31nuheiWbgVEXVXQUOcXaVbGVGY=
 EOT;
         $secretKey = SecretKey::fromBytes(base64_decode($data))->decrypt(self::PASSPHRASE);
-        $this->assertSame('1c4116eb2b58cfa196c57ddbbdff135160c56a0b', bin2hex($secretKey->getFingerprint()));
-        $this->assertSame('bdff135160c56a0b', bin2hex($secretKey->getKeyID()));
+        $this->assertSame('1c4116eb2b58cfa196c57ddbbdff135160c56a0b', $secretKey->getFingerprint(true));
+        $this->assertSame('bdff135160c56a0b', $secretKey->getKeyID(true));
         $this->assertSame(4, $secretKey->getVersion());
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
     }
@@ -203,10 +203,27 @@ BwMCXhynxjWHX9z//fP2s+xS5iJ1GuvkHqAq+i32Z7LO/92WrWb521yGgPfAipIfrwxwgLZByGjg
 DE1hLVYK35eygNH+dtRvaK5/hLCNXKeUiQ==
 EOT;
         $secretSubkey = SecretSubkey::fromBytes(base64_decode($data))->decrypt(self::PASSPHRASE);
-        $this->assertSame('8efa53a375fc569aa9ca564a044eac93f0b69ea0', bin2hex($secretSubkey->getFingerprint()));
-        $this->assertSame('044eac93f0b69ea0', bin2hex($secretSubkey->getKeyID()));
+        $this->assertSame('8efa53a375fc569aa9ca564a044eac93f0b69ea0', $secretSubkey->getFingerprint(true));
+        $this->assertSame('044eac93f0b69ea0', $secretSubkey->getKeyID(true));
         $this->assertSame(4, $secretSubkey->getVersion());
         $this->assertTrue($secretSubkey->getKeyMaterial()->isValid());
+    }
+
+    public function testVersion6SecretKey()
+    {
+        $data = <<<EOT
+BmOHf+MbAAAAIPlNp7tI1gph5WdwamWH0DMZmbudiRoIJC6thFQ9+JWjABlygXsSvnB+jV9YbOYTYSAdNE6yZqLIL95oNXYrZbC3Dac=
+EOT;
+        $secretKey = SecretKey::fromBytes(base64_decode($data));
+        $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $secretKey->getFingerprint(true));
+        $this->assertSame(6, $secretKey->getVersion());
+
+        $data = <<<EOT
+BmOHf+MZAAAAIIaTJINn+eUBXbki+PSAld2nhJh/LVmFsS+60WyvXkQ1AE1gCk95TUR3XFeibg/u/tVY6a//1q0NWC1X+yui3O24EL4=
+EOT;
+        $secretSubkey = SecretSubkey::fromBytes(base64_decode($data));
+        $this->assertSame('12c83f1e706f6308fe151a417743a1f033790e93e9978488d1db378da9930885', $secretSubkey->getFingerprint(true));
+        $this->assertSame(6, $secretSubkey->getVersion());
     }
 
     public function testGenerateRSASecretKey()

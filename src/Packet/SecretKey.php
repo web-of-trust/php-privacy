@@ -130,10 +130,12 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         $keyMaterial = null;
         $keyData = substr($bytes, $offset);
         if ($s2kUsage === S2kUsage::None) {
-            $checksum = substr($keyData, strlen($keyData) - 2);
-            $keyData = substr($keyData, 0, strlen($keyData) - 2);
-            if (strcmp(Helper::computeChecksum($keyData), $checksum) !== 0) {
-                throw new \UnexpectedValueException('Key checksum mismatch!');
+            if ($publicKey->getVersion() === PublicKey::VERSION_4) {
+                $checksum = substr($keyData, strlen($keyData) - 2);
+                $keyData = substr($keyData, 0, strlen($keyData) - 2);
+                if (strcmp(Helper::computeChecksum($keyData), $checksum) !== 0) {
+                    throw new \UnexpectedValueException('Key checksum mismatch!');
+                }
             }
             $keyMaterial = self::readKeyMaterial($keyData, $publicKey);
         }
