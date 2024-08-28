@@ -61,7 +61,7 @@ class AeadTest extends OpenPGPTestCase
             new PacketList([LiteralData::fromText(self::LITERAL_TEXT)])
         );
         $this->assertEquals($aedp->getSymmetricAlgorithm(), SymmetricAlgorithm::Aes128);
-        $this->assertEquals($aedp->getAeadAlgorithm(), AeadAlgorithm::Eax);
+        $this->assertEquals($aedp->getAeadAlgorithm(), AeadAlgorithm::Gcm);
         $this->assertTrue(!empty($aedp->getEncrypted()));
 
         $aedp = $aedp->decrypt($sessionKey->getEncryptionKey());

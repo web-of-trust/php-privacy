@@ -186,7 +186,7 @@ final class OCB implements AeadCipher
             $offset = self::xor($offset, $this->mask[self::ntz($i + 1)]);
             // C_i = Offset_i xor ENCIPHER(K, P_i xor Offset_i)
             // P_i = Offset_i xor DECIPHER(K, C_i xor Offset_i)
-            if (strcmp($cipher, $this->encipher) === 0) {
+            if ($cipher === $this->encipher) {
                 $encrypted = self::xor($cipher->encryptBlock(self::xor($offset, $text)), $offset);
             }
             else {

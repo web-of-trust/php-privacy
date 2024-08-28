@@ -241,10 +241,13 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
         }
         else {
             return new self(
+                $this->version,
                 $secretKey->getKeyID(),
+                $secretKey->getVersion(),
+                $secretKey->getFingerprint(),
                 $secretKey->getKeyAlgorithm(),
                 $this->sessionKeyCryptor,
-                $this->decryptSessionKey($secretKey)
+                $this->decryptSessionKey($secretKey),
             );
         }
     }

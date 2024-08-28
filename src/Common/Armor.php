@@ -160,7 +160,7 @@ final class Armor
         }
 
         $data = Strings::base64_decode(implode($dataLines));
-        if (strcmp($checksum, $self::crc24Checksum($data)) !== 0 &&
+        if (strcmp($checksum, self::crc24Checksum($data)) !== 0 &&
            (!empty($checksum) || $checksumRequired))
         {
             throw new \UnexpectedValueException(
