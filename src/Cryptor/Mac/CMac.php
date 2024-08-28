@@ -53,7 +53,7 @@ final class CMac
 
         if ($this->macSize > $this->blockSize) {
             throw new \LengthException(
-                "MAC size must be less or equal to {$this->blockSize}"
+                "MAC size must be less or equal to {$this->blockSize}."
             );
         }
     }

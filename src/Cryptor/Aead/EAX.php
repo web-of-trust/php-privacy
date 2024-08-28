@@ -93,7 +93,7 @@ final class EAX implements AeadCipher
         $tagLength = $this->mac->getMacSize();
 
         if ($length < $tagLength) {
-            throw new \LengthException('Invalid EAX ciphertext');
+            throw new \LengthException('Invalid EAX ciphertext.');
         }
         $ciphered = substr($ciphertext, 0, $length - $tagLength);
         $ctTag = substr($ciphertext, $length - $tagLength);

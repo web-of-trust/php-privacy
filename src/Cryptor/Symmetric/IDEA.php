@@ -47,7 +47,7 @@ class IDEA extends BlockCipher
         parent::__construct($mode);
         if ($this->mode == self::MODE_STREAM) {
             throw new BadModeException(
-                'Block ciphers cannot be ran in stream mode'
+                'Block ciphers cannot be ran in stream mode.'
             );
         }
         $this->block_size = self::BLOCK_SIZE;

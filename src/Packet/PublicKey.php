@@ -42,6 +42,8 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
 {
     const VERSION_4   = 4;
     const VERSION_6   = 6;
+    const V4_HASH     = 'sha1';
+    const V6_HASH     = 'sha256';
     const KEY_ID_SIZE = 8;
 
     /**
@@ -87,14 +89,14 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
                ($curveOid === CurveOid::Curve25519)
             ) {
                 throw new \UnexpectedValueException(
-                    'Legacy curve25519 cannot be used with version 6 keys',
+                    'Legacy curve25519 cannot be used with version 6 key packet.',
                 );
             }
         }
 
         $this->fingerprint = $isV6 ?
-            hash('sha256', $this->getSignBytes(), true) :
-            hash('sha1', $this->getSignBytes(), true);
+            hash(self::V6_HASH, $this->getSignBytes(), true) :
+            hash(self::V4_HASH, $this->getSignBytes(), true);
         $this->keyID = $isV6 ?
             substr($this->fingerprint, 0, self::KEY_ID_SIZE) :
             substr($this->fingerprint, 12, self::KEY_ID_SIZE);
@@ -298,7 +300,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
                     $bytes, EdDSACurve::Ed448
                 ),
             default => throw new \UnexpectedValueException(
-                "Unsupported OpenPGP public key algorithm encountered",
+                "Unsupported OpenPGP public key algorithm encountered.",
             ),
         };
     }

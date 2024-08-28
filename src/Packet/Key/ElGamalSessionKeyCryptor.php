@@ -83,7 +83,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
         }
         else {
             throw new \InvalidArgumentException(
-                'Public key is not instance of ElGamal key'
+                'Public key is not instance of ElGamal key.'
             );
         }
     }
@@ -136,7 +136,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
         }
         else {
             throw new \InvalidArgumentException(
-                'Private key is not instance of ElGamal key'
+                'Private key is not instance of ElGamal key.'
             );
         }
     }

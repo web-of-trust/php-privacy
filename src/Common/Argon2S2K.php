@@ -74,12 +74,12 @@ class Argon2S2K implements S2KInterface
         if (empty($this->argon2Path = $finder->find(self::ARGON2_COMMAND))) {
             if (!function_exists('sodium_crypto_pwhash')) {
                 throw new \UnexpectedValueException(
-                    'Argon2 string to key is unsupported',
+                    'Argon2 string to key is unsupported.',
                 );
             }
             elseif ($parallelism > self::PHP_PARALLELISM) {
                 throw new \InvalidArgumentException(
-                    'PHP Argon2 only support 1 parallelism',
+                    'PHP Argon2 only support 1 parallelism.',
                 );
             }
         }

@@ -95,7 +95,7 @@ final class OCB implements AeadCipher
     {
         $length = strlen($ciphertext);
         if ($length < self::TAG_LENGTH) {
-            throw new \InvalidArgumentException('Invalid OCB ciphertext');
+            throw new \InvalidArgumentException('Invalid OCB ciphertext.');
         }
 
         $tag = substr($ciphertext, $length - self::TAG_LENGTH);
