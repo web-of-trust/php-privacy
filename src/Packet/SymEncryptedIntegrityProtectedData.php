@@ -172,16 +172,11 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
                 );
             }
 
-            // Remove random prefix
-            $packetBytes = substr($toHash, $size + 2);
-            // Remove MDC packet
-            $packetBytes = substr(
-                $packetBytes, 0, strlen($packetBytes) - 2
-            );
-
             return new self(
                 $this->encrypted,
-                PacketList::decode($packetBytes)
+                PacketList::decode(
+                    substr($toHash, $size + 2, strlen($toHash) - $size - 4)
+                )
             );
         }
     }
