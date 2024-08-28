@@ -312,9 +312,11 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
                         'Modification detected.'
                     );
                 }
-                // Remove random prefix & MDC packet
+                // Remove random prefix
+                $packetBytes = substr($toHash, $size + 2);
+                // Remove MDC packet
                 $packetBytes = substr(
-                    $toHash, $size + 2, strlen($toHash) - $size - 2
+                    $packetBytes, 0, strlen($packetBytes) - 2
                 );
             }
 
