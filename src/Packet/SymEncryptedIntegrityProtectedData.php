@@ -13,6 +13,7 @@ use OpenPGP\Common\{
     Helper,
 };
 use OpenPGP\Enum\{
+    AeadAlgorithm,
     HashAlgorithm,
     PacketTag,
     SymmetricAlgorithm,
@@ -72,7 +73,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
                 "Version $version of the SEIPD packet is unsupported.",
             );
         }
-        if ($aead instanceof AeadAlgorithm && $version !== PublicKey::VERSION_2) {
+        if ($aead instanceof AeadAlgorithm && $version !== self::VERSION_2) {
             throw new \UnexpectedValueException(
                 "Using AEAD with version {$version} of the SEIPD packet is not allowed."
             );

@@ -8,13 +8,10 @@
 
 namespace OpenPGP\Packet;
 
-use phpseclib3\Common\Functions\Strings;
-use phpseclib3\Crypt\Random;
 use OpenPGP\Enum\{
     KeyAlgorithm,
     MontgomeryCurve,
     PacketTag,
-    SymmetricAlgorithm,
 };
 use OpenPGP\Type\{
     KeyPacketInterface,
@@ -22,6 +19,7 @@ use OpenPGP\Type\{
     SessionKeyInterface,
     SessionKeyCryptorInterface,
 };
+use phpseclib3\Common\Functions\Strings;
 
 /**
  * PublicKeyEncryptedSessionKey represents a Public-Key Encrypted Session Key (PKESK) packet.

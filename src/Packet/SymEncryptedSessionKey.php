@@ -16,7 +16,6 @@ use OpenPGP\Common\{
 };
 use OpenPGP\Enum\{
     AeadAlgorithm,
-    HashAlgorithm,
     PacketTag,
     S2kType,
     SymmetricAlgorithm,
