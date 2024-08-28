@@ -79,7 +79,7 @@ class EdDSAPublicKeyMaterial implements PublicKeyMaterialInterface
     ): self
     {
         return new self(
-            substr($bytes, 0, $payloadSize),
+            substr($bytes, 0, $curve->payloadSize()),
             $curve->getCurve(),
         );
     }
