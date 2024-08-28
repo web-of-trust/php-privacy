@@ -271,7 +271,6 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             ),
             Signature\Features::fromFeatures(
                 SupportFeature::Version1SEIPD->value |
-                SupportFeature::Version6PublicKey->value |
                 SupportFeature::Version2SEIPD->value
             ),
         ];

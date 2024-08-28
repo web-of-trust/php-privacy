@@ -3,7 +3,6 @@
 namespace OpenPGP\Tests\Packet;
 
 use OpenPGP\Common\Config;
-use OpenPGP\Packet\AeadEncryptedData;
 use OpenPGP\Packet\LiteralData;
 use OpenPGP\Packet\PacketList;
 use OpenPGP\Packet\SymEncryptedSessionKey;

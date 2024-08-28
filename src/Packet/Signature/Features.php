@@ -71,17 +71,6 @@ class Features extends SignatureSubpacket
     }
 
     /**
-     * Support version 6 public key
-     *
-     * @return bool
-     */
-    public function supportVersion6PublicKey(): bool
-    {
-        return (ord($this->getData()[0]) & SupportFeature::Version6PublicKey->value)
-            === SupportFeature::Version6PublicKey->value;
-    }
-
-    /**
      * Support version 2 SEIPD
      *
      * @return bool

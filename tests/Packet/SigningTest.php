@@ -277,11 +277,9 @@ EOT;
     {
         $features = Features::fromFeatures(
             SupportFeature::Version2SEIPD->value |
-            SupportFeature::Version6PublicKey->value |
             SupportFeature::Version2SEIPD->value
         );
         $this->assertTrue($features->supportVersion2SEIPD());
-        $this->assertTrue($features->supportVersion6PublicKey());
         $this->assertTrue($features->supportVersion2SEIPD());
     }
 

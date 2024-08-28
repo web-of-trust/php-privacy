@@ -25,11 +25,6 @@ enum SupportFeature: int
     case Version1SEIPD = 1;
 
     /**
-     * Version 6 Public-Key Packet format and corresponding new fingerprint format
-     */
-    case Version6PublicKey = 2;
-
-    /**
      * Version 2 Symmetrically Encrypted and Integrity Protected Data packet
      */
     case Version2SEIPD = 8;

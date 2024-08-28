@@ -21,7 +21,6 @@ use OpenPGP\Enum\{
 };
 use OpenPGP\Packet\Signature as SignaturePacket;
 use OpenPGP\Packet\{
-    AeadEncryptedData,
     CompressedData,
     OnePassSignature,
     LiteralData,
@@ -245,11 +244,12 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
         foreach ($encryptionKeys as $key) {
             if (!$key->aeadSupported()) {
                 $aeadSupported = false;
+                break;
             }
         }
         if ($aeadSupported && Config::aeadProtect()) {
-            $encryptedPacket = AeadEncryptedData::encryptPacketsWithSessionKey(
-                $sessionKey, $this->getPacketList()
+            $encryptedPacket = SymEncryptedIntegrityProtectedData::encryptPacketsWithSessionKey(
+                $sessionKey, $this->getPacketList(), Config::getPreferredAead()
             );
         }
         else {
