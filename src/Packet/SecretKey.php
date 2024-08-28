@@ -210,7 +210,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             KeyAlgorithm::Ed448
                 => Key\EdDSASecretKeyMaterial::generate(EdDSACurve::Ed448),
             default => throw new \UnexpectedValueException(
-                'Unsupported PGP public key algorithm encountered.'
+                'Unsupported OpenPGP public key algorithm encountered.'
             ),
         };
         return new self(
@@ -669,7 +669,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                     $bytes, $publicKey->getKeyMaterial(), EdDSACurve::Ed448
                 ),
             default => throw new \UnexpectedValueException(
-                'Unsupported PGP public key algorithm encountered.',
+                'Unsupported OpenPGP public key algorithm encountered.',
             ),
         };
         if (!$keyMaterial->isValid()) {
