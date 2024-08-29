@@ -343,7 +343,8 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
     {
         $dataLength = strlen($data);
         $tagLength = $fn === 'decrypt' ? $this->aead->tagLength() : 0;
-        $chunkSize = (1 << ($this->chunkSize + 6)) + $tagLength; // ((uint64_t)1 << (c + 6))
+        // ((uint64_t)1 << (c + 6))
+        $chunkSize = (1 << ($this->chunkSize + 6)) + $tagLength;
 
         $aData = $this->getAData();
         $zeroBytes = str_repeat(self::ZERO_CHAR, 8);
@@ -386,10 +387,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
         );
         $processedBytes = pack('N', $bytesProcessed);
         $aDataTagBytes = substr_replace(
-            $aDataTagBytes,
-            $processedBytes,
-            $tagSize - 4,
-            4,
+            $aDataTagBytes, $processedBytes, $tagSize - 4, 4,
         );
 
         // After the final chunk, we either encrypt a final, empty data
