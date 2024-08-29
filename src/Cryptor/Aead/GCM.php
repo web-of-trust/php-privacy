@@ -45,24 +45,20 @@ final class GCM implements AeadCipher
      * {@inheritdoc}
      */
     public function encrypt(
-        string $plaintext, string $nonce, string $adata = ''
+        string $plainText, string $nonce, string $aData = ''
     ): string
     {
-        $this->cipher->setNonce($nonce);
-        $this->cipher->setAAD($adata);
-        return $this->cipher->encrypt($plaintext);
+        return $this->crypt($plainText, $nonce, $adata);
     }
 
     /**
      * {@inheritdoc}
      */
     public function decrypt(
-        string $ciphertext, string $nonce, string $adata = ''
+        string $cipherText, string $nonce, string $aData = ''
     ): string
     {
-        $this->cipher->setNonce($nonce);
-        $this->cipher->setAAD($adata);
-        return $this->cipher->encrypt($ciphertext);
+        return $this->crypt($cipherText, $nonce, $aData);
     }
 
     /**
@@ -82,5 +78,14 @@ final class GCM implements AeadCipher
             $nonce[4 + $i] = $nonce[4 + $i] ^ $chunkIndex[$i];
         }
         return $nonce;
+    }
+
+    private function crypt(
+        string $plainText, string $nonce, string $aData = ''
+    ): string
+    {
+        $this->cipher->setNonce($nonce);
+        $this->cipher->setAAD($aData);
+        return $this->cipher->encrypt($cipherText);
     }
 }

@@ -80,28 +80,28 @@ final class OCB implements AeadCipher
      * {@inheritdoc}
      */
     public function encrypt(
-        string $plaintext, string $nonce, string $adata = ''
+        string $plainText, string $nonce, string $aData = ''
     ): string
     {
-        return $this->crypt($this->encipher, $plaintext, $nonce, $adata);
+        return $this->crypt($this->encipher, $plainText, $nonce, $aData);
     }
 
     /**
      * {@inheritdoc}
      */
     public function decrypt(
-        string $ciphertext, string $nonce, string $adata = ''
+        string $cipherText, string $nonce, string $aData = ''
     ): string
     {
-        $length = strlen($ciphertext);
+        $length = strlen($cipherText);
         if ($length < self::TAG_LENGTH) {
-            throw new \InvalidArgumentException('Invalid OCB ciphertext.');
+            throw new \InvalidArgumentException('Invalid OCB cipher text.');
         }
 
-        $tag = substr($ciphertext, $length - self::TAG_LENGTH);
-        $ciphertext = substr($ciphertext, 0, $length - self::TAG_LENGTH);
+        $tag = substr($cipherText, $length - self::TAG_LENGTH);
+        $cipherText = substr($cipherText, 0, $length - self::TAG_LENGTH);
 
-        $crypted = $this->crypt($this->decipher, $ciphertext, $nonce, $adata);
+        $crypted = $this->crypt($this->decipher, $cipherText, $nonce, $aData);
         $length = strlen($crypted);
         // if (Tag[1..TAGLEN] == T)
         if (strcmp($tag, substr($crypted, $length - self::TAG_LENGTH)) === 0) {

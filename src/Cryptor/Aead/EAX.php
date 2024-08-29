@@ -69,13 +69,13 @@ final class EAX implements AeadCipher
      * {@inheritdoc}
      */
     public function encrypt(
-        string $plaintext, string $nonce, string $adata = ''
+        string $plainText, string $nonce, string $aData = ''
     ): string
     {
         $omacNonce = $this->omac($this->zeroBlock, $nonce);
-        $omacAdata = $this->omac($this->oneBlock, $adata);
+        $omacAdata = $this->omac($this->oneBlock, $aData);
 
-        $ciphered = $this->crypt($plaintext, $omacNonce);
+        $ciphered = $this->crypt($plainText, $omacNonce);
         $omacCiphered = $this->omac($this->twoBlock, $ciphered);
         $tag = $omacCiphered ^ $omacAdata ^ $omacNonce;
 
@@ -86,20 +86,20 @@ final class EAX implements AeadCipher
      * {@inheritdoc}
      */
     public function decrypt(
-        string $ciphertext, string $nonce, string $adata = ''
+        string $cipherText, string $nonce, string $aData = ''
     ): string
     {
-        $length = strlen($ciphertext);
+        $length = strlen($cipherText);
         $tagLength = $this->mac->getMacSize();
 
         if ($length < $tagLength) {
-            throw new \LengthException('Invalid EAX ciphertext.');
+            throw new \LengthException('Invalid EAX cipher text.');
         }
-        $ciphered = substr($ciphertext, 0, $length - $tagLength);
-        $ctTag = substr($ciphertext, $length - $tagLength);
+        $ciphered = substr($cipherText, 0, $length - $tagLength);
+        $ctTag = substr($cipherText, $length - $tagLength);
 
         $omacNonce = $this->omac($this->zeroBlock, $nonce);
-        $omacAdata = $this->omac($this->oneBlock, $adata);
+        $omacAdata = $this->omac($this->oneBlock, $aData);
         $omacCiphered = $this->omac($this->twoBlock, $ciphered);
         $tag = $omacCiphered ^ $omacAdata ^ $omacNonce;
 

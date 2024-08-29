@@ -18,27 +18,27 @@ namespace OpenPGP\Cryptor\Aead;
 interface AeadCipher
 {
     /**
-     * Encrypt plaintext input.
+     * Encrypt plain text input.
      *
-     * @param string $plaintext - The cleartext input to be encrypted
+     * @param string $plainText - The plain text input to be encrypted
      * @param string $nonce - The nonce
-     * @param string $adata - Associated data to sign
-     * @return string The ciphertext output.
+     * @param string $aData - Associated data to sign
+     * @return string The cipher text output.
      */
     function encrypt(
-        string $plaintext, string $nonce, string $adata = ''
+        string $plainText, string $nonce, string $aData = ''
     ): string;
 
     /**
-     * Decrypt ciphertext input.
+     * Decrypt cipher text input.
      *
-     * @param string $ciphertext - The ciphertext input to be decrypted
+     * @param string $cipherText - The cipher text input to be decrypted
      * @param string $nonce - The nonce
-     * @param string $adata - Associated data to verify
-     * @return string The plaintext output.
+     * @param string $aData - Associated data to verify
+     * @return string The plain text output.
      */
     function decrypt(
-        string $ciphertext, string $nonce, string $adata = ''
+        string $cipherText, string $nonce, string $aData = ''
     ): string;
 
     /**
