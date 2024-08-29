@@ -346,10 +346,13 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
         $chunkSize = (1 << ($this->chunkSize + 6)) + $tagLength; // ((uint64_t)1 << (c + 6))
 
         $aData = $this->getAData();
-        $adataTagBuffer = implode([
+        $zeroBytes = str_repeat(self::ZERO_CHAR, 8);
+
+        $aDataTagBytes = implode([
             $aData,
-            str_repeat(self::ZERO_CHAR, 8),
+            $zeroBytes,
         ]);
+        $tagSize = strlen($aDataTagBytes);
 
         $keySize = $this->symmetric->keySizeInByte();
         $ivLength = $this->aead->ivLength();
@@ -358,13 +361,13 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
         );
         $encryptionKey = substr($derivedKey, 0, $keySize);
         $iv = substr($derivedKey, $keySize, $keySize + $ivLength);
-        $iv = substr_replace($iv, str_repeat(self::ZERO_CHAR, 8), strlen($iv) - 8);
+        $iv = substr_replace($iv, $zeroBytes, $ivLength - 8);
         $cipher = $this->aead->cipherEngine($encryptionKey, $this->symmetric);
 
         $crypted = [];
         $chunk = substr($data, 0, $dataLength - $tagLength);
         for ($chunkIndex = 0; $chunkIndex === 0 || strlen($chunk);) {
-            $chunkIndexData = substr($adataTagBuffer, 5, 8);
+            $chunkIndexData = substr($aDataTagBytes, 5, 8);
             $crypted[] = $cipher->$fn(
                 substr($chunk, 0, $chunkSize),
                 $cipher->getNonce($iv, $chunkIndexData),
@@ -373,17 +376,20 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
             // We take a chunk of data, en/decrypt it, and shift `data` to the next chunk.
             $chunk = substr($chunk, $chunkSize);
             $ciBytes = pack('N', ++$chunkIndex);
-            $adataTagBuffer = substr_replace(
-                $adataTagBuffer, $ciBytes, strlen($adataTagBuffer) - strlen($ciBytes), strlen($ciBytes)
+            $aDataTagBytes = substr_replace(
+                $aDataTagBytes, $ciBytes, $tagSize - 4, 4
             );
         }
-        $chunkIndexData = substr($adataTagBuffer, 5, 8);
+        $chunkIndexData = substr($aDataTagBytes, 5, 8);
         $bytesProcessed = array_sum(
             array_map(fn ($processed) => strlen($processed), $crypted)
         );
         $processedBytes = pack('N', $bytesProcessed);
-        $adataTagBuffer = substr_replace(
-            $adataTagBuffer, $processedBytes, strlen($adataTagBuffer) - strlen($processedBytes), strlen($processedBytes)
+        $aDataTagBytes = substr_replace(
+            $aDataTagBytes,
+            $processedBytes,
+            $tagSize - 4,
+            4,
         );
 
         // After the final chunk, we either encrypt a final, empty data
@@ -392,7 +398,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
         $crypted[] = $cipher->$fn(
             substr($data, $dataLength - $tagLength, $tagLength),
             $cipher->getNonce($iv, $chunkIndexData),
-            $adataTagBuffer
+            $aDataTagBytes
         );
         return implode($crypted);
     }
