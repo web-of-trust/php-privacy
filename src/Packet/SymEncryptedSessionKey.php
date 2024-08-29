@@ -27,19 +27,9 @@ use OpenPGP\Type\{
 use phpseclib3\Crypt\Random;
 
 /**
- * SymEncryptedSessionKey packet class
- * 
  * Implementation of the Symmetric-Key Encrypted Session Key packet (Tag 3)
- * See RFC 4880, section 5.3.
  * 
- * The Symmetric-Key Encrypted Session Key packet holds the
- * symmetric-key encryption of a session key used to encrypt a message.
- * Zero or more Public-Key Encrypted Session Key packets and/or
- * Symmetric-Key Encrypted Session Key packets may precede a
- * Symmetrically Encrypted Data packet that holds an encrypted message.
- * The message is encrypted with a session key, and the session key is
- * itself encrypted and stored in the Encrypted Session Key packet or
- * the Symmetric-Key Encrypted Session Key packet.
+ * See RFC 9580, section 5.3.
  * 
  * @package  OpenPGP
  * @category Packet

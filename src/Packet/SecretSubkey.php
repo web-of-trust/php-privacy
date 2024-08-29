@@ -25,7 +25,9 @@ use OpenPGP\Type\{
 };
 
 /**
- * Secret sub key packet class
+ * Implementation a possibly encrypted sub private key (Tag 7).
+ * 
+ * See RFC 9580, section 5.5.1.4.
  * 
  * @package  OpenPGP
  * @category Packet

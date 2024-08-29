@@ -453,7 +453,7 @@ EOT;
         );
     }
 
-    public function testGenerateV6Key()
+    public function testGenerateV6RsaKey()
     {
         Config::setUseV6Key(true);
 
@@ -466,12 +466,74 @@ EOT;
         Config::setUseV6Key(false);
     }
 
+    public function testGenerateV6EcDsaKey()
+    {
+        Config::setUseV6Key(true);
+
+        $secretKey = SecretKey::generate(KeyAlgorithm::EcDsa);
+        $this->assertFalse($secretKey->isEncrypted());
+        $this->assertTrue($secretKey->getKeyMaterial()->isValid());
+        $this->assertSame(521, $secretKey->getKeyStrength());
+        $this->assertSame(6, $secretKey->getVersion());
+
+        Config::setUseV6Key(false);
+    }
+
+    public function testGenerateV6EcdhKey()
+    {
+        Config::setUseV6Key(true);
+
+        $secretKey = SecretKey::generate(KeyAlgorithm::Ecdh);
+        $this->assertFalse($secretKey->isEncrypted());
+        $this->assertTrue($secretKey->getKeyMaterial()->isValid());
+        $this->assertSame(521, $secretKey->getKeyStrength());
+        $this->assertSame(6, $secretKey->getVersion());
+
+        Config::setUseV6Key(false);
+    }
+
+    public function testGenerateX25519Key()
+    {
+        $secretKey = SecretKey::generate(KeyAlgorithm::X25519);
+        $this->assertFalse($secretKey->isEncrypted());
+        $this->assertTrue($secretKey->getKeyMaterial()->isValid());
+        $this->assertSame(255, $secretKey->getKeyStrength());
+        $this->assertSame(6, $secretKey->getVersion());
+    }
+
+    public function testGenerateX448Key()
+    {
+        $secretKey = SecretKey::generate(KeyAlgorithm::X448);
+        $this->assertFalse($secretKey->isEncrypted());
+        $this->assertTrue($secretKey->getKeyMaterial()->isValid());
+        $this->assertSame(448, $secretKey->getKeyStrength());
+        $this->assertSame(6, $secretKey->getVersion());
+    }
+
+    public function testGenerateEd25519Key()
+    {
+        $secretKey = SecretKey::generate(KeyAlgorithm::Ed25519);
+        $this->assertFalse($secretKey->isEncrypted());
+        $this->assertTrue($secretKey->getKeyMaterial()->isValid());
+        $this->assertSame(255, $secretKey->getKeyStrength());
+        $this->assertSame(6, $secretKey->getVersion());
+    }
+
+    public function testGenerateEd448Key()
+    {
+        $secretKey = SecretKey::generate(KeyAlgorithm::Ed448);
+        $this->assertFalse($secretKey->isEncrypted());
+        $this->assertTrue($secretKey->getKeyMaterial()->isValid());
+        $this->assertSame(448, $secretKey->getKeyStrength());
+        $this->assertSame(6, $secretKey->getVersion());
+    }
+
     public function testGenerateEcDsaSecretKeyException()
     {
         $this->expectException(\UnexpectedValueException::class);
         SecretKey::generate(
             KeyAlgorithm::EcDsa,
-            curveOid: CurveOid::Ed25519
+            curveOid: CurveOid::Curve25519
         );
     }
 

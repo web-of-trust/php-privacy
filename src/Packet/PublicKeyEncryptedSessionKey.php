@@ -22,7 +22,8 @@ use OpenPGP\Type\{
 use phpseclib3\Common\Functions\Strings;
 
 /**
- * PublicKeyEncryptedSessionKey represents a Public-Key Encrypted Session Key (PKESK) packet.
+ * Implementation Public-Key Encrypted Session Key (PKESK) packet (Tag 1).
+ * 
  * See RFC 9580, section 5.1.
  * 
  * @package  OpenPGP

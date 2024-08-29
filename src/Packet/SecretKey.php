@@ -39,10 +39,9 @@ use OpenPGP\Type\{
 };
 
 /**
- * Secret key packet class
+ * Implementation a possibly encrypted private key (Tag 5).
  * 
- * SecretKey represents a possibly encrypted private key.
- * See RFC 4880, section 5.5.3.
+ * See RFC 9580, section 5.5.3.
  * 
  * @package  OpenPGP
  * @category Packet
@@ -178,7 +177,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
         DHKeySize $dhKeySize = DHKeySize::Normal,
-        CurveOid $curveOid = CurveOid::Ed25519,
+        CurveOid $curveOid = CurveOid::Secp521r1,
         ?DateTimeInterface $time = null
     ): self
     {
@@ -213,10 +212,21 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 'Unsupported OpenPGP public key algorithm encountered.'
             ),
         };
+        switch ($keyAlgorithm) {
+            case KeyAlgorithm::X25519:
+            case KeyAlgorithm::X448:
+            case KeyAlgorithm::Ed25519:
+            case KeyAlgorithm::Ed448:
+                $version = PublicKey::VERSION_6;
+                break;
+            default:
+                $version = Config::useV6Key() ?
+                    PublicKey::VERSION_6 : PublicKey::VERSION_4;
+                break;
+        }
         return new self(
             new PublicKey(
-                Config::useV6Key() ?
-                PublicKey::VERSION_6 : PublicKey::VERSION_4,
+                $version,
                 $time ?? new \DateTime(),
                 $keyAlgorithm,
                 $keyMaterial->getPublicMaterial(),

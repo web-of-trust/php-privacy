@@ -29,10 +29,9 @@ use OpenPGP\Type\{
 };
 
 /**
- * Public key packet class
+ * Implementation an OpenPGP public key packet (Tag 6).
  * 
- * PublicKey represents an OpenPGP public key packet.
- * See RFC rfc9580, section 5.5.2.
+ * See RFC 9580, section 5.5.2.
  * 
  * @package  OpenPGP
  * @category Packet
