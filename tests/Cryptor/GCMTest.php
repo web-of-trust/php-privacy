@@ -23,7 +23,7 @@ class GCMTest extends OpenPGPTestCase
             $nonce,
             $adata
         );
-        $pt = $gcm->encrypt(
+        $pt = $gcm->decrypt(
             $ct,
             $nonce,
             $adata
