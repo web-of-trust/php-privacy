@@ -134,11 +134,11 @@ final class OCB implements AeadCipher
      * @param BlockCipher $cipher - Encryption/decryption block cipher function
      * @param string $text - The cleartext or ciphertext (without tag) input
      * @param string $nonce - The nonce (15 bytes)
-     * @param string $adata - Associated data to sign
+     * @param string $aData - Associated data to sign
      * @return string The ciphertext or plaintext output, with tag appended in both cases.
      */
     private function crypt(
-        BlockCipher $cipher, string $text, string $nonce, string $adata
+        BlockCipher $cipher, string $text, string $nonce, string $aData
     ): string
     {
         $length = strlen($text);
@@ -146,7 +146,7 @@ final class OCB implements AeadCipher
         $m = floor($length / self::BLOCK_LENGTH) | 0;
 
         // Key-dependent variables
-        $this->extendKeyVariables($text, $adata);
+        $this->extendKeyVariables($text, $aData);
 
         // Nonce-dependent and per-encryption variables
         //
@@ -243,7 +243,7 @@ final class OCB implements AeadCipher
                     $this->mask[self::MASK_DOLLAR]
                 )
             ),
-            self::hash($adata)
+            self::hash($aData)
         );
 
         // Assemble ciphertext
@@ -251,10 +251,10 @@ final class OCB implements AeadCipher
         return substr_replace($ct, $tag, $pos, strlen($tag));
     }
 
-    private function extendKeyVariables(string $text, string $adata): void
+    private function extendKeyVariables(string $text, string $aData): void
     {
         $newMaxNtz = self::nbits(
-            floor(max(strlen($text), strlen($adata)) / self::BLOCK_LENGTH) | 0
+            floor(max(strlen($text), strlen($aData)) / self::BLOCK_LENGTH) | 0
         ) - 1;
         for ($i = $this->maxNtz + 1; $i <= $newMaxNtz; $i++) {
           $this->mask[$i] = self::double($this->mask[$i - 1]);
@@ -262,9 +262,9 @@ final class OCB implements AeadCipher
         $this->maxNtz = $newMaxNtz;
     }
 
-    private function hash(string $adata): string
+    private function hash(string $aData): string
     {
-        $length = strlen($adata);
+        $length = strlen($aData);
         if (!$length) {
             // Fast path
             return self::ZERO_BLOCK;
@@ -277,17 +277,17 @@ final class OCB implements AeadCipher
             $offset = self::xor($offset, $this->mask[self::ntz($i + 1)]);
             $sum = self::xor(
                 $sum,
-                $this->encipher->encryptBlock(self::xor($offset, $adata))
+                $this->encipher->encryptBlock(self::xor($offset, $aData))
             );
-            $adata = substr($adata, self::BLOCK_LENGTH);
+            $aData = substr($aData, self::BLOCK_LENGTH);
         }
 
         // Process any final partial block; compute final hash value
-        $length = strlen($adata);
+        $length = strlen($aData);
         if ($length) {
             $offset = self::xor($offset, $this->mask[self::MASK_ASTERISK]);
 
-            $cipherInput = substr_replace(self::ZERO_BLOCK, $adata, 0, strlen($adata));
+            $cipherInput = substr_replace(self::ZERO_BLOCK, $aData, 0, strlen($aData));
             $cipherInput[$length] = "\x80";
             $cipherInput = self::xor($cipherInput, $offset);
 
