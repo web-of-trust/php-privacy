@@ -362,6 +362,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
         );
         $encryptionKey = substr($derivedKey, 0, $keySize);
         $iv = substr($derivedKey, $keySize, $keySize + $ivLength);
+        // The last 8 bytes of HKDF output are unneeded, but this avoids one copy.
         $iv = substr_replace($iv, $zeroBytes, $ivLength - 8);
         $cipher = $this->aead->cipherEngine($encryptionKey, $this->symmetric);
 
