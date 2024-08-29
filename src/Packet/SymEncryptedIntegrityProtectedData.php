@@ -38,12 +38,14 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
 {
     use EncryptedDataTrait;
 
-    const VERSION_1  = 1;
-    const VERSION_2  = 2;
-    const HASH_ALGO  = 'sha1';
-    const ZERO_CHAR  = "\x00";
-    const MDC_SUFFIX = "\xd3\x14";
-    const SALT_SIZE  = 32;
+    const VERSION_1    = 1;
+    const VERSION_2    = 2;
+    const HASH_ALGO    = 'sha1';
+    const ZERO_CHAR    = "\x00";
+    const MDC_SUFFIX   = "\xd3\x14";
+    const SALT_SIZE    = 32;
+    const AEAD_ENCRYPT = 'encrypt';
+    const AEAD_DECRYPT = 'decrypt';
 
     /**
      * Constructor
@@ -155,7 +157,9 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
                 $chunkSize,
                 $salt,
             );
-            $encrypted = $cryptor->aeadCrypt('encrypt', $key, $packetList->encode());
+            $encrypted = $cryptor->aeadCrypt(
+                self::AEAD_ENCRYPT, $key, $packetList->encode()
+            );
         }
         else {
             $toHash = implode([
@@ -295,7 +299,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
             );
             if ($this->aead instanceof AeadAlgorithm) {
                 $packetBytes = $this->aeadCrypt(
-                    'decrypt', $key, $this->encrypted
+                    self::AEAD_DECRYPT, $key, $this->encrypted
                 );
             }
             else {
@@ -342,7 +346,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
     ): string
     {
         $dataLength = strlen($data);
-        $tagLength = $fn === 'decrypt' ? $this->aead->tagLength() : 0;
+        $tagLength = $fn === self::AEAD_DECRYPT ? $this->aead->tagLength() : 0;
         // ((uint64_t)1 << (c + 6))
         $chunkSize = (1 << ($this->chunkSize + 6)) + $tagLength;
 
