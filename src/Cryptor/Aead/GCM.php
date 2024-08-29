@@ -61,25 +61,6 @@ final class GCM implements AeadCipher
         return $this->crypt($cipherText, $nonce, $aData);
     }
 
-    /**
-     * Get GCM nonce. Note: this operation is not defined by the standard.
-     * A future version of the standard may define GCM mode differently,
-     * hopefully under a different ID (we use Private/Experimental algorithm
-     * ID 100) so that we can maintain backwards compatibility.
-     * 
-     * @param string $iv - The initialization vector (12 bytes)
-     * @param string $chunkIndex - The chunk index (8 bytes)
-     * @return string
-     */
-    public function getNonce(string $iv, string $chunkIndex): string
-    {
-        $nonce = $iv;
-        for ($i = 0, $len = strlen($chunkIndex); $i < $len; $i++) {
-            $nonce[4 + $i] = $nonce[4 + $i] ^ $chunkIndex[$i];
-        }
-        return $nonce;
-    }
-
     private function crypt(
         string $text, string $nonce, string $aData = ''
     ): string

@@ -58,7 +58,7 @@ final class OCB implements AeadCipher
     {
         if ($symmetric->blockSize() !== self::BLOCK_LENGTH) {
             throw new \InvalidArgumentException(
-                'Cipher must have a block size of ' . self::BLOCK_LENGTH
+                'Cipher must have a block size of ' . self::BLOCK_LENGTH . '.'
             );
         }
         $this->encipher = $symmetric->ecbCipherEngine();
@@ -108,24 +108,6 @@ final class OCB implements AeadCipher
             return substr($crypted, 0, $length - self::TAG_LENGTH);
         }
         throw new \UnexpectedValueException('Authentication tag mismatch!');
-    }
-
-    /**
-     * Get OCB nonce as defined by
-     * {@link https://tools.ietf.org/html/draft-ietf-openpgp-rfc4880bis-10#section-5.16.2|RFC4880bis-10,
-     * section 5.16.2}.
-     * 
-     * @param string $iv - The initialization vector (15 bytes)
-     * @param string $chunkIndex - The chunk index (8 bytes)
-     * @return string
-     */
-    public function getNonce(string $iv, string $chunkIndex): string
-    {
-        $nonce = $iv;
-        for ($i = 0, $len = strlen($chunkIndex); $i < $len; $i++) {
-            $nonce[7 + $i] = $nonce[7 + $i] ^ $chunkIndex[$i];
-        }
-        return $nonce;
     }
 
     /**

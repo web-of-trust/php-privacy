@@ -110,24 +110,6 @@ final class EAX implements AeadCipher
         return $this->crypt($ciphered, $omacNonce);
     }
 
-    /**
-     * Get EAX nonce as defined by
-     * {@link https://tools.ietf.org/html/draft-ietf-openpgp-rfc4880bis-10#section-5.16.1|RFC4880bis-10,
-     * section 5.16.1}.
-     * 
-     * @param string $iv - The initialization vector (16 bytes)
-     * @param string $chunkIndex - The chunk index (8 bytes)
-     * @return string
-     */
-    public function getNonce(string $iv, string $chunkIndex): string
-    {
-        $nonce = $iv;
-        for ($i = 0, $len = strlen($chunkIndex); $i < $len; $i++) {
-            $nonce[8 + $i] = $nonce[8 + $i] ^ $chunkIndex[$i];
-        }
-        return $nonce;
-    }
-
     private function omac(string $tag, string $message): string
     {
         return $this->mac->generate(
