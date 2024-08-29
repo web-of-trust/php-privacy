@@ -61,6 +61,18 @@ final class GCM implements AeadCipher
         return $this->crypt($cipherText, $nonce, $aData);
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getNonce(string $iv, string $chunkIndex): string
+    {
+        $nonce = $iv;
+        for ($i = 0, $len = strlen($chunkIndex); $i < $len; $i++) {
+            $nonce[4 + $i] = $nonce[4 + $i] ^ $chunkIndex[$i];
+        }
+        return $nonce;
+    }
+
     private function crypt(
         string $text, string $nonce, string $aData = ''
     ): string

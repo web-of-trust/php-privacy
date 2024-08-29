@@ -110,6 +110,18 @@ final class EAX implements AeadCipher
         return $this->crypt($ciphered, $omacNonce);
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getNonce(string $iv, string $chunkIndex): string
+    {
+        $nonce = $iv;
+        for ($i = 0, $len = strlen($chunkIndex); $i < $len; $i++) {
+            $nonce[8 + $i] = $nonce[8 + $i] ^ $chunkIndex[$i];
+        }
+        return $nonce;
+    }
+
     private function omac(string $tag, string $message): string
     {
         return $this->mac->generate(

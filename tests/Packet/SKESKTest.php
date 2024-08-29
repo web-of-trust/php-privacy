@@ -69,6 +69,22 @@ class SKESKTest extends OpenPGPTestCase
         $this->assertEquals($sessionKey, $skesk->getSessionKey());
     }
 
+    public function testAeadEaxDecryption()
+    {
+        $skeskData = 'Bh4HAQsDCKWuV50fxdgr/2kiT5GZk7NQb6O1mmpzz/jF78X0HFf7VOHCJoFdeCj1+SxFTrZevgCrWYbGjm58VQ==';
+        $skesk = SymEncryptedSessionKey::fromBytes(base64_decode($skeskData))->decrypt(self::PASSPHRASE);
+        $sessionKey = $skesk->getSessionKey();
+        $this->assertEquals('3881bafe985412459b86c36f98cb9a5e', bin2hex($sessionKey->getEncryptionKey()));
+
+        $seipdData = 'AgcBBp/5DjsyGWTzpCkTyNzGYZMlAVIn77fq6qSfBMLmdBddSj0ibtavy5yprBIsFHDhHGPUwKskHGqTitSL+ZpambkLuoMl3mEEdUAlireVmpWtBR3alusVQx3+9fXiJVyngmFUbjOa';
+        $seipd = SymEncryptedIntegrityProtectedData::fromBytes(base64_decode($seipdData));
+        $seipd = $seipd->decryptWithSessionKey(
+            $skesk->getSessionKey()
+        );
+        $literalData = $seipd->getPacketList()->offsetGet(0);
+        $this->assertSame('Hello, world!', trim($literalData->getData()));
+    }
+
     // public function testAeadEncryptSessionKey()
     // {
     //     Config::setAeadProtect(true);

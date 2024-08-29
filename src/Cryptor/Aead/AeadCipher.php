@@ -40,4 +40,13 @@ interface AeadCipher
     function decrypt(
         string $cipherText, string $nonce, string $aData = ''
     ): string;
+
+    /**
+     * Get aead nonce
+     * 
+     * @param string $iv - The initialization vector
+     * @param string $chunkIndex - The chunk index
+     * @return string
+     */
+    function getNonce(string $iv, string $chunkIndex): string;
 }

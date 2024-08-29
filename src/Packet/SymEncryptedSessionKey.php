@@ -83,7 +83,7 @@ class SymEncryptedSessionKey extends AbstractPacket
     {
         $offset = 0;
 
-        // A one-octet version number. The only currently defined version is 4.
+        // A one-octet version number.
         $version = ord($bytes[$offset++]);
         $isV6 = $version === self::VERSION_6;
 
@@ -101,6 +101,9 @@ class SymEncryptedSessionKey extends AbstractPacket
             // A one-octet AEAD algorithm identifier.
             $aead = AeadAlgorithm::from(ord($bytes[$offset++]));
             $ivLength = $aead->ivLength();
+
+            // A one-octet scalar octet count of the following field.
+            $offset++;
         }
 
         // A string-to-key (S2K) specifier, length as defined above.
@@ -340,8 +343,10 @@ class SymEncryptedSessionKey extends AbstractPacket
         return ($this->version === self::VERSION_6) ?
             implode([
                 chr($this->version),
+                chr(3 + $this->s2k->getLength() + strlen($this->iv)),
                 chr($this->symmetric->value),
                 chr($this->aead->value),
+                chr($this->s2k->getLength()),
                 $this->s2k->toBytes(),
                 $this->iv,
                 $this->encrypted,
