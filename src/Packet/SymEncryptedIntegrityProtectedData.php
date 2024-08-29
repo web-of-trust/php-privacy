@@ -105,7 +105,8 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
             $aead = AeadAlgorithm::from(ord($bytes[$offset++]));
             // - A one-octet chunk size.
             $chunkSize = ord($bytes[$offset++]);
-            // - Thirty-two octets of salt. The salt is used to derive the message key and must be unique.
+            // Thirty-two octets of salt.
+            // The salt is used to derive the message key and must be unique.
             $salt = substr($bytes, $offset, self::SALT_SIZE);
             $offset += self::SALT_SIZE;
 
@@ -171,7 +172,9 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
 
             $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
             $cipher->setKey($key);
-            $cipher->setIV(str_repeat(self::ZERO_CHAR, $symmetric->blockSize()));
+            $cipher->setIV(
+                str_repeat(self::ZERO_CHAR, $symmetric->blockSize())
+            );
             $encrypted = $cipher->encrypt($plainText);
         }
 
@@ -318,7 +321,9 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
                     );
                 }
                 // Remove random prefix & MDC packet
-                $packetBytes = substr($toHash, $size + 2, strlen($toHash) - $size - 4);
+                $packetBytes = substr(
+                    $toHash, $size + 2, strlen($toHash) - $size - 4
+                );
             }
 
             return new self(

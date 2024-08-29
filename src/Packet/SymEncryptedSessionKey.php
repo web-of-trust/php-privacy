@@ -151,8 +151,7 @@ class SymEncryptedSessionKey extends AbstractPacket
 
         $keySize = $symmetric->keySizeInByte();
         $key = $s2k->produceKey(
-            $password,
-            $keySize
+            $password, $keySize
         );
 
         $iv = '';
@@ -160,7 +159,7 @@ class SymEncryptedSessionKey extends AbstractPacket
 
         if ($sessionKey instanceof SessionKeyInterface) {
             if ($aeadProtect) {
-                $adata = implode([
+                $aData = implode([
                     chr(0xc0 | PacketTag::SymEncryptedSessionKey->value),
                     chr($version),
                     chr($symmetric->value),
@@ -168,10 +167,12 @@ class SymEncryptedSessionKey extends AbstractPacket
                 ]);
                 $iv = Random::string($aead->ivLength());
                 $encryptionKey = hash_hkdf(
-                    Config::HKDF_ALGO, $key, $keySize, $adata
+                    Config::HKDF_ALGO, $key, $keySize, $aData
                 );
                 $cipher = $aead->cipherEngine($encryptionKey, $symmetric);
-                $encrypted = $cipher->encrypt($sessionKey->getEncryptionKey(), $iv, $adata);
+                $encrypted = $cipher->encrypt(
+                    $sessionKey->getEncryptionKey(), $iv, $aData
+                );
             }
             else {
                 $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
@@ -193,7 +194,7 @@ class SymEncryptedSessionKey extends AbstractPacket
             $aead,
             $iv,
             $encrypted,
-            $sessionKey
+            $sessionKey,
         );
     }
 
@@ -289,31 +290,33 @@ class SymEncryptedSessionKey extends AbstractPacket
             }
             else {
                 if ($this->aead instanceof AeadAlgorithm) {
-                    $adata = implode([
+                    $aData = implode([
                         chr(0xc0 | $this->getTag()->value),
                         chr($this->version),
                         chr($this->symmetric->value),
                         chr($this->aead->value),
                     ]);
                     $encryptionKey = hash_hkdf(
-                        Config::HKDF_ALGO, $key, $keySize, $adata
+                        Config::HKDF_ALGO, $key, $keySize, $aData
                     );
                     $cipher = $this->aead->cipherEngine(
                         $encryptionKey, $this->symmetric
                     );
                     $decrypted = $cipher->decrypt(
-                        $this->encrypted, $this->iv, $adata
+                        $this->encrypted, $this->iv, $aData
                     );
                     $sessionKey = new Key\SessionKey(
                         $decrypted, $this->symmetric
                     );
                 }
                 else {
-                    $cipher = $this->symmetric->cipherEngine(Config::CIPHER_MODE);
-                    $cipher->setKey($key);
-                    $cipher->setIV(
-                        str_repeat(self::ZERO_CHAR, $this->symmetric->blockSize())
+                    $cipher = $this->symmetric->cipherEngine(
+                        Config::CIPHER_MODE
                     );
+                    $cipher->setKey($key);
+                    $cipher->setIV(str_repeat(
+                        self::ZERO_CHAR, $this->symmetric->blockSize()
+                    ));
                     $decrypted = $cipher->decrypt($this->encrypted);
                     $sessionKeySymmetric = SymmetricAlgorithm::from(
                         ord($decrypted[0])

@@ -79,10 +79,18 @@ class SKESKTest extends OpenPGPTestCase
         $seipdData = 'AgcBBp/5DjsyGWTzpCkTyNzGYZMlAVIn77fq6qSfBMLmdBddSj0ibtavy5yprBIsFHDhHGPUwKskHGqTitSL+ZpambkLuoMl3mEEdUAlireVmpWtBR3alusVQx3+9fXiJVyngmFUbjOa';
         $seipd = SymEncryptedIntegrityProtectedData::fromBytes(base64_decode($seipdData));
         $seipd = $seipd->decryptWithSessionKey(
-            $skesk->getSessionKey()
+            $sessionKey
         );
         $literalData = $seipd->getPacketList()->offsetGet(0);
         $this->assertSame('Hello, world!', trim($literalData->getData()));
+    }
+
+    public function testAeadOcbDecryption()
+    {
+    }
+
+    public function testAeadGcmDecryption()
+    {
     }
 
     // public function testAeadEncryptSessionKey()
