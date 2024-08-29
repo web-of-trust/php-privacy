@@ -142,7 +142,7 @@ class SymEncryptedSessionKey extends AbstractPacket
     {
         $aeadProtect = $aead instanceof AeadAlgorithm;
         $version = $aeadProtect ? self::VERSION_6 : self::VERSION_4;
-        $s2k = $aeadProtect ?
+        $s2k = $aeadProtect && Argon2S2K::argon2Supported() ?
             Helper::stringToKey(S2kType::Argon2) :
             Helper::stringToKey(S2kType::Iterated);
 

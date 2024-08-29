@@ -21,7 +21,7 @@ class SKESKTest extends OpenPGPTestCase
     public function testEncryptNullSessionKey()
     {
         $skesk = SymEncryptedSessionKey::encryptSessionKey(self::PASSPHRASE);
-        $seip = SymEncryptedIntegrityProtectedData::encryptPacketsWithSessionKey(
+        $seipd = SymEncryptedIntegrityProtectedData::encryptPacketsWithSessionKey(
             $skesk->getSessionKey(),
             new PacketList([LiteralData::fromText(self::LITERAL_TEXT)])
         );
@@ -29,14 +29,14 @@ class SKESKTest extends OpenPGPTestCase
         $this->assertSame(SymEncryptedSessionKey::VERSION_4, $skesk->getVersion());
         $this->assertTrue(empty($skesk->getEncrypted()));
         $this->assertSame($skesk->getSessionKey()->getSymmetric(), $skesk->getSymmetric());
-        $this->assertTrue(!empty($seip->getEncrypted()));
+        $this->assertTrue(!empty($seipd->getEncrypted()));
 
-        $packets = PacketList::decode((new PacketList([$skesk, $seip]))->encode());
+        $packets = PacketList::decode((new PacketList([$skesk, $seipd]))->encode());
         $skesk = $packets->offsetGet(0)->decrypt(self::PASSPHRASE);
-        $seip = $packets->offsetGet(1)->decryptWithSessionKey(
+        $seipd = $packets->offsetGet(1)->decryptWithSessionKey(
             $skesk->getSessionKey()
         );
-        $literalData = $seip->getPacketList()->offsetGet(0);
+        $literalData = $seipd->getPacketList()->offsetGet(0);
 
         $this->assertSame(SymEncryptedSessionKey::VERSION_4, $skesk->getVersion());
         $this->assertSame(self::LITERAL_TEXT, trim($literalData->getData()));
@@ -46,24 +46,24 @@ class SKESKTest extends OpenPGPTestCase
     {
         $sessionKey = SessionKey::produceKey();
         $skesk = SymEncryptedSessionKey::encryptSessionKey(self::PASSPHRASE, $sessionKey);
-        $seip = SymEncryptedIntegrityProtectedData::encryptPacketsWithSessionKey(
+        $seipd = SymEncryptedIntegrityProtectedData::encryptPacketsWithSessionKey(
             $skesk->getSessionKey(),
             new PacketList([LiteralData::fromText(self::LITERAL_TEXT)])
         );
 
         $this->assertSame(SymEncryptedSessionKey::VERSION_4, $skesk->getVersion());
         $this->assertTrue(!empty($skesk->getEncrypted()));
-        $this->assertTrue(!empty($seip->getEncrypted()));
+        $this->assertTrue(!empty($seipd->getEncrypted()));
 
-        $packets = PacketList::decode((new PacketList([$skesk, $seip]))->encode());
+        $packets = PacketList::decode((new PacketList([$skesk, $seipd]))->encode());
         $skesk = $packets->offsetGet(0)->decrypt(self::PASSPHRASE);
-        $seip = $packets->offsetGet(1)->decryptWithSessionKey(
+        $seipd = $packets->offsetGet(1)->decryptWithSessionKey(
             $skesk->getSessionKey()
         );
-        $literalData = $seip->getPacketList()->offsetGet(0);
+        $literalData = $seipd->getPacketList()->offsetGet(0);
 
         $this->assertTrue($skesk instanceof SymEncryptedSessionKey);
-        $this->assertTrue($seip instanceof SymEncryptedIntegrityProtectedData);
+        $this->assertTrue($seipd instanceof SymEncryptedIntegrityProtectedData);
         $this->assertSame(SymEncryptedSessionKey::VERSION_4, $skesk->getVersion());
         $this->assertSame(self::LITERAL_TEXT, trim($literalData->getData()));
         $this->assertEquals($sessionKey, $skesk->getSessionKey());

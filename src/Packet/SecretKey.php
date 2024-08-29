@@ -406,19 +406,19 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             );
 
             $aeadProtect = $aead instanceof AeadAlgorithm;
-            if ($aeadProtect) {
-                if ($this->getVersion() !== PublicKey::VERSION_6) {
-                    throw new \UnexpectedValueException(
-                        "Using AEAD with version {$this->getVersion()} of the key packet is not allowed."
-                    );
-                }
-                $s2k = Helper::stringToKey(S2kType::Argon2);
-                $iv = Random::string($aead->ivLength());
+            if ($aeadProtect && $this->getVersion() !== PublicKey::VERSION_6) {
+                throw new \UnexpectedValueException(
+                    "Using AEAD with version {$this->getVersion()} of the key packet is not allowed."
+                );
             }
-            else {
-                $s2k = Helper::stringToKey(S2kType::Iterated);
-                $iv = Random::string($symmetric->blockSize());
-            }
+
+            $s2k = $aeadProtect && Argon2S2K::argon2Supported() ?
+                Helper::stringToKey(S2kType::Argon2) :
+                Helper::stringToKey(S2kType::Iterated);
+
+            $iv = $aeadProtect ?
+                Random::string($aead->ivLength()) :
+                Random::string($symmetric->blockSize());
 
             $packetTag = chr(0xc0 | $this->getTag()->value);
             $key = self::produceEncryptionKey(

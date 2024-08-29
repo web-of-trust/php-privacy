@@ -158,4 +158,16 @@ class Argon2S2K implements S2KInterface
             $salt, $iteration, $parallelism, $memoryExponent
         );
     }
+
+    /**
+     * Check argon2 supported.
+     * 
+     * @return bool
+     */
+    public static function argon2Supported(): bool
+    {
+        $finder = new ExecutableFinder();
+        return !empty($finder->find(self::ARGON2_COMMAND)) ||
+            function_exists('sodium_crypto_pwhash');
+    }
 }
