@@ -463,6 +463,12 @@ EOT;
         $this->assertSame(2048, $secretKey->getKeyStrength());
         $this->assertSame(6, $secretKey->getVersion());
 
+        $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
+        $this->assertTrue($encryptedSecretKey->isEncrypted());
+
+        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
+        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+
         Config::setUseV6Key(false);
     }
 
@@ -475,6 +481,12 @@ EOT;
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
         $this->assertSame(521, $secretKey->getKeyStrength());
         $this->assertSame(6, $secretKey->getVersion());
+
+        $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
+        $this->assertTrue($encryptedSecretKey->isEncrypted());
+
+        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
+        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
 
         Config::setUseV6Key(false);
     }
@@ -489,6 +501,12 @@ EOT;
         $this->assertSame(521, $secretKey->getKeyStrength());
         $this->assertSame(6, $secretKey->getVersion());
 
+        $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
+        $this->assertTrue($encryptedSecretKey->isEncrypted());
+
+        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
+        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+
         Config::setUseV6Key(false);
     }
 
@@ -499,6 +517,16 @@ EOT;
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
         $this->assertSame(255, $secretKey->getKeyStrength());
         $this->assertSame(6, $secretKey->getVersion());
+
+        $encryptedSecretKey = $secretKey->encrypt(
+            self::PASSPHRASE,
+            Config::getPreferredSymmetric(),
+            Config::getPreferredAead(),
+        );
+        $this->assertTrue($encryptedSecretKey->isEncrypted());
+
+        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
+        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
     }
 
     public function testGenerateX448Key()
@@ -508,6 +536,16 @@ EOT;
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
         $this->assertSame(448, $secretKey->getKeyStrength());
         $this->assertSame(6, $secretKey->getVersion());
+
+        $encryptedSecretKey = $secretKey->encrypt(
+            self::PASSPHRASE,
+            Config::getPreferredSymmetric(),
+            Config::getPreferredAead(),
+        );
+        $this->assertTrue($encryptedSecretKey->isEncrypted());
+
+        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
+        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
     }
 
     public function testGenerateEd25519Key()
@@ -517,6 +555,16 @@ EOT;
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
         $this->assertSame(255, $secretKey->getKeyStrength());
         $this->assertSame(6, $secretKey->getVersion());
+
+        $encryptedSecretKey = $secretKey->encrypt(
+            self::PASSPHRASE,
+            Config::getPreferredSymmetric(),
+            Config::getPreferredAead(),
+        );
+        $this->assertTrue($encryptedSecretKey->isEncrypted());
+
+        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
+        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
     }
 
     public function testGenerateEd448Key()
@@ -526,6 +574,16 @@ EOT;
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
         $this->assertSame(448, $secretKey->getKeyStrength());
         $this->assertSame(6, $secretKey->getVersion());
+
+        $encryptedSecretKey = $secretKey->encrypt(
+            self::PASSPHRASE,
+            Config::getPreferredSymmetric(),
+            Config::getPreferredAead(),
+        );
+        $this->assertTrue($encryptedSecretKey->isEncrypted());
+
+        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
+        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
     }
 
     public function testGenerateEcDsaSecretKeyException()

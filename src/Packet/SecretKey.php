@@ -68,7 +68,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         private readonly PublicKey $publicKey,
         private readonly string $keyData = '',
         private readonly ?KeyMaterialInterface $keyMaterial = null,
-        private readonly S2kUsage $s2kUsage = S2kUsage::Sha1,
+        private readonly S2kUsage $s2kUsage = S2kUsage::None,
         private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         private readonly ?S2KInterface $s2k = null,
         private readonly ?AeadAlgorithm $aead = null,
@@ -232,7 +232,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $keyMaterial->getPublicMaterial(),
             ),
             $keyMaterial->toBytes(),
-            $keyMaterial
+            $keyMaterial,
         );
     }
 
@@ -498,7 +498,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                     implode([
                         $packetTag,
                         $this->publicKey->toBytes(),
-                    ])
+                    ]),
                 );
             }
             else {

@@ -62,7 +62,7 @@ final class GCM implements AeadCipher
     {
         $this->cipher->setNonce($nonce);
         $this->cipher->setAAD($adata);
-        return $this->cipher->decrypt($ciphertext);
+        return $this->cipher->encrypt($ciphertext);
     }
 
     /**
