@@ -335,11 +335,10 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
      * @param string $fn - Whether to encrypt or decrypt
      * @param string $key - The session key used to en/decrypt the payload
      * @param string $data - The data to en/decrypt
-     * @param string $finalChunk - For encryption: empty final chunk; for decryption: final authentication tag
      * @return string
      */
     protected function aeadCrypt(
-        string $fn, string $key, string $data, string $finalChunk = ''
+        string $fn, string $key, string $data
     ): string
     {
         $dataLength = strlen($data);
@@ -347,13 +346,10 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
         $chunkSize = (1 << ($this->chunkSize + 6)) + $tagLength; // ((uint64_t)1 << (c + 6))
 
         $aData = $this->getAData();
-        $adataTagBuffer = str_repeat(self::ZERO_CHAR, 13);
-
-        $adataTagBuffer = substr_replace($adataTagBuffer, $aData, 0, strlen($aData));
-        $ciBytes = pack('N', 0);
-        $adataTagBuffer = substr_replace(
-            $adataTagBuffer, $ciBytes, strlen($adataTagBuffer) - strlen($ciBytes), strlen($ciBytes)
-        );
+        $adataTagBuffer = implode([
+            $aData,
+            str_repeat(self::ZERO_CHAR, 8),
+        ]);
 
         $keySize = $this->symmetric->keySizeInByte();
         $ivLength = $this->aead->ivLength();
@@ -367,7 +363,6 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
 
         $crypted = [];
         $chunk = substr($data, 0, $dataLength - $tagLength);
-        $finalChunk = substr($data, $dataLength - $tagLength, $tagLength);
         for ($chunkIndex = 0; $chunkIndex === 0 || strlen($chunk);) {
             $chunkIndexData = substr($adataTagBuffer, 5, 8);
             $crypted[] = $cipher->$fn(
@@ -379,19 +374,23 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
             $chunk = substr($chunk, $chunkSize);
             $ciBytes = pack('N', ++$chunkIndex);
             $adataTagBuffer = substr_replace(
-                $adataTagBuffer, $ciBytes, 13 - 4, strlen($ciBytes)
+                $adataTagBuffer, $ciBytes, strlen($adataTagBuffer) - strlen($ciBytes), strlen($ciBytes)
             );
         }
         $chunkIndexData = substr($adataTagBuffer, 5, 8);
-        var_dump(bin2hex($cipher->getNonce($iv, $chunkIndexData)));
-        var_dump(bin2hex($adataTagBuffer));
-        exit;
+        $bytesProcessed = array_sum(
+            array_map(fn ($processed) => strlen($processed), $crypted)
+        );
+        $processedBytes = pack('N', $bytesProcessed);
+        $adataTagBuffer = substr_replace(
+            $adataTagBuffer, $processedBytes, strlen($adataTagBuffer) - strlen($processedBytes), strlen($processedBytes)
+        );
 
         // After the final chunk, we either encrypt a final, empty data
         // chunk to get the final authentication tag or validate that final
         // authentication tag.
         $crypted[] = $cipher->$fn(
-            $finalChunk,
+            substr($data, $dataLength - $tagLength, $tagLength),
             $cipher->getNonce($iv, $chunkIndexData),
             $adataTagBuffer
         );
