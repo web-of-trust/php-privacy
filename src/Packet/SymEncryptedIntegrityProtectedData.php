@@ -249,7 +249,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
      *
      * @return SymmetricAlgorithm
      */
-    public function getSymmetricAlgorithm(): SymmetricAlgorithm
+    public function getSymmetric(): SymmetricAlgorithm
     {
         return $this->symmetric;
     }
@@ -259,7 +259,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
      *
      * @return AeadAlgorithm
      */
-    public function getAeadAlgorithm(): ?AeadAlgorithm
+    public function getAead(): ?AeadAlgorithm
     {
         return $this->aead;
     }
@@ -301,8 +301,15 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
                 'Decrypt the encrypted data contained in the packet.'
             );
             if ($this->aead instanceof AeadAlgorithm) {
+                $length = strlen($this->encrypted);
+                $data = substr(
+                    $this->encrypted, 0, $length - $this->aead->tagLength()
+                );
+                $authTag = substr(
+                    $this->encrypted, $length - $this->aead->tagLength()
+                );
                 $packetBytes = $this->aeadCrypt(
-                    self::AEAD_DECRYPT, $key, $this->encrypted
+                    self::AEAD_DECRYPT, $key, $data, $authTag
                 );
             }
             else {
@@ -344,10 +351,11 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
      * @param string $fn - Whether to encrypt or decrypt
      * @param string $key - The session key used to en/decrypt the payload
      * @param string $data - The data to en/decrypt
+     * @param string $finalChunk - For encryption: empty final chunk; for decryption: final authentication tag
      * @return string
      */
     protected function aeadCrypt(
-        string $fn, string $key, string $data
+        string $fn, string $key, string $data, string $finalChunk = ''
     ): string
     {
         $dataLength = strlen($data);
@@ -376,16 +384,15 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
         $cipher = $this->aead->cipherEngine($encryptionKey, $this->symmetric);
 
         $crypted = [];
-        $chunk = substr($data, 0, $dataLength - $tagLength);
-        for ($chunkIndex = 0; $chunkIndex === 0 || strlen($chunk);) {
+        for ($chunkIndex = 0; $chunkIndex === 0 || strlen($data);) {
             $chunkIndexData = substr($aDataTagBytes, 5, 8);
             $crypted[] = $cipher->$fn(
-                substr($chunk, 0, $chunkSize),
+                substr($data, 0, $chunkSize),
                 $cipher->getNonce($iv, $chunkIndexData),
                 $aData
             );
             // We take a chunk of data, en/decrypt it, and shift `data` to the next chunk.
-            $chunk = substr($chunk, $chunkSize);
+            $data = substr($data, $chunkSize);
             $ciBytes = pack('N', ++$chunkIndex);
             $aDataTagBytes = substr_replace(
                 $aDataTagBytes, $ciBytes, $tagSize - 4, 4
@@ -404,7 +411,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
         // chunk to get the final authentication tag or validate that final
         // authentication tag.
         $crypted[] = $cipher->$fn(
-            substr($data, $dataLength - $tagLength, $tagLength),
+            $finalChunk,
             $cipher->getNonce($iv, $chunkIndexData),
             $aDataTagBytes
         );
