@@ -39,8 +39,9 @@ use OpenPGP\Type\{
 };
 
 /**
- * Signature represents a signature.
- * See RFC 4880, section 5.2.
+ * Implementation an OpenPGP signature packet (Tag 2).
+ * 
+ * See RFC 9580, section 5.2.
  * 
  * @package  OpenPGP
  * @category Packet
@@ -50,6 +51,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 {
     const VERSION_4 = 4;
     const VERSION_5 = 5;
+    const VERSION_6 = 6;
 
     private readonly string $signatureData;
 
@@ -108,7 +110,10 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 
         // A one-octet version number.
         $version = ord($bytes[$offset++]);
-        if ($version != self::VERSION_4 && $version != self::VERSION_5) {
+        if ($version != self::VERSION_4 &&
+            $version != self::VERSION_5 &&
+            $version != self::VERSION_6)
+        {
             throw new \UnexpectedValueException(
                 "Version $version of the signature packet is unsupported.",
             );
@@ -1033,12 +1038,12 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         int $version, int $dataLength
     ): string
     {
-        if ($version === self::VERSION_5) {
-            return chr($version) . "\xff" . str_repeat("\x00", 4) . pack('N', $dataLength);
-        }
-        else {
-            return chr($version) . "\xff" . pack('N', $dataLength);
-        }
+        return implode([
+            chr($version),
+            "\xff",
+            $version === self::VERSION_5 ? str_repeat("\x00", 4) : '',
+            pack('N', $dataLength),
+        ]);
     }
 
     /**
