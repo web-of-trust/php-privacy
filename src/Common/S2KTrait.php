@@ -9,7 +9,6 @@
 namespace OpenPGP\Common;
 
 use OpenPGP\Enum\S2kType;
-use phpseclib3\Crypt\Random;
 
 /**
  * String-to-key trait
