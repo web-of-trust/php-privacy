@@ -2,6 +2,11 @@
 
 namespace OpenPGP\Tests\Packet;
 
+use OpenPGP\Enum\{
+    AeadAlgorithm,
+    KeyAlgorithm,
+    SymmetricAlgorithm,
+};
 use OpenPGP\Packet\LiteralData;
 use OpenPGP\Packet\PacketList;
 use OpenPGP\Packet\PublicKeyEncryptedSessionKey;
@@ -279,5 +284,31 @@ EOT;
         );
         $literalData = $seipd->getPacketList()->offsetGet(0);
         $this->assertSame(self::LITERAL_TEXT, trim($literalData->getData()));
+    }
+
+    public function testX25519Encryption()
+    {
+        $sessionKey = SessionKey::produceKey(SymmetricAlgorithm::Aes128);
+        $secretSubkey = SecretSubkey::generate(KeyAlgorithm::X25519);
+        $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey($secretSubkey->getPublicKey(), $sessionKey);
+        $this->assertSame($secretSubkey->getFingerprint(), $pkesk->getPublicKeyFingerprint());
+
+        $packets = PacketList::decode($pkesk->encode());
+        $pkesk = $packets->offsetGet(0)->decrypt($secretSubkey);
+        $this->assertSame($secretSubkey->getFingerprint(), $pkesk->getPublicKeyFingerprint());
+        $this->assertEquals($sessionKey, $pkesk->getSessionKey());
+    }
+
+    public function testX448Encryption()
+    {
+        $sessionKey = SessionKey::produceKey(SymmetricAlgorithm::Aes256);
+        $secretSubkey = SecretSubkey::generate(KeyAlgorithm::X448);
+        $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey($secretSubkey->getPublicKey(), $sessionKey);
+        $this->assertSame($secretSubkey->getFingerprint(), $pkesk->getPublicKeyFingerprint());
+
+        $packets = PacketList::decode($pkesk->encode());
+        $pkesk = $packets->offsetGet(0)->decrypt($secretSubkey);
+        $this->assertSame($secretSubkey->getFingerprint(), $pkesk->getPublicKeyFingerprint());
+        $this->assertEquals($sessionKey, $pkesk->getSessionKey());
     }
 }

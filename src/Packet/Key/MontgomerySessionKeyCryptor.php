@@ -81,6 +81,11 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
         MontgomeryCurve $curve = MontgomeryCurve::Curve25519
     ): self
     {
+        if ($sessionKey->getSymmetric() !== $curve->symmetricAlgorithm()) {
+            throw new \UnexpectedValueException(
+                'Symmetric algorithm of the session key mismatch!'
+            );
+        }
         $privateKey = EC::createKey(
             $publicKey->getCurve()
         );
