@@ -8,10 +8,7 @@
 
 namespace OpenPGP\Cryptor\Aead;
 
-use OpenPGP\Enum\{
-    AeadAlgorithm,
-    SymmetricAlgorithm,
-};
+use OpenPGP\Enum\SymmetricAlgorithm;
 use phpseclib3\Crypt\Common\BlockCipher;
 
 /**
@@ -25,6 +22,7 @@ use phpseclib3\Crypt\Common\BlockCipher;
 final class GCM implements AeadCipher
 {
     const CIPHER_MODE = 'gcm';
+    const TAG_LENGTH  = 16;
 
     private readonly BlockCipher $cipher;
 
@@ -65,14 +63,14 @@ final class GCM implements AeadCipher
     ): string
     {
         $length = strlen($cipherText);
-        $tagLength = AeadAlgorithm::Gcm->tagLength();
-        if ($length < $tagLength) {
+        if ($length < self::TAG_LENGTH) {
             throw new \InvalidArgumentException('Invalid GCM cipher text.');
         }
-        $tag = substr($cipherText, $length - $tagLength);
-        $this->cipher->setTag($tag);
+        $this->cipher->setTag(
+            substr($cipherText, $length - self::TAG_LENGTH)
+        );
         return $this->crypt(
-            substr($cipherText, 0, $length - $tagLength), $nonce, $aData
+            substr($cipherText, 0, $length - self::TAG_LENGTH), $nonce, $aData
         );
     }
 

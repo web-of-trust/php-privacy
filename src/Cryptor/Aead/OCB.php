@@ -8,10 +8,7 @@
 
 namespace OpenPGP\Cryptor\Aead;
 
-use OpenPGP\Enum\{
-    AeadAlgorithm,
-    SymmetricAlgorithm,
-};
+use OpenPGP\Enum\SymmetricAlgorithm;
 use phpseclib3\Crypt\Common\BlockCipher;
 
 /**
@@ -32,6 +29,10 @@ final class OCB implements AeadCipher
     const ONE_CHAR      = "\x01";
     const ZERO_BLOCK    = "\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0";
 
+    const BLOCK_LENGTH  = 16;
+    const IV_LENGTH     = 15;
+    const TAG_LENGTH    = 16;
+
     const MASK_ASTERISK = 'x';
     const MASK_DOLLAR   = '$';
 
@@ -42,8 +43,6 @@ final class OCB implements AeadCipher
     private array $mask;
 
     private int $maxNtz = 0;
-
-    private readonly AeadAlgorithm $algo;
 
     /**
      * Constructor
@@ -57,10 +56,9 @@ final class OCB implements AeadCipher
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     )
     {
-        $this->algo = AeadAlgorithm::Gcm;
-        if ($symmetric->blockSize() !== $this->algo->blockLength()) {
+        if ($symmetric->blockSize() !== self::BLOCK_LENGTH) {
             throw new \InvalidArgumentException(
-                "Cipher must have a block size of {$this->algo->blockLength()}."
+                'Cipher must have a block size of ' . self::BLOCK_LENGTH . '.'
             );
         }
         $this->encipher = $symmetric->ecbCipherEngine();
@@ -96,19 +94,18 @@ final class OCB implements AeadCipher
     ): string
     {
         $length = strlen($cipherText);
-        $tagLength = $this->algo->tagLength();
-        if ($length < $tagLength) {
+        if ($length < self::TAG_LENGTH) {
             throw new \InvalidArgumentException('Invalid OCB cipher text.');
         }
 
-        $tag = substr($cipherText, $length - $tagLength);
-        $cipherText = substr($cipherText, 0, $length - $tagLength);
+        $tag = substr($cipherText, $length - self::TAG_LENGTH);
+        $cipherText = substr($cipherText, 0, $length - self::TAG_LENGTH);
 
         $crypted = $this->crypt($this->decipher, $cipherText, $nonce, $aData);
         $length = strlen($crypted);
         // if (Tag[1..TAGLEN] == T)
-        if (strcmp($tag, substr($crypted, $length - $tagLength)) === 0) {
-            return substr($crypted, 0, $length - $tagLength);
+        if (strcmp($tag, substr($crypted, $length - self::TAG_LENGTH)) === 0) {
+            return substr($crypted, 0, $length - self::TAG_LENGTH);
         }
         throw new \UnexpectedValueException('Authentication tag mismatch!');
     }
@@ -139,10 +136,8 @@ final class OCB implements AeadCipher
     ): string
     {
         $length = strlen($text);
-        $blockLength = $this->algo->blockLength();
-        $tagLength = $this->algo->tagLength();
         // Consider P as a sequence of 128-bit blocks
-        $m = floor($length / $blockLength) | 0;
+        $m = floor($length / self::BLOCK_LENGTH) | 0;
 
         // Key-dependent variables
         $this->extendKeyVariables($text, $aData);
@@ -152,15 +147,15 @@ final class OCB implements AeadCipher
         // Nonce = num2str(TAGLEN mod 128,7) || zeros(120-bitlen(N)) || 1 || N
         // Note: We assume here that tagLength mod 16 == 0.
         $paddedNonce = implode([
-            substr(self::ZERO_BLOCK, 0, $this->algo->ivLength() - strlen($nonce)),
+            substr(self::ZERO_BLOCK, 0, self::IV_LENGTH - strlen($nonce)),
             self::ONE_CHAR,
             $nonce,
         ]);
         // bottom = str2num(Nonce[123..128])
-        $bottom = ord($paddedNonce[$blockLength - 1]) & 0x3f;
+        $bottom = ord($paddedNonce[self::BLOCK_LENGTH - 1]) & 0x3f;
         // Ktop = ENCIPHER(K, Nonce[1..122] || zeros(6))
-        $paddedNonce[$blockLength - 1] = chr(
-            ord($paddedNonce[$blockLength - 1]) & 0xc0
+        $paddedNonce[self::BLOCK_LENGTH - 1] = chr(
+            ord($paddedNonce[self::BLOCK_LENGTH - 1]) & 0xc0
         );
         $kTop = $this->encipher->encryptBlock($paddedNonce);
         //  Stretch = Ktop || (Ktop[1..64] xor Ktop[9..72])
@@ -175,7 +170,7 @@ final class OCB implements AeadCipher
         // Checksum_0 = zeros(128)
         $checksum = self::ZERO_BLOCK;
 
-        $ct = str_repeat(self::ZERO_CHAR, $length + $tagLength);
+        $ct = str_repeat(self::ZERO_CHAR, $length + self::TAG_LENGTH);
 
         // Process any whole blocks
         $i = 0;
@@ -202,8 +197,8 @@ final class OCB implements AeadCipher
                 $checksum, $cipher === $this->encipher ? $text : substr($ct, $pos)
             );
 
-            $text = substr($text, $blockLength);
-            $pos += $blockLength;
+            $text = substr($text, self::BLOCK_LENGTH);
+            $pos += self::BLOCK_LENGTH;
         }
 
         // Process any final partial block and compute raw tag
@@ -223,7 +218,7 @@ final class OCB implements AeadCipher
             );
 
             // Checksum_* = Checksum_m xor (P_* || 1 || new Uint8Array(127-bitlen(P_*)))
-            $input = $cipher === $this->encipher ? $text : substr($ct, $pos, strlen($ct) - $tagLength);
+            $input = $cipher === $this->encipher ? $text : substr($ct, $pos, strlen($ct) - self::TAG_LENGTH);
             $xorInput = substr_replace(
                 self::ZERO_BLOCK,
                 $input,
@@ -253,7 +248,7 @@ final class OCB implements AeadCipher
     private function extendKeyVariables(string $text, string $aData): void
     {
         $newMaxNtz = self::nbits(
-            floor(max(strlen($text), strlen($aData)) / $blockLength) | 0
+            floor(max(strlen($text), strlen($aData)) / self::BLOCK_LENGTH) | 0
         ) - 1;
         for ($i = $this->maxNtz + 1; $i <= $newMaxNtz; $i++) {
           $this->mask[$i] = self::double($this->mask[$i - 1]);
@@ -270,7 +265,7 @@ final class OCB implements AeadCipher
         }
 
         // Consider A as a sequence of 128-bit blocks
-        $m = floor($length / $blockLength) | 0;
+        $m = floor($length / self::BLOCK_LENGTH) | 0;
         $offset = $sum = self::ZERO_BLOCK;
         for ($i = 0; $i < $m; $i++) {
             $offset = self::xor($offset, $this->mask[self::ntz($i + 1)]);
@@ -278,7 +273,7 @@ final class OCB implements AeadCipher
                 $sum,
                 $this->encipher->encryptBlock(self::xor($offset, $aData))
             );
-            $aData = substr($aData, $blockLength);
+            $aData = substr($aData, self::BLOCK_LENGTH);
         }
 
         // Process any final partial block; compute final hash value
