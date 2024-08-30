@@ -9,7 +9,6 @@
 namespace OpenPGP\Packet;
 
 use DateTimeInterface;
-use phpseclib3\Crypt\Random;
 use OpenPGP\Common\{
     Argon2S2K,
     Config,
@@ -37,6 +36,7 @@ use OpenPGP\Type\{
     SecretKeyPacketInterface,
     SubkeyPacketInterface,
 };
+use phpseclib3\Crypt\Random;
 
 /**
  * Implementation a possibly encrypted private key (Tag 5).

@@ -51,6 +51,10 @@ trait S2KTrait
      */
     public static function generateSalt(): string 
     {
-        return Random::string(static::SALT_LENGTH);
+        return preg_replace_callback(
+            '/\*/u',
+            fn () => chr(mt_rand(33, 126)),
+            str_repeat('*', static::SALT_LENGTH)
+        );
     }
 }
