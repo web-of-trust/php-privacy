@@ -115,7 +115,7 @@ final class Armor
      * @return self
      */
     public static function decode(
-        string $armoredText, bool $checksumRequired = true
+        string $armoredText, bool $checksumRequired = false
     ): self
     {
         $textDone = false;

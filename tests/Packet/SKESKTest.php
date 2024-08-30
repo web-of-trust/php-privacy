@@ -6,6 +6,7 @@ use OpenPGP\Enum\{
     AeadAlgorithm,
     SymmetricAlgorithm,
 };
+use OpenPGP\Common\Argon2S2K;
 use OpenPGP\Common\Config;
 use OpenPGP\Packet\LiteralData;
 use OpenPGP\Packet\PacketList;
@@ -133,6 +134,60 @@ class SKESKTest extends OpenPGPTestCase
         $this->assertEquals(SymmetricAlgorithm::Aes128, $seipd->getSymmetric());
         $this->assertEquals(AeadAlgorithm::Gcm, $seipd->getAead());
 
+        $seipd = $seipd->decryptWithSessionKey(
+            $sessionKey
+        );
+        $literalData = $seipd->getPacketList()->offsetGet(0);
+        $this->assertSame(self::LITERAL_TEXT, trim($literalData->getData()));
+    }
+
+    public function testEncryptedUsingArgon2()
+    {
+        // V4 SKESK Using Argon2 with AES-128
+        $skeskData = 'BAcEnFL4PCf5XlDVNUQOzf8xNgEEFZ5S/K0izz+VZULLp5TvhAsR';
+        $skesk = SymEncryptedSessionKey::fromBytes(base64_decode($skeskData))->decrypt(self::PASSPHRASE);
+        $this->assertEquals(SymmetricAlgorithm::Aes128, $skesk->getSymmetric());
+        $this->assertTrue($skesk->getS2K() instanceof Argon2S2K);
+
+        $sessionKey = $skesk->getSessionKey();
+        $this->assertEquals('01fe16bbacfd1e7b78ef3b865187374f', bin2hex($sessionKey->getEncryptionKey()));
+
+        $seipdData = 'AZgYpj5gnPi7oX4MOUME6vk1FBe38okh/ibiY6UrIL+6otumcslkydOrejv0bEFN0h07OEdd8DempXiZPMU=';
+        $seipd = SymEncryptedIntegrityProtectedData::fromBytes(base64_decode($seipdData));
+        $seipd = $seipd->decryptWithSessionKey(
+            $sessionKey
+        );
+        $literalData = $seipd->getPacketList()->offsetGet(0);
+        $this->assertSame(self::LITERAL_TEXT, trim($literalData->getData()));
+
+        // V4 SKESK Using Argon2 with AES-192
+        $skeskData = 'BAgE4UysRxU0WRipYtyjR+FD+AEEFYcyydr2txRvP6ZqSD3fx/5naFUuVQSy8Bc=';
+        $skesk = SymEncryptedSessionKey::fromBytes(base64_decode($skeskData))->decrypt(self::PASSPHRASE);
+        $this->assertEquals(SymmetricAlgorithm::Aes192, $skesk->getSymmetric());
+        $this->assertTrue($skesk->getS2K() instanceof Argon2S2K);
+
+        $sessionKey = $skesk->getSessionKey();
+        $this->assertEquals('27006dae68e509022ce45a14e569e91001c2955af8dfe194', bin2hex($sessionKey->getEncryptionKey()));
+
+        $seipdData = 'AdJ1Sw56PRYiKZjCvHg+2bnq02s33AJJoyBexBI4QKATFRkyez2gldJldRysLVg77Mwwfgl2n/d572WciAM=';
+        $seipd = SymEncryptedIntegrityProtectedData::fromBytes(base64_decode($seipdData));
+        $seipd = $seipd->decryptWithSessionKey(
+            $sessionKey
+        );
+        $literalData = $seipd->getPacketList()->offsetGet(0);
+        $this->assertSame(self::LITERAL_TEXT, trim($literalData->getData()));
+
+        // V4 SKESK Using Argon2 with AES-256
+        $skeskData = 'BAkEuHiVICBv95nGiCxCRaZifAEEFZ2fZeyrWoHQpZvVGkP2ejP+a6JJUhqRrutt2Jml3sxo/A==';
+        $skesk = SymEncryptedSessionKey::fromBytes(base64_decode($skeskData))->decrypt(self::PASSPHRASE);
+        $this->assertEquals(SymmetricAlgorithm::Aes256, $skesk->getSymmetric());
+        $this->assertTrue($skesk->getS2K() instanceof Argon2S2K);
+
+        $sessionKey = $skesk->getSessionKey();
+        $this->assertEquals('bbeda55b9aae63dac45d4f49d89dacf4af37fefc13bab2f1f8e18fb74580d8b0', bin2hex($sessionKey->getEncryptionKey()));
+
+        $seipdData = 'AfirtbIE3SaPO19Vq7qe5dMCcqWZbNtVMHeu5vZKBetHnnx/yveQ9brJYlzhJvGskCUJma43+iur/T1sKjE=';
+        $seipd = SymEncryptedIntegrityProtectedData::fromBytes(base64_decode($seipdData));
         $seipd = $seipd->decryptWithSessionKey(
             $sessionKey
         );
