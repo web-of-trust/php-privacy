@@ -20,7 +20,7 @@ use OpenPGP\Tests\OpenPGPTestCase;
  */
 class SKESKTest extends OpenPGPTestCase
 {
-    const PASSPHRASE = 'password';
+    const PASSPHRASE   = 'password';
     const LITERAL_TEXT = 'Hello, world!';
 
     public function testEncryptNullSessionKey()
@@ -83,7 +83,7 @@ class SKESKTest extends OpenPGPTestCase
         $this->assertEquals(AeadAlgorithm::Eax, $skesk->getAead());
 
         $sessionKey = $skesk->getSessionKey();
-        $this->assertEquals('3881bafe985412459b86c36f98cb9a5e', bin2hex($sessionKey->getEncryptionKey()));
+        $this->assertSame('3881bafe985412459b86c36f98cb9a5e', bin2hex($sessionKey->getEncryptionKey()));
 
         $seipdData = 'AgcBBp/5DjsyGWTzpCkTyNzGYZMlAVIn77fq6qSfBMLmdBddSj0ibtavy5yprBIsFHDhHGPUwKskHGqTitSL+ZpambkLuoMl3mEEdUAlireVmpWtBR3alusVQx3+9fXiJVyngmFUbjOa';
         $seipd = SymEncryptedIntegrityProtectedData::fromBytes(base64_decode($seipdData));
@@ -105,7 +105,7 @@ class SKESKTest extends OpenPGPTestCase
         $this->assertEquals(AeadAlgorithm::Ocb, $skesk->getAead());
 
         $sessionKey = $skesk->getSessionKey();
-        $this->assertEquals('28e79ab82397d3c63de24ac217d7b791', bin2hex($sessionKey->getEncryptionKey()));
+        $this->assertSame('28e79ab82397d3c63de24ac217d7b791', bin2hex($sessionKey->getEncryptionKey()));
 
         $seipdData = 'AgcCBiCmYfcx/JowMrViMyYCfjpdjbV0jr7/CwxZENCezdZB/5/ThWJ1gDW8SXVM4b8//6fa0KO4EE9RM89CpBAKg+70yhtIAaiEa/QrzafIzp1l4hLzAcvNmP3K3mlKh3rUJHMj9uhX';
         $seipd = SymEncryptedIntegrityProtectedData::fromBytes(base64_decode($seipdData));
@@ -127,7 +127,7 @@ class SKESKTest extends OpenPGPTestCase
         $this->assertEquals(AeadAlgorithm::Gcm, $skesk->getAead());
 
         $sessionKey = $skesk->getSessionKey();
-        $this->assertEquals('1936fc8568980274bb900d8319360c77', bin2hex($sessionKey->getEncryptionKey()));
+        $this->assertSame('1936fc8568980274bb900d8319360c77', bin2hex($sessionKey->getEncryptionKey()));
 
         $seipdData = 'AgcDBvy5RJC8uYu9ydEGxgkCZpQPcuie3CG1WWsVdrEB7Q+f/G/G1lu/0k3NB5CWbm0ehaMAU3hMsdi2oGme8SFVp7KtYlhTG1dlH9d3eRL6leNdm0Ahb2mkwkjbKP9DMfFjKQc5nm/5';
         $seipd = SymEncryptedIntegrityProtectedData::fromBytes(base64_decode($seipdData));
@@ -150,7 +150,7 @@ class SKESKTest extends OpenPGPTestCase
         $this->assertTrue($skesk->getS2K() instanceof Argon2S2K);
 
         $sessionKey = $skesk->getSessionKey();
-        $this->assertEquals('01fe16bbacfd1e7b78ef3b865187374f', bin2hex($sessionKey->getEncryptionKey()));
+        $this->assertSame('01fe16bbacfd1e7b78ef3b865187374f', bin2hex($sessionKey->getEncryptionKey()));
 
         $seipdData = 'AZgYpj5gnPi7oX4MOUME6vk1FBe38okh/ibiY6UrIL+6otumcslkydOrejv0bEFN0h07OEdd8DempXiZPMU=';
         $seipd = SymEncryptedIntegrityProtectedData::fromBytes(base64_decode($seipdData));
@@ -167,7 +167,7 @@ class SKESKTest extends OpenPGPTestCase
         $this->assertTrue($skesk->getS2K() instanceof Argon2S2K);
 
         $sessionKey = $skesk->getSessionKey();
-        $this->assertEquals('27006dae68e509022ce45a14e569e91001c2955af8dfe194', bin2hex($sessionKey->getEncryptionKey()));
+        $this->assertSame('27006dae68e509022ce45a14e569e91001c2955af8dfe194', bin2hex($sessionKey->getEncryptionKey()));
 
         $seipdData = 'AdJ1Sw56PRYiKZjCvHg+2bnq02s33AJJoyBexBI4QKATFRkyez2gldJldRysLVg77Mwwfgl2n/d572WciAM=';
         $seipd = SymEncryptedIntegrityProtectedData::fromBytes(base64_decode($seipdData));
@@ -184,7 +184,7 @@ class SKESKTest extends OpenPGPTestCase
         $this->assertTrue($skesk->getS2K() instanceof Argon2S2K);
 
         $sessionKey = $skesk->getSessionKey();
-        $this->assertEquals('bbeda55b9aae63dac45d4f49d89dacf4af37fefc13bab2f1f8e18fb74580d8b0', bin2hex($sessionKey->getEncryptionKey()));
+        $this->assertSame('bbeda55b9aae63dac45d4f49d89dacf4af37fefc13bab2f1f8e18fb74580d8b0', bin2hex($sessionKey->getEncryptionKey()));
 
         $seipdData = 'AfirtbIE3SaPO19Vq7qe5dMCcqWZbNtVMHeu5vZKBetHnnx/yveQ9brJYlzhJvGskCUJma43+iur/T1sKjE=';
         $seipd = SymEncryptedIntegrityProtectedData::fromBytes(base64_decode($seipdData));

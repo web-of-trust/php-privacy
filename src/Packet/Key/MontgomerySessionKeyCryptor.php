@@ -59,9 +59,10 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
         string $bytes, MontgomeryCurve $curve = MontgomeryCurve::Curve25519
     ): self
     {
+        $length = ord($bytes[$curve->payloadSize()]);
         return new self(
             substr($bytes, 0, $curve->payloadSize()),
-            substr($bytes, $curve->payloadSize()),
+            substr($bytes, $curve->payloadSize() + 1, $length),
             $curve,
         );
     }
@@ -106,7 +107,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
         return new self(
             $ephemeralKey,
             $keyWrapper->wrap(
-                $kek, $sessionKey->toBytes()
+                $kek, $sessionKey->getEncryptionKey()
             ),
             $curve,
         );
@@ -119,6 +120,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
     {
         return implode([
             $this->ephemeralKey,
+            chr(strlen($this->wrappedKey)),
             $this->wrappedKey,
         ]);
     }
@@ -150,9 +152,9 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
         SecretKeyPacketInterface $secretKey
     ): SessionKeyInterface
     {
-        return SessionKey::fromBytes($this->decrypt(
+        return new SessionKey($this->decrypt(
             $secretKey->getKeyMaterial()->getECPrivateKey(),
-        ));
+        ), $this->curve->symmetricAlgorithm());
     }
 
     /**

@@ -8,6 +8,7 @@ use OpenPGP\Packet\PublicKeyEncryptedSessionKey;
 use OpenPGP\Packet\SymEncryptedIntegrityProtectedData;
 use OpenPGP\Packet\SecretKey;
 use OpenPGP\Packet\SecretSubkey;
+use OpenPGP\Packet\Key\MontgomerySecretKeyMaterial;
 use OpenPGP\Packet\Key\SessionKey;
 use OpenPGP\Tests\OpenPGPTestCase;
 
@@ -16,7 +17,8 @@ use OpenPGP\Tests\OpenPGPTestCase;
  */
 class PKESKTest extends OpenPGPTestCase
 {
-    const PASSPHRASE = 'password';
+    const PASSPHRASE   = 'password';
+    const LITERAL_TEXT = 'Hello, world!';
 
     private static $rsaSecretSubkey = <<<EOT
 BGRUrD4BCACyRTYWSBsXFtxLOmSp3RvaW13GRh8HJ4p7adVqJpDBsvo8iInDgBt542/aoWDGIESA
@@ -257,5 +259,25 @@ EOT;
         $pkesk = $packets->offsetGet(0)->decrypt($secretSubkey);
         $this->assertSame($secretSubkey->getKeyID(), $pkesk->getPublicKeyID());
         $this->assertEquals($sessionKey, $pkesk->getSessionKey());
+    }
+
+    public function testX25519AeadOcbDecryption()
+    {
+        $subkeyData = 'BmOHf+MZAAAAIIaTJINn+eUBXbki+PSAld2nhJh/LVmFsS+60WyvXkQ1AE1gCk95TUR3XFeibg/u/tVY6a//1q0NWC1X+yui3O24EL4=';
+        $subkey = SecretSubkey::fromBytes(base64_decode($subkeyData));
+
+        $pkeskData = 'BiEGEsg/HnBvYwj+FRpBd0Oh8DN5DpPpl4SI0ds3jamTCIUZh88Y1fG1P4F8zloATPOTzIlYvdwGXyX4SvUJsX3TZ2QY3qNVQ3lWYXkB4GlX+8qKakeltRU+jTq3';
+        $pkesk = PublicKeyEncryptedSessionKey::fromBytes(base64_decode($pkeskData))->decrypt($subkey);
+
+        $sessionKey = $pkesk->getSessionKey();
+        $this->assertSame('dd708f6fa1ed65114d68d2343e7c2f1d', bin2hex($sessionKey->getEncryptionKey()));
+
+        $seipdData = 'AgcCBmFkFlNb4LBxbWDgUqVsTEB/nrNrDvr+mtCg35sDPGmiG6nr0sDslb9WnSXJme5KPeFwWPQN+otMaCvj+7vXsn6w9Zu1AF+Ax8b0A4jDCtQGqwUT3Nb5/XN2VihuEXfQD4iK2zHE';
+        $seipd = SymEncryptedIntegrityProtectedData::fromBytes(base64_decode($seipdData));
+        $seipd = $seipd->decryptWithSessionKey(
+            $sessionKey
+        );
+        $literalData = $seipd->getPacketList()->offsetGet(0);
+        $this->assertSame(self::LITERAL_TEXT, trim($literalData->getData()));
     }
 }
