@@ -182,6 +182,14 @@ interface SignaturePacketInterface extends PacketInterface
     function getIssuerKeyID(bool $toHex = false): string;
 
     /**
+     * Get issuer key fingerprint sub packet
+     *
+     * @param bool $toHex
+     * @return string
+     */
+    function getIssuerFingerprint(bool $toHex = false): string;
+
+    /**
      * Get notation data sub packet
      *
      * @return SubpacketInterface
@@ -278,11 +286,4 @@ interface SignaturePacketInterface extends PacketInterface
      * @return SubpacketInterface
      */
     function getEmbeddedSignature(): ?SubpacketInterface;
-
-    /**
-     * Get issuer fingerprint sub packet
-     *
-     * @return SubpacketInterface
-     */
-    function getIssuerFingerprint(): ?SubpacketInterface;
 }

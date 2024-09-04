@@ -854,14 +854,10 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
                        self::getSubpacket($this->unhashedSubpackets, $type);
         if (!($issuerKeyID instanceof Signature\IssuerKeyID)) {
             $issuerFingerprint = $this->getIssuerFingerprint();
-            if ($issuerFingerprint instanceof Signature\IssuerFingerprint) {
-                $issuerKeyID = new Signature\IssuerKeyID(
-                    substr($issuerFingerprint->getKeyFingerprint(), 12, 20)
-                );
-            }
-            else {
-                $issuerKeyID = Signature\IssuerKeyID::wildcard();
-            }
+            $keyID = $this->version === self::VERSION_6 ?
+                substr($issuerFingerprint, 0, PublicKey::KEY_ID_SIZE) :
+                substr($issuerFingerprint, 12, PublicKey::KEY_ID_SIZE);
+            $issuerKeyID = new Signature\IssuerKeyID($keyID);
         }
         return $issuerKeyID->getKeyID($toHex);
     }
@@ -1027,11 +1023,15 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * {@inheritdoc}
      */
-    public function getIssuerFingerprint(): ?SubpacketInterface
+    public function getIssuerFingerprint(bool $toHex = false): string
     {
         $type = SignatureSubpacketType::IssuerFingerprint;
-        return self::getSubpacket($this->hashedSubpackets, $type) ??
+        $subpacket = self::getSubpacket($this->hashedSubpackets, $type) ??
                self::getSubpacket($this->unhashedSubpackets, $type);
+        if ($subpacket instanceof Signature\IssuerFingerprint) {
+            return $subpacket->getKeyFingerprint($toHex);
+        }
+        return Signature\IssuerFingerprint::wildcard()->getKeyFingerprint($toHex);
     }
 
     /**

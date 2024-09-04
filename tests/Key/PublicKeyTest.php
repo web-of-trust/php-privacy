@@ -223,7 +223,7 @@ EOT;
 
         $signature = $publicKey->getLatestDirectSignature();
         $this->assertSame(6, $signature->getVersion());
-        $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $signature->getIssuerFingerprint()->getKeyFingerprint(true));
+        $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $signature->getIssuerFingerprint(true));
 
         $subkey = $publicKey->getSubKeys()[0];
         $this->assertSame(6, $subkey->getVersion());
@@ -231,6 +231,6 @@ EOT;
 
         $signature = $subkey->getLatestBindingSignature();
         $this->assertSame(6, $signature->getVersion());
-        $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $signature->getIssuerFingerprint()->getKeyFingerprint(true));
+        $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $signature->getIssuerFingerprint(true));
     }
 }

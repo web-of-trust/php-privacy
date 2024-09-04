@@ -146,7 +146,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
                 $packet->getHashAlgorithm(),
                 $packet->getKeyAlgorithm(),
                 $packet->getSalt(),
-                $packet->getIssuerFingerprint()?->getKeyFingerprint() ?? '',
+                $packet->getIssuerFingerprint(),
                 $packet->getIssuerKeyID(),
                 ((++$index) === $length) ? 1 : 0
             ),
