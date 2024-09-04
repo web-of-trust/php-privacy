@@ -132,7 +132,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
                 static fn ($packet) => $packet instanceof SignaturePacketInterface
             ),
             ...$this->createSignature(
-                $signingKeys, false, $notationData, $time
+                $signingKeys, $notationData, $time
             )->getPackets(),
         ];
 
@@ -167,7 +167,6 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
     {
         return $this->createSignature(
             $signingKeys,
-            true,
             $notationData,
             $time,
         );
@@ -183,7 +182,6 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
         return $this->getSignature()->verify(
             $verificationKeys,
             $this->getLiteralData(),
-            false,
             $time
         );
     }
@@ -198,7 +196,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
     ): array
     {
         return $signature->verify(
-            $verificationKeys, $this->getLiteralData(), true, $time
+            $verificationKeys, $this->getLiteralData(), $time
         );
     }
 
@@ -285,14 +283,12 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
      * Create literal signature.
      *
      * @param array $signingKeys
-     * @param bool $detached
      * @param NotationDataInterface $notationData
      * @param DateTimeInterface $time
      * @return SignatureInterface
      */
     private function createSignature(
         array $signingKeys,
-        bool $detached = false,
         ?NotationDataInterface $notationData = null,
         ?DateTimeInterface $time = null
     ): SignatureInterface
@@ -310,7 +306,6 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
             fn ($key) => SignaturePacket::createLiteralData(
                 $key->getSigningKeyPacket(),
                 $this->getLiteralData(),
-                $detached,
                 $notationData,
                 $time
             ),

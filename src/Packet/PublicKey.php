@@ -9,7 +9,6 @@
 namespace OpenPGP\Packet;
 
 use DateTimeInterface;
-use phpseclib3\Common\Functions\Strings;
 use OpenPGP\Common\{
     Config,
     Helper,
@@ -27,6 +26,7 @@ use OpenPGP\Type\{
     KeyMaterialInterface,
     SubkeyPacketInterface,
 };
+use phpseclib3\Common\Functions\Strings;
 
 /**
  * Implementation an OpenPGP public key packet (Tag 6).

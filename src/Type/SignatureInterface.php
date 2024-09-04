@@ -33,14 +33,12 @@ interface SignatureInterface extends ArmorableInterface, PacketContainerInterfac
      *
      * @param array $verificationKeys
      * @param LiteralDataInterface $literalData
-     * @param bool $detached
      * @param DateTimeInterface $time
      * @return array
      */
     function verify(
         array $verificationKeys,
         LiteralDataInterface $literalData,
-        bool $detached = false,
         ?DateTimeInterface $time = null
     ): array;
 
@@ -50,14 +48,12 @@ interface SignatureInterface extends ArmorableInterface, PacketContainerInterfac
      *
      * @param array $verificationKeys
      * @param CleartextMessageInterface $cleartext
-     * @param bool $detached
      * @param DateTimeInterface $time
      * @return array
      */
     function verifyCleartext(
         array $verificationKeys,
         CleartextMessageInterface $cleartext,
-        bool $detached = false,
         ?DateTimeInterface $time = null
     ): array;
 }

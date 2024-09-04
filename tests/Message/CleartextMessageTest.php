@@ -310,7 +310,7 @@ EOT;
         $verification = $message->verifyDetached([$publicKey], $signature)[0];
         $this->assertTrue($verification->isVerified());
 
-        $verification = $signature->verifyCleartext([$publicKey], $message, true)[0];
+        $verification = $signature->verifyCleartext([$publicKey], $message)[0];
         $this->assertTrue($verification->isVerified());
 
         Config::setUseV6Key(false);

@@ -95,14 +95,12 @@ interface SignaturePacketInterface extends PacketInterface
      * @param KeyPacketInterface $verifyKey
      * @param string $dataToVerify
      * @param DateTimeInterface $time
-     * @param string $detachedDataHeader
      * @return bool
      */
     function verify(
         KeyPacketInterface $verifyKey,
         string $dataToVerify,
         ?DateTimeInterface $time = null,
-        string $detachedDataHeader = ''
     ): bool;
 
     /**
