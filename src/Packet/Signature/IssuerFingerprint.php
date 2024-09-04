@@ -62,6 +62,19 @@ class IssuerFingerprint extends SignatureSubpacket
     }
 
     /**
+     * From wildcard
+     *
+     * @param bool $critical
+     * @return self
+     */
+    public static function wildcard(
+        bool $critical = false
+    ): self
+    {
+        return new self(chr(6) . str_repeat("\x00", 32), $critical);
+    }
+
+    /**
      * Get key version
      * 
      * @return int

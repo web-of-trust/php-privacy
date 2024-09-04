@@ -74,13 +74,11 @@ interface SignaturePacketInterface extends PacketInterface
     function getSignedHashValue(): string;
 
     /**
-     * Verify signature expiration date
-     * Use the given date for verification instead of the current time
+     * Get salt value
      *
-     * @param DateTimeInterface $time
-     * @return bool
+     * @return string
      */
-    function isExpired(?DateTimeInterface $time = null): bool;
+    function getSalt(): string;
 
     /**
      * Get signature data
@@ -88,6 +86,15 @@ interface SignaturePacketInterface extends PacketInterface
      * @return string
      */
     function getSignature(): string;
+
+    /**
+     * Verify signature expiration date
+     * Use the given date for verification instead of the current time
+     *
+     * @param DateTimeInterface $time
+     * @return bool
+     */
+    function isExpired(?DateTimeInterface $time = null): bool;
 
     /**
      * Verify the signature packet.

@@ -686,6 +686,14 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * {@inheritdoc}
      */
+    public function getSalt(): string
+    {
+        return $this->salt;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getSignature(): string
     {
         return $this->signature;

@@ -16,13 +16,9 @@ use OpenPGP\Enum\{
 };
 
 /**
- * OnePassSignature represents a One-Pass Signature packet.
- * See RFC 4880, section 5.4.
+ * Implementation an OpenPGP One-Pass Signature packet (Tag 4).
  * 
- * The One-Pass Signature packet precedes the signed data and contains enough information
- * to allow the receiver to begin calculating any hashes needed to verify the signature.
- * It allows the Signature packet to be placed at the end of the message,
- * so that the signer can compute the entire signed message in one pass.
+ * See RFC 9580, section 5.4.
  * 
  * @package  OpenPGP
  * @category Packet
@@ -30,24 +26,31 @@ use OpenPGP\Enum\{
  */
 class OnePassSignature extends AbstractPacket
 {
-    const VERSION = 3;
+    const VERSION_3 = 3;
+    const VERSION_6 = 6;
 
     /**
      * Constructor
      *
+     * @param int $version
      * @param SignatureType $signatureType
      * @param HashAlgorithm $hashAlgorithm
      * @param KeyAlgorithm $keyAlgorithm
+     * @param string $salt
+     * @param string $issuerFingerprint
      * @param string $issuerKeyID
      * @param int $nested
      * @return self
      */
     public function __construct(
+        private readonly int $version,
         private readonly SignatureType $signatureType,
         private readonly HashAlgorithm $hashAlgorithm,
         private readonly KeyAlgorithm $keyAlgorithm,
+        private readonly string $salt,
+        private readonly string $issuerFingerprint,
         private readonly string $issuerKeyID,
-        private readonly int $nested = 0
+        private readonly int $nested = 0,
     )
     {
         parent::__construct(PacketTag::OnePassSignature);
@@ -59,9 +62,9 @@ class OnePassSignature extends AbstractPacket
     public static function fromBytes(string $bytes): self
     {
         $offset = 0;
-        // A one-octet version number. The current version is 3.
+        // A one-octet version number.
         $version = ord($bytes[$offset++]);
-        if ($version != self::VERSION) {
+        if ($version != self::VERSION_3 && $version != self::VERSION_6) {
             throw new \RuntimeException(
                 "Version $version of the one-pass signature packet is unsupported.",
             );
@@ -76,23 +79,50 @@ class OnePassSignature extends AbstractPacket
         // A one-octet number describing the public-key algorithm used.
         $keyAlgorithm = KeyAlgorithm::from(ord($bytes[$offset++]));
 
-        // An eight-octet number holding the Key ID of the signing key.
-        $issuerKeyID = substr($bytes, $offset, 8);
+        $salt = '';
+        $issuerFingerprint = '';
+        if ($version === self::VERSION_6) {
+            $saltLength = ord($bytes[$offset++]);
+            $salt = substr($bytes, $offset, $saltLength);
+            $offset += $saltLength;
+
+            $issuerFingerprint = substr($bytes, $offset, 32);
+            $offset += 32;
+            $issuerKeyID = substr($issuerFingerprint, 0, 8);
+        }
+        else {
+            // An eight-octet number holding the Key ID of the signing key.
+            $issuerKeyID = substr($bytes, $offset, 8);
+            $offset += 8;
+        }
 
         /**
          * A one-octet number holding a flag showing whether the signature is nested.
          * A zero value indicates that the next packet is another One-Pass Signature packet
          * that describes another signature to be applied to the same message data.
          */
-        $nested = ord($bytes[$offset + 8]);
+        $nested = ord($bytes[$offset]);
 
         return new self(
+            $version,
             $signatureType,
             $hashAlgorithm,
             $keyAlgorithm,
+            $salt,
+            $issuerFingerprint,
             $issuerKeyID,
             $nested
         );
+    }
+
+    /**
+     * Get version
+     *
+     * @return int
+     */
+    public function getVersion(): int
+    {
+        return $this->version;
     }
 
     /**
@@ -126,6 +156,26 @@ class OnePassSignature extends AbstractPacket
     }
 
     /**
+     * Get salt
+     *
+     * @return string
+     */
+    public function getSalt(): string
+    {
+        return $this->salt;
+    }
+
+    /**
+     * Get issuer fingerprint
+     *
+     * @return string
+     */
+    public function getIssuerFingerprint(): string
+    {
+        return $this->issuerFingerprint;
+    }
+
+    /**
      * Get issuer key ID
      *
      * @return string
@@ -150,13 +200,21 @@ class OnePassSignature extends AbstractPacket
      */
     public function toBytes(): string
     {
-        return implode([
-            chr(self::VERSION),
+        $data = [
+            chr($this->version),
             chr($this->signatureType->value),
             chr($this->hashAlgorithm->value),
             chr($this->keyAlgorithm->value),
-            $this->issuerKeyID,
-            chr($this->nested),
-        ]);
+        ];
+        if ($this->version === self::VERSION_6) {
+            $data[] = chr(strlen($this->salt));
+            $data[] = $this->salt;
+            $data[] = $this->issuerFingerprint;
+        }
+        else {
+            $data[] = $this->issuerKeyID;
+        }
+        $data[] = chr($this->nested);
+        return implode($data);
     }
 }
