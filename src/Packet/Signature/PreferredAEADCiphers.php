@@ -44,17 +44,4 @@ class PreferredAEADCiphers extends SignatureSubpacket
             $isLong
         );
     }
-
-    /**
-     * Get preferences
-     *
-     * @return array
-     */
-    public function getPreferences(): array
-    {
-        return array_map(
-            fn ($pref) => AeadAlgorithm::from(ord($pref)),
-            str_split($this->getData())
-        );
-    }
 }

@@ -14,6 +14,7 @@ use OpenPGP\Common\{
     Helper,
 };
 use OpenPGP\Enum\{
+    AeadAlgorithm,
     CompressionAlgorithm,
     HashAlgorithm,
     KeyAlgorithm,
@@ -99,7 +100,10 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             chr($this->signatureType->value),
             chr($this->keyAlgorithm->value),
             chr($this->hashAlgorithm->value),
-            self::subpacketsToBytes($this->hashedSubpackets),
+            self::subpacketsToBytes(
+                $this->hashedSubpackets,
+                $this->version === self::VERSION_6
+            ),
         ]);
     }
 
@@ -117,6 +121,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
                 "Version $version of the signature packet is unsupported.",
             );
         }
+        $isV6 = $version === self::VERSION_6;
 
         // One-octet signature type.
         $signatureType = SignatureType::from(ord($bytes[$offset++]));
@@ -128,16 +133,20 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         $hashAlgorithm = HashAlgorithm::from(ord($bytes[$offset++]));
 
         // Read hashed subpackets
-        $hashedLength = Helper::bytesToShort($bytes, $offset);
-        $offset += 2;
+        $hashedLength = $isV6 ?
+            Helper::bytesToLong($bytes, $offset) :
+            Helper::bytesToShort($bytes, $offset);
+        $offset += $isV6 ? 4: 2;
         $hashedSubpackets = self::readSubpackets(
             substr($bytes, $offset, $hashedLength)
         );
         $offset += $hashedLength;
 
         // read unhashed subpackets
-        $unhashedLength = Helper::bytesToShort($bytes, $offset);
-        $offset += 2;
+        $unhashedLength = $isV6 ?
+            Helper::bytesToLong($bytes, $offset) :
+            Helper::bytesToShort($bytes, $offset);
+        $offset += $isV6 ? 4: 2;
         $unhashedSubpackets = self::readSubpackets(
             substr($bytes, $offset, $unhashedLength)
         );
@@ -148,7 +157,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         $offset += 2;
 
         $salt = '';
-        if ($version === self::VERSION_6) {
+        if ($isV6) {
             $saltLength = ord($bytes[$offset++]);
             $salt = substr($bytes, $offset, $saltLength);
             $offset += $saltLength;
@@ -207,7 +216,10 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             chr($signatureType->value),
             chr($keyAlgorithm->value),
             chr($hashAlgorithm->value),
-            self::subpacketsToBytes($hashedSubpackets),
+            self::subpacketsToBytes(
+                $hashedSubpackets,
+                $version === self::VERSION_6
+            ),
         ]);
 
         $trailer = self::calculateTrailer(
@@ -286,6 +298,18 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         }
         if ($keyExpiry > 0) {
             $subpackets[] = Signature\KeyExpirationTime::fromTime($keyExpiry);
+        }
+        if ($signKey->getVersion() === self::VERSION_6) {
+            $subpackets[] = new Signature\PreferredAEADCiphers(
+                implode([
+                    chr(SymmetricAlgorithm::Aes128->value),
+                    chr(AeadAlgorithm::Gcm->value),
+                    chr(SymmetricAlgorithm::Aes192->value),
+                    chr(AeadAlgorithm::Gcm->value),
+                    chr(SymmetricAlgorithm::Aes256->value),
+                    chr(AeadAlgorithm::Gcm->value),
+                ])
+            );
         }
         return self::createSignature(
             $signKey,
@@ -545,7 +569,10 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     {
         $data = [
             $this->signatureData,
-            self::subpacketsToBytes($this->unhashedSubpackets),
+            self::subpacketsToBytes(
+                $this->unhashedSubpackets,
+                $this->version === self::VERSION_6
+            ),
             $this->signedHashValue,
         ];
         if ($this->version === self::VERSION_6) {
@@ -864,6 +891,17 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * {@inheritdoc}
      */
+    public function getPreferredAEADCiphers(): ?SubpacketInterface
+    {
+        return self::getSubpacket(
+            $this->hashedSubpackets,
+            SignatureSubpacketType::PreferredAEADCiphers
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getPreferredCompressionAlgorithms(): ?SubpacketInterface
     {
         return self::getSubpacket(
@@ -1018,6 +1056,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             case KeyAlgorithm::Dsa:
             case KeyAlgorithm::EcDsa:
             case KeyAlgorithm::EdDsaLegacy:
+            case KeyAlgorithm::Ed25519:
+            case KeyAlgorithm::Ed448:
                 $keyMaterial = $signKey->getKeyMaterial();
                 if ($keyMaterial instanceof SecretKeyMaterialInterface) {
                     return $keyMaterial->sign($hash, $message);
@@ -1049,15 +1089,18 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * Serialize subpackets to bytes
      * 
      * @param array $subpackets
+     * @param bool $isV6
      * @return string
      */
-    private static function subpacketsToBytes(array $subpackets): string
+    private static function subpacketsToBytes(
+        array $subpackets, bool $isV6 = false
+    ): string
     {
         $bytes = implode(array_map(
             static fn ($subpacket): string => $subpacket->toBytes(),
             $subpackets
         ));
-        return pack('n', strlen($bytes)) . $bytes;
+        return pack($isV6 ? 'N' : 'n', strlen($bytes)) . $bytes;
     }
 
     /**
