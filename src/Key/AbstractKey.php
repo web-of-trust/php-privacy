@@ -173,9 +173,7 @@ abstract class AbstractKey implements KeyInterface
     }
 
     /**
-     * Get revocation signatures
-     * 
-     * @return array
+     * {@inheritdoc}
      */
     public function getRevocationSignatures(): array
     {
@@ -183,13 +181,31 @@ abstract class AbstractKey implements KeyInterface
     }
 
     /**
-     * Get direct signatures
-     * 
-     * @return array
+     * {@inheritdoc}
      */
     public function getDirectSignatures(): array
     {
         return $this->directSignatures;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLatestDirectSignature(): ?SignaturePacketInterface
+    {
+        if (!empty($this->directSignatures)) {
+            $signatures = $this->directSignatures;
+            usort(
+                $signatures,
+                static function ($a, $b): int {
+                    $aTime = $a->getSignatureCreationTime() ?? new \DateTime();
+                    $bTime = $b->getSignatureCreationTime() ?? new \DateTime();
+                    return $aTime->getTimestamp() - $bTime->getTimestamp();
+                }
+            );
+            return array_pop($signatures);
+        }
+        return null;
     }
 
     /**

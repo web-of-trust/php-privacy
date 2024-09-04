@@ -31,6 +31,13 @@ interface SubkeyInterface extends PacketContainerInterface
     function getKeyPacket(): SubkeyPacketInterface;
 
     /**
+     * Return key version
+     *
+     * @return int
+     */
+    function getVersion(): int;
+
+    /**
      * Get the expiration time of the subkey or null if subkey does not expire.
      * 
      * @return DateTimeInterface

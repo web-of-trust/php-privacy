@@ -93,6 +93,27 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
     function getKeyStrength(): int;
 
     /**
+     * Get revocation signatures
+     * 
+     * @return array
+     */
+    function getRevocationSignatures(): array;
+
+    /**
+     * Get direct signatures
+     * 
+     * @return array
+     */
+    function getDirectSignatures(): array;
+
+    /**
+     * Get latest direct signature
+     * 
+     * @return SignaturePacketInterface
+     */
+    function getLatestDirectSignature(): ?SignaturePacketInterface;
+
+    /**
      * Return last created key packet or key packet by given keyID
      * that is available for signing or verification
      * 
