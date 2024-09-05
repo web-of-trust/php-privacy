@@ -45,4 +45,14 @@ enum HashAlgorithm: int
             self::Sha224 => 28,
         };
     }
+
+    public function saltSize(): int
+    {
+        return match($this) {
+            self::Unknown, self::Md5, self::Sha1, self::Ripemd160 => 8,
+            self::Sha224, self::Sha256, self::Sha3_256 => 16,
+            self::Sha384 => 24,
+            self::Sha512, self::Sha3_512 => 32,
+        };
+    }
 }

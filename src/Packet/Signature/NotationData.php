@@ -14,7 +14,8 @@ use OpenPGP\Type\NotationDataInterface;
 
 /**
  * NotationData sub-packet class.
- * Class provided a NotationData object according to RFC2440, Chapter 5.2.3.15.
+ * 
+ * Class provided a NotationData object according to RFC4880, Chapter 5.2.3.16.
  * 
  * @package  OpenPGP
  * @category Packet
@@ -77,7 +78,7 @@ class NotationData extends SignatureSubpacket implements NotationDataInterface
      */
     public function isHumanReadable(): bool
     {
-        return ord($this->getData()[0]) === 0x80;
+        return $this->getData()[0] === "\x80";
     }
 
     /**
@@ -115,26 +116,25 @@ class NotationData extends SignatureSubpacket implements NotationDataInterface
         string $notationValue
     ): string
     {
+        $notationName = mb_convert_encoding($notationName, 'UTF-8');
         $nameLength = min(strlen($notationName), 0xffff);
-        if ($nameLength != strlen($notationName)) {
+        if ($nameLength !== strlen($notationName)) {
             throw new \InvalidArgumentException(
                 'Notation name exceeds maximum length.'
             );
         }
 
         $valueLength = min(strlen($notationValue), 0xffff);
-        if ($valueLength != strlen($notationValue)) {
+        if ($valueLength !== strlen($notationValue)) {
             throw new \InvalidArgumentException(
                 'Notation value exceeds maximum length.'
             );
         }
 
         return implode([
-            $humanReadable ? chr(0x80) : str_repeat(chr(0), 4),
-            chr(($nameLength >> 8) & 0xff),
-            chr(($nameLength >> 0) & 0xff),
-            chr(($valueLength >> 8) & 0xff),
-            chr(($valueLength >> 0) & 0xff),
+            $humanReadable ? "\x80\x00\x00\x00" : "\x00\x00\x00\x00",
+            pack('n', $nameLength),
+            pack('n', $valueLength),
             substr($notationName, 0, $nameLength),
             substr($notationValue, 0, $valueLength),
         ]);

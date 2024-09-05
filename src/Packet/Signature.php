@@ -187,6 +187,11 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             ),
             Signature\IssuerFingerprint::fromKeyPacket($signKey),
             Signature\IssuerKeyID::fromKeyID($signKey->getKeyID()),
+            Signature\NotationData::fromNotation(
+                false,
+                Config::SALT_NOTATION,
+                Random::string($hashAlgorithm->saltSize())
+            ),
             ...$subpackets,
         ];
 
