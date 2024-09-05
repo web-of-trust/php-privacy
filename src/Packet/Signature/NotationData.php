@@ -86,10 +86,9 @@ class NotationData extends SignatureSubpacket implements NotationDataInterface
     public function getNotationName(): string
     {
         $data = $this->getData();
-        $flagLength = ord($data[0]) & 0x80 ? 1 : self::FLAG_LENGTH;
-        $nameLength = (((ord($data[$flagLength]) & 0xff) << 8) +
-            (ord($data[$flagLength + 1]) & 0xff));
-        $nameOffset = $flagLength + self::NAME_LENGTH + self::VALUE_LENGTH;
+        $nameLength = (((ord($data[self::FLAG_LENGTH]) & 0xff) << 8) +
+            (ord($data[self::FLAG_LENGTH + 1]) & 0xff));
+        $nameOffset = self::FLAG_LENGTH + self::NAME_LENGTH + self::VALUE_LENGTH;
         return substr($data, $nameOffset, $nameLength);
     }
 
@@ -99,12 +98,11 @@ class NotationData extends SignatureSubpacket implements NotationDataInterface
     public function getNotationValue(): string
     {
         $data = $this->getData();
-        $flagLength = ord($data[0]) & 0x80 ? 1 : self::FLAG_LENGTH;
-        $nameLength = (((ord($data[$flagLength]) & 0xff) << 8) +
-            (ord($this->getData()[$flagLength + 1]) & 0xff));
-        $valueLength = (((ord($data[$flagLength + self::NAME_LENGTH]) & 0xff) << 8) +
-            (ord($data[$flagLength + self::NAME_LENGTH + 1]) & 0xff));
-        $valueOffset =  $flagLength +
+        $nameLength = (((ord($data[self::FLAG_LENGTH]) & 0xff) << 8) +
+            (ord($this->getData()[self::FLAG_LENGTH + 1]) & 0xff));
+        $valueLength = (((ord($data[self::FLAG_LENGTH + self::NAME_LENGTH]) & 0xff) << 8) +
+            (ord($data[self::FLAG_LENGTH + self::NAME_LENGTH + 1]) & 0xff));
+        $valueOffset =  self::FLAG_LENGTH +
             self::NAME_LENGTH +
             self::VALUE_LENGTH +
             $nameLength;
@@ -117,6 +115,7 @@ class NotationData extends SignatureSubpacket implements NotationDataInterface
         string $notationValue
     ): string
     {
+        $notationName = mb_convert_encoding($notationName, 'UTF-8');
         $nameLength = min(strlen($notationName), 0xffff);
         if ($nameLength !== strlen($notationName)) {
             throw new \InvalidArgumentException(
@@ -132,7 +131,7 @@ class NotationData extends SignatureSubpacket implements NotationDataInterface
         }
 
         return implode([
-            $humanReadable ? "\x80" : str_repeat("\x00", 4),
+            $humanReadable ? "\x80\x00\x00\x00" : "\x00\x00\x00\x00",
             pack('n', $nameLength),
             pack('n', $valueLength),
             substr($notationName, 0, $nameLength),
