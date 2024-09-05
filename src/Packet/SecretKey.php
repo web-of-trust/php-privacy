@@ -12,8 +12,8 @@ use DateTimeInterface;
 use OpenPGP\Common\{
     Argon2S2K,
     Config,
-    Helper,
     GenericS2K,
+    Helper,
 };
 use OpenPGP\Enum\{
     AeadAlgorithm,
