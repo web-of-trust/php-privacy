@@ -37,6 +37,7 @@ use OpenPGP\Type\{
     UserIDPacketInterface,
     PublicKeyMaterialInterface,
 };
+use phpseclib3\Crypt\Random;
 
 /**
  * Signature represents a signature.
