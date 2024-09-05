@@ -219,7 +219,6 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         }
         else {
             $hashedSubpackets[] = Signature\NotationData::fromNotation(
-                false,
                 Config::SALT_NOTATION,
                 Random::string($hashAlgorithm->saltSize())
             );

@@ -52,22 +52,22 @@ class NotationData extends SignatureSubpacket implements NotationDataInterface
     /**
      * From notation
      *
-     * @param bool $humanReadable
      * @param string $notationName
      * @param string $notationValue
+     * @param bool $humanReadable
      * @param bool $critical
      * @return self
      */
     public static function fromNotation(
-        bool $humanReadable,
         string $notationName,
         string $notationValue,
-        bool $critical = false
+        bool $humanReadable = false,
+        bool $critical = false,
     ): self
     {
         return new self(
             self::notationToBytes(
-                $humanReadable, $notationName, $notationValue
+                $notationName, $notationValue, $humanReadable
             ),
             $critical
         );
@@ -111,9 +111,9 @@ class NotationData extends SignatureSubpacket implements NotationDataInterface
     }
 
     private static function notationToBytes(
-        bool $humanReadable,
         string $notationName,
-        string $notationValue
+        string $notationValue,
+        bool $humanReadable = false,
     ): string
     {
         $notationName = mb_convert_encoding($notationName, 'UTF-8');
