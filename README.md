@@ -15,12 +15,12 @@ It implements [RFC9580](https://www.rfc-editor.org/rfc/rfc9580).
   [DSA](https://en.wikipedia.org/wiki/Digital_Signature_Algorithm),
   [ElGamal](https://en.wikipedia.org/wiki/ElGamal_encryption),
   [ECDSA](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm),
-  [EdDSA](https://en.wikipedia.org/wiki/EdDSA)
+  [EdDSA](https://www.rfc-editor.org/rfc/rfc8032)
   and [ECDH](https://en.wikipedia.org/wiki/Elliptic-curve_Diffie%E2%80%93Hellman).
 * Support symmetric ciphers: TripleDES, IDEA, CAST5, Blowfish, Twofish,
-  [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard),
-  [Camellia](https://en.wikipedia.org/wiki/Camellia_(cipher)).
-* Support AEAD ciphers: [EAX](https://www.cs.ucdavis.edu/~rogaway/papers/eax.pdf), [OCB](https://tools.ietf.org/html/rfc7253), [GCM](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf).
+  [AES](https://www.rfc-editor.org/rfc/rfc3394),
+  [Camellia](https://www.rfc-editor.org/rfc/rfc3713).
+* Support AEAD ciphers: [EAX](https://seclab.cs.ucdavis.edu/papers/eax.pdf), [OCB](https://tools.ietf.org/html/rfc7253), [GCM](https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-38d.pdf).
 * Support hash algorithms: MD5, SHA-1, RIPEMD-160, SHA-256, SHA-384, SHA-512, SHA-224, SHA3-256, SHA3-512.
 * Support compression algorithms: Zip, Zlib, BZip2.
 * Support [ECC](https://en.wikipedia.org/wiki/Elliptic-curve_cryptography) curves:
