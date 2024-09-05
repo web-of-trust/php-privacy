@@ -165,5 +165,5 @@ enum SignatureSubpacketType: int
     /**
      * Preferred AEAD Ciphers
      */
-    case PreferredAEADCiphers = 39;
+    case PreferredAeadCiphers = 39;
 }

@@ -15,13 +15,13 @@ use OpenPGP\Enum\{
 use OpenPGP\Packet\SignatureSubpacket;
 
 /**
- * PreferredAEADCiphers sub-packet class
+ * PreferredAeadCiphers sub-packet class
  * 
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class PreferredAEADCiphers extends SignatureSubpacket
+class PreferredAeadCiphers extends SignatureSubpacket
 {
     /**
      * Constructor

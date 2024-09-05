@@ -301,7 +301,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             $subpackets[] = Signature\KeyExpirationTime::fromTime($keyExpiry);
         }
         if ($signKey->getVersion() === self::VERSION_6) {
-            $subpackets[] = new Signature\PreferredAEADCiphers(
+            $subpackets[] = new Signature\PreferredAeadCiphers(
                 implode([
                     chr(SymmetricAlgorithm::Aes128->value),
                     chr(AeadAlgorithm::Gcm->value),
@@ -887,11 +887,11 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * {@inheritdoc}
      */
-    public function getPreferredAEADCiphers(): ?SubpacketInterface
+    public function getPreferredAeadCiphers(): ?SubpacketInterface
     {
         return self::getSubpacket(
             $this->hashedSubpackets,
-            SignatureSubpacketType::PreferredAEADCiphers
+            SignatureSubpacketType::PreferredAeadCiphers
         );
     }
 
