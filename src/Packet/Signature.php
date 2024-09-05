@@ -557,7 +557,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         if ($notationData instanceof NotationDataInterface) {
             $subpackets[] = Signature\NotationData::fromNotation(
                 $notationData->getNotationName(),
-                $notationData->getNotationValue()
+                $notationData->getNotationValue(),
                 $notationData->isHumanReadable(),
             );
         }
