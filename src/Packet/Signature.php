@@ -257,6 +257,34 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
+     * Create direct key signature
+     *
+     * @param KeyPacketInterface $signKey
+     * @param int $keyExpiry
+     * @param DateTimeInterface $time
+     * @return self
+     */
+    public static function createDirectKeySignature(
+        KeyPacketInterface $signKey,
+        int $keyExpiry = 0,
+        ?DateTimeInterface $time = null
+    )
+    {
+        $props = self::keySignatureProperties($signKey->getVersion());
+        if ($keyExpiry > 0) {
+            $props[] = Signature\KeyExpirationTime::fromTime($keyExpiry);
+        }
+        return self::createSignature(
+            $signKey,
+            SignatureType::DirectKey,
+            $signKey->getSignBytes(),
+            Config::getPreferredHash(),
+            $props,
+            $time
+        );
+    }
+
+    /**
      * Create self signature
      *
      * @param KeyPacketInterface $signKey
@@ -274,53 +302,15 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         ?DateTimeInterface $time = null
     )
     {
-        $subpackets = [
-            Signature\KeyFlags::fromFlags(
-                KeyFlag::CertifyKeys->value | KeyFlag::SignData->value
-            ),
-            new Signature\PreferredSymmetricAlgorithms(
-                implode([
-                    chr(SymmetricAlgorithm::Aes128->value),
-                    chr(SymmetricAlgorithm::Aes192->value),
-                    chr(SymmetricAlgorithm::Aes256->value),
-                ])
-            ),
-            new Signature\PreferredHashAlgorithms(
-                implode([
-                    chr(HashAlgorithm::Sha256->value),
-                    chr(HashAlgorithm::Sha512->value),
-                ])
-            ),
-            new Signature\PreferredCompressionAlgorithms(
-                implode([
-                    chr(CompressionAlgorithm::Uncompressed->value),
-                    chr(CompressionAlgorithm::Zip->value),
-                    chr(CompressionAlgorithm::Zlib->value),
-                    chr(CompressionAlgorithm::BZip2->value),
-                ])
-            ),
-            Signature\Features::fromFeatures(
-                SupportFeature::Version1SEIPD->value |
-                SupportFeature::Version2SEIPD->value
-            ),
-        ];
+        $props = [];
+        if ($signKey->getVersion() === self::VERSION_6) {
+            $props = self::keySignatureProperties($signKey->getVersion());
+        }
         if ($isPrimaryUser) {
-            $subpackets[] = new Signature\PrimaryUserID("\x01");
+            $props[] = new Signature\PrimaryUserID("\x01");
         }
         if ($keyExpiry > 0) {
-            $subpackets[] = Signature\KeyExpirationTime::fromTime($keyExpiry);
-        }
-        if ($signKey->getVersion() === self::VERSION_6) {
-            $subpackets[] = new Signature\PreferredAeadCiphers(
-                implode([
-                    chr(SymmetricAlgorithm::Aes128->value),
-                    chr(AeadAlgorithm::Gcm->value),
-                    chr(SymmetricAlgorithm::Aes192->value),
-                    chr(AeadAlgorithm::Gcm->value),
-                    chr(SymmetricAlgorithm::Aes256->value),
-                    chr(AeadAlgorithm::Gcm->value),
-                ])
-            );
+            $props[] = Signature\KeyExpirationTime::fromTime($keyExpiry);
         }
         return self::createSignature(
             $signKey,
@@ -330,7 +320,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
                 $userID->getSignBytes(),
             ]),
             Config::getPreferredHash(),
-            $subpackets,
+            $props,
             $time
         );
     }
@@ -1044,8 +1034,70 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
+     * Create key signature subpackets
+     * 
+     * @param int $version
+     * @return array
+     */
+    private static function keySignatureProperties(int $version): array
+    {
+        $symmetrics = [
+            chr(SymmetricAlgorithm::Aes128->value),
+            chr(SymmetricAlgorithm::Aes256->value),
+        ];
+        $aeads = array_map(
+            static fn ($algo) => chr($algo->value),
+            AeadAlgorithm::cases(),
+        );
+        $props = [
+            Signature\KeyFlags::fromFlags(
+                KeyFlag::CertifyKeys->value | KeyFlag::SignData->value
+            ),
+            new Signature\PreferredSymmetricAlgorithms(
+                implode($symmetrics)
+            ),
+            new Signature\PreferredAeadAlgorithms(
+                implode($aeads)
+            ),
+            new Signature\PreferredHashAlgorithms(
+                implode([
+                    chr(HashAlgorithm::Sha256->value),
+                    chr(HashAlgorithm::Sha3_256->value),
+                    chr(HashAlgorithm::Sha512->value),
+                    chr(HashAlgorithm::Sha3_512->value),
+                ])
+            ),
+            new Signature\PreferredCompressionAlgorithms(
+                implode([
+                    chr(CompressionAlgorithm::Uncompressed->value),
+                    chr(CompressionAlgorithm::Zip->value),
+                    chr(CompressionAlgorithm::Zlib->value),
+                    chr(CompressionAlgorithm::BZip2->value),
+                ])
+            ),
+            Signature\Features::fromFeatures(
+                SupportFeature::Version1SEIPD->value |
+                SupportFeature::Version2SEIPD->value
+            ),
+        ];
+        if ($version === self::VERSION_6) {
+            $props[] = new Signature\PreferredAeadCiphers(
+                implode(array_map(
+                    static fn ($aead) => implode([
+                        $symmetrics[0] . $aead,
+                        $symmetrics[1] . $aead,
+                    ]),
+                    $aeads,
+                ))
+            );
+        }
+        return $props;
+    }
+
+    /**
      * Read subpackets
      * 
+     * @param array $bytes
      * @return array
      */
     private static function readSubpackets(string $bytes): array

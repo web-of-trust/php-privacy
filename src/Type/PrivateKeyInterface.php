@@ -41,6 +41,13 @@ interface PrivateKeyInterface extends KeyInterface
     function isDecrypted(): bool;
 
     /**
+     * Return true if the key packet is aead protected.
+     * 
+     * @return bool
+     */
+    function aeadProtected(): bool;
+
+    /**
      * Get array of key packets that is available for decryption
      * 
      * @param string $keyID

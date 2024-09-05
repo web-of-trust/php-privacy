@@ -9,6 +9,8 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\PacketTag;
+use OpenPGP\Type\PaddingPacketInterface;
+use phpseclib3\Common\Functions\Strings;
 use phpseclib3\Crypt\Random;
 
 /**
@@ -18,7 +20,7 @@ use phpseclib3\Crypt\Random;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class Padding extends AbstractPacket
+class Padding extends AbstractPacket implements PaddingPacketInterface
 {
     /**
      * Constructor
@@ -29,18 +31,6 @@ class Padding extends AbstractPacket
     public function __construct(private string $padding)
     {
         parent::__construct(PacketTag::Padding);
-    }
-
-    /**
-     * Create random padding.
-     *
-     * @param int $length - The length of padding to be generated.
-     * @return self
-     */
-    public function createPadding(int $length): self
-    {
-        $this->padding = Random::string($length);
-        return $this;
     }
 
     /**
@@ -57,5 +47,24 @@ class Padding extends AbstractPacket
     public function toBytes(): string
     {
         return $this->padding;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPadding(bool $toHex = false): string
+    {
+        return $toHex ? Strings::bin2hex($this->padding) : $this->padding;
+    }
+
+    /**
+     * Create random padding.
+     *
+     * @param int $length - The length of padding to be generated.
+     * @return self
+     */
+    public static function createPadding(int $length): self
+    {
+        return new self(Random::string($length));
     }
 }

@@ -5,7 +5,7 @@ namespace OpenPGP\Tests\Cryptor;
 use OpenPGP\Common\Config;
 use OpenPGP\Enum\{CurveOid, KeyAlgorithm, KeyType};
 use OpenPGP\Key\{PrivateKey, PublicKey};
-use OpenPGP\Type\SecretKeyPacketInterface;
+use OpenPGP\Type\{PaddingPacketInterface, SecretKeyPacketInterface};
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
@@ -591,9 +591,10 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertTrue($user->isRevoked());
     }
 
-    public function testGenerateV6RSAKey()
+    public function testGenerateV6RsaKeyWithAeadProtect()
     {
         Config::setUseV6Key(true);
+        Config::setAeadProtect(true);
 
         $name = $this->faker->unique()->name();
         $email = $this->faker->unique()->safeEmail();
@@ -607,10 +608,133 @@ class PrivateKeyTest extends OpenPGPTestCase
             KeyType::Rsa
         );
         $this->assertSame(6, $privateKey->getVersion());
+        $this->assertSame(KeyAlgorithm::RsaEncryptSign, $privateKey->getKeyAlgorithm());
+        $this->assertTrue($privateKey->aeadProtected());
+        $this->assertTrue($privateKey->toPublic()->getPadding() instanceof PaddingPacketInterface);
+
+        $signature = $privateKey->getLatestDirectSignature();
+        $this->assertSame(6, $signature->getVersion());
+
+        $subkey = $privateKey->getSubKeys()[0];
+        $this->assertSame(6, $subkey->getVersion());
+        $this->assertSame(KeyAlgorithm::RsaEncryptSign, $subkey->getKeyAlgorithm());
 
         $user = $privateKey->getPrimaryUser();
         $this->assertSame(6, $user->getLatestSelfCertification()->getVersion());
 
+        Config::setAeadProtect(false);
+        Config::setUseV6Key(false);
+    }
+
+    public function testGenerateV6EccKeyWithAeadProtect()
+    {
+        Config::setUseV6Key(true);
+        Config::setAeadProtect(true);
+
+        $name = $this->faker->unique()->name();
+        $email = $this->faker->unique()->safeEmail();
+        $comment = $this->faker->unique()->sentence(1);
+        $passphrase = $this->faker->unique()->password();
+        $userID = implode([$name, "($comment)", "<$email>"]);
+
+        $privateKey = PrivateKey::generate(
+            [$userID],
+            $passphrase,
+            KeyType::Ecc,
+            curve: CurveOid::Secp521r1,
+        );
+        $this->assertSame(6, $privateKey->getVersion());
+        $this->assertSame(521, $privateKey->getKeyStrength());
+        $this->assertSame(KeyAlgorithm::EcDsa, $privateKey->getKeyAlgorithm());
+        $this->assertTrue($privateKey->aeadProtected());
+        $this->assertTrue($privateKey->toPublic()->getPadding() instanceof PaddingPacketInterface);
+
+        $signature = $privateKey->getLatestDirectSignature();
+        $this->assertSame(6, $signature->getVersion());
+
+        $subkey = $privateKey->getSubKeys()[0];
+        $this->assertSame(6, $subkey->getVersion());
+        $this->assertSame(521, $subkey->getKeyStrength());
+        $this->assertSame(KeyAlgorithm::Ecdh, $subkey->getKeyAlgorithm());
+
+        $user = $privateKey->getPrimaryUser();
+        $this->assertSame(6, $user->getLatestSelfCertification()->getVersion());
+
+        Config::setAeadProtect(false);
+        Config::setUseV6Key(false);
+    }
+
+    public function testGenerateV6Curve25519KeyWithAeadProtect()
+    {
+        Config::setUseV6Key(true);
+        Config::setAeadProtect(true);
+
+        $name = $this->faker->unique()->name();
+        $email = $this->faker->unique()->safeEmail();
+        $comment = $this->faker->unique()->sentence(1);
+        $passphrase = $this->faker->unique()->password();
+        $userID = implode([$name, "($comment)", "<$email>"]);
+
+        $privateKey = PrivateKey::generate(
+            [$userID],
+            $passphrase,
+            KeyType::Curve25519,
+        );
+        $this->assertSame(6, $privateKey->getVersion());
+        $this->assertSame(255, $privateKey->getKeyStrength());
+        $this->assertSame(KeyAlgorithm::Ed25519, $privateKey->getKeyAlgorithm());
+        $this->assertTrue($privateKey->aeadProtected());
+        $this->assertTrue($privateKey->toPublic()->getPadding() instanceof PaddingPacketInterface);
+
+        $signature = $privateKey->getLatestDirectSignature();
+        $this->assertSame(6, $signature->getVersion());
+
+        $subkey = $privateKey->getSubKeys()[0];
+        $this->assertSame(6, $subkey->getVersion());
+        $this->assertSame(255, $subkey->getKeyStrength());
+        $this->assertSame(KeyAlgorithm::X25519, $subkey->getKeyAlgorithm());
+
+        $user = $privateKey->getPrimaryUser();
+        $this->assertSame(6, $user->getLatestSelfCertification()->getVersion());
+
+        Config::setAeadProtect(false);
+        Config::setUseV6Key(false);
+    }
+
+    public function testGenerateV6Curve448KeyWithAeadProtect()
+    {
+        Config::setUseV6Key(true);
+        Config::setAeadProtect(true);
+
+        $name = $this->faker->unique()->name();
+        $email = $this->faker->unique()->safeEmail();
+        $comment = $this->faker->unique()->sentence(1);
+        $passphrase = $this->faker->unique()->password();
+        $userID = implode([$name, "($comment)", "<$email>"]);
+
+        $privateKey = PrivateKey::generate(
+            [$userID],
+            $passphrase,
+            KeyType::Curve448,
+        );
+        $this->assertSame(6, $privateKey->getVersion());
+        $this->assertSame(448, $privateKey->getKeyStrength());
+        $this->assertSame(KeyAlgorithm::Ed448, $privateKey->getKeyAlgorithm());
+        $this->assertTrue($privateKey->aeadProtected());
+        $this->assertTrue($privateKey->toPublic()->getPadding() instanceof PaddingPacketInterface);
+
+        $signature = $privateKey->getLatestDirectSignature();
+        $this->assertSame(6, $signature->getVersion());
+
+        $subkey = $privateKey->getSubKeys()[0];
+        $this->assertSame(6, $subkey->getVersion());
+        $this->assertSame(448, $subkey->getKeyStrength());
+        $this->assertSame(KeyAlgorithm::X448, $subkey->getKeyAlgorithm());
+
+        $user = $privateKey->getPrimaryUser();
+        $this->assertSame(6, $user->getLatestSelfCertification()->getVersion());
+
+        Config::setAeadProtect(false);
         Config::setUseV6Key(false);
     }
 
@@ -646,5 +770,90 @@ class PrivateKeyTest extends OpenPGPTestCase
         );
         $this->assertFalse($publicKey->isRevoked($privateKey));
         $this->assertTrue($revokedKey->isRevoked($privateKey));
+    }
+
+    public function testVersion6SecretKey()
+    {
+        $keyData = <<<EOT
+-----BEGIN PGP PRIVATE KEY BLOCK-----
+
+xUsGY4d/4xsAAAAg+U2nu0jWCmHlZ3BqZYfQMxmZu52JGggkLq2EVD34laMAGXKB
+exK+cH6NX1hs5hNhIB00TrJmosgv3mg1ditlsLfCsQYfGwoAAABCBYJjh3/jAwsJ
+BwUVCg4IDAIWAAKbAwIeCSIhBssYbE8GCaaX5NUt+mxyKwwfHifBilZwj2Ul7Ce6
+2azJBScJAgcCAAAAAK0oIBA+LX0ifsDm185Ecds2v8lwgyU2kCcUmKfvBXbAf6rh
+RYWzuQOwEn7E/aLwIwRaLsdry0+VcallHhSu4RN6HWaEQsiPlR4zxP/TP7mhfVEe
+7XWPxtnMUMtf15OyA51YBMdLBmOHf+MZAAAAIIaTJINn+eUBXbki+PSAld2nhJh/
+LVmFsS+60WyvXkQ1AE1gCk95TUR3XFeibg/u/tVY6a//1q0NWC1X+yui3O24wpsG
+GBsKAAAALAWCY4d/4wKbDCIhBssYbE8GCaaX5NUt+mxyKwwfHifBilZwj2Ul7Ce6
+2azJAAAAAAQBIKbpGG2dWTX8j+VjFM21J0hqWlEg+bdiojWnKfA5AQpWUWtnNwDE
+M0g12vYxoWM8Y81W+bHBw805I8kWVkXU6vFOi+HWvv/ira7ofJu16NnoUkhclkUr
+k0mXubZvyl4GBg==
+-----END PGP PRIVATE KEY BLOCK-----
+EOT;
+
+        $privateKey = PrivateKey::fromArmored($keyData);
+        $this->assertSame(6, $privateKey->getVersion());
+        $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $privateKey->getFingerprint(true));
+        $this->assertTrue($privateKey->verify());
+        $this->assertFalse($privateKey->isEncrypted());
+
+        $signature = $privateKey->getLatestDirectSignature();
+        $this->assertSame(6, $signature->getVersion());
+        $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $signature->getIssuerFingerprint(true));
+
+        $subkey = $privateKey->getSubKeys()[0];
+        $this->assertSame(6, $subkey->getVersion());
+        $this->assertSame('12c83f1e706f6308fe151a417743a1f033790e93e9978488d1db378da9930885', $subkey->getFingerprint(true));
+        $this->assertTrue($subkey->verify());
+
+        $signature = $subkey->getLatestBindingSignature();
+        $this->assertSame(6, $signature->getVersion());
+        $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $signature->getIssuerFingerprint(true));
+    }
+
+    public function testLockedVersion6SecretKey()
+    {
+        $keyData = <<<EOT
+-----BEGIN PGP PRIVATE KEY BLOCK-----
+
+xYIGY4d/4xsAAAAg+U2nu0jWCmHlZ3BqZYfQMxmZu52JGggkLq2EVD34laP9JgkC
+FARdb9ccngltHraRe25uHuyuAQQVtKipJ0+r5jL4dacGWSAheCWPpITYiyfyIOPS
+3gIDyg8f7strd1OB4+LZsUhcIjOMpVHgmiY/IutJkulneoBYwrEGHxsKAAAAQgWC
+Y4d/4wMLCQcFFQoOCAwCFgACmwMCHgkiIQbLGGxPBgmml+TVLfpscisMHx4nwYpW
+cI9lJewnutmsyQUnCQIHAgAAAACtKCAQPi19In7A5tfORHHbNr/JcIMlNpAnFJin
+7wV2wH+q4UWFs7kDsBJ+xP2i8CMEWi7Ha8tPlXGpZR4UruETeh1mhELIj5UeM8T/
+0z+5oX1RHu11j8bZzFDLX9eTsgOdWATHggZjh3/jGQAAACCGkySDZ/nlAV25Ivj0
+gJXdp4SYfy1ZhbEvutFsr15ENf0mCQIUBA5hhGgp2oaavg6mFUXcFMwBBBUuE8qf
+9Ock+xwusd+GAglBr5LVyr/lup3xxQvHXFSjjA2haXfoN6xUGRdDEHI6+uevKjVR
+v5oAxgu7eJpaXNjCmwYYGwoAAAAsBYJjh3/jApsMIiEGyxhsTwYJppfk1S36bHIr
+DB8eJ8GKVnCPZSXsJ7rZrMkAAAAABAEgpukYbZ1ZNfyP5WMUzbUnSGpaUSD5t2Ki
+Nacp8DkBClZRa2c3AMQzSDXa9jGhYzxjzVb5scHDzTkjyRZWRdTq8U6L4da+/+Kt
+ruh8m7Xo2ehSSFyWRSuTSZe5tm/KXgYG
+-----END PGP PRIVATE KEY BLOCK-----
+EOT;
+
+        $privateKey = PrivateKey::fromArmored($keyData);
+        $this->assertSame(6, $privateKey->getVersion());
+        $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $privateKey->getFingerprint(true));
+        $this->assertTrue($privateKey->verify());
+        $this->assertTrue($privateKey->isEncrypted());
+        $this->assertFalse($privateKey->isDecrypted());
+
+        $signature = $privateKey->getLatestDirectSignature();
+        $this->assertSame(6, $signature->getVersion());
+        $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $signature->getIssuerFingerprint(true));
+
+        $subkey = $privateKey->getSubKeys()[0];
+        $this->assertSame(6, $subkey->getVersion());
+        $this->assertSame('12c83f1e706f6308fe151a417743a1f033790e93e9978488d1db378da9930885', $subkey->getFingerprint(true));
+        $this->assertTrue($subkey->verify());
+
+        $signature = $subkey->getLatestBindingSignature();
+        $this->assertSame(6, $signature->getVersion());
+        $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $signature->getIssuerFingerprint(true));
+
+        $privateKey = $privateKey->decrypt('correct horse battery staple');
+        $this->assertTrue($privateKey->isEncrypted());
+        $this->assertTrue($privateKey->isDecrypted());
     }
 }

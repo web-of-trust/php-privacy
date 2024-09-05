@@ -70,7 +70,7 @@ final class OpenPGP
         KeyType $type = KeyType::Rsa,
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
         DHKeySize $dhKeySize = DHKeySize::Normal,
-        CurveOid $curve = CurveOid::Ed25519,
+        CurveOid $curve = CurveOid::Secp521r1,
         int $keyExpiry = 0,
         ?DateTimeInterface $time = null
     ): PrivateKeyInterface
@@ -83,7 +83,7 @@ final class OpenPGP
             $dhKeySize,
             $curve,
             $keyExpiry,
-            $time
+            $time,
         );
     }
 

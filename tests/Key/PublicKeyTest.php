@@ -220,6 +220,7 @@ EOT;
         $publicKey = PublicKey::fromArmored($keyData);
         $this->assertSame(6, $publicKey->getVersion());
         $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $publicKey->getFingerprint(true));
+        $this->assertTrue($publicKey->verify());
 
         $signature = $publicKey->getLatestDirectSignature();
         $this->assertSame(6, $signature->getVersion());
@@ -228,6 +229,7 @@ EOT;
         $subkey = $publicKey->getSubKeys()[0];
         $this->assertSame(6, $subkey->getVersion());
         $this->assertSame('12c83f1e706f6308fe151a417743a1f033790e93e9978488d1db378da9930885', $subkey->getFingerprint(true));
+        $this->assertTrue($subkey->verify());
 
         $signature = $subkey->getLatestBindingSignature();
         $this->assertSame(6, $signature->getVersion());

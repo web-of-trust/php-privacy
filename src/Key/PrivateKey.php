@@ -14,6 +14,7 @@ use OpenPGP\Common\{
     Config,
 };
 use OpenPGP\Enum\{
+    AeadAlgorithm,
     ArmorType,
     CurveOid,
     DHKeySize,
@@ -25,6 +26,7 @@ use OpenPGP\Enum\{
 };
 use OpenPGP\Packet\{
     PacketList,
+    Padding,
     SecretKey,
     SecretSubkey,
     Signature,
@@ -56,6 +58,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
      * @param array $directSignatures
      * @param array $users
      * @param array $subkeys
+     * @param Padding $padding
      * @return self
      */
     public function __construct(
@@ -63,7 +66,8 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         array $revocationSignatures = [],
         array $directSignatures = [],
         array $users = [],
-        array $subkeys = []
+        array $subkeys = [],
+        ?Padding $padding = null,
     )
     {
         parent::__construct(
@@ -71,7 +75,8 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $revocationSignatures,
             $directSignatures,
             $users,
-            $subkeys
+            $subkeys,
+            $padding,
         );
         $this->secretKeyPacket = $keyPacket;
     }
@@ -114,7 +119,8 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         $privateKey = new self(
             $keyStruct['keyPacket'],
             $keyStruct['revocationSignatures'],
-            $keyStruct['directSignatures']
+            $keyStruct['directSignatures'],
+            padding: $keyStruct['padding'],
         );
         self::applyKeyStructure($privateKey, $keyStruct);
 
@@ -142,7 +148,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         KeyType $type = KeyType::Rsa,
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
         DHKeySize $dhKeySize = DHKeySize::Normal,
-        CurveOid $curve = CurveOid::Ed25519,
+        CurveOid $curve = CurveOid::Secp521r1,
         int $keyExpiry = 0,
         ?DateTimeInterface $time = null
     ): self
@@ -152,23 +158,35 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 'UserIDs and passphrase are required for key generation.',
             );
         }
-        $keyAlgorithm = KeyAlgorithm::RsaEncryptSign;
-        $subkeyAlgorithm = KeyAlgorithm::RsaEncryptSign;
         $subkeyCurve = $curve;
-        if ($type === KeyType::Dsa) {
-            $keyAlgorithm = KeyAlgorithm::Dsa;
-            $subkeyAlgorithm = KeyAlgorithm::ElGamal;
-        }
-        elseif ($type === KeyType::Ecc) {
-            if ($curve === CurveOid::Ed25519 || $curve === CurveOid::Curve25519) {
-                $keyAlgorithm = KeyAlgorithm::EdDsaLegacy;
-                $curve = CurveOid::Ed25519;
-                $subkeyCurve = CurveOid::Curve25519;
-            }
-            else {
-                $keyAlgorithm = KeyAlgorithm::EcDsa;
-            }
-            $subkeyAlgorithm = KeyAlgorithm::Ecdh;
+        switch ($type) {
+            case KeyType::Dsa:
+                $keyAlgorithm = KeyAlgorithm::Dsa;
+                $subkeyAlgorithm = KeyAlgorithm::ElGamal;
+                break;
+            case KeyType::Ecc:
+                if ($curve === CurveOid::Ed25519 || $curve === CurveOid::Curve25519) {
+                    $keyAlgorithm = KeyAlgorithm::EdDsaLegacy;
+                    $curve = CurveOid::Ed25519;
+                    $subkeyCurve = CurveOid::Curve25519;
+                }
+                else {
+                    $keyAlgorithm = KeyAlgorithm::EcDsa;
+                }
+                $subkeyAlgorithm = KeyAlgorithm::Ecdh;
+                break;
+            case KeyType::Curve25519:
+                $keyAlgorithm = KeyAlgorithm::Ed25519;
+                $subkeyAlgorithm = KeyAlgorithm::X25519;
+                break;
+            case KeyType::Curve448:
+                $keyAlgorithm = KeyAlgorithm::Ed448;
+                $subkeyAlgorithm = KeyAlgorithm::X448;
+                break;
+            default:
+                $keyAlgorithm = KeyAlgorithm::RsaEncryptSign;
+                $subkeyAlgorithm = KeyAlgorithm::RsaEncryptSign;
+                break;
         }
 
         $secretKey = SecretKey::generate(
@@ -177,16 +195,37 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $dhKeySize,
             $curve,
             $time,
-        )->encrypt($passphrase, Config::getPreferredSymmetric());
+        );
         $secretSubkey = SecretSubkey::generate(
             $subkeyAlgorithm,
             $rsaKeySize,
             $dhKeySize,
             $subkeyCurve,
             $time,
-        )->encrypt($passphrase, Config::getPreferredSymmetric());
+        );
+
+        $aead = null;
+        $v6Key = $secretKey->getVersion() === 6;
+
+        if ($v6Key && Config::aeadProtect()) {
+            $aead = Config::getPreferredAead();
+        }
+        $secretKey = $secretKey->encrypt(
+            $passphrase, Config::getPreferredSymmetric(), $aead
+        );
+        $secretSubkey = $secretSubkey->encrypt(
+            $passphrase, Config::getPreferredSymmetric(), $aead
+        );
 
         $packets = [$secretKey];
+        if ($v6Key) {
+            // Wrap secret key with direct key signature
+            $packets[] = Signature::createDirectKeySignature(
+                $secretKey,
+                $keyExpiry,
+                $time,
+            );
+        }
 
         // Wrap user id with certificate signature
         $index = 0;
@@ -198,7 +237,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 $packet,
                 ($index === 0) ? true : false,
                 $keyExpiry,
-                $time
+                $time,
             );
             $index++;
         }
@@ -208,6 +247,12 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         $packets[] = Signature::createSubkeyBinding(
             $secretKey, $secretSubkey, $keyExpiry, false, $time
         );
+
+        if ($v6Key) {
+            $packets[] = Padding::createPadding(
+                random_int(Config::PADDING_MIN, Config::PADDING_MAX)
+            );
+        }
 
         return self::fromPacketList(new PacketList($packets));
     }
@@ -254,6 +299,14 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     public function isDecrypted(): bool
     {
         return $this->secretKeyPacket->isDecrypted();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function aeadProtected(): bool
+    {
+        return $this->secretKeyPacket->getAead() instanceof AeadAlgorithm;
     }
 
     /**
@@ -311,9 +364,14 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             );
         }
 
+        $aead = null;
+        if ($this->getVersion() === 6 && Config::aeadProtect()) {
+            $aead = Config::getPreferredAead();
+        }
+
         $privateKey = new self(
             $this->secretKeyPacket->encrypt(
-                $passphrase, Config::getPreferredSymmetric()
+                $passphrase, Config::getPreferredSymmetric(), $aead
             ),
             $this->getRevocationSignatures(),
             $this->getDirectSignatures(),
@@ -335,7 +393,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             if ($keyPacket instanceof SecretKeyPacketInterface) {
                 $subkeyPassphrase = $subkeyPassphrases[$key] ?? $passphrase;
                 $keyPacket = $keyPacket->encrypt(
-                    $subkeyPassphrase, Config::getPreferredSymmetric()
+                    $subkeyPassphrase, Config::getPreferredSymmetric(), $aead
                 );
             }
             $subkeys[] = new Subkey(
