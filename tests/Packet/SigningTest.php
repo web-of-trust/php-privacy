@@ -3,6 +3,7 @@
 namespace OpenPGP\Tests\Packet;
 
 use phpseclib3\Crypt\Random;
+use OpenPGP\Enum\KeyAlgorithm;
 use OpenPGP\Enum\KeyFlag;
 use OpenPGP\Enum\SignatureType;
 use OpenPGP\Enum\SignatureSubpacketType;
@@ -268,6 +269,33 @@ EOT;
             $secretKey,
             SignatureType::Standalone,
             $message
+        );
+        $this->assertTrue($signature->verify($publicKey, $message));
+        $this->assertFalse($signature->verify($publicKey, self::LITERAL_TEXT));
+    }
+
+    public function testVersion6Curve25519Signing()
+    {
+        $message = Random::string(1024);
+        $secretKeyData = <<<EOT
+BmOHf+MbAAAAIPlNp7tI1gph5WdwamWH0DMZmbudiRoIJC6thFQ9+JWjABlygXsSvnB+jV9YbOYTYSAdNE6yZqLIL95oNXYrZbC3Dac=
+EOT;
+        $publicKeyData = <<<EOT
+BmOHf+MbAAAAIPlNp7tI1gph5WdwamWH0DMZmbudiRoIJC6thFQ9+JWj
+EOT;
+
+        $secretKey = SecretKey::fromBytes(base64_decode($secretKeyData));
+        $publicKey = PublicKey::fromBytes(base64_decode($publicKeyData));
+
+        $signature = Signature::createSignature(
+            $secretKey,
+            SignatureType::Standalone,
+            $message
+        );
+        $this->assertSame(KeyAlgorithm::Ed25519, $signature->getKeyAlgorithm());
+        $this->assertSame(
+            'cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9',
+            $signature->getIssuerFingerprint(true)
         );
         $this->assertTrue($signature->verify($publicKey, $message));
         $this->assertFalse($signature->verify($publicKey, self::LITERAL_TEXT));

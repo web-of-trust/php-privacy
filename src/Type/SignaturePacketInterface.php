@@ -76,16 +76,18 @@ interface SignaturePacketInterface extends PacketInterface
     /**
      * Get salt value
      *
+     * @param bool $toHex
      * @return string
      */
-    function getSalt(): string;
+    function getSalt(bool $toHex = false): string;
 
     /**
      * Get signature data
      *
+     * @param bool $toHex
      * @return string
      */
-    function getSignature(): string;
+    function getSignature(bool $toHex = false): string;
 
     /**
      * Verify signature expiration date

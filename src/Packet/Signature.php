@@ -39,6 +39,7 @@ use OpenPGP\Type\{
     PublicKeyMaterialInterface,
 };
 use phpseclib3\Crypt\Random;
+use phpseclib3\Common\Functions\Strings;
 
 /**
  * Implementation an OpenPGP signature packet (Tag 2).
@@ -712,17 +713,17 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * {@inheritdoc}
      */
-    public function getSalt(): string
+    public function getSalt(bool $toHex = false): string
     {
-        return $this->salt;
+        return $toHex ? Strings::bin2hex($this->salt) : $this->salt;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getSignature(): string
+    public function getSignature(bool $toHex = false): string
     {
-        return $this->signature;
+        return $toHex ? Strings::bin2hex($this->signature) : $this->signature;
     }
 
     /**
