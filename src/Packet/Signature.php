@@ -212,8 +212,19 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             ...$subpackets,
         ];
 
+        $salt = '';
         $isV6 = $version === self::VERSION_6;
-        $salt = $isV6 ? Random::string($hashAlgorithm->saltSize()) : '';
+        if ($isV6) {
+            $salt = Random::string($hashAlgorithm->saltSize());
+        }
+        else {
+            $hashedSubpackets[] = Signature\NotationData::fromNotation(
+                false,
+                Config::SALT_NOTATION,
+                Random::string($hashAlgorithm->saltSize())
+            );
+        }
+
         $signatureData = implode([
             chr($version),
             chr($signatureType->value),

@@ -34,6 +34,8 @@ final class Config
     const CIPHER_MODE = 'cfb';
     const HKDF_ALGO   = 'sha256';
 
+    const SALT_NOTATION = 'PHP Privacy Salt Notation';
+
     private static HashAlgorithm $preferredHash = HashAlgorithm::Sha256;
 
     private static SymmetricAlgorithm $preferredSymmetric = SymmetricAlgorithm::Aes128;
