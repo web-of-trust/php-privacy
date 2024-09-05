@@ -38,7 +38,7 @@ class PreferredAeadCiphers extends SignatureSubpacket
     )
     {
         parent::__construct(
-            SignatureSubpacketType::PreferredAEADCiphers->value,
+            SignatureSubpacketType::PreferredAeadCiphers->value,
             $data,
             $critical,
             $isLong
