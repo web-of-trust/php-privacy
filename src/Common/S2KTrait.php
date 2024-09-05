@@ -53,7 +53,7 @@ trait S2KTrait
         return preg_replace_callback(
             '/\*/u',
             fn () => chr(random_int(33, 126)),
-            str_repeat('*', static::SALT_LENGTH)
+            str_repeat('*', self::SALT_LENGTH)
         );
     }
 }

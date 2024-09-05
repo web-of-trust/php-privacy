@@ -15,22 +15,27 @@ use OpenPGP\Enum\{
 use OpenPGP\Type\S2KInterface;
 
 /**
- * String-to-key class
- * 
  * Implementation of the String-to-key specifier
- * String-to-key (S2K) specifiers are used to convert passphrase strings into
- * symmetric-key encryption/decryption keys.
- * They are used in two places, currently: to encrypt the secret part
- * of private keys in the private keyring, and to convert passphrases
- * to encryption keys for symmetrically encrypted messages.
+ * 
+ * See RFC 9580, section 3.7.
+ * 
+ * A string-to-key (S2K) Specifier is used to convert a passphrase string into a
+ * symmetric key encryption/decryption key.
+ * Passphrases requiring use of S2K conversion are currently used in two places:
+ * to encrypt the secret part of private keys and for symmetrically encrypted messages.
  *
  * @package  OpenPGP
  * @category Common
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class S2K implements S2KInterface
+class GenericS2K implements S2KInterface
 {
     use S2KTrait;
+
+    /**
+     * Default salt length
+     */
+    const SALT_LENGTH = 8;
 
     /**
      * Exponent bias, defined in RFC4880

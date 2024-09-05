@@ -39,7 +39,7 @@ class OnePassSignature extends AbstractPacket
      * @param string $salt
      * @param string $issuerFingerprint
      * @param string $issuerKeyID
-     * @param int $nested
+     * @param int $isLast
      * @return self
      */
     public function __construct(
@@ -50,10 +50,15 @@ class OnePassSignature extends AbstractPacket
         private readonly string $salt,
         private readonly string $issuerFingerprint,
         private readonly string $issuerKeyID,
-        private readonly int $nested = 0,
+        private readonly int $isLast = 0,
     )
     {
         parent::__construct(PacketTag::OnePassSignature);
+        if ($version != self::VERSION_3 && $version != self::VERSION_6) {
+            throw new \RuntimeException(
+                "Version $version of the one-pass signature packet is unsupported.",
+            );
+        }
     }
 
     /**
@@ -64,11 +69,6 @@ class OnePassSignature extends AbstractPacket
         $offset = 0;
         // A one-octet version number.
         $version = ord($bytes[$offset++]);
-        if ($version != self::VERSION_3 && $version != self::VERSION_6) {
-            throw new \RuntimeException(
-                "Version $version of the one-pass signature packet is unsupported.",
-            );
-        }
 
         // A one-octet signature type.
         $signatureType = SignatureType::from(ord($bytes[$offset++]));
@@ -101,7 +101,7 @@ class OnePassSignature extends AbstractPacket
          * A zero value indicates that the next packet is another One-Pass Signature packet
          * that describes another signature to be applied to the same message data.
          */
-        $nested = ord($bytes[$offset]);
+        $isLast = ord($bytes[$offset]);
 
         return new self(
             $version,
@@ -111,7 +111,29 @@ class OnePassSignature extends AbstractPacket
             $salt,
             $issuerFingerprint,
             $issuerKeyID,
-            $nested
+            $isLast
+        );
+    }
+
+    /**
+     * Build one-pass signature packet from signature packet
+     *
+     * @param Signature $signature
+     * @param int $isLast
+     * @return self
+     */
+    public static function fromSignature(Signature $signature, int $isLast = 0): self
+    {
+        return new self(
+            $signature->getVersion() === self::VERSION_6 ?
+                    self::VERSION_6 : self::VERSION_3,
+            $signature->getSignatureType(),
+            $signature->getHashAlgorithm(),
+            $signature->getKeyAlgorithm(),
+            $signature->getSalt(),
+            $signature->getIssuerFingerprint(),
+            $signature->getIssuerKeyID(),
+            $isLast
         );
     }
 
@@ -186,13 +208,13 @@ class OnePassSignature extends AbstractPacket
     }
 
     /**
-     * Get nested
+     * Packet is last
      *
      * @return int
      */
-    public function getNested(): int
+    public function isLast(): int
     {
-        return $this->nested;
+        return $this->isLast;
     }
 
     /**
@@ -214,7 +236,7 @@ class OnePassSignature extends AbstractPacket
         else {
             $data[] = $this->issuerKeyID;
         }
-        $data[] = chr($this->nested);
+        $data[] = chr($this->isLast);
         return implode($data);
     }
 }

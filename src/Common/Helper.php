@@ -129,8 +129,8 @@ final class Helper
                 Config::getArgon2Iteration(),
                 Config::getArgon2Parallelism(),
                 Config::getArgon2MemoryExponent(),
-            ) : new S2K(
-                S2K::generateSalt(),
+            ) : new GenericS2K(
+                GenericS2K::generateSalt(),
                 $type,
                 Config::getS2kHash(),
                 Config::getS2kItCount(),

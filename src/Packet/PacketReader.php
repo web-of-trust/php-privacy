@@ -75,9 +75,10 @@ class PacketReader
      */
     public static function read(string $bytes, int $offset = 0): self
     {
-        if (strlen($bytes) <= $offset
-            || strlen(substr($bytes, $offset)) < 2
-            || (ord($bytes[$offset]) & 0x80) === 0) {
+        if (strlen($bytes) <= $offset ||
+            strlen(substr($bytes, $offset)) < 2 ||
+            (ord($bytes[$offset]) & 0x80) === 0
+        ) {
             throw new \UnexpectedValueException(
                 'Error during parsing. This data probably does not conform to a valid OpenPGP format.',
             );

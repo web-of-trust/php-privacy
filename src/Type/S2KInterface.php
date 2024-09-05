@@ -20,11 +20,6 @@ use OpenPGP\Enum\S2kType;
 interface S2KInterface
 {
     /**
-     * Default salt length
-     */
-    const SALT_LENGTH = 8;
-
-    /**
      * Get S2K type
      *
      * @return S2kType

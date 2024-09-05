@@ -17,6 +17,8 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 /**
  * Argon2 string-to-key class
  * 
+ * See RFC 9580, section 3.7.
+ * 
  * Implementation of the Argon2 string-to-key specifier.
  * This S2K method hashes the passphrase using Argon2, as specified in RFC9106.
  * This provides memory hardness, further protecting the passphrase against brute-force attacks.

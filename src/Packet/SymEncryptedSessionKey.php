@@ -12,7 +12,7 @@ use OpenPGP\Common\{
     Argon2S2K,
     Config,
     Helper,
-    S2K,
+    GenericS2K,
 };
 use OpenPGP\Enum\{
     AeadAlgorithm,
@@ -110,7 +110,7 @@ class SymEncryptedSessionKey extends AbstractPacket
         $s2kType = S2kType::from(ord($bytes[$offset]));
         $s2k = ($s2kType === S2kType::Argon2) ?
             Argon2S2K::fromBytes(substr($bytes, $offset)) : 
-            S2K::fromBytes(substr($bytes, $offset));
+            GenericS2K::fromBytes(substr($bytes, $offset));
         $offset += $s2kType->packetLength();
 
         // A starting initialization vector of size specified by the AEAD algorithm.

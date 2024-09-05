@@ -3,7 +3,7 @@
 namespace OpenPGP\Tests\Packet;
 
 use OpenPGP\Common\Argon2S2K;
-use OpenPGP\Common\S2K;
+use OpenPGP\Common\GenericS2K;
 use OpenPGP\Enum\HashAlgorithm;
 use OpenPGP\Enum\S2kType;
 use OpenPGP\Enum\SymmetricAlgorithm;
@@ -29,7 +29,7 @@ class S2KTest extends OpenPGPTestCase
         $this->assertSame(HashAlgorithm::Sha1, $s2k->getHashAlgorithm());
         $this->assertSame($salt, $s2k->getSalt());
 
-        $s2k = new S2K($salt, $s2k->getType(), $s2k->getHashAlgorithm());
+        $s2k = new GenericS2K($salt, $s2k->getType(), $s2k->getHashAlgorithm());
         $key = $s2k->produceKey($passphrase, $skesk->getSymmetric()->keySizeInByte());
         $this->assertSame(bin2hex($key), '7110eda4d09e062aa5e4a390b0a572ac0d2c0220f352b0d292b65164c2a67301');
     }
@@ -48,7 +48,7 @@ class S2KTest extends OpenPGPTestCase
         $this->assertSame(HashAlgorithm::Sha1, $s2k->getHashAlgorithm());
         $this->assertSame($salt, $s2k->getSalt());
 
-        $s2k = new S2K($salt, $s2k->getType(), $s2k->getHashAlgorithm());
+        $s2k = new GenericS2K($salt, $s2k->getType(), $s2k->getHashAlgorithm());
         $key = $s2k->produceKey($passphrase, $skesk->getSymmetric()->keySizeInByte());
         $this->assertSame(bin2hex($key), '8b79077ca448f6fb3d3ad2a264d3b938d357c9fb3e41219fd962df960a9afa08');
     }
@@ -67,7 +67,7 @@ class S2KTest extends OpenPGPTestCase
         $this->assertSame(HashAlgorithm::Sha1, $s2k->getHashAlgorithm());
         $this->assertSame($salt, $s2k->getSalt());
 
-        $s2k = new S2K($salt, $s2k->getType(), $s2k->getHashAlgorithm());
+        $s2k = new GenericS2K($salt, $s2k->getType(), $s2k->getHashAlgorithm());
         $key = $s2k->produceKey($passphrase, $skesk->getSymmetric()->keySizeInByte());
         $this->assertSame(bin2hex($key), 'b7d48aae9b943b22a4d390083e8460b5edfa118fe1688bf0c473b8094d1a8d10');
     }
@@ -88,7 +88,7 @@ class S2KTest extends OpenPGPTestCase
         $this->assertSame($salt, $s2k->getSalt());
         $this->assertSame($itCount, $s2k->getItCount());
 
-        $s2k = new S2K($salt, $s2k->getType(), $s2k->getHashAlgorithm(), $s2k->getItCount());
+        $s2k = new GenericS2K($salt, $s2k->getType(), $s2k->getHashAlgorithm(), $s2k->getItCount());
         $key = $s2k->produceKey($passphrase, $skesk->getSymmetric()->keySizeInByte());
         $this->assertSame(bin2hex($key), '575ad156187a3f8cec11108309236eb499f1e682f0d1afadfac4ecf97613108a');
     }
@@ -109,7 +109,7 @@ class S2KTest extends OpenPGPTestCase
         $this->assertSame($salt, $s2k->getSalt());
         $this->assertSame($itCount, $s2k->getItCount());
 
-        $s2k = new S2K($salt, $s2k->getType(), $s2k->getHashAlgorithm(), $s2k->getItCount());
+        $s2k = new GenericS2K($salt, $s2k->getType(), $s2k->getHashAlgorithm(), $s2k->getItCount());
         $key = $s2k->produceKey($passphrase, $skesk->getSymmetric()->keySizeInByte());
         $this->assertSame(bin2hex($key), '736c226b8c64e4e6d0325c6c552ef7c0738f98f48fed65fd8c93265103efa23a');
     }
@@ -130,7 +130,7 @@ class S2KTest extends OpenPGPTestCase
         $this->assertSame($salt, $s2k->getSalt());
         $this->assertSame($itCount, $s2k->getItCount());
 
-        $s2k = new S2K($salt, $s2k->getType(), $s2k->getHashAlgorithm(), $s2k->getItCount());
+        $s2k = new GenericS2K($salt, $s2k->getType(), $s2k->getHashAlgorithm(), $s2k->getItCount());
         $key = $s2k->produceKey($passphrase, $skesk->getSymmetric()->keySizeInByte());
         $this->assertSame(bin2hex($key), '915e96fc694e7f90a6850b740125ea005199c725f3bd27e3');
     }
@@ -151,7 +151,7 @@ class S2KTest extends OpenPGPTestCase
         $this->assertSame($salt, $s2k->getSalt());
         $this->assertSame($itCount, $s2k->getItCount());
 
-        $s2k = new S2K($salt, $s2k->getType(), $s2k->getHashAlgorithm(), $s2k->getItCount());
+        $s2k = new GenericS2K($salt, $s2k->getType(), $s2k->getHashAlgorithm(), $s2k->getItCount());
         $key = $s2k->produceKey($passphrase, $skesk->getSymmetric()->keySizeInByte());
         $this->assertSame(bin2hex($key), 'ea264fada5a859c40d88a159b344ecf1f51ff327fdb3c558b0a7dc299777173e');
     }
@@ -172,7 +172,7 @@ class S2KTest extends OpenPGPTestCase
         $this->assertSame($salt, $s2k->getSalt());
         $this->assertSame($itCount, $s2k->getItCount());
 
-        $s2k = new S2K($salt, $s2k->getType(), $s2k->getHashAlgorithm(), $s2k->getItCount());
+        $s2k = new GenericS2K($salt, $s2k->getType(), $s2k->getHashAlgorithm(), $s2k->getItCount());
         $key = $s2k->produceKey($passphrase, $skesk->getSymmetric()->keySizeInByte());
         $this->assertSame(bin2hex($key), 'f3d0ce52ed6143637443e3399437fd0f');
     }

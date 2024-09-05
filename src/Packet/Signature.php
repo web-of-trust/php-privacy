@@ -87,6 +87,12 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     )
     {
         parent::__construct(PacketTag::Signature);
+        if ($version != self::VERSION_4 && $version != self::VERSION_6) {
+            throw new \UnexpectedValueException(
+                "Version $version of the signature packet is unsupported.",
+            );
+        }
+
         $this->hashedSubpackets = array_filter(
             $hashedSubpackets,
             static fn ($subpacket) => $subpacket instanceof SignatureSubpacket
@@ -116,11 +122,6 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 
         // A one-octet version number.
         $version = ord($bytes[$offset++]);
-        if ($version != self::VERSION_4 && $version != self::VERSION_6) {
-            throw new \UnexpectedValueException(
-                "Version $version of the signature packet is unsupported.",
-            );
-        }
         $isV6 = $version === self::VERSION_6;
 
         // One-octet signature type.
