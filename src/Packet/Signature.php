@@ -212,6 +212,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             ...$subpackets,
         ];
 
+        $isV6 = $version === self::VERSION_6;
+        $salt = $isV6 ? Random::string($hashAlgorithm->saltSize()) : '';
         $signatureData = implode([
             chr($version),
             chr($signatureType->value),
@@ -219,19 +221,17 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             chr($hashAlgorithm->value),
             self::subpacketsToBytes(
                 $hashedSubpackets,
-                $version === self::VERSION_6
+                $isV6
             ),
         ]);
-
-        $trailer = self::calculateTrailer(
-            $version,
-            strlen($signatureData),
-        );
-
         $message = implode([
+            $salt,
             $dataToSign,
             $signatureData,
-            $trailer,
+            self::calculateTrailer(
+                $version,
+                strlen($signatureData),
+            ),
         ]);
 
         return new self(
@@ -240,7 +240,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             $keyAlgorithm,
             $hashAlgorithm,
             substr($hashAlgorithm->hash($message), 0, 2),
-            $version === self::VERSION_6 ? Random::string($hashAlgorithm->saltSize()) : '',
+            $salt,
             self::signMessage($signKey, $hashAlgorithm, $message),
             $hashedSubpackets,
         );
@@ -622,15 +622,14 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             }
         }
 
-        $trailer = self::calculateTrailer(
-            $this->version,
-            strlen($this->signatureData),
-        );
-
         $message = implode([
+            $this->salt,
             $dataToVerify,
             $this->signatureData,
-            $trailer,
+            self::calculateTrailer(
+                $this->version,
+                strlen($this->signatureData),
+            ),
         ]);
 
         $hash = $this->hashAlgorithm->hash($message);
