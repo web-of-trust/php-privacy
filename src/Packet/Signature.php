@@ -556,12 +556,11 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         $subpackets = [];
         if ($notationData instanceof NotationDataInterface) {
             $subpackets[] = Signature\NotationData::fromNotation(
-                $notationData->isHumanReadable(),
                 $notationData->getNotationName(),
                 $notationData->getNotationValue()
+                $notationData->isHumanReadable(),
             );
         }
-
 
         return self::createSignature(
             $signKey,
