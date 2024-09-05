@@ -2,6 +2,7 @@
 
 namespace OpenPGP\Tests\Cryptor;
 
+use OpenPGP\Enum\KeyAlgorithm;
 use OpenPGP\Key\PublicKey;
 use OpenPGP\Tests\OpenPGPTestCase;
 
@@ -201,7 +202,7 @@ EOT;
         $this->assertSame('c959bdbafa32a2f89a153b678cfde12197965a9a', $publicKey->getFingerprint(true));
     }
 
-    public function testVersion6Certificate()
+    public function testVersion6Curve25519Certificate()
     {
         $keyData = <<<EOT
 -----BEGIN PGP PUBLIC KEY BLOCK-----
@@ -219,6 +220,7 @@ I8kWVkXU6vFOi+HWvv/ira7ofJu16NnoUkhclkUrk0mXubZvyl4GBg==
 EOT;
         $publicKey = PublicKey::fromArmored($keyData);
         $this->assertSame(6, $publicKey->getVersion());
+        $this->assertSame(KeyAlgorithm::Ed25519, $publicKey->getKeyAlgorithm());
         $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $publicKey->getFingerprint(true));
         $this->assertTrue($publicKey->verify());
 
@@ -228,6 +230,7 @@ EOT;
 
         $subkey = $publicKey->getSubKeys()[0];
         $this->assertSame(6, $subkey->getVersion());
+        $this->assertSame(KeyAlgorithm::X25519, $subkey->getKeyAlgorithm());
         $this->assertSame('12c83f1e706f6308fe151a417743a1f033790e93e9978488d1db378da9930885', $subkey->getFingerprint(true));
         $this->assertTrue($subkey->verify());
 

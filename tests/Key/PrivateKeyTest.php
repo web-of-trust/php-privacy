@@ -609,6 +609,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         );
         $this->assertSame(6, $privateKey->getVersion());
         $this->assertSame(KeyAlgorithm::RsaEncryptSign, $privateKey->getKeyAlgorithm());
+        $this->assertTrue($privateKey->verify());
         $this->assertTrue($privateKey->aeadProtected());
         $this->assertTrue($privateKey->toPublic()->getPadding() instanceof PaddingPacketInterface);
 
@@ -616,11 +617,14 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertSame(6, $signature->getVersion());
 
         $subkey = $privateKey->getSubKeys()[0];
+        $this->assertTrue($subkey->verify());
         $this->assertSame(6, $subkey->getVersion());
         $this->assertSame(KeyAlgorithm::RsaEncryptSign, $subkey->getKeyAlgorithm());
 
         $user = $privateKey->getPrimaryUser();
+        $this->assertTrue($user->verify());
         $this->assertSame(6, $user->getLatestSelfCertification()->getVersion());
+        $this->assertSame($userID, $user->getUserID());
 
         Config::setAeadProtect(false);
         Config::setUseV6Key(false);
@@ -646,6 +650,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertSame(6, $privateKey->getVersion());
         $this->assertSame(521, $privateKey->getKeyStrength());
         $this->assertSame(KeyAlgorithm::EcDsa, $privateKey->getKeyAlgorithm());
+        $this->assertTrue($privateKey->verify());
         $this->assertTrue($privateKey->aeadProtected());
         $this->assertTrue($privateKey->toPublic()->getPadding() instanceof PaddingPacketInterface);
 
@@ -653,12 +658,15 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertSame(6, $signature->getVersion());
 
         $subkey = $privateKey->getSubKeys()[0];
+        $this->assertTrue($subkey->verify());
         $this->assertSame(6, $subkey->getVersion());
         $this->assertSame(521, $subkey->getKeyStrength());
         $this->assertSame(KeyAlgorithm::Ecdh, $subkey->getKeyAlgorithm());
 
         $user = $privateKey->getPrimaryUser();
+        $this->assertTrue($user->verify());
         $this->assertSame(6, $user->getLatestSelfCertification()->getVersion());
+        $this->assertSame($userID, $user->getUserID());
 
         Config::setAeadProtect(false);
         Config::setUseV6Key(false);
@@ -683,6 +691,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertSame(6, $privateKey->getVersion());
         $this->assertSame(255, $privateKey->getKeyStrength());
         $this->assertSame(KeyAlgorithm::Ed25519, $privateKey->getKeyAlgorithm());
+        $this->assertTrue($privateKey->verify());
         $this->assertTrue($privateKey->aeadProtected());
         $this->assertTrue($privateKey->toPublic()->getPadding() instanceof PaddingPacketInterface);
 
@@ -690,12 +699,15 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertSame(6, $signature->getVersion());
 
         $subkey = $privateKey->getSubKeys()[0];
+        $this->assertTrue($subkey->verify());
         $this->assertSame(6, $subkey->getVersion());
         $this->assertSame(255, $subkey->getKeyStrength());
         $this->assertSame(KeyAlgorithm::X25519, $subkey->getKeyAlgorithm());
 
         $user = $privateKey->getPrimaryUser();
+        $this->assertTrue($user->verify());
         $this->assertSame(6, $user->getLatestSelfCertification()->getVersion());
+        $this->assertSame($userID, $user->getUserID());
 
         Config::setAeadProtect(false);
         Config::setUseV6Key(false);
@@ -720,6 +732,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertSame(6, $privateKey->getVersion());
         $this->assertSame(448, $privateKey->getKeyStrength());
         $this->assertSame(KeyAlgorithm::Ed448, $privateKey->getKeyAlgorithm());
+        $this->assertTrue($privateKey->verify());
         $this->assertTrue($privateKey->aeadProtected());
         $this->assertTrue($privateKey->toPublic()->getPadding() instanceof PaddingPacketInterface);
 
@@ -727,12 +740,15 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertSame(6, $signature->getVersion());
 
         $subkey = $privateKey->getSubKeys()[0];
+        $this->assertTrue($subkey->verify());
         $this->assertSame(6, $subkey->getVersion());
         $this->assertSame(448, $subkey->getKeyStrength());
         $this->assertSame(KeyAlgorithm::X448, $subkey->getKeyAlgorithm());
 
         $user = $privateKey->getPrimaryUser();
+        $this->assertTrue($user->verify());
         $this->assertSame(6, $user->getLatestSelfCertification()->getVersion());
+        $this->assertSame($userID, $user->getUserID());
 
         Config::setAeadProtect(false);
         Config::setUseV6Key(false);
@@ -772,7 +788,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertTrue($revokedKey->isRevoked($privateKey));
     }
 
-    public function testVersion6SecretKey()
+    public function testVersion6Curve25519SecretKey()
     {
         $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -793,6 +809,7 @@ EOT;
 
         $privateKey = PrivateKey::fromArmored($keyData);
         $this->assertSame(6, $privateKey->getVersion());
+        $this->assertSame(KeyAlgorithm::Ed25519, $privateKey->getKeyAlgorithm());
         $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $privateKey->getFingerprint(true));
         $this->assertTrue($privateKey->verify());
         $this->assertFalse($privateKey->isEncrypted());
@@ -803,6 +820,7 @@ EOT;
 
         $subkey = $privateKey->getSubKeys()[0];
         $this->assertSame(6, $subkey->getVersion());
+        $this->assertSame(KeyAlgorithm::X25519, $subkey->getKeyAlgorithm());
         $this->assertSame('12c83f1e706f6308fe151a417743a1f033790e93e9978488d1db378da9930885', $subkey->getFingerprint(true));
         $this->assertTrue($subkey->verify());
 
@@ -811,7 +829,7 @@ EOT;
         $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $signature->getIssuerFingerprint(true));
     }
 
-    public function testLockedVersion6SecretKey()
+    public function testLockedVersion6Curve25519SecretKey()
     {
         $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -834,10 +852,12 @@ EOT;
 
         $privateKey = PrivateKey::fromArmored($keyData);
         $this->assertSame(6, $privateKey->getVersion());
+        $this->assertSame(KeyAlgorithm::Ed25519, $privateKey->getKeyAlgorithm());
         $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $privateKey->getFingerprint(true));
         $this->assertTrue($privateKey->verify());
         $this->assertTrue($privateKey->isEncrypted());
         $this->assertFalse($privateKey->isDecrypted());
+        $this->assertTrue($privateKey->aeadProtected());
 
         $signature = $privateKey->getLatestDirectSignature();
         $this->assertSame(6, $signature->getVersion());
@@ -845,6 +865,7 @@ EOT;
 
         $subkey = $privateKey->getSubKeys()[0];
         $this->assertSame(6, $subkey->getVersion());
+        $this->assertSame(KeyAlgorithm::X25519, $subkey->getKeyAlgorithm());
         $this->assertSame('12c83f1e706f6308fe151a417743a1f033790e93e9978488d1db378da9930885', $subkey->getFingerprint(true));
         $this->assertTrue($subkey->verify());
 
