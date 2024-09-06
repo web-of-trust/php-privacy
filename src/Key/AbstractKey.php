@@ -32,7 +32,6 @@ use OpenPGP\Type\{
     KeyInterface,
     KeyPacketInterface,
     PacketListInterface,
-    PaddingPacketInterface,
     PrivateKeyInterface,
     SignaturePacketInterface,
     SubkeyInterface,
@@ -85,13 +84,6 @@ abstract class AbstractKey implements KeyInterface
     private array $subkeys = [];
 
     /**
-     * Padding package
-     * 
-     * @var Padding
-     */
-    private ?Padding $padding;
-
-    /**
      * Constructor
      *
      * @param KeyPacketInterface $keyPacket
@@ -99,7 +91,6 @@ abstract class AbstractKey implements KeyInterface
      * @param array $directSignatures
      * @param array $users
      * @param array $subkeys
-     * @param Padding $padding
      * @return self
      */
     protected function __construct(
@@ -108,7 +99,6 @@ abstract class AbstractKey implements KeyInterface
         array $directSignatures = [],
         array $users = [],
         array $subkeys = [],
-        ?Padding $padding = null,
     )
     {
         $this->revocationSignatures = array_values(array_filter(
@@ -119,7 +109,6 @@ abstract class AbstractKey implements KeyInterface
             $directSignatures,
             static fn ($signature) => $signature instanceof SignaturePacketInterface
         ));
-        $this->padding = $padding;
         $this->setUsers($users)
              ->setSubkeys($subkeys)
              ->setLogger(Config::getLogger());
@@ -143,14 +132,20 @@ abstract class AbstractKey implements KeyInterface
             );
         }
 
-        return new PacketList([
+        $packets = [
             $this->keyPacket,
             ...$this->revocationSignatures,
             ...$this->directSignatures,
             ...$userPackets,
             ...$subkeyPackets,
-            $this->padding,
-        ]);
+        ];
+        if ($this->getVersion() === 6) {
+            $packets[] = Padding::createPadding(
+                random_int(Config::PADDING_MIN, Config::PADDING_MAX)
+            );
+        }
+
+        return new PacketList($packets);
     }
 
     /**
@@ -559,14 +554,6 @@ abstract class AbstractKey implements KeyInterface
     /**
      * {@inheritdoc}
      */
-    public function getPadding(): ?PaddingPacketInterface
-    {
-        return $this->padding;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function certifyBy(
         PrivateKeyInterface $signKey, ?DateTimeInterface $time = null
     ): self
@@ -783,7 +770,7 @@ abstract class AbstractKey implements KeyInterface
     protected static function readPacketList(PacketListInterface $packetList): array
     {
         $revocationSignatures = $directSignatures = $users = $subkeys = [];
-        $keyPacket = $primaryKeyID = $padding = null;
+        $keyPacket = $primaryKeyID = null;
 
         foreach ($packetList->getPackets() as $packet) {
             switch ($packet->getTag()) {
@@ -871,11 +858,6 @@ abstract class AbstractKey implements KeyInterface
                         }
                     }
                     break;
-                case PacketTag::Padding:
-                    if ($packet instanceof Padding) {
-                        $padding = $packet;
-                    }
-                    break;
             }
         }
 
@@ -891,7 +873,6 @@ abstract class AbstractKey implements KeyInterface
             'directSignatures' => $directSignatures,
             'users' => $users,
             'subkeys' => $subkeys,
-            'padding' => $padding,
         ];
     }
 }

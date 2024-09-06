@@ -13,10 +13,7 @@ use OpenPGP\Enum\{
     ArmorType,
     PacketTag,
 };
-use OpenPGP\Packet\{
-    PacketList,
-    Padding,
-};
+use OpenPGP\Packet\PacketList;
 use OpenPGP\Type\{
     KeyInterface,
     PacketListInterface,
@@ -40,7 +37,6 @@ class PublicKey extends AbstractKey
      * @param array $directSignatures
      * @param array $users
      * @param array $subkeys
-     * @param Padding $padding
      * @return self
      */
     public function __construct(
@@ -49,7 +45,6 @@ class PublicKey extends AbstractKey
         array $directSignatures = [],
         array $users = [],
         array $subkeys = [],
-        ?Padding $padding = null,
     )
     {
         parent::__construct(
@@ -58,7 +53,6 @@ class PublicKey extends AbstractKey
             $directSignatures,
             $users,
             $subkeys,
-            $padding,
         );
     }
 
@@ -131,7 +125,6 @@ class PublicKey extends AbstractKey
             $keyStruct['keyPacket'],
             $keyStruct['revocationSignatures'],
             $keyStruct['directSignatures'],
-            padding: $keyStruct['padding'],
         );
         self::applyKeyStructure($publicKey, $keyStruct);
 

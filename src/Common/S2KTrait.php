@@ -42,18 +42,4 @@ trait S2KTrait
     {
         return $this->type->packetLength();
     }
-
-    /**
-     * Generate random salt string
-     * 
-     * @return string
-     */
-    public static function generateSalt(): string 
-    {
-        return preg_replace_callback(
-            '/\*/u',
-            fn () => chr(random_int(33, 126)),
-            str_repeat('*', self::SALT_LENGTH)
-        );
-    }
 }

@@ -26,7 +26,6 @@ use OpenPGP\Enum\{
 };
 use OpenPGP\Packet\{
     PacketList,
-    Padding,
     SecretKey,
     SecretSubkey,
     Signature,
@@ -58,7 +57,6 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
      * @param array $directSignatures
      * @param array $users
      * @param array $subkeys
-     * @param Padding $padding
      * @return self
      */
     public function __construct(
@@ -67,7 +65,6 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         array $directSignatures = [],
         array $users = [],
         array $subkeys = [],
-        ?Padding $padding = null,
     )
     {
         parent::__construct(
@@ -76,7 +73,6 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $directSignatures,
             $users,
             $subkeys,
-            $padding,
         );
         $this->secretKeyPacket = $keyPacket;
     }
@@ -120,7 +116,6 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $keyStruct['keyPacket'],
             $keyStruct['revocationSignatures'],
             $keyStruct['directSignatures'],
-            padding: $keyStruct['padding'],
         );
         self::applyKeyStructure($privateKey, $keyStruct);
 
@@ -247,12 +242,6 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         $packets[] = Signature::createSubkeyBinding(
             $secretKey, $secretSubkey, $keyExpiry, false, $time
         );
-
-        if ($v6Key) {
-            $packets[] = Padding::createPadding(
-                random_int(Config::PADDING_MIN, Config::PADDING_MAX)
-            );
-        }
 
         return self::fromPacketList(new PacketList($packets));
     }

@@ -9,7 +9,6 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\PacketTag;
-use OpenPGP\Type\PaddingPacketInterface;
 use phpseclib3\Common\Functions\Strings;
 use phpseclib3\Crypt\Random;
 
@@ -20,7 +19,7 @@ use phpseclib3\Crypt\Random;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class Padding extends AbstractPacket implements PaddingPacketInterface
+class Padding extends AbstractPacket
 {
     /**
      * Constructor

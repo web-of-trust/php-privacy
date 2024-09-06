@@ -125,12 +125,12 @@ final class Helper
     {
         return $type === S2kType::Argon2 ? 
             new Argon2S2K(
-                Argon2S2K::generateSalt(),
+                self::generatePassword(Argon2S2K::SALT_LENGTH),
                 Config::getArgon2Iteration(),
                 Config::getArgon2Parallelism(),
                 Config::getArgon2MemoryExponent(),
             ) : new GenericS2K(
-                GenericS2K::generateSalt(),
+                self::generatePassword(GenericS2K::SALT_LENGTH),
                 $type,
                 Config::getS2kHash(),
                 Config::getS2kItCount(),
@@ -150,5 +150,19 @@ final class Helper
             str_split($text)
         ));
         return pack('n', $sum & 0xffff);
+    }
+
+    /**
+     * Generate random password
+     * 
+     * @return string
+     */
+    public static function generatePassword(int $length = 32): string 
+    {
+        return preg_replace_callback(
+            '/\*/u',
+            fn () => chr(random_int(33, 126)),
+            str_repeat('*', $length)
+        );
     }
 }

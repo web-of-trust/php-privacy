@@ -5,7 +5,7 @@ namespace OpenPGP\Tests\Cryptor;
 use OpenPGP\Common\Config;
 use OpenPGP\Enum\{CurveOid, KeyAlgorithm, KeyType};
 use OpenPGP\Key\{PrivateKey, PublicKey};
-use OpenPGP\Type\{PaddingPacketInterface, SecretKeyPacketInterface};
+use OpenPGP\Type\SecretKeyPacketInterface;
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
@@ -611,7 +611,6 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertSame(KeyAlgorithm::RsaEncryptSign, $privateKey->getKeyAlgorithm());
         $this->assertTrue($privateKey->verify());
         $this->assertTrue($privateKey->aeadProtected());
-        $this->assertTrue($privateKey->toPublic()->getPadding() instanceof PaddingPacketInterface);
 
         $signature = $privateKey->getLatestDirectSignature();
         $this->assertSame(6, $signature->getVersion());
@@ -652,7 +651,6 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertSame(KeyAlgorithm::EcDsa, $privateKey->getKeyAlgorithm());
         $this->assertTrue($privateKey->verify());
         $this->assertTrue($privateKey->aeadProtected());
-        $this->assertTrue($privateKey->toPublic()->getPadding() instanceof PaddingPacketInterface);
 
         $signature = $privateKey->getLatestDirectSignature();
         $this->assertSame(6, $signature->getVersion());
@@ -693,7 +691,6 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertSame(KeyAlgorithm::Ed25519, $privateKey->getKeyAlgorithm());
         $this->assertTrue($privateKey->verify());
         $this->assertTrue($privateKey->aeadProtected());
-        $this->assertTrue($privateKey->toPublic()->getPadding() instanceof PaddingPacketInterface);
 
         $signature = $privateKey->getLatestDirectSignature();
         $this->assertSame(6, $signature->getVersion());
@@ -734,7 +731,6 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertSame(KeyAlgorithm::Ed448, $privateKey->getKeyAlgorithm());
         $this->assertTrue($privateKey->verify());
         $this->assertTrue($privateKey->aeadProtected());
-        $this->assertTrue($privateKey->toPublic()->getPadding() instanceof PaddingPacketInterface);
 
         $signature = $privateKey->getLatestDirectSignature();
         $this->assertSame(6, $signature->getVersion());

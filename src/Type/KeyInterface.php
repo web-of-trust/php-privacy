@@ -146,13 +146,6 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
     function getPrimaryUser(?DateTimeInterface $time = null): ?UserInterface;
 
     /**
-     * Get padding packet
-     * 
-     * @return PaddingPacketInterface
-     */
-    function getPadding(): ?PaddingPacketInterface;
-
-    /**
      * Return key is private
      * 
      * @return bool
