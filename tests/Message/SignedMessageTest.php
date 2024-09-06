@@ -159,4 +159,47 @@ EOT;
         $this->assertSame('bdff135160c56a0b', $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
+
+    public function testEd25519CleartextSignedMessage()
+    {
+        $publicKeyData = <<<EOT
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+xioGY4d/4xsAAAAg+U2nu0jWCmHlZ3BqZYfQMxmZu52JGggkLq2EVD34laPCsQYf
+GwoAAABCBYJjh3/jAwsJBwUVCg4IDAIWAAKbAwIeCSIhBssYbE8GCaaX5NUt+mxy
+KwwfHifBilZwj2Ul7Ce62azJBScJAgcCAAAAAK0oIBA+LX0ifsDm185Ecds2v8lw
+gyU2kCcUmKfvBXbAf6rhRYWzuQOwEn7E/aLwIwRaLsdry0+VcallHhSu4RN6HWaE
+QsiPlR4zxP/TP7mhfVEe7XWPxtnMUMtf15OyA51YBM4qBmOHf+MZAAAAIIaTJINn
++eUBXbki+PSAld2nhJh/LVmFsS+60WyvXkQ1wpsGGBsKAAAALAWCY4d/4wKbDCIh
+BssYbE8GCaaX5NUt+mxyKwwfHifBilZwj2Ul7Ce62azJAAAAAAQBIKbpGG2dWTX8
+j+VjFM21J0hqWlEg+bdiojWnKfA5AQpWUWtnNwDEM0g12vYxoWM8Y81W+bHBw805
+I8kWVkXU6vFOi+HWvv/ira7ofJu16NnoUkhclkUrk0mXubZvyl4GBg==
+-----END PGP PUBLIC KEY BLOCK-----
+
+EOT;
+
+        $signedMessageData = <<<EOT
+-----BEGIN PGP SIGNED MESSAGE-----
+
+What we need from the grocery store:
+
+- - tofu
+- - vegetables
+- - noodles
+
+-----BEGIN PGP SIGNATURE-----
+
+wpgGARsKAAAAKQWCY5ijYyIhBssYbE8GCaaX5NUt+mxyKwwfHifBilZwj2Ul7Ce6
+2azJAAAAAGk2IHZJX1AhiJD39eLuPBgiUU9wUA9VHYblySHkBONKU/usJ9BvuAqo
+/FvLFuGWMbKAdA+epq7V4HOtAPlBWmU8QOd6aud+aSunHQaaEJ+iTFjP2OMW0KBr
+NK2ay45cX1IVAQ==
+-----END PGP SIGNATURE-----
+EOT;
+
+        $publicKey = PublicKey::fromArmored($publicKeyData);
+        $signedMessage = SignedMessage::fromArmored($signedMessageData);
+        $verification = $signedMessage->verify([$publicKey])[0];
+        $this->assertSame($publicKey->getKeyID(true), $verification->getKeyID(true));
+        $this->assertTrue($verification->isVerified());
+    }
 }

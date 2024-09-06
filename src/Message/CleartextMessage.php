@@ -49,7 +49,7 @@ class CleartextMessage implements CleartextMessageInterface
      */
     public function getText(): string
     {
-        return rtrim($this->text);
+        return $this->text;
     }
 
     /**
