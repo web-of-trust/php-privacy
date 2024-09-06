@@ -65,3 +65,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 1.1.8 - released 2024-08-27
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.1.7...1.1.8)
 - Add checksum to none encrypted secret key packet.
+
+## 1.1.9 - released 2024-09-06
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.1.8...1.1.9)
+- Remove random prefix & MDC packet.
+- Fix gcm encryptor.
+- Add salt notation to signature.
