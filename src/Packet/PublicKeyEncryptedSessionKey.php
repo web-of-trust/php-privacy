@@ -288,7 +288,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
                 $sessionKey, $keyPacket->getKeyMaterial()->getAsymmetricKey()
             ),
             KeyAlgorithm::Ecdh => Key\ECDHSessionKeyCryptor::encryptSessionKey(
-                $sessionKey, $keyPacket->getKeyMaterial(), $keyPacket->getFingerprint()
+                $sessionKey, $keyPacket
             ),
             KeyAlgorithm::X25519 => Key\MontgomerySessionKeyCryptor::encryptSessionKey(
                 $sessionKey,
