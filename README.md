@@ -11,10 +11,10 @@ It implements [RFC9580](https://www.rfc-editor.org/rfc/rfc9580).
 ## Features
 * Support data signing & encryption.
 * Support key management: key generation, key reading, key decryption.
-* Support public-key algorithms: [RSA](https://en.wikipedia.org/wiki/RSA_(cryptosystem)),
-  [DSA](https://en.wikipedia.org/wiki/Digital_Signature_Algorithm),
+* Support public-key algorithms: [RSA](https://www.rfc-editor.org/rfc/rfc3447),
+  [DSA](https://www.rfc-editor.org/rfc/rfc6979),
   [ElGamal](https://en.wikipedia.org/wiki/ElGamal_encryption),
-  [ECDSA](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm),
+  [ECDSA](https://www.rfc-editor.org/rfc/rfc6979),
   [EdDSA](https://www.rfc-editor.org/rfc/rfc8032)
   and [ECDH](https://en.wikipedia.org/wiki/Elliptic-curve_Diffie%E2%80%93Hellman).
 * Support symmetric ciphers: TripleDES, IDEA, CAST5, Blowfish, Twofish,
