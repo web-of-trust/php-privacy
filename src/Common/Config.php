@@ -53,9 +53,9 @@ final class Config
 
     private static int $s2kItCount = 224;
 
-    private static int $argon2Iteration = 4;
+    private static int $argon2Iteration = 3;
 
-    private static int $argon2Parallelism = 1;
+    private static int $argon2Parallelism = 4;
 
     private static int $argon2MemoryExponent = 16;
 

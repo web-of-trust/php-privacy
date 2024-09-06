@@ -301,6 +301,22 @@ EOT;
         $this->assertFalse($signature->verify($publicKey, self::LITERAL_TEXT));
     }
 
+    public function testVersion4Ed25519LegacySignature()
+    {
+        $publicKeyData = <<<EOT
+BFPzXwsWCSsGAQQB2kcPAQEHQD8JiZS92RbtQFMZeTTkqHyAczoSgNYvgBCZLkPuOyQG
+EOT;
+        $publicKey = PublicKey::fromBytes(base64_decode($publicKeyData));
+
+        $signatureData = <<<EOT
+BAAWCAAGBQJV+V+VAAoJEIz94SGXllqa9iIA/1b5DMqY4hAmN72YP9sWwTHf0n7YK/Td5WBuDXVq7TNmAQDQnE+hFSfwOOD1fyIB2C8uoskDMmX6bOtInoVLrmG0BA==
+EOT;
+        $signature = Signature::fromBytes(base64_decode($signatureData));
+        $this->assertSame(KeyAlgorithm::EdDsaLegacy, $signature->getKeyAlgorithm());
+        $this->assertSame($publicKey->getKeyID(), $signature->getIssuerKeyID());
+        $this->assertTrue($signature->verify($publicKey, 'OpenPGP'));
+    }
+
     public function testFeatures()
     {
         $features = Features::fromFeatures(
