@@ -90,7 +90,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
             $privateKey = EC::createKey(
                 $keyMaterial->getECPublicKey()->getCurve()
             );
-            $sharedKey = DH::computeSecret(
+            $sharedSecret = DH::computeSecret(
                 $privateKey,
                 $keyMaterial->getECPublicKey()->getEncodedCoordinates()
             );
@@ -100,7 +100,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
             );
             $kek = self::ecdhKdf(
                 $keyMaterial->getKdfHash(),
-                $sharedKey,
+                $sharedSecret,
                 self::kdfParameter($keyMaterial, $keyPacket->getFingerprint()),
                 $keyMaterial->getKdfSymmetric()->keySizeInByte()
             );
@@ -204,7 +204,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
                 );
             }
             $publicKey = EC::loadFormat($format, $key);
-            $sharedKey = DH::computeSecret(
+            $sharedSecret = DH::computeSecret(
                 $keyMaterial->getECPrivateKey(),
                 $publicKey->getEncodedCoordinates()
             );
@@ -214,7 +214,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
             );
             $kek = self::ecdhKdf(
                 $publicMaterial->getKdfHash(),
-                $sharedKey,
+                $sharedSecret,
                 self::kdfParameter($publicMaterial, $secretKey->getFingerprint()),
                 $publicMaterial->getKdfSymmetric()->keySizeInByte()
             );
@@ -235,14 +235,14 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
      */
     private static function ecdhKdf(
         HashAlgorithm $hash,
-        string $sharedKey,
+        string $sharedSecret,
         string $param,
         int $keySize
     ): string
     {
         $toHash = implode([
             self::KDF_HEADER,
-            $sharedKey,
+            $sharedSecret,
             $param,
         ]);
         return substr($hash->hash($toHash), 0, $keySize);

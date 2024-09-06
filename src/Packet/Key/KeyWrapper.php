@@ -13,6 +13,7 @@ use phpseclib3\Crypt\Common\BlockCipher;
 
 /**
  * KeyWrapper class
+ * 
  * An implementation of the key wrapper based on RFC 3394.
  * 
  * @package  OpenPGP

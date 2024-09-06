@@ -12,6 +12,7 @@ use OpenPGP\Enum\KekSize;
 
 /**
  * CamelliaKeyWrapper class
+ * 
  * An implementation of the Camellia key wrapper based on RFC 3657/RFC 3394.
  * 
  * @package  OpenPGP

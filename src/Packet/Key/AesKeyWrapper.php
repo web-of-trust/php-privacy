@@ -12,7 +12,8 @@ use OpenPGP\Enum\KekSize;
 
 /**
  * AesKeyWrapper class
- * An implementation of the AES Key Wrapper from the NIST Key Wrap Specification.
+ * 
+ * An implementation of the AES key wrapper based on RFC 3394.
  * 
  * @package  OpenPGP
  * @category Packet
