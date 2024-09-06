@@ -22,6 +22,7 @@ use phpseclib3\Crypt\Common\BlockCipher;
 final class GCM implements AeadCipher
 {
     const CIPHER_MODE = 'gcm';
+    const TAG_LENGTH  = 16;
 
     private readonly BlockCipher $cipher;
 
@@ -48,7 +49,10 @@ final class GCM implements AeadCipher
         string $plaintext, string $nonce, string $adata = ''
     ): string
     {
-        return $this->crypt($plaintext, $nonce, $adata);
+        return implode([
+            $this->crypt($plaintext, $nonce, $adata),
+            $this->cipher->getTag(),
+        ]);
     }
 
     /**
@@ -58,7 +62,16 @@ final class GCM implements AeadCipher
         string $ciphertext, string $nonce, string $adata = ''
     ): string
     {
-        return $this->crypt($ciphertext, $nonce, $adata);
+        $length = strlen($ciphertext);
+        if ($length < self::TAG_LENGTH) {
+            throw new \InvalidArgumentException('Invalid GCM cipher text.');
+        }
+        $this->cipher->setTag(
+            substr($ciphertext, $length - self::TAG_LENGTH)
+        );
+        return $this->crypt(
+            substr($ciphertext, 0, $length - self::TAG_LENGTH), $nonce, $adata
+        );
     }
 
     /**
