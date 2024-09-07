@@ -168,11 +168,12 @@ final class Armor
             );
         }
 
+        unset($textLines[0]);
         return new self(
             $type ?? ArmorType::Message,
             $headers,
             $data,
-            trim(implode(self::CRLF, $textLines))
+            implode(self::CRLF, $textLines),
         );
     }
 
@@ -216,7 +217,7 @@ final class Armor
             ArmorType::SignedMessage => [
                 self::SIGNED_MESSAGE_BEGIN,
                 "Hash: $hashAlgo" . self::EOL . self::EOL,
-                str_replace('-', '- -', $text) . self::EOL,
+                preg_replace('/^- /m', '- -', $text) . self::EOL,
                 self::SIGNATURE_BEGIN,
                 self::addHeader($customComment) . self::EOL,
                 chunk_split(Strings::base64_encode($data), self::TRUNK, self::EOL),
