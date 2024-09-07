@@ -27,6 +27,13 @@ interface EncryptedMessageInterface
     function getEncryptedPacket(): EncryptedDataPacketInterface;
 
     /**
+     * Return session key.
+     *
+     * @return SessionKeyInterface
+     */
+    function getSessionKey(): ?SessionKeyInterface;
+
+    /**
      * Decrypt the message. One of `decryptionKeys` or `passwords` must be specified.
      * Return new message with decrypted content.
      *
