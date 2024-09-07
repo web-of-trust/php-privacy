@@ -865,11 +865,13 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * {@inheritdoc}
      */
-    public function getNotationData(): ?SubpacketInterface
+    public function getNotations(): array
     {
-        return self::getSubpacket(
+        return array_filter(
             $this->hashedSubpackets,
-            SignatureSubpacketType::NotationData
+            static fn ($subpacket) =>
+                $this->hashedSubpackets->getType() ===
+                SignatureSubpacketType::NotationData->value
         );
     }
 
