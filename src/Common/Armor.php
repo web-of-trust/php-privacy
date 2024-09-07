@@ -45,6 +45,7 @@ final class Armor
     const HEADER_PATTERN     = '/^([^\s:]|[^\s:][^:]*[^\s:]): .+$/';
 
     const EOL   = "\n";
+    const CRLF  = "\r\n";
     const TRUNK = 76;
 
     /**
@@ -172,7 +173,7 @@ final class Armor
             $type ?? ArmorType::Message,
             $headers,
             $data,
-            implode(self::EOL, $textLines)
+            implode(self::CRLF, $textLines)
         );
     }
 
