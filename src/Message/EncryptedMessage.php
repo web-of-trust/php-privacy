@@ -33,6 +33,8 @@ use OpenPGP\Type\{
  */
 class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterface
 {
+    private ?SessionKeyInterface $sessionKey = null;
+
     /**
      * Read message from armored string
      *
@@ -66,6 +68,14 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
     /**
      * {@inheritdoc}
      */
+    public function getSessionKey(): ?SessionKeyInterface
+    {
+        return $this->sessionKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function decrypt(
         array $decryptionKeys = [],
         array $passwords = []
@@ -81,9 +91,10 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
             );
         }
 
-        $encryptedPacket = $this->getEncryptedPacket();
-        $sessionKey = $this->decryptSessionKey($decryptionKeys, $passwords);
-        $decryptedPacket = $encryptedPacket->decryptWithSessionKey(
+        $this->sessionKey = $this->decryptSessionKey(
+            $decryptionKeys, $passwords
+        );
+        $decryptedPacket = $this->getEncryptedPacket()->decryptWithSessionKey(
             $sessionKey
         );
 
