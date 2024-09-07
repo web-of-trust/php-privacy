@@ -177,11 +177,11 @@ interface SignaturePacketInterface extends PacketInterface
     function getIssuerKeyID(bool $toHex = false): string;
 
     /**
-     * Get notation data sub packet
+     * Get notation data sub packets
      *
-     * @return SubpacketInterface
+     * @return array
      */
-    function getNotationData(): ?SubpacketInterface;
+    function getNotations(): array;
 
     /**
      * Get preferred hash algorithms sub packet
