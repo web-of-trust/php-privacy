@@ -19,7 +19,8 @@ use OpenPGP\Type\{
 
 /**
  * Implementation of the Literal Data Packet (Tag 11)
- * See RFC 4880, section 5.9.
+ * 
+ * See RFC 9580, section 5.9.
  * 
  * A Literal Data packet contains the body of a message; data that is not to be further interpreted.
  * 
@@ -78,15 +79,18 @@ class LiteralData extends AbstractPacket implements ForSigningInterface, Literal
      * Build literal data packet from text
      *
      * @param string $text
+     * @param Format $format
      * @param DateTimeInterface $time
      * @return self
      */
     public static function fromText(
-        string $text, ?DateTimeInterface $time = null
+        string $text,
+        Format $format = Format::Utf8,
+        ?DateTimeInterface $time = null,
     ): self
     {
         return new self(
-            $text, Format::Utf8, '', $time
+            $text, $format, '', $time
         );
     }
 
@@ -152,7 +156,10 @@ class LiteralData extends AbstractPacket implements ForSigningInterface, Literal
     public function getSignBytes(): string
     {
         if ($this->format === Format::Text || $this->format === Format::Utf8) {
-            $data = Helper::removeTrailingSpaces($this->data);
+            // Remove trailing whitespace and normalize EOL to canonical form <CR><LF>
+            $data = Helper::removeTrailingSpaces(
+                mb_convert_encoding($this->data, 'UTF-8')
+            );
             return preg_replace(
                 '/\r?\n/m', "\r\n", $data
             ) ?? $data;
