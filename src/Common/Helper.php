@@ -135,7 +135,7 @@ final class Helper
                 Config::getArgon2Parallelism(),
                 Config::getArgon2MemoryExponent(),
             ) : new GenericS2K(
-                self::generatePassword(GenericS2K::SALT_LENGTH),
+                Random::string(GenericS2K::SALT_LENGTH),
                 $type,
                 Config::getS2kHash(),
                 Config::getS2kItCount(),
@@ -167,7 +167,7 @@ final class Helper
     {
         return preg_replace_callback(
             '/\*/u',
-            fn () => chr(random_int(33, 126)),
+            static fn () => chr(random_int(33, 126)),
             str_repeat('*', $length)
         );
     }
