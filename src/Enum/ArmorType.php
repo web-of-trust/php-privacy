@@ -78,7 +78,7 @@ enum ArmorType
             preg_match('/PUBLIC KEY BLOCK/', $matches[0]) => self::PublicKey,
             preg_match('/PRIVATE KEY BLOCK/', $matches[0]) => self::PrivateKey,
             preg_match('/SIGNATURE/', $matches[0]) => self::Signature,
-            default => self::MultipartSection,
+            default => self::Message,
         };
     }
 }

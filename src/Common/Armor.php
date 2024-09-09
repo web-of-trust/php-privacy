@@ -142,6 +142,7 @@ final class Armor
                         }
                         else {
                             $textDone = true;
+                            unset($textLines[0]);
                         }
                     }
                     elseif (!preg_match(self::SPLIT_PATTERN, $line)) {
@@ -168,7 +169,6 @@ final class Armor
             );
         }
 
-        unset($textLines[0]);
         return new self(
             $type ?? ArmorType::Message,
             $headers,
