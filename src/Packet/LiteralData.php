@@ -78,15 +78,18 @@ class LiteralData extends AbstractPacket implements ForSigningInterface, Literal
      * Build literal data packet from text
      *
      * @param string $text
+     * @param Format $format
      * @param DateTimeInterface $time
      * @return self
      */
     public static function fromText(
-        string $text, ?DateTimeInterface $time = null
+        string $text,
+        Format $format = Format::Utf8,
+        ?DateTimeInterface $time = null,
     ): self
     {
         return new self(
-            $text, Format::Utf8, '', $time
+            $text, $format, '', $time
         );
     }
 
