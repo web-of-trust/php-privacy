@@ -139,7 +139,7 @@ final class Armor
                     }
                     elseif (!$textDone && $type === ArmorType::SignedMessage) {
                         if (!preg_match(self::SPLIT_PATTERN, $line)) {
-                            $textLines[] = preg_replace('/^- /', '', $line);
+                            $textLines[] = $line;
                         }
                         else {
                             $textDone = true;
@@ -177,7 +177,9 @@ final class Armor
             $type ?? ArmorType::Message,
             $headers,
             $data,
-            implode(Helper::CRLF, $textLines)
+            preg_replace(
+                '/^- /m', '', implode(Helper::CRLF, $textLines)
+            ), // Reverse dash-escaped text
         );
     }
 
@@ -224,7 +226,7 @@ final class Armor
                     Helper::EOL,
                     array_map(static fn ($hashAlgo) => "Hash: $hashAlgo", $hashAlgos)
                 ) . Helper::EOL . Helper::EOL : Helper::EOL,
-                preg_replace('/^- /m', '- -', $text) . Helper::EOL,
+                preg_replace('/^- /m', '- -', $text) . Helper::EOL, // Dash-escape text
                 self::SIGNATURE_BEGIN,
                 self::addHeader($customComment) . Helper::EOL,
                 chunk_split(Strings::base64_encode($data), self::TRUNK_SIZE, Helper::EOL),
