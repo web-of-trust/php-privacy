@@ -14,6 +14,9 @@ use OpenPGP\Enum\ArmorType;
 /**
  * Armor class
  *
+ * Class that represents an OpenPGP Base64 Conversions.
+ * See RFC 4880, section 6.
+ * 
  * @package  OpenPGP
  * @category Common
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -39,14 +42,10 @@ final class Armor
     const SIGNATURE_BEGIN = "-----BEGIN PGP SIGNATURE-----\n";
     const SIGNATURE_END   = "-----END PGP SIGNATURE-----\n";
 
-    const SPLIT_PATTERN      = '/^-----[^-]+-----$/';
-    const EMPTY_LINE_PATTERN = '/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/';
-    const LINE_SPLIT_PATTERN = '/\r\n|\n|\r/';
-    const HEADER_PATTERN     = '/^([^\s:]|[^\s:][^:]*[^\s:]): .+$/';
+    const SPLIT_PATTERN  = '/^-----[^-]+-----$/';
+    const HEADER_PATTERN = '/^([^\s:]|[^\s:][^:]*[^\s:]): .+$/';
 
-    const EOL   = "\n";
-    const CRLF  = "\r\n";
-    const TRUNK = 76;
+    const TRUNK_SIZE = 76;
 
     /**
      * Constructor
@@ -115,7 +114,7 @@ final class Armor
      * @return self
      */
     public static function decode(
-        string $armoredText, bool $checksumRequired = true
+        string $armoredText, bool $checksumRequired = false
     ): self
     {
         $textDone = false;
@@ -126,9 +125,11 @@ final class Armor
         $textLines = [];
         $dataLines = [];
 
-        $lines = preg_split(self::LINE_SPLIT_PATTERN, $armoredText);
+        $lines = preg_split(Helper::LINE_SPLIT_PATTERN, $armoredText);
         if (!empty($lines)) {
             foreach ($lines as $line) {
+                /// Remove trailing whitespaces
+                $line = rtrim($line, " \r\t");
                 if ($type === null && preg_match(self::SPLIT_PATTERN, $line)) {
                     $type = ArmorType::fromBegin($line);
                 }
@@ -142,10 +143,14 @@ final class Armor
                         }
                         else {
                             $textDone = true;
+                            /// Remove first empty line (not included in the message digest)
+                            if (isset($textLines[0]) && empty($textLines[0])) {
+                                unset($textLines[0]);
+                            }
                         }
                     }
                     elseif (!preg_match(self::SPLIT_PATTERN, $line)) {
-                        if (preg_match(self::EMPTY_LINE_PATTERN, $line)) {
+                        if (preg_match(Helper::EMPTY_LINE_PATTERN, $line)) {
                             continue;
                         }
                         if (strpos($line, '=') === 0) {
@@ -160,20 +165,19 @@ final class Armor
         }
 
         $data = Strings::base64_decode(implode($dataLines));
-        if (($checksum != self::crc24Checksum($data)) &&
+        if (strcmp($checksum, self::crc24Checksum($data)) !== 0 &&
            (!empty($checksum) || $checksumRequired))
         {
             throw new \UnexpectedValueException(
-                'Ascii armor integrity check failed'
+                'Ascii armor integrity check failed!'
             );
         }
 
-        unset($textLines[0]);
         return new self(
             $type ?? ArmorType::Message,
             $headers,
             $data,
-            implode(self::CRLF, $textLines),
+            implode(Helper::CRLF, $textLines)
         );
     }
 
@@ -202,54 +206,54 @@ final class Armor
         $result = match($type) {
             ArmorType::MultipartSection => [
                 sprintf(self::MULTIPART_SECTION_MESSAGE_BEGIN, $partIndex, $partTotal),
-                self::addHeader($customComment) . self::EOL,
-                chunk_split(Strings::base64_encode($data), self::TRUNK, self::EOL),
-                '=' . self::crc24Checksum($data) . self::EOL,
+                self::addHeader($customComment) . Helper::EOL,
+                chunk_split(Strings::base64_encode($data), self::TRUNK_SIZE, Helper::EOL),
+                '=' . self::crc24Checksum($data) . Helper::EOL,
                 sprintf(self::MULTIPART_SECTION_MESSAGE_END, $partIndex, $partTotal),
             ],
             ArmorType::MultipartLast => [
                 sprintf(self::MULTIPART_LAST_MESSAGE_BEGIN, $partIndex),
-                self::addHeader($customComment) . self::EOL,
-                chunk_split(Strings::base64_encode($data), self::TRUNK, self::EOL),
-                '=' . self::crc24Checksum($data) . self::EOL,
+                self::addHeader($customComment) . Helper::EOL,
+                chunk_split(Strings::base64_encode($data), self::TRUNK_SIZE, Helper::EOL),
+                '=' . self::crc24Checksum($data) . Helper::EOL,
                 sprintf(self::MULTIPART_LAST_MESSAGE_END, $partIndex),
             ],
             ArmorType::SignedMessage => [
                 self::SIGNED_MESSAGE_BEGIN,
-                "Hash: $hashAlgo" . self::EOL . self::EOL,
-                preg_replace('/^- /m', '- -', $text) . self::EOL,
+                "Hash: $hashAlgo" . Helper::EOL . Helper::EOL,
+                preg_replace('/^- /m', '- -', $text) . Helper::EOL,
                 self::SIGNATURE_BEGIN,
-                self::addHeader($customComment) . self::EOL,
-                chunk_split(Strings::base64_encode($data), self::TRUNK, self::EOL),
-                '=' . self::crc24Checksum($data) . self::EOL,
+                self::addHeader($customComment) . Helper::EOL,
+                chunk_split(Strings::base64_encode($data), self::TRUNK_SIZE, Helper::EOL),
+                '=' . self::crc24Checksum($data) . Helper::EOL,
                 self::SIGNATURE_END,
             ],
             ArmorType::Message => [
                 self::MESSAGE_BEGIN,
-                self::addHeader($customComment) . self::EOL,
-                chunk_split(Strings::base64_encode($data), self::TRUNK, self::EOL),
-                '=' . self::crc24Checksum($data) . self::EOL,
+                self::addHeader($customComment) . Helper::EOL,
+                chunk_split(Strings::base64_encode($data), self::TRUNK_SIZE, Helper::EOL),
+                '=' . self::crc24Checksum($data) . Helper::EOL,
                 self::MESSAGE_END,
             ],
             ArmorType::PublicKey => [
                 self::PUBLIC_KEY_BLOCK_BEGIN,
-                self::addHeader($customComment) . self::EOL,
-                chunk_split(Strings::base64_encode($data), self::TRUNK, self::EOL),
-                '=' . self::crc24Checksum($data) . self::EOL,
+                self::addHeader($customComment) . Helper::EOL,
+                chunk_split(Strings::base64_encode($data), self::TRUNK_SIZE, Helper::EOL),
+                '=' . self::crc24Checksum($data) . Helper::EOL,
                 self::PUBLIC_KEY_BLOCK_END,
             ],
             ArmorType::PrivateKey => [
                 self::PRIVATE_KEY_BLOCK_BEGIN,
-                self::addHeader($customComment) . self::EOL,
-                chunk_split(Strings::base64_encode($data), self::TRUNK, self::EOL),
-                '=' . self::crc24Checksum($data) . self::EOL,
+                self::addHeader($customComment) . Helper::EOL,
+                chunk_split(Strings::base64_encode($data), self::TRUNK_SIZE, Helper::EOL),
+                '=' . self::crc24Checksum($data) . Helper::EOL,
                 self::PRIVATE_KEY_BLOCK_END,
             ],
             ArmorType::Signature => [
                 self::SIGNATURE_BEGIN,
-                self::addHeader($customComment) . self::EOL,
-                chunk_split(Strings::base64_encode($data), self::TRUNK, self::EOL),
-                '=' . self::crc24Checksum($data) . self::EOL,
+                self::addHeader($customComment) . Helper::EOL,
+                chunk_split(Strings::base64_encode($data), self::TRUNK_SIZE, Helper::EOL),
+                '=' . self::crc24Checksum($data) . Helper::EOL,
                 self::SIGNATURE_END,
             ],
         };
@@ -265,11 +269,11 @@ final class Armor
     private static function addHeader(string $customComment = ''): string
     {
         $headers = [
-            'Version: ' . Config::VERSION . self::EOL,
-            'Comment: ' . Config::COMMENT . self::EOL,
+            'Version: ' . Config::VERSION . Helper::EOL,
+            'Comment: ' . Config::COMMENT . Helper::EOL,
         ];
         if (!empty($customComment)) {
-            $headers[] = 'Comment: ' . $customComment . self::EOL;
+            $headers[] = 'Comment: ' . $customComment . Helper::EOL;
         }
         return implode($headers);
     }

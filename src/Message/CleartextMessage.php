@@ -9,6 +9,7 @@
 namespace OpenPGP\Message;
 
 use DateTimeInterface;
+use OpenPGP\Common\Helper;
 use OpenPGP\Packet\{
     LiteralData,
     PacketList,
@@ -49,7 +50,10 @@ class CleartextMessage implements CleartextMessageInterface
      */
     public function getText(): string
     {
-        return $this->text;
+        $text = Helper::removeTrailingSpaces($this->text);
+        return preg_replace(
+            '/\r?\n/m', "\r\n", $text
+        ) ?? $text;
     }
 
     /**
