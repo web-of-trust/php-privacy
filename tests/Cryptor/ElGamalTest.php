@@ -2,12 +2,12 @@
 
 namespace OpenPGP\Tests\Cryptor;
 
-use phpseclib3\Crypt\Random;
-use phpseclib3\Math\BigInteger;
+use OpenPGP\Common\Helper;
 use OpenPGP\Cryptor\Asymmetric\ElGamal;
 use OpenPGP\Cryptor\Asymmetric\ElGamal\PrivateKey;
 use OpenPGP\Cryptor\Asymmetric\ElGamal\PublicKey;
 use OpenPGP\Tests\OpenPGPTestCase;
+use phpseclib3\Math\BigInteger;
 
 /**
  * Testcase class for ElGamal public key algo.
@@ -54,7 +54,7 @@ class ElGamalTest extends OpenPGPTestCase
             $publicExponent->equals($generator->modPow($rqx, $prime))
         );
 
-        $plainText = Random::string(($privateKey->getBitSize() - 1) >> 8);
+        $plainText = Helper::generatePassword(($privateKey->getBitSize() - 1) >> 8);
         $publicKey = $privateKey->getPublicKey();
         $encrypted = $publicKey->encrypt($plainText);
         $this->assertSame($plainText, $privateKey->decrypt($encrypted));
@@ -76,7 +76,7 @@ class ElGamalTest extends OpenPGPTestCase
         $publicKey = new PublicKey($publicExponent, $prime, $generator);
         $privateKey = new PrivateKey($secretExponent, $publicExponent, $prime, $generator);
 
-        $plainText = Random::string(($privateKey->getBitSize() - 1) >> 8);
+        $plainText = Helper::generatePassword(($privateKey->getBitSize() - 1) >> 8);
         $encrypted = $publicKey->encrypt($plainText);
         $this->assertSame($plainText, $privateKey->decrypt($encrypted));
     }
