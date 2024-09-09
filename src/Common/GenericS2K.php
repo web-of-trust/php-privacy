@@ -70,7 +70,7 @@ class GenericS2K implements S2KInterface
     {
         if ($type === S2kType::Argon2) {
             throw new \InvalidArgumentException(
-                'Argon2 string to key is unsupported.',
+                "S2k type {$type->name} is invalid argument.",
             );
         }
         $this->count = (16 + ($itCount & 15)) << (($itCount >> 4) + self::EXPBIAS);
@@ -180,11 +180,10 @@ class GenericS2K implements S2KInterface
 
     private function hash(string $data, int $size): string
     {
-        $alg = strtolower($this->hash->name);
-        $hash = hash($alg, $data, true);
+        $hash = $this->hash->hash($data);
         while(strlen($hash) < $size) {
             $data = "\x00" . $data;
-            $hash .= hash($alg, $data, true);
+            $hash .= $this->hash->hash($data);
         }
         return substr($hash, 0, $size);
     }

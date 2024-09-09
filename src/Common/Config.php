@@ -84,6 +84,7 @@ final class Config
      */
     public static function setPreferredHash(HashAlgorithm $hash): void
     {
+        self::unsupportedHash($hash);
         self::$preferredHash = $hash;
     }
 
@@ -106,6 +107,7 @@ final class Config
         SymmetricAlgorithm $symmetric
     ): void
     {
+        self::unsupportedSymmetric($symmetric);
         self::$preferredSymmetric = $symmetric;
     }
 
@@ -171,6 +173,7 @@ final class Config
      */
     public static function setS2kHash(HashAlgorithm $s2kHash): void
     {
+        self::unsupportedHash($s2kHash);
         self::$s2kHash = $s2kHash;
     }
 
@@ -355,5 +358,37 @@ final class Config
     public static function setAllowUnauthenticated(bool $allow): void
     {
         self::$allowUnauthenticated = $allow;
+    }
+
+    private static function unsupportedSymmetric(SymmetricAlgorithm $symmetric)
+    {
+        if (self::useV6Key()) {
+            switch ($symmetric) {
+                case SymmetricAlgorithm::Plaintext:
+                case SymmetricAlgorithm::Idea:
+                case SymmetricAlgorithm::TripleDes:
+                case SymmetricAlgorithm::Cast5:
+                    throw new \UnexpectedValueException(
+                        "Symmetric {$symmetric->name} cannot be used with v6 packet.",
+                    );
+                    break;
+            }
+        }
+    }
+
+    private static function unsupportedHash(HashAlgorithm $hash): void
+    {
+        if (self::useV6Key()) {
+            switch ($hash) {
+                case HashAlgorithm::Unknown:
+                case HashAlgorithm::Md5:
+                case HashAlgorithm::Sha1:
+                case HashAlgorithm::Ripemd160:
+                    throw new \UnexpectedValueException(
+                        "Hash {$hash->name} cannot be used with v6 packet.",
+                    );
+                    break;
+            }
+        }
     }
 }
