@@ -93,6 +93,13 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
                 "Version $version of the signature packet is unsupported.",
             );
         }
+        if ($version === self::VERSION_6 &&
+            $keyAlgorithm === KeyAlgorithm::Dsa
+        ) {
+            throw new \UnexpectedValueException(
+                "Public key algorithm {$keyAlgorithm->name} cannot be used with v{$version} signature packet.",
+            );
+        }
 
         $this->hashedSubpackets = array_filter(
             $hashedSubpackets,

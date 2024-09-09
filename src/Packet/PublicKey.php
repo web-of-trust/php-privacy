@@ -77,7 +77,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         );
         if ($version !== self::VERSION_4 && $version !== self::VERSION_6) {
             throw new \UnexpectedValueException(
-                "Version $version of the key packet is unsupported.",
+                "Version {$version} of the key packet is unsupported.",
             );
         }
         $isV6 = $version === self::VERSION_6;
@@ -88,7 +88,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
                ($curveOid === CurveOid::Curve25519)
             ) {
                 throw new \UnexpectedValueException(
-                    "Legacy curve25519 cannot be used with v{$version} key packet.",
+                    "Legacy {$curveOid->name} cannot be used with v{$version} key packet.",
                 );
             }
         }
