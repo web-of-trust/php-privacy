@@ -60,7 +60,14 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
         parent::__construct(PacketTag::PublicKeyEncryptedSessionKey);
         if ($version !== self::VERSION_3 && $version !== self::VERSION_6) {
             throw new \UnexpectedValueException(
-                "Version $version of the PKESK packet is unsupported.",
+                "Version {$version} of the PKESK packet is unsupported.",
+            );
+        }
+        if ($version === self::VERSION_6 &&
+            $publicKeyAlgorithm === KeyAlgorithm::ElGamal
+        ) {
+            throw new \UnexpectedValueException(
+                "ElGamal key algorithm cannot be used with v{$version} PKESK packet.",
             );
         }
     }

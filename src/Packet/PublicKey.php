@@ -88,7 +88,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
                ($curveOid === CurveOid::Curve25519)
             ) {
                 throw new \UnexpectedValueException(
-                    'Legacy curve25519 cannot be used with version 6 key packet.',
+                    "Legacy curve25519 cannot be used with v{$version} key packet.",
                 );
             }
         }
