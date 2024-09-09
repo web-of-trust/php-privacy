@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace OpenPGP\Tests\Cryptor;
+namespace OpenPGP\Tests\Key;
 
 use OpenPGP\Enum\KeyAlgorithm;
 use OpenPGP\Key\PublicKey;

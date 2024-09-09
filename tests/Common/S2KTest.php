@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace OpenPGP\Tests\Packet;
+namespace OpenPGP\Tests\Common;
 
 use OpenPGP\Common\Argon2S2K;
 use OpenPGP\Common\GenericS2K;

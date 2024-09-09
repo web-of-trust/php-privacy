@@ -2,7 +2,6 @@
 
 namespace OpenPGP\Tests\Cryptor;
 
-use phpseclib3\Crypt\Random;
 use OpenPGP\Cryptor\Symmetric\Camellia;
 use OpenPGP\Cryptor\Symmetric\CAST5;
 use OpenPGP\Cryptor\Symmetric\IDEA;
