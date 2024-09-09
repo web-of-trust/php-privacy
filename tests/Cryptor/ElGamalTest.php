@@ -7,7 +7,6 @@ use OpenPGP\Cryptor\Asymmetric\ElGamal;
 use OpenPGP\Cryptor\Asymmetric\ElGamal\PrivateKey;
 use OpenPGP\Cryptor\Asymmetric\ElGamal\PublicKey;
 use OpenPGP\Tests\OpenPGPTestCase;
-use phpseclib3\Crypt\Random;
 use phpseclib3\Math\BigInteger;
 
 /**
