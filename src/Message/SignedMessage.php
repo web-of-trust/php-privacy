@@ -20,6 +20,9 @@ use OpenPGP\Type\{
 /**
  * OpenPGP signed message class
  *
+ * Class that represents an OpenPGP cleartext signed message.
+ * See RFC 9580, section 7.
+ * 
  * @package  OpenPGP
  * @category Message
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

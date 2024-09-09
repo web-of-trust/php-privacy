@@ -9,6 +9,7 @@
 namespace OpenPGP\Message;
 
 use DateTimeInterface;
+use OpenPGP\Common\Helper;
 use OpenPGP\Packet\{
     LiteralData,
     PacketList,
@@ -25,6 +26,8 @@ use OpenPGP\Type\{
 
 /**
  * Cleartext message class
+ * 
+ * Class that represents an OpenPGP cleartext message.
  *
  * @package  OpenPGP
  * @category Message
@@ -49,7 +52,9 @@ class CleartextMessage implements CleartextMessageInterface
      */
     public function getText(): string
     {
-        return $this->text;
+        return preg_replace(
+            '/\r?\n/m', "\r\n", Helper::removeTrailingSpaces($this->text)
+        );
     }
 
     /**
@@ -70,7 +75,8 @@ class CleartextMessage implements CleartextMessageInterface
     ): SignedMessageInterface
     {
         return new SignedMessage(
-            $this->getText(), $this->createSignature(
+            $this->getText(),
+            $this->createSignature(
                 $signingKeys,
                 $notationData,
                 $time

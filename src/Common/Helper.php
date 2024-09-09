@@ -25,6 +25,10 @@ use phpseclib3\Math\BigInteger;
  */
 final class Helper
 {
+    const EOL = "\n";
+    const CRLF = "\r\n";
+    const LINE_SPLIT_PATTERN = '/\r\n|\n|\r/';
+
     /**
      * Read multiprecision integer (MPI) from binary data
      *
@@ -155,6 +159,7 @@ final class Helper
     /**
      * Generate random password
      * 
+     * @param int $length
      * @return string
      */
     public static function generatePassword(int $length = 32): string 
@@ -164,5 +169,18 @@ final class Helper
             fn () => chr(random_int(33, 126)),
             str_repeat('*', $length)
         );
+    }
+
+    /**
+     * Remove trailing spaces, carriage returns and tabs from each line
+     * 
+     * @param string $text
+     * @return string
+     */
+    public static function removeTrailingSpaces(string $text): string
+    {
+        $lines = preg_split(self::LINE_SPLIT_PATTERN, $text);
+        $lines = array_map(static fn ($line) => rtrim($line, " \r\t"), $lines);
+        return implode(self::EOL, $lines);
     }
 }
