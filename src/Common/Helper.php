@@ -148,6 +148,21 @@ final class Helper
     }
 
     /**
+     * Generate random password
+     * 
+     * @param int $length
+     * @return string
+     */
+    public static function generatePassword(int $length = 32): string 
+    {
+        return preg_replace_callback(
+            '/\*/u',
+            static fn () => chr(random_int(33, 126)),
+            str_repeat('*', $length)
+        );
+    }
+
+    /**
      * Remove trailing spaces, carriage returns and tabs from each line
      * 
      * @param string $text
