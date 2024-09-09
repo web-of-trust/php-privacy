@@ -67,7 +67,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
             $publicKeyAlgorithm === KeyAlgorithm::ElGamal
         ) {
             throw new \UnexpectedValueException(
-                "Public key algorithm {$publicKeyAlgorithm->name} cannot be used with v{$version} PKESK packet.",
+                "Public key {$publicKeyAlgorithm->name} cannot be used with v{$version} PKESK packet.",
             );
         }
     }
