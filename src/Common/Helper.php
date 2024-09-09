@@ -28,6 +28,7 @@ final class Helper
     const EOL = "\n";
     const CRLF = "\r\n";
     const LINE_SPLIT_PATTERN = '/\r\n|\n|\r/';
+    const EMPTY_LINE_PATTERN = '/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/';
 
     /**
      * Read multiprecision integer (MPI) from binary data

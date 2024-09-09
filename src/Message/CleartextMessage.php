@@ -52,9 +52,10 @@ class CleartextMessage implements CleartextMessageInterface
      */
     public function getText(): string
     {
+        $text = Helper::removeTrailingSpaces($this->text);
         return preg_replace(
-            '/\r?\n/m', "\r\n", Helper::removeTrailingSpaces($this->text)
-        );
+            '/\r?\n/m', "\r\n", $text
+        ) ?? $text;
     }
 
     /**
