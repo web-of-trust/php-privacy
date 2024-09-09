@@ -50,10 +50,7 @@ class CleartextMessage implements CleartextMessageInterface
      */
     public function getText(): string
     {
-        $text = Helper::removeTrailingSpaces($this->text);
-        return preg_replace(
-            '/\r?\n/m', "\r\n", $text
-        ) ?? $text;
+        return $this->text;
     }
 
     /**
@@ -61,7 +58,11 @@ class CleartextMessage implements CleartextMessageInterface
      */
     public function getNormalizeText(): string
     {
-        return preg_replace('/\r\n/m', "\n", $this->getText());
+        // Remove trailing whitespace and normalize EOL to canonical form <CR><LF>
+        $text = Helper::removeTrailingSpaces($this->text);
+        return preg_replace(
+            '/\r?\n/m', "\r\n", $text
+        ) ?? $text;
     }
 
     /**

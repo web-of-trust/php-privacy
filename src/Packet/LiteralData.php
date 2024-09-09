@@ -152,7 +152,10 @@ class LiteralData extends AbstractPacket implements ForSigningInterface, Literal
     public function getSignBytes(): string
     {
         if ($this->format === Format::Text || $this->format === Format::Utf8) {
-            $data = Helper::removeTrailingSpaces($this->data);
+            // Remove trailing whitespace and normalize EOL to canonical form <CR><LF>
+            $data = Helper::removeTrailingSpaces(
+                mb_convert_encoding($this->data, 'UTF-8')
+            );
             return preg_replace(
                 '/\r?\n/m', "\r\n", $data
             ) ?? $data;
