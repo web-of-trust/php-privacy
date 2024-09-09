@@ -145,6 +145,18 @@ class SymEncryptedSessionKey extends AbstractPacket
     {
         $aeadProtect = $aead instanceof AeadAlgorithm;
         $version = $aeadProtect ? self::VERSION_6 : self::VERSION_4;
+        if ($version === self::VERSION_6) {
+            switch ($symmetric) {
+                case SymmetricAlgorithm::Plaintext:
+                case SymmetricAlgorithm::Idea:
+                case SymmetricAlgorithm::TripleDes:
+                case SymmetricAlgorithm::Cast5:
+                    throw new \UnexpectedValueException(
+                        "Symmetric {$symmetric->name} cannot be used with v{$version} SKESK packet.",
+                    );
+                    break;
+            }
+        }
         $s2k = $aeadProtect && Argon2S2K::argon2Supported() ?
             Helper::stringToKey(S2kType::Argon2) :
             Helper::stringToKey(S2kType::Iterated);
