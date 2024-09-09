@@ -71,3 +71,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Remove random prefix & MDC packet.
 - Fix gcm encryptor.
 - Add salt notation to signature.
+
+## 1.1.10 - released 2024-09-09
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.1.9...1.1.10)
+- Refactor cleartext signature framework.
+- Add getSessionKey method to EncryptedMessage.
