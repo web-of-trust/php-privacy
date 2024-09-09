@@ -187,7 +187,7 @@ final class Armor
      * @param ArmorType $type
      * @param string $data
      * @param string $text
-     * @param string $hashAlgo
+     * @param array $hashAlgos
      * @param int $partIndex
      * @param int $partTotal
      * @param string $customComment
@@ -197,7 +197,7 @@ final class Armor
         ArmorType $type,
         string $data,
         string $text = '',
-        string $hashAlgo = '',
+        array $hashAlgos = [],
         int $partIndex = 0,
         int $partTotal = 0,
         string $customComment = ''
@@ -220,7 +220,10 @@ final class Armor
             ],
             ArmorType::SignedMessage => [
                 self::SIGNED_MESSAGE_BEGIN,
-                "Hash: $hashAlgo" . Helper::EOL . Helper::EOL,
+                !empty($hashAlgos) ? implode(
+                    Helper::EOL,
+                    array_map(static fn ($hashAlgo) => "Hash: $hashAlgo", $hashAlgos)
+                ) . Helper::EOL . Helper::EOL : Helper::EOL,
                 preg_replace('/^- /m', '- -', $text) . Helper::EOL,
                 self::SIGNATURE_BEGIN,
                 self::addHeader($customComment) . Helper::EOL,

@@ -37,7 +37,7 @@ final class Config
     const PADDING_MIN = 16;
     const PADDING_MAX = 32;
 
-    const SALT_NOTATION  = 'PHP Privacy Salt Notation';
+    const SALT_NOTATION = 'PHP Privacy Salt Notation';
 
     private static HashAlgorithm $preferredHash = HashAlgorithm::Sha256;
 

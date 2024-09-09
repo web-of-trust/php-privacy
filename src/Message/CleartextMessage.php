@@ -28,6 +28,7 @@ use OpenPGP\Type\{
  * Cleartext message class
  * 
  * Class that represents an OpenPGP cleartext message.
+ * See RFC 9580, section 7.
  *
  * @package  OpenPGP
  * @category Message

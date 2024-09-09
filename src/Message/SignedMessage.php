@@ -81,7 +81,7 @@ class SignedMessage extends CleartextMessage implements SignedMessageInterface
     {
         $hashes = array_map(
             static fn ($packet) => strtoupper(
-                $packet->getHashAlgorithm()->name
+                str_replace('_', '-', $packet->getHashAlgorithm()->name)
             ),
             $this->signature->getPackets()
         );
@@ -89,7 +89,7 @@ class SignedMessage extends CleartextMessage implements SignedMessageInterface
             ArmorType::SignedMessage,
             $this->signature->getPacketList()->encode(),
             $this->getText(),
-            implode(',', $hashes)
+            $hashes,
         );
     }
 

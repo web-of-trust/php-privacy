@@ -20,7 +20,7 @@ class ArmorTest extends OpenPGPTestCase
         $partIndex = $this->faker->unique()->randomDigit();
         $partTotal = $this->faker->unique()->randomDigit();
         $armored = Armor::encode(
-            ArmorType::MultipartSection, $data, '', '', $partIndex, $partTotal
+            ArmorType::MultipartSection, $data, '', [], $partIndex, $partTotal
         );
 
         preg_match('/BEGIN PGP MESSAGE, PART \d+\/\d+/', $armored, $beginMatches);
@@ -38,7 +38,7 @@ class ArmorTest extends OpenPGPTestCase
         $data = Random::string(100);
         $partIndex = $this->faker->randomDigit();
         $armored = Armor::encode(
-            ArmorType::MultipartLast, $data, '', '', $partIndex
+            ArmorType::MultipartLast, $data, '', [], $partIndex
         );
 
         preg_match('/BEGIN PGP MESSAGE, PART \d+/', $armored, $beginMatches);
@@ -57,7 +57,7 @@ class ArmorTest extends OpenPGPTestCase
         $text = $this->faker->sentence(100);
         $hashAlgo = $this->faker->randomElement(HashAlgorithm::cases())->name;
         $armored = Armor::encode(
-            ArmorType::SignedMessage, $data, $text, $hashAlgo
+            ArmorType::SignedMessage, $data, $text, [$hashAlgo]
         );
 
         preg_match('/BEGIN PGP SIGNED MESSAGE/', $armored, $matches);
