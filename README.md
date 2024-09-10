@@ -6,6 +6,7 @@ It implements [RFC9580](https://www.rfc-editor.org/rfc/rfc9580).
 ## Requirement
 * PHP 8.1.x or later,
 * [phpseclib](https://github.com/phpseclib/phpseclib) library provides cryptography algorithms,
+* [argon2](https://github.com/P-H-C/phc-winner-argon2) Argon2 for Argon2S2K,
 * (optional) PHPUnit to run tests,
 
 ## Features
