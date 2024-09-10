@@ -33,7 +33,7 @@ use phpseclib3\Crypt\Random;
  */
 class AeadEncryptedData extends AbstractPacket implements AeadEncryptedDataPacketInterface
 {
-    use EncryptedDataTrait;
+    use AeadEncryptedDataTrait, EncryptedDataTrait;
 
     const VERSION = 1;
 
@@ -74,7 +74,7 @@ class AeadEncryptedData extends AbstractPacket implements AeadEncryptedDataPacke
         $version = ord($bytes[$offset++]);
         if ($version !== self::VERSION) {
             throw new \UnexpectedValueException(
-                "Version $version of the AEAD-encrypted data packet is not supported.",
+                "Version $version of the AEPD is not supported.",
           );
         }
 
@@ -164,38 +164,6 @@ class AeadEncryptedData extends AbstractPacket implements AeadEncryptedDataPacke
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getVersion(): int
-    {
-        return $this->version;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSymmetric(): SymmetricAlgorithm
-    {
-        return $this->symmetric;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAead(): ?AeadAlgorithm
-    {
-        return $this->aead;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getChunkSize(): int
-    {
-        return $this->chunkSize;
-    }
-
-    /**
      * Get initialization vector
      * 
      * @return string
@@ -203,17 +171,6 @@ class AeadEncryptedData extends AbstractPacket implements AeadEncryptedDataPacke
     public function getIV(): string
     {
         return $this->iv;
-    }
-
-    private function getAAData(): string
-    {
-        return implode([
-            chr(0xc0 | $this->getTag()->value),
-            chr($this->version),
-            chr($this->symmetric->value),
-            chr($this->aead->value),
-            chr($this->chunkSize),
-        ]);
     }
 
     /**
@@ -273,7 +230,7 @@ class AeadEncryptedData extends AbstractPacket implements AeadEncryptedDataPacke
         $adataBuffer = substr($zeroBuffer, 0, 13);
         $adataTagBuffer = $zeroBuffer;
 
-        $aaData = $this->getAAData();
+        $aaData = $this->getAData();
         $adataBuffer = substr_replace($adataBuffer, $aaData, 0, strlen($aaData));
 
         $adataTagBuffer = substr_replace($adataTagBuffer, $aaData, 0, strlen($aaData));

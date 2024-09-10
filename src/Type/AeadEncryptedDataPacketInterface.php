@@ -28,6 +28,13 @@ interface AeadEncryptedDataPacketInterface extends EncryptedDataPacketInterface
     const AEAD_DECRYPT = 'decrypt';
 
     /**
+     * Get version
+     *
+     * @return int
+     */
+    function getVersion(): int;
+
+    /**
      * Get symmetric algorithm
      *
      * @return SymmetricAlgorithm

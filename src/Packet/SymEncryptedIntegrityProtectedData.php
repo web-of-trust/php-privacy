@@ -36,7 +36,7 @@ use phpseclib3\Crypt\Random;
  */
 class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadEncryptedDataPacketInterface
 {
-    use EncryptedDataTrait;
+    use AeadEncryptedDataTrait, EncryptedDataTrait;
 
     const VERSION_1  = 1;
     const VERSION_2  = 2;
@@ -238,38 +238,6 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getVersion(): int
-    {
-        return $this->version;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSymmetric(): SymmetricAlgorithm
-    {
-        return $this->symmetric;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAead(): ?AeadAlgorithm
-    {
-        return $this->aead;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getChunkSize(): int
-    {
-        return $this->chunkSize;
-    }
-
-    /**
      * Get salt
      * 
      * @return string
@@ -411,16 +379,5 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
             $aDataTagBytes
         );
         return implode($crypted);
-    }
-
-    private function getAData(): string
-    {
-        return implode([
-            chr(0xc0 | $this->getTag()->value),
-            chr($this->version),
-            chr($this->symmetric->value),
-            chr($this->aead->value),
-            chr($this->chunkSize),
-        ]);
     }
 }

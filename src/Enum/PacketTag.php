@@ -104,7 +104,7 @@ enum PacketTag: int
     case ModificationDetectionCode = 19;
 
     /**
-     * AEAD - Aead Encrypted Protected Data Packet
+     * AEPD - Aead Encrypted Protected Data Packet
      */
     case AeadEncryptedData = 20;
 
