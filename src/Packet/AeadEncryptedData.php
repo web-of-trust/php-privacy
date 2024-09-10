@@ -108,6 +108,8 @@ class AeadEncryptedData extends AbstractPacket implements AeadEncryptedDataPacke
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self
     {
+        self::validateSymmetric($symmetric);
+
         $aead = Config::getPreferredAead();
         $chunkSize = Config::getAeadChunkSize();
         $iv = Random::string($aead->ivLength());
