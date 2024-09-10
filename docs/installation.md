@@ -4,7 +4,7 @@ PHP Privacy installation
 ## Requirement
 * PHP 8.1.x or later,
 * [phpseclib](https://github.com/phpseclib/phpseclib) library provides cryptography algorithms,
-* [argon2](https://github.com/P-H-C/phc-winner-argon2) Argon2 for Argon2S2K,
+* [Argon2](https://github.com/P-H-C/phc-winner-argon2) for Argon2 string-to-key
 * (optional) PHPUnit to run tests,
 
 ## Installation
