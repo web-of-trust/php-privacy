@@ -38,6 +38,7 @@ use phpseclib3\Crypt\Random;
 class SymEncryptedSessionKey extends AbstractPacket
 {
     const VERSION_4 = 4;
+    const VERSION_5 = 5;
     const VERSION_6 = 6;
     const ZERO_CHAR = "\x00";
 
@@ -64,7 +65,10 @@ class SymEncryptedSessionKey extends AbstractPacket
     )
     {
         parent::__construct(PacketTag::SymEncryptedSessionKey);
-        if ($version != self::VERSION_4 && $version != self::VERSION_6) {
+        if ($version != self::VERSION_4 &&
+            $version != self::VERSION_5 &&
+            $version != self::VERSION_6
+        ) {
             throw new \UnexpectedValueException(
                 "Version $version of the SKESK packet is unsupported."
             );
@@ -72,7 +76,7 @@ class SymEncryptedSessionKey extends AbstractPacket
         if ($version === self::VERSION_6) {
             self::validateSymmetric($symmetric);
         }
-        if ($aead instanceof AeadAlgorithm && $version !== PublicKey::VERSION_6) {
+        if ($aead instanceof AeadAlgorithm && $version < self::VERSION_5) {
             throw new \UnexpectedValueException(
                 "Using AEAD with version {$version} of the SKESK packet is not allowed."
             );
@@ -100,13 +104,14 @@ class SymEncryptedSessionKey extends AbstractPacket
 
         $aead = null;
         $ivLength = 0;
-        if ($isV6) {
+        if ($version >= self::VERSION_5) {
             // A one-octet AEAD algorithm identifier.
             $aead = AeadAlgorithm::from(ord($bytes[$offset++]));
             $ivLength = $aead->ivLength();
-
-            // A one-octet scalar octet count of the following field.
-            $offset++;
+            if ($isV6) {
+                // A one-octet scalar octet count of the following field.
+                $offset++;
+            }
         }
 
         // A string-to-key (S2K) specifier, length as defined above.
@@ -303,9 +308,9 @@ class SymEncryptedSessionKey extends AbstractPacket
                         chr($this->symmetric->value),
                         chr($this->aead->value),
                     ]);
-                    $encryptionKey = hash_hkdf(
+                    $encryptionKey = $this->version === self::VERSION_6 ? hash_hkdf(
                         Config::HKDF_ALGO, $key, $keySize, $aData
-                    );
+                    ) : $key;
                     $cipher = $this->aead->cipherEngine(
                         $encryptionKey, $this->symmetric
                     );
@@ -350,21 +355,34 @@ class SymEncryptedSessionKey extends AbstractPacket
      */
     public function toBytes(): string
     {
-        return ($this->version === self::VERSION_6) ?
-            implode([
-                chr($this->version),
-                chr(3 + $this->s2k->getLength() + strlen($this->iv)),
-                chr($this->symmetric->value),
-                chr($this->aead->value),
-                chr($this->s2k->getLength()),
-                $this->s2k->toBytes(),
-                $this->iv,
-                $this->encrypted,
-            ]) : implode([
-                chr($this->version),
-                chr($this->symmetric->value),
-                $this->s2k->toBytes(),
-                $this->encrypted,
-            ]);
+        switch ($this->version) {
+            case self::VERSION_6:
+                return implode([
+                    chr($this->version),
+                    chr(3 + $this->s2k->getLength() + strlen($this->iv)),
+                    chr($this->symmetric->value),
+                    chr($this->aead->value),
+                    chr($this->s2k->getLength()),
+                    $this->s2k->toBytes(),
+                    $this->iv,
+                    $this->encrypted,
+                ]);
+            case self::VERSION_5:
+                return implode([
+                    chr($this->version),
+                    chr($this->symmetric->value),
+                    chr($this->aead->value),
+                    $this->s2k->toBytes(),
+                    $this->iv,
+                    $this->encrypted,
+                ]);
+            default:
+                return implode([
+                    chr($this->version),
+                    chr($this->symmetric->value),
+                    $this->s2k->toBytes(),
+                    $this->encrypted,
+                ]);
+        }
     }
 }
