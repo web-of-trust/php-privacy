@@ -60,15 +60,15 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, 
         $bodyLen = strlen($bodyBytes);
         $data = [];
 
-        $hdr = 0x80 | 0x40 | $this->tag->value;
+        $hdr = 0xc0 | $this->tag->value;
         if ($bodyLen < 192) {
             $data = [chr($hdr), chr($bodyLen)];
         }
-        elseif ($bodyLen <= 8383) {
+        elseif ($bodyLen > 191 && $bodyLen < 8384) {
             $data = [
               chr($hdr),
               chr(((($bodyLen - 192) >> 8) & 0xff) + 192),
-              chr($bodyLen - 192),
+              chr(($bodyLen - 192) & 0xff),
             ];
         }
         else {
