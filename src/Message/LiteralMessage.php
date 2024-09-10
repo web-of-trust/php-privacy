@@ -216,6 +216,16 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
             );
         }
 
+        $aeadSupported = true;
+        foreach ($encryptionKeys as $key) {
+            if (!$key->aeadSupported()) {
+                $aeadSupported = false;
+                break;
+            }
+        }
+        $aead = ($aeadSupported && Config::aeadProtect()) ?
+            Config::getPreferredAead() : null;
+
         $sessionKey = SessionKey::produceKey(
             $symmetric ?? Config::getPreferredSymmetric()
         );
@@ -230,28 +240,14 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
             static fn ($password) => SymEncryptedSessionKey::encryptSessionKey(
                 $password,
                 $sessionKey,
-                $symmetric ?? Config::getPreferredSymmetric()
+                $symmetric ?? Config::getPreferredSymmetric(),
+                $aead,
             ),
             $passwords
         );
-
-        $aeadSupported = true;
-        foreach ($encryptionKeys as $key) {
-            if (!$key->aeadSupported()) {
-                $aeadSupported = false;
-                break;
-            }
-        }
-        if ($aeadSupported && Config::aeadProtect()) {
-            $encryptedPacket = SymEncryptedIntegrityProtectedData::encryptPacketsWithSessionKey(
-                $sessionKey, $this->getPacketList(), Config::getPreferredAead()
-            );
-        }
-        else {
-            $encryptedPacket = SymEncryptedIntegrityProtectedData::encryptPacketsWithSessionKey(
-                $sessionKey, $this->getPacketList()
-            );
-        }
+        $encryptedPacket = SymEncryptedIntegrityProtectedData::encryptPacketsWithSessionKey(
+            $sessionKey, $this->getPacketList(), $aead
+        );
 
         return new EncryptedMessage(new PacketList([
             ...$pkeskPackets,
