@@ -19,7 +19,7 @@ use OpenPGP\Enum\{
     SymmetricAlgorithm,
 };
 use OpenPGP\Type\{
-    EncryptedDataPacketInterface,
+    AeadEncryptedDataPacketInterface,
     PacketListInterface,
     SessionKeyInterface,
 };
@@ -34,18 +34,15 @@ use phpseclib3\Crypt\Random;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class SymEncryptedIntegrityProtectedData extends AbstractPacket implements EncryptedDataPacketInterface
+class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadEncryptedDataPacketInterface
 {
     use EncryptedDataTrait;
 
-    const VERSION_1    = 1;
-    const VERSION_2    = 2;
-    const HASH_ALGO    = 'sha1';
-    const ZERO_CHAR    = "\x00";
-    const MDC_SUFFIX   = "\xd3\x14";
-    const SALT_SIZE    = 32;
-    const AEAD_ENCRYPT = 'encrypt';
-    const AEAD_DECRYPT = 'decrypt';
+    const VERSION_1  = 1;
+    const VERSION_2  = 2;
+    const HASH_ALGO  = 'sha1';
+    const MDC_SUFFIX = "\xd3\x14";
+    const SALT_SIZE  = 32;
 
     /**
      * Constructor
@@ -75,10 +72,11 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
                 "Version $version of the SEIPD packet is unsupported.",
             );
         }
-        if ($version === self::VERSION_2) {
+        $isV2 = $version === self::VERSION_2;
+        if ($isV2) {
             self::validateSymmetric($symmetric);
         }
-        if ($aead instanceof AeadAlgorithm && $version !== self::VERSION_2) {
+        if ($aead instanceof AeadAlgorithm && !$isV2) {
             throw new \UnexpectedValueException(
                 "Using AEAD with v{$version} SEIPD packet is not allowed."
             );
@@ -240,9 +238,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
     }
 
     /**
-     * Get version
-     *
-     * @return int
+     * {@inheritdoc}
      */
     public function getVersion(): int
     {
@@ -250,9 +246,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
     }
 
     /**
-     * Get symmetric algorithm
-     *
-     * @return SymmetricAlgorithm
+     * {@inheritdoc}
      */
     public function getSymmetric(): SymmetricAlgorithm
     {
@@ -260,9 +254,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
     }
 
     /**
-     * Get AEAD algorithm
-     *
-     * @return AeadAlgorithm
+     * {@inheritdoc}
      */
     public function getAead(): ?AeadAlgorithm
     {
@@ -270,9 +262,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
     }
 
     /**
-     * Get chunk size byte
-     *
-     * @return int
+     * {@inheritdoc}
      */
     public function getChunkSize(): int
     {

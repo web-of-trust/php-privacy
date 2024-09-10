@@ -42,7 +42,8 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
 {
     use EncryptedDataTrait;
 
-    const ZERO_CHAR   = "\x00";
+    const VERSION   = 1;
+    const ZERO_CHAR = "\x00";
 
     /**
      * Constructor
@@ -108,6 +109,14 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
             $packetList,
             $sessionKey->getSymmetric()
         );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVersion(): int
+    {
+        return self::VERSION;
     }
 
     /**

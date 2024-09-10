@@ -20,6 +20,13 @@ use OpenPGP\Enum\SymmetricAlgorithm;
 interface EncryptedDataPacketInterface extends PacketInterface
 {
     /**
+     * Get version
+     *
+     * @return int
+     */
+    function getVersion(): int;
+
+    /**
      * Get encrypted data
      *
      * @return string
