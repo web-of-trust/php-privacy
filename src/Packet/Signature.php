@@ -99,16 +99,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
                     "Public key {$keyAlgorithm->name} cannot be used with v{$version} signature packet.",
                 );
             }
-            switch ($hashAlgorithm) {
-                case HashAlgorithm::Unknown:
-                case HashAlgorithm::Md5:
-                case HashAlgorithm::Sha1:
-                case HashAlgorithm::Ripemd160:
-                    throw new \UnexpectedValueException(
-                        "Hash {$hashAlgorithm->name} cannot be used with v{$version} signature packet.",
-                    );
-                    break;
-            }
+            self::validateHash($hashAlgorithm);
         }
 
         $this->hashedSubpackets = array_filter(
@@ -220,6 +211,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         $version = $signKey->getVersion();
         $keyAlgorithm = $signKey->getKeyAlgorithm();
         $hashAlgorithm = $signKey->getPreferredHash($hashAlgorithm);
+        self::validateHash($hashAlgorithm);
 
         $hashedSubpackets = [
             Signature\SignatureCreationTime::fromTime(

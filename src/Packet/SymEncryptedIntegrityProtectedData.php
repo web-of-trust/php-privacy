@@ -75,6 +75,9 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
                 "Version $version of the SEIPD packet is unsupported.",
             );
         }
+        if ($version === self::VERSION_2) {
+            self::validateSymmetric($symmetric);
+        }
         if ($aead instanceof AeadAlgorithm && $version !== self::VERSION_2) {
             throw new \UnexpectedValueException(
                 "Using AEAD with v{$version} SEIPD packet is not allowed."
@@ -145,18 +148,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
         $aeadProtect = $aead instanceof AeadAlgorithm;
         $version = ($aeadProtect || Config::useV6Key()) ?
             self::VERSION_2 : self::VERSION_1;
-        if ($version === self::VERSION_2) {
-            switch ($symmetric) {
-                case SymmetricAlgorithm::Plaintext:
-                case SymmetricAlgorithm::Idea:
-                case SymmetricAlgorithm::TripleDes:
-                case SymmetricAlgorithm::Cast5:
-                    throw new \UnexpectedValueException(
-                        "Symmetric {$symmetric->name} cannot be used with v{$version} SEIPD packet.",
-                    );
-                    break;
-            }
-        }
+        self::validateSymmetric($symmetric);
 
         $salt = '';
         $chunkSize = 0;

@@ -69,6 +69,9 @@ class SymEncryptedSessionKey extends AbstractPacket
                 "Version $version of the SKESK packet is unsupported."
             );
         }
+        if ($version === self::VERSION_6) {
+            self::validateSymmetric($symmetric);
+        }
         if ($aead instanceof AeadAlgorithm && $version !== PublicKey::VERSION_6) {
             throw new \UnexpectedValueException(
                 "Using AEAD with version {$version} of the SKESK packet is not allowed."
@@ -147,18 +150,8 @@ class SymEncryptedSessionKey extends AbstractPacket
         $version = ($aeadProtect || Config::useV6Key()) ?
             self::VERSION_6 : self::VERSION_4;
         $symmetric = $sessionKey?->getSymmetric() ?? $symmetric;
-        if ($version === self::VERSION_6) {
-            switch ($symmetric) {
-                case SymmetricAlgorithm::Plaintext:
-                case SymmetricAlgorithm::Idea:
-                case SymmetricAlgorithm::TripleDes:
-                case SymmetricAlgorithm::Cast5:
-                    throw new \UnexpectedValueException(
-                        "Symmetric {$symmetric->name} cannot be used with v{$version} SKESK packet.",
-                    );
-                    break;
-            }
-        }
+        self::validateSymmetric($symmetric);
+
         $s2k = $aeadProtect && Argon2S2K::argon2Supported() ?
             Helper::stringToKey(S2kType::Argon2) :
             Helper::stringToKey(S2kType::Iterated);

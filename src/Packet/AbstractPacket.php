@@ -8,7 +8,11 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Enum\PacketTag;
+use OpenPGP\Enum\{
+    HashAlgorithm,
+    PacketTag,
+    SymmetricAlgorithm,
+};
 use OpenPGP\Common\Config;
 use OpenPGP\Type\PacketInterface;
 use Psr\Log\{
@@ -95,4 +99,32 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, 
      * {@inheritdoc}
      */
     abstract public function toBytes(): string;
+
+    protected static function validateHash(HashAlgorithm $hash): void
+    {
+        switch ($hash) {
+            case HashAlgorithm::Unknown:
+            case HashAlgorithm::Md5:
+            case HashAlgorithm::Sha1:
+            case HashAlgorithm::Ripemd160:
+                throw new \UnexpectedValueException(
+                    "Hash {$hash->name} is unsupported.",
+                );
+                break;
+        }
+    }
+
+    protected static function validateSymmetric(SymmetricAlgorithm $Symmetric): void
+    {
+        switch ($symmetric) {
+            case SymmetricAlgorithm::Plaintext:
+            case SymmetricAlgorithm::Idea:
+            case SymmetricAlgorithm::TripleDes:
+            case SymmetricAlgorithm::Cast5:
+                throw new \UnexpectedValueException(
+                    "Symmetric {$symmetric->name} is unsupported.",
+                );
+                break;
+        }
+    }
 }
