@@ -18,7 +18,7 @@ $publicKey = $privateKey->toPublic();
 echo $publicKey; // '-----BEGIN PGP PUBLIC KEY BLOCK ... '
 ```
 
-Dsa key type (uses DSA algorithm for signing & ElGamal algorithm for encryption):
+Dsa key type (uses Dsa algorithm for signing & ElGamal algorithm for encryption):
 ```php
 const PASSPHRASE = 'Your passphase';
 const USER_ID = 'Your name <name@example.com>';
@@ -33,7 +33,7 @@ $publicKey = $privateKey->toPublic();
 echo $publicKey; // '-----BEGIN PGP PUBLIC KEY BLOCK ... '
 ```
 
-Ecc key type (uses ECDSA/EdDSA algorithm for signing & ECDH algorithm for encryption):
+Ecc key type (uses EcDsa/EdDsaLegacy algorithm for signing & Ecdh algorithm for encryption):
 ```php
 const PASSPHRASE = 'Your passphase';
 const USER_ID = 'Your name <name@example.com>';
@@ -41,7 +41,35 @@ $privateKey = OpenPGP::generateKey(
     [USER_ID],
     PASSPHRASE,
     type: KeyType::Ecc,
-    curve: CurveInfo::Ed25519,
+    curve: CurveOid::Ed25519,
+);
+file_put_contents('privateKey.asc', $privateKey->armor());
+$publicKey = $privateKey->toPublic();
+echo $publicKey; // '-----BEGIN PGP PUBLIC KEY BLOCK ... '
+```
+
+Curve25519 key type (uses Ed25519 algorithm for signing & X25519 algorithm for encryption):
+```php
+const PASSPHRASE = 'Your passphase';
+const USER_ID = 'Your name <name@example.com>';
+$privateKey = OpenPGP::generateKey(
+    [USER_ID],
+    PASSPHRASE,
+    type: KeyType::Curve25519,
+);
+file_put_contents('privateKey.asc', $privateKey->armor());
+$publicKey = $privateKey->toPublic();
+echo $publicKey; // '-----BEGIN PGP PUBLIC KEY BLOCK ... '
+```
+
+Curve448 key type (uses Ed448 algorithm for signing & X448 algorithm for encryption):
+```php
+const PASSPHRASE = 'Your passphase';
+const USER_ID = 'Your name <name@example.com>';
+$privateKey = OpenPGP::generateKey(
+    [USER_ID],
+    PASSPHRASE,
+    type: KeyType::Curve448,
 );
 file_put_contents('privateKey.asc', $privateKey->armor());
 $publicKey = $privateKey->toPublic();
