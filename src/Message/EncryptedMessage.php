@@ -49,7 +49,18 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
                 'Armored text not of message type.'
             );
         }
-        $packetList = PacketList::decode($armor->getData());
+        return self::fromBytes($armor->getData());
+    }
+
+    /**
+     * Read message from byte string
+     *
+     * @param string $bytes
+     * @return self
+     */
+    public static function fromBytes(string $bytes): self
+    {
+        $packetList = PacketList::decode($bytes);
         self::validatePacketList($packetList);
         return new self($packetList);
     }

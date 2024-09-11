@@ -100,8 +100,19 @@ class PublicKey extends AbstractKey
                 'Armored text not of public key type.'
             );
         }
+        return self::fromBytes($armor->getData());
+    }
+
+    /**
+     * Read public key from byte string
+     *
+     * @param string $bytes
+     * @return self
+     */
+    public static function fromBytes(string $bytes): self
+    {
         return self::fromPacketList(
-            PacketList::decode($armor->getData())
+            PacketList::decode($bytes)
         );
     }
 
