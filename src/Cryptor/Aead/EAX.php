@@ -115,11 +115,7 @@ final class EAX implements AeadCipher
      */
     public function getNonce(string $iv, string $chunkIndex): string
     {
-        $nonce = $iv;
-        for ($i = 0, $len = strlen($chunkIndex); $i < $len; $i++) {
-            $nonce[8 + $i] = $nonce[8 + $i] ^ $chunkIndex[$i];
-        }
-        return $nonce;
+        return substr_replace($iv, substr($iv, 8) ^ $chunkIndex, 8);
     }
 
     private function omac(string $tag, string $message): string

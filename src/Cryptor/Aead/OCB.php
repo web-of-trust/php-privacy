@@ -115,11 +115,7 @@ final class OCB implements AeadCipher
      */
     public function getNonce(string $iv, string $chunkIndex): string
     {
-        $nonce = $iv;
-        for ($i = 0, $len = strlen($chunkIndex); $i < $len; $i++) {
-            $nonce[7 + $i] = $nonce[7 + $i] ^ $chunkIndex[$i];
-        }
-        return $nonce;
+        return substr_replace($iv, substr($iv, 7) ^ $chunkIndex, 7);
     }
 
     /**
