@@ -321,7 +321,6 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
         string $fn, string $key, string $data, string $finalChunk = ''
     ): string
     {
-        $dataLength = strlen($data);
         $tagLength = $fn === self::AEAD_DECRYPT ? $this->aead->tagLength() : 0;
         // ((uint64_t)1 << (c + 6))
         $chunkSize = (1 << ($this->chunkSize + 6)) + $tagLength;
