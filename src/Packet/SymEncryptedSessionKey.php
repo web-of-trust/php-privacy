@@ -152,8 +152,7 @@ class SymEncryptedSessionKey extends AbstractPacket
     ): self
     {
         $aeadProtect = $aead instanceof AeadAlgorithm;
-        $version = ($aeadProtect || Config::useV6Key()) ?
-            self::VERSION_6 : self::VERSION_4;
+        $version = $aeadProtect ? self::VERSION_6 : self::VERSION_4;
         $symmetric = $sessionKey?->getSymmetric() ?? $symmetric;
         self::validateSymmetric($symmetric);
 

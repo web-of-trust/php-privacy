@@ -144,8 +144,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
     ): self
     {
         $aeadProtect = $aead instanceof AeadAlgorithm;
-        $version = ($aeadProtect || Config::useV6Key()) ?
-            self::VERSION_2 : self::VERSION_1;
+        $version = $aeadProtect ? self::VERSION_2 : self::VERSION_1;
         self::validateSymmetric($symmetric);
 
         $salt = '';
