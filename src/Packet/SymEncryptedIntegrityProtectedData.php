@@ -317,12 +317,12 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
      * @param string $finalChunk - For encryption: empty final chunk; for decryption: final authentication tag
      * @return string
      */
-    protected function aeadCrypt(
+    private function aeadCrypt(
         string $fn, string $key, string $data, string $finalChunk = ''
     ): string
     {
         $tagLength = $fn === self::AEAD_DECRYPT ? $this->aead->tagLength() : 0;
-        // chunk_size = (uint32_t) 1 << (c + 6)
+        // chunkSize = (uint32_t) 1 << (c + 6)
         $chunkSize = (1 << ($this->chunkSize + 6)) + $tagLength;
 
         $aData = $this->getAData();
@@ -346,27 +346,25 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
         $cipher = $this->aead->cipherEngine($encryptionKey, $this->symmetric);
 
         $crypted = [];
+        $chunkIndexData = substr($aDataTagBytes, 5, 8);
         for ($chunkIndex = 0; $chunkIndex === 0 || strlen($data);) {
-            $chunkIndexData = substr($aDataTagBytes, 5, 8);
+            // Take a chunk of data, en/decrypt it, and shift `data` to the next chunk.
             $crypted[] = $cipher->$fn(
                 substr($data, 0, $chunkSize),
                 $cipher->getNonce($iv, $chunkIndexData),
                 $aData
             );
-            // We take a chunk of data, en/decrypt it, and shift `data` to the next chunk.
             $data = substr($data, $chunkSize);
-            $ciBytes = pack('N', ++$chunkIndex);
             $aDataTagBytes = substr_replace(
-                $aDataTagBytes, $ciBytes, $tagSize - 4, 4
+                $aDataTagBytes, pack('N', ++$chunkIndex), $tagSize - 4, 4
             );
+            $chunkIndexData = substr($aDataTagBytes, 5, 8);
         }
-        $chunkIndexData = substr($aDataTagBytes, 5, 8);
-        $bytesProcessed = array_sum(
-            array_map(fn ($processed) => strlen($processed), $crypted)
+        $processed = array_sum(
+            array_map(static fn ($bytes) => strlen($bytes), $crypted)
         );
-        $processedBytes = pack('N', $bytesProcessed);
         $aDataTagBytes = substr_replace(
-            $aDataTagBytes, $processedBytes, $tagSize - 4, 4,
+            $aDataTagBytes, pack('N', $processed), $tagSize - 4, 4
         );
 
         // After the final chunk, we either encrypt a final, empty data
