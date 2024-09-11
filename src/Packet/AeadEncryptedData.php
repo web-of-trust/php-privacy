@@ -251,7 +251,7 @@ class AeadEncryptedData extends AbstractPacket implements AeadEncryptedDataPacke
         // chunk to get the final authentication tag or validate that final
         // authentication tag.
         $aDataTagBytes = substr_replace(
-            str_repeat(self::ZERO_CHAR, 21), $aDataBuffer, 0, 13)
+            str_repeat(self::ZERO_CHAR, 21), $aDataBytes, 0, 13)
         ;
         $cryptedLength = $dataLength - $tagLength * (int) ceil($dataLength / $chunkSize);
         $aDataTagBytes = substr_replace(

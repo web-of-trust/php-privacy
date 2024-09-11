@@ -346,19 +346,19 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
         $cipher = $this->aead->cipherEngine($encryptionKey, $this->symmetric);
 
         $crypted = [];
-        $chunkIndexData = substr($aDataTagBytes, 5, 8);
+        $ciBytes = substr($aDataTagBytes, 5, 8);
         for ($chunkIndex = 0; $chunkIndex === 0 || strlen($data);) {
             // Take a chunk of data, en/decrypt it, and shift `data` to the next chunk.
             $crypted[] = $cipher->$fn(
                 substr($data, 0, $chunkSize),
-                $cipher->getNonce($iv, $chunkIndexData),
+                $cipher->getNonce($iv, $ciBytes),
                 $aData
             );
             $data = substr($data, $chunkSize);
             $aDataTagBytes = substr_replace(
                 $aDataTagBytes, pack('N', ++$chunkIndex), $tagSize - 4, 4
             );
-            $chunkIndexData = substr($aDataTagBytes, 5, 8);
+            $ciBytes = substr($aDataTagBytes, 5, 8);
         }
         $processed = array_sum(
             array_map(static fn ($bytes) => strlen($bytes), $crypted)
@@ -372,7 +372,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
         // authentication tag.
         $crypted[] = $cipher->$fn(
             $finalChunk,
-            $cipher->getNonce($iv, $chunkIndexData),
+            $cipher->getNonce($iv, $ciBytes),
             $aDataTagBytes
         );
         return implode($crypted);
