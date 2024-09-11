@@ -76,3 +76,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.1.9...1.1.10)
 - Refactor cleartext signature framework.
 - Add getSessionKey method to EncryptedMessage.
+
+## 1.1.11 - released 2024-09-11
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.1.10...1.1.11)
+- Fix partial packet reader.
+- Fix AEAD Protected Data encrypt/decrypt.
