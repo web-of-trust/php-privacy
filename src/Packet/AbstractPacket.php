@@ -28,7 +28,7 @@ use Psr\Log\{
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, \Stringable
+abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
 {
     use LoggerAwareTrait;
 

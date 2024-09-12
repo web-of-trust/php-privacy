@@ -17,7 +17,7 @@ use OpenPGP\Enum\PacketTag;
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-interface PacketInterface
+interface PacketInterface extends \Stringable
 {
     /**
      * Get packet tag
