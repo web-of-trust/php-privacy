@@ -30,7 +30,10 @@ class PacketList implements PacketListInterface
      */
     private readonly array $packets;
 
-    const SUPPORT_STREAMING = [
+    /**
+     * Packet tag support partial body length
+     */
+    const PARTIAL_SUPPORTING = [
         PacketTag::AeadEncryptedData,
         PacketTag::CompressedData,
         PacketTag::LiteralData,
@@ -38,8 +41,8 @@ class PacketList implements PacketListInterface
         PacketTag::SymEncryptedIntegrityProtectedData,
     ];
 
-    const CHUNK_SIZE = 1024;
-    const MIN_SIZE   = 512;
+    const PARTIAL_CHUNK_SIZE = 1024;
+    const PARTIAL_MIN_SIZE   = 512;
 
     /**
      * Constructor
@@ -279,14 +282,14 @@ class PacketList implements PacketListInterface
 
     private static function encodePacket(PacketInterface $packet): string
     {
-        if (in_array($packet->getTag(), self::SUPPORT_STREAMING, true)) {
+        if (in_array($packet->getTag(), self::PARTIAL_SUPPORTING, true)) {
             $buffer = '';
             $partialData = [];
-            $chunks = str_split($packet->toBytes(), self::CHUNK_SIZE);
+            $chunks = str_split($packet->toBytes(), self::PARTIAL_CHUNK_SIZE);
             foreach ($chunks as $chunk) {
                 $buffer .= $chunk;
                 $bufferLength = strlen($buffer);
-                if ($bufferLength >= self::MIN_SIZE) {
+                if ($bufferLength >= self::PARTIAL_MIN_SIZE) {
                     $powerOf2 = min(log($bufferLength) / M_LN2 | 0, 30);
                     $chunkSize = 1 << $powerOf2;
                     $partialData[] = implode([
