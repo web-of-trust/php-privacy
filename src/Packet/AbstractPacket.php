@@ -29,6 +29,20 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, 
     use LoggerAwareTrait;
 
     /**
+     * Packet tag support partial body length
+     */
+    const PARTIAL_SUPPORTING = [
+        PacketTag::AeadEncryptedData,
+        PacketTag::CompressedData,
+        PacketTag::LiteralData,
+        PacketTag::SymEncryptedData,
+        PacketTag::SymEncryptedIntegrityProtectedData,
+    ];
+
+    const PARTIAL_CHUNK_SIZE = 1024;
+    const PARTIAL_MIN_SIZE   = 512;
+
+    /**
      * Constructor
      *
      * @param PacketTag $tag
@@ -52,27 +66,17 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, 
      */
     public function encode(): string
     {
-        $bodyBytes = $this->toBytes();
-        $bodyLen = strlen($bodyBytes);
-        $data = [];
-
-        $hdr = 0xc0 | $this->tag->value;
-        if ($bodyLen < 192) {
-            $data = [chr($hdr), chr($bodyLen)];
-        }
-        elseif ($bodyLen > 191 && $bodyLen < 8384) {
-            $data = [
-              chr($hdr),
-              chr(((($bodyLen - 192) >> 8) & 0xff) + 192),
-              chr(($bodyLen - 192) & 0xff),
-            ];
+        if (in_array($this->tag, self::PARTIAL_SUPPORTING, true)) {
+            return $this->partialEncode();
         }
         else {
-            $data = [chr($hdr), "\xff", pack('N', $bodyLen)];
+            $bytes = $this->toBytes();
+            return implode([
+                chr(0xc0 | $this->tag->value),
+                self::bodyLength(strlen($bytes)),
+                $bytes,
+            ]);
         }
-        $data[] = $bodyBytes;
-
-        return implode($data);
     }
 
     /**
@@ -95,4 +99,78 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, 
      * {@inheritdoc}
      */
     abstract public function toBytes(): string;
+
+    /**
+     * Encode package to the openpgp partial body specifier
+     *
+     * @return string
+     */
+    private function partialEncode(): string
+    {
+        $buffer = '';
+        $partialData = [];
+        $chunks = str_split($this->toBytes(), self::PARTIAL_CHUNK_SIZE);
+        foreach ($chunks as $chunk) {
+            $buffer .= $chunk;
+            $bufferLength = strlen($buffer);
+            if ($bufferLength >= self::PARTIAL_MIN_SIZE) {
+                $powerOf2 = min(log($bufferLength) / M_LN2 | 0, 30);
+                $chunkSize = 1 << $powerOf2;
+                $partialData[] = implode([
+                    self::partialBodyLength($powerOf2),
+                    substr($buffer, 0, $chunkSize),
+                ]);
+                $buffer = substr($buffer, $chunkSize);
+            }
+        }
+        if (!empty($buffer)) {
+            $partialData[] = implode([
+                self::bodyLength(strlen($buffer)),
+                $buffer,
+            ]);
+        }
+
+        return implode([
+            chr(0xc0 | $this->tag->value),
+            ...$partialData,
+        ]);
+    }
+
+    /**
+     * Encode a given integer of length to the openpgp body length specifier
+     *
+     * @param int $length
+     * @return string
+     */
+    private static function bodyLength(int $length): string
+    {
+        if ($length < 192) {
+            return chr($length);
+        }
+        elseif ($length > 191 && $length < 8384) {
+            return implode([
+              chr(((($length - 192) >> 8) & 0xff) + 192),
+              chr(($length - 192) & 0xff),
+            ]);
+        }
+        else {
+            return implode(["\xff", pack('N', $length)]);
+        }
+    }
+
+    /**
+     * Encode a given integer of length power to the openpgp partial body length specifier
+     *
+     * @param int $power
+     * @return string
+     */
+    private static function partialBodyLength(int $power): string
+    {
+        if ($power < 0 || $power > 30) {
+            throw new \UnexpectedValueException(
+                'Partial length power must be between 1 and 30'
+            );
+        }
+        return chr(224 + $power);
+    }
 }
