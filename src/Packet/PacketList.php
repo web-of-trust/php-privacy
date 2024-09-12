@@ -31,20 +31,6 @@ class PacketList implements PacketListInterface
     private readonly array $packets;
 
     /**
-     * Packet tag support partial body length
-     */
-    const PARTIAL_SUPPORTING = [
-        PacketTag::AeadEncryptedData,
-        PacketTag::CompressedData,
-        PacketTag::LiteralData,
-        PacketTag::SymEncryptedData,
-        PacketTag::SymEncryptedIntegrityProtectedData,
-    ];
-
-    const PARTIAL_CHUNK_SIZE = 1024;
-    const PARTIAL_MIN_SIZE   = 512;
-
-    /**
      * Constructor
      *
      * @param array $packets
@@ -180,6 +166,17 @@ class PacketList implements PacketListInterface
     /**
      * {@inheritdoc}
      */
+    public function encode(): string
+    {
+        return implode(array_map(
+            static fn ($packet): string => $packet->encode(),
+            $this->packets
+        ));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getIterator(): \Iterator
     {
         return new \ArrayIterator($this->packets);
@@ -267,62 +264,5 @@ class PacketList implements PacketListInterface
      */
     public function offsetUnset(mixed $offset): void
     {
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function encode(): string
-    {
-        return implode(array_map(
-            static fn ($packet): string => self::encodePacket($packet),
-            $this->packets
-        ));
-    }
-
-    private static function encodePacket(PacketInterface $packet): string
-    {
-        if (in_array($packet->getTag(), self::PARTIAL_SUPPORTING, true)) {
-            $buffer = '';
-            $partialData = [];
-            $chunks = str_split($packet->toBytes(), self::PARTIAL_CHUNK_SIZE);
-            foreach ($chunks as $chunk) {
-                $buffer .= $chunk;
-                $bufferLength = strlen($buffer);
-                if ($bufferLength >= self::PARTIAL_MIN_SIZE) {
-                    $powerOf2 = min(log($bufferLength) / M_LN2 | 0, 30);
-                    $chunkSize = 1 << $powerOf2;
-                    $partialData[] = implode([
-                        self::partialLength($powerOf2),
-                        substr($buffer, 0, $chunkSize),
-                    ]);
-                    $buffer = substr($buffer, $chunkSize);
-                }
-            }
-            if (!empty($buffer)) {
-                $partialData[] = implode([
-                    AbstractPacket::simpleLength(strlen($buffer)),
-                    $buffer,
-                ]);
-            }
-
-            return implode([
-                chr(0xc0 | $packet->getTag()->value),
-                ...$partialData,
-            ]);
-        }
-        else {
-            return $packet->encode();
-        }
-    }
-
-    private static function partialLength(int $power): string
-    {
-        if ($power < 0 || $power > 30) {
-            throw new \UnexpectedValueException(
-                'Partial length power must be between 1 and 30'
-            );
-        }
-        return chr(224 + $power);
     }
 }
