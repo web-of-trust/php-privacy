@@ -2,7 +2,6 @@
 
 namespace OpenPGP\Tests\Message;
 
-use phpseclib3\Crypt\Random;
 use OpenPGP\Common\Config;
 use OpenPGP\Enum\{
     AeadAlgorithm,
@@ -14,6 +13,7 @@ use OpenPGP\Key\{PrivateKey, PublicKey};
 use OpenPGP\Message\{LiteralMessage, Signature};
 use OpenPGP\Packet\{LiteralData, PacketList};
 use OpenPGP\Tests\OpenPGPTestCase;
+use phpseclib3\Crypt\Random;
 
 /**
  * Testcase class for OpenPGP literal message.
@@ -326,7 +326,7 @@ EOT;
         $publicKey = PublicKey::fromArmored(
             file_get_contents('tests/Data/RsaPublicKey.asc')
         );
-        $literalData = Random::string(1024);
+        $literalData = Random::string(10240);
         $literalMessage = new LiteralMessage(new PacketList([
             new LiteralData($literalData, LiteralFormat::Binary)
         ]));
@@ -354,7 +354,7 @@ EOT;
         $publicKey = PublicKey::fromArmored(
             file_get_contents('tests/Data/DsaPublicKey.asc')
         );
-        $literalData = Random::string(1024);
+        $literalData = Random::string(10240);
         $literalMessage = new LiteralMessage(new PacketList([
             new LiteralData($literalData, LiteralFormat::Binary)
         ]));
@@ -382,7 +382,7 @@ EOT;
         $publicKey = PublicKey::fromArmored(
             file_get_contents('tests/Data/EcP384PublicKey.asc')
         );
-        $literalData = Random::string(1024);
+        $literalData = Random::string(10240);
         $literalMessage = new LiteralMessage(new PacketList([
             new LiteralData($literalData, LiteralFormat::Binary)
         ]));
@@ -410,7 +410,7 @@ EOT;
         $publicKey = PublicKey::fromArmored(
             file_get_contents('tests/Data/EcBrainpoolPublicKey.asc')
         );
-        $literalData = Random::string(1024);
+        $literalData = Random::string(10240);
         $literalMessage = new LiteralMessage(new PacketList([
             new LiteralData($literalData, LiteralFormat::Binary)
         ]));
@@ -438,7 +438,7 @@ EOT;
         $publicKey = PublicKey::fromArmored(
             file_get_contents('tests/Data/EcCurve25519PublicKey.asc')
         );
-        $literalData = Random::string(1024);
+        $literalData = Random::string(10240);
         $literalMessage = new LiteralMessage(new PacketList([
             new LiteralData($literalData, LiteralFormat::Binary)
         ]));
@@ -476,7 +476,7 @@ EOT;
             file_get_contents('tests/Data/EcCurve25519PublicKey.asc')
         );
 
-        $literalData = Random::string(1024);
+        $literalData = Random::string(10240);
         $message = new LiteralMessage(new PacketList([
             new LiteralData($literalData, LiteralFormat::Binary)
         ]));
@@ -567,7 +567,7 @@ EOT;
     {
         Config::setAeadProtect(true);
 
-        $literalData = Random::string(1024);
+        $literalData = Random::string(10240);
         $message = new LiteralMessage(new PacketList([
             new LiteralData($literalData, LiteralFormat::Binary)
         ]));
@@ -592,7 +592,7 @@ EOT;
         $comment = $this->faker->unique()->sentence(1);
         $passphrase = $this->faker->unique()->password();
         $userID = implode([$name, "($comment)", "<$email>"]);
-        $literalData = Random::string(1024);
+        $literalData = Random::string(10240);
 
         $privateKey = PrivateKey::generate(
             [$userID],
