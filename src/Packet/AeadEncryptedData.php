@@ -213,7 +213,7 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
         return $this->iv;
     }
 
-    private function getAAData(): string
+    private function getAData(): string
     {
         return implode([
             chr(0xc0 | $this->getTag()->value),
