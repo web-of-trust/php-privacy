@@ -56,27 +56,12 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, 
      */
     public function encode(): string
     {
-        $bodyBytes = $this->toBytes();
-        $bodyLen = strlen($bodyBytes);
-        $data = [];
-
-        $hdr = 0xc0 | $this->tag->value;
-        if ($bodyLen < 192) {
-            $data = [chr($hdr), chr($bodyLen)];
-        }
-        elseif ($bodyLen > 191 && $bodyLen < 8384) {
-            $data = [
-              chr($hdr),
-              chr(((($bodyLen - 192) >> 8) & 0xff) + 192),
-              chr(($bodyLen - 192) & 0xff),
-            ];
-        }
-        else {
-            $data = [chr($hdr), "\xff", pack('N', $bodyLen)];
-        }
-        $data[] = $bodyBytes;
-
-        return implode($data);
+        $bytes = $this->toBytes();
+        return implode([
+            chr(0xc0 | $this->tag->value),
+            self::simpleLength(strlen($bytes)),
+            $bytes,
+        ]);
     }
 
     /**
@@ -99,6 +84,28 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, 
      * {@inheritdoc}
      */
     abstract public function toBytes(): string;
+
+    /**
+     * Encode a given integer of length to the openpgp length specifier to a string
+     *
+     * @param int $length
+     * @return string
+     */
+    public static function simpleLength(int $length): string
+    {
+        if ($length < 192) {
+            return chr($length);
+        }
+        elseif ($length > 191 && $length < 8384) {
+            return implode([
+              chr(((($length - 192) >> 8) & 0xff) + 192),
+              chr(($length - 192) & 0xff),
+            ]);
+        }
+        else {
+            return implode(["\xff", pack('N', $length)]);
+        }
+    }
 
     protected static function validateHash(HashAlgorithm $hash): void
     {
