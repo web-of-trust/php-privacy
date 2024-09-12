@@ -548,11 +548,10 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         ?DateTimeInterface $time = null
     )
     {
-        $signatureType = SignatureType::Binary;
-        $format = $literalData->getFormat();
-        if ($format === LiteralFormat::Text || $format === LiteralFormat::Utf8) {
-            $signatureType = SignatureType::Text;
-        }
+        $signatureType = match ($literalData->getFormat()) {
+            LiteralFormat::Text, LiteralFormat::Utf8 => SignatureType::Text,
+            default => SignatureType::Binary,
+        };
         $subpackets = [];
         if ($notationData instanceof NotationDataInterface) {
             $subpackets[] = Signature\NotationData::fromNotation(
