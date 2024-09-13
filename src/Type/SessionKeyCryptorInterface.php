@@ -17,6 +17,8 @@ namespace OpenPGP\Type;
  */
 interface SessionKeyCryptorInterface
 {
+    const PKESK_VERSION_3 = 3;
+
     /**
      * Decrypt session key by using secret key packet
      *

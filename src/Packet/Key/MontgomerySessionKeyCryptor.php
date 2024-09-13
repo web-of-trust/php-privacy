@@ -37,12 +37,14 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
      *
      * @param string $ephemeralKey
      * @param string $wrappedKey
+     * @param int $pkeskVersion
      * @param MontgomeryCurve $curve
      * @return self
      */
     public function __construct(
         private readonly string $ephemeralKey,
         private readonly string $wrappedKey,
+        private readonly int $pkeskVersion,
         private readonly MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
     )
     {
@@ -52,17 +54,21 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
      * Read encrypted session key from byte string
      *
      * @param string $bytes
+     * @param int $pkeskVersion
      * @param MontgomeryCurve $curve
      * @return self
      */
     public static function fromBytes(
-        string $bytes, MontgomeryCurve $curve = MontgomeryCurve::Curve25519
+        string $bytes,
+        int $pkeskVersion,
+        MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
     ): self
     {
         $length = ord($bytes[$curve->payloadSize()]);
         return new self(
             substr($bytes, 0, $curve->payloadSize()),
             substr($bytes, $curve->payloadSize() + 1, $length),
+            $pkeskVersion,
             $curve,
         );
     }
@@ -72,12 +78,14 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
      *
      * @param SessionKeyInterface $sessionKey
      * @param PublicKey $publicKey
+     * @param int $pkeskVersion
      * @param MontgomeryCurve $curve
      * @return self
      */
     public static function encryptSessionKey(
         SessionKeyInterface $sessionKey,
         PublicKey $publicKey,
+        int $pkeskVersion,
         MontgomeryCurve $curve = MontgomeryCurve::Curve25519
     ): self
     {
@@ -112,8 +120,12 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
         return new self(
             $ephemeralKey,
             $keyWrapper->wrap(
-                $kek, $sessionKey->getEncryptionKey()
+                $kek,
+                $pkeskVersion === self::PKESK_VERSION_3 ?
+                    $sessionKey->toBytes() :
+                    $sessionKey->getEncryptionKey()
             ),
+            $pkeskVersion,
             $curve,
         );
     }
@@ -157,9 +169,14 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
         SecretKeyPacketInterface $secretKey
     ): SessionKeyInterface
     {
-        return new SessionKey($this->decrypt(
+        $decrypted = $this->decrypt(
             $secretKey->getKeyMaterial()->getECPrivateKey(),
-        ), $this->curve->symmetricAlgorithm());
+        );
+        return $this->pkeskVersion === self::PKESK_VERSION_3 ?
+            SessionKey::fromBytes($decrypted) :
+            new SessionKey(
+                $decrypted, $this->curve->symmetricAlgorithm()
+            );
     }
 
     /**

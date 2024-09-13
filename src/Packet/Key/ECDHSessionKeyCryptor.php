@@ -48,11 +48,13 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
      *
      * @param BigInteger $ephemeralKey
      * @param string $wrappedKey
+     * @param int $pkeskVersion
      * @return self
      */
     public function __construct(
         private readonly BigInteger $ephemeralKey,
-        private readonly string $wrappedKey
+        private readonly string $wrappedKey,
+        private readonly int $pkeskVersion,
     )
     {
     }
@@ -61,15 +63,18 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
      * Read encrypted session key from byte string
      *
      * @param string $bytes
+     * @param int $pkeskVersion
      * @return self
      */
-    public static function fromBytes(string $bytes): self
+    public static function fromBytes(string $bytes, int $pkeskVersion): self
     {
         $ephemeralKey = Helper::readMPI($bytes);
         $offset = $ephemeralKey->getLengthInBytes() + 2;
         $length = ord($bytes[$offset++]);
         return new self(
-            $ephemeralKey, substr($bytes, $offset, $length)
+            $ephemeralKey,
+            substr($bytes, $offset, $length),
+            $pkeskVersion,
         );
     }
 
@@ -78,11 +83,13 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
      *
      * @param SessionKeyInterface $sessionKey
      * @param KeyPacketInterface $keyPacket
+     * @param int $pkeskVersion
      * @return self
      */
     public static function encryptSessionKey(
         SessionKeyInterface $sessionKey,
         KeyPacketInterface $keyPacket,
+        int $pkeskVersion,
     ): self
     {
         $keyMaterial = $keyPacket->getKeyMaterial();
@@ -106,7 +113,9 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
             );
             $wrappedKey = $keyWrapper->wrap(
                 $kek, self::pkcs5Encode(implode([
-                    $sessionKey->toBytes(),
+                    $pkeskVersion === self::PKESK_VERSION_3 ?
+                        $sessionKey->toBytes() :
+                        $sessionKey->getEncryptionKey(),
                     $sessionKey->computeChecksum(),
                 ]))
             );
@@ -123,7 +132,8 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
             }
             return new self(
                 $ephemeralKey,
-                $wrappedKey
+                $wrappedKey,
+                $pkeskVersion,
             );
         }
         else {
@@ -173,7 +183,10 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
         SecretKeyPacketInterface $secretKey
     ): SessionKeyInterface
     {
-        return SessionKey::fromBytes($this->decrypt($secretKey));
+        $decrypted = $this->decrypt($secretKey);
+        return $this->pkeskVersion === self::PKESK_VERSION_3 ?
+            SessionKey::fromBytes($decrypted) :
+            new SessionKey($decrypted);
     }
 
     /**

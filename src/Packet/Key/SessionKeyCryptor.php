@@ -25,15 +25,30 @@ use phpseclib3\Crypt\Common\AsymmetricKey;
 abstract class SessionKeyCryptor implements SessionKeyCryptorInterface
 {
     /**
+     * Constructor
+     *
+     * @param int $pkeskVersion
+     * @return self
+     */
+    protected function __construct(
+        private readonly int $pkeskVersion
+    )
+    {
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function decryptSessionKey(
         SecretKeyPacketInterface $secretKey
     ): SessionKeyInterface
     {
-        return SessionKey::fromBytes($this->decrypt(
+        $decrypted = $this->decrypt(
             $secretKey->getKeyMaterial()->getAsymmetricKey()
-        ));
+        );
+        return $this->pkeskVersion === self::PKESK_VERSION_3 ?
+            SessionKey::fromBytes($decrypted) :
+            new SessionKey($decrypted);
     }
 
     /**
