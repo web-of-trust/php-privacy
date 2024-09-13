@@ -8,7 +8,10 @@
 
 namespace OpenPGP\Packet\Key;
 
-use OpenPGP\Enum\MontgomeryCurve;
+use OpenPGP\Enum\{
+    MontgomeryCurve,
+    SymmetricAlgorithm,
+};
 use OpenPGP\Type\{
     SecretKeyPacketInterface,
     SessionKeyCryptorInterface,
@@ -173,7 +176,10 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
             $secretKey->getKeyMaterial()->getECPrivateKey(),
         );
         return $this->pkeskVersion === self::PKESK_VERSION_3 ?
-            SessionKey::fromBytes($decrypted) :
+            new SessionKey(
+                substr($decrypted, 1)
+                SymmetricAlgorithm::from(ord($decrypted[0]))
+            ) :
             new SessionKey(
                 $decrypted, $this->curve->symmetricAlgorithm()
             );
