@@ -195,7 +195,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
      * @param SecretKeyPacketInterface $secretKey
      * @return string
      */
-    public function decrypt(
+    protected function decrypt(
         SecretKeyPacketInterface $secretKey
     ): string
     {

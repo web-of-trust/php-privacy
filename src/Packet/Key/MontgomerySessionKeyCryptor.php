@@ -185,7 +185,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
      * @param PrivateKey $privateKey
      * @return string
      */
-    public function decrypt(
+    protected function decrypt(
         PrivateKey $privateKey
     ): string
     {
