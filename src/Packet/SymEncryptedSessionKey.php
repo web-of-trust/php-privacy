@@ -78,7 +78,7 @@ class SymEncryptedSessionKey extends AbstractPacket
         }
         if ($aead instanceof AeadAlgorithm && $version < self::VERSION_5) {
             throw new \UnexpectedValueException(
-                "Using AEAD with version {$version} of the SKESK packet is not allowed."
+                "Using AEAD with v{$version} SKESK packet is not allowed."
             );
         }
     }

@@ -123,7 +123,6 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
                 throw new \UnexpectedValueException(
                     "Hash {$hash->name} is unsupported.",
                 );
-                break;
         }
     }
 
@@ -143,7 +142,6 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
                 throw new \UnexpectedValueException(
                     "Symmetric {$symmetric->name} is unsupported.",
                 );
-                break;
         }
     }
 
