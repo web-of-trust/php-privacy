@@ -86,3 +86,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.1.11...1.1.12)
 - Fix packet reader.
 - Fix aead crypt.
+
+## 1.1.13 - released 2024-09-13
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.1.12...1.1.13)
+- Support partial body length.
