@@ -37,18 +37,44 @@ abstract class SessionKeyCryptor implements SessionKeyCryptorInterface
     }
 
     /**
+     * Produce session key from byte string & pkesk version
+     *
+     * @param string $bytes
+     * @param int $pkeskVersion
+     * @return string
+     */
+    public static function sessionKeyFromBytes(
+        string $bytes, int $pkeskVersion
+    ): SessionKeyInterface
+    {
+        if ($pkeskVersion === self::PKESK_VERSION_3) {
+            return SessionKey::fromBytes($bytes);
+        }
+        else {
+            $sessionKey = new SessionKey(
+                substr($bytes, 0, strlen($bytes) - 2)
+            );
+
+            $checksum = substr($bytes, strlen($bytes) - 2);
+            if (strcmp($sessionKey->computeChecksum(), $checksum) !== 0) {
+                throw new \UnexpectedValueException(
+                    'Session key checksum mismatch!'
+                );
+            }
+            return $sessionKey;
+        }
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function decryptSessionKey(
         SecretKeyPacketInterface $secretKey
     ): SessionKeyInterface
     {
-        $decrypted = $this->decrypt(
+        return self::sessionKeyFromBytes(this->decrypt(
             $secretKey->getKeyMaterial()->getAsymmetricKey()
-        );
-        return $this->pkeskVersion === self::PKESK_VERSION_3 ?
-            SessionKey::fromBytes($decrypted) :
-            new SessionKey($decrypted);
+        ));
     }
 
     /**
