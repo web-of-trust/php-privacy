@@ -8,12 +8,15 @@
 
 namespace OpenPGP\Packet;
 
+use OpenPGP\Common\{
+    Config,
+    Helper,
+};
 use OpenPGP\Enum\{
     HashAlgorithm,
     PacketTag,
     SymmetricAlgorithm,
 };
-use OpenPGP\Common\Config;
 use OpenPGP\Type\PacketInterface;
 use Psr\Log\{
     LoggerAwareInterface,
@@ -77,7 +80,7 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
             $bytes = $this->toBytes();
             return implode([
                 chr(0xc0 | $this->tag->value),
-                self::bodyLength(strlen($bytes)),
+                Helper::simpleLength(strlen($bytes)),
                 $bytes,
             ]);
         }
@@ -162,7 +165,7 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
             $chunkSize = 1 << $powerOf2;
 
             $partialData[] = implode([
-                self::partialBodyLength($powerOf2),
+                self::partialLength($powerOf2),
                 substr($data, 0, $chunkSize),
             ]);
 
@@ -170,7 +173,7 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
             $dataLengh = strlen($data);
         }
         $partialData[] = implode([
-            self::bodyLength(strlen($data)),
+            Helper::simpleLength(strlen($data)),
             $data,
         ]);
 
@@ -181,34 +184,12 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
     }
 
     /**
-     * Encode a given integer of length to the openpgp body length specifier
-     *
-     * @param int $length
-     * @return string
-     */
-    private static function bodyLength(int $length): string
-    {
-        if ($length < 192) {
-            return chr($length);
-        }
-        elseif ($length > 191 && $length < 8384) {
-            return implode([
-              chr(((($length - 192) >> 8) & 0xff) + 192),
-              chr(($length - 192) & 0xff),
-            ]);
-        }
-        else {
-            return implode(["\xff", pack('N', $length)]);
-        }
-    }
-
-    /**
      * Encode a given integer of length power to the openpgp partial body length specifier
      *
      * @param int $power
      * @return string
      */
-    private static function partialBodyLength(int $power): string
+    private static function partialLength(int $power): string
     {
         if ($power < 0 || $power > 30) {
             throw new \UnexpectedValueException(

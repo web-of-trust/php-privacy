@@ -8,6 +8,7 @@
 
 namespace OpenPGP\Packet;
 
+use OpenPGP\Common\Helper;
 use OpenPGP\Type\SubpacketInterface;
 
 /**
@@ -64,31 +65,10 @@ class UserAttributeSubpacket implements SubpacketInterface
      */
     public function toBytes(): string
     {
-        $data = [];
-        $bodyLen = strlen($this->data) + 1;
-        if ($bodyLen < 192 && !$this->isLong) {
-            $data = [
-                chr($bodyLen),
-                chr($this->type),
-                $this->data,
-            ];
-        }
-        elseif ($bodyLen <= 8383 && !$this->isLong) {
-            $data = [
-                chr(((($bodyLen - 192) >> 8) & 0xff) + 192),
-                chr($bodyLen - 192),
-                chr($this->type),
-                $this->data,
-            ];
-        }
-        else {
-            $data = [
-                "\xff",
-                pack('N', $bodyLen),
-                chr($this->type),
-                $this->data,
-            ];
-        }
-        return implode($data);
+        return implode([
+            Helper::simpleLength(strlen($this->data) + 1),
+            chr($this->type),
+            $this->data,
+        ]);
     }
 }

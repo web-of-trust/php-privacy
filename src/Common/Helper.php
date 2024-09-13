@@ -184,4 +184,26 @@ final class Helper
         $lines = array_map(static fn ($line) => rtrim($line, " \r\t"), $lines);
         return implode(self::EOL, $lines);
     }
+
+    /**
+     * Encode a given integer of length to the openpgp body length specifier
+     *
+     * @param int $length
+     * @return string
+     */
+    public static function simpleLength(int $length): string
+    {
+        if ($length < 192) {
+            return chr($length);
+        }
+        elseif ($length < 8384) {
+            return implode([
+              chr(((($length - 192) >> 8) & 0xff) + 192),
+              chr(($length - 192) & 0xff),
+            ]);
+        }
+        else {
+            return implode(["\xff", pack('N', $length)]);
+        }
+    }
 }

@@ -8,6 +8,7 @@
 
 namespace OpenPGP\Packet;
 
+use OpenPGP\Common\Helper;
 use OpenPGP\Type\SubpacketInterface;
 
 /**
@@ -76,28 +77,8 @@ class SignatureSubpacket implements SubpacketInterface
      */
     public function toBytes(): string
     {
-        $header = '';
-        $bodyLen = strlen($this->data) + 1;
-        if ($this->isLong) {
-            $header = "\xff" . pack('N', $bodyLen);
-        }
-        else {
-            if ($bodyLen < 192) {
-                $header = chr($bodyLen);
-            }
-            elseif ($bodyLen <= 8383) {
-                $header = implode([
-                    chr(((($bodyLen - 192) >> 8) & 0xff) + 192),
-                    chr($bodyLen - 192),
-                ]);
-            }
-            else {
-                $header = "\xff" . pack('N', $bodyLen);
-            }
-        }
-        
         return implode([
-            $header,
+            Helper::simpleLength(strlen($this->data) + 1),
             $this->critical ? chr($this->type | 0x80) : chr($this->type),
             $this->data,
         ]);

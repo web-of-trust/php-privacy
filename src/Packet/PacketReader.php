@@ -94,76 +94,74 @@ class PacketReader
             $lengthType = $headerByte & 0x03;
             switch ($lengthType) {
                 case 0:
-                    $packetLength = ord($bytes[$offset++]);
+                    $packetLen = ord($bytes[$offset++]);
                     break;
                 case 1:
-                    $packetLength = Helper::bytesToShort($bytes, $offset);
+                    $packetLen = Helper::bytesToShort($bytes, $offset);
                     $offset += 2;
                     break;
                 case 2:
-                    $packetLength = Helper::bytesToLong($bytes, $offset);
+                    $packetLen = Helper::bytesToLong($bytes, $offset);
                     $offset += 4;
                     break;
                 default:
-                    $packetLength = strlen($bytes) - $offset;
+                    $packetLen = strlen($bytes) - $offset;
             }
-            $packetData = substr($bytes, $offset, $packetLength);
+            $packetData = substr($bytes, $offset, $packetLen);
         }
         else {
-            $length = ord($bytes[$offset++]);
-            if ($length < 192) {
-                $packetLength = $length;
-                $packetData = substr($bytes, $offset, $packetLength);
+            $packetLen = ord($bytes[$offset++]);
+            if ($packetLen < 192) {
+                $packetData = substr($bytes, $offset, $packetLen);
             }
-            elseif ($length < 224) {
-                $packetLength = (($length - 192) << 8) + (ord($bytes[$offset++])) + 192;
-                $packetData = substr($bytes, $offset, $packetLength);
+            elseif ($packetLen < 224) {
+                $packetLen = (($packetLen - 192) << 8) + (ord($bytes[$offset++])) + 192;
+                $packetData = substr($bytes, $offset, $packetLen);
             }
-            elseif ($length < 255) {
-                $partialLength = 1 << ($length & 0x1f);
-                $partialData = [substr($bytes, $offset, $partialLength)];
-                $pos = $offset + $partialLength;
+            elseif ($packetLen < 255) {
+                $partialLen = 1 << ($packetLen & 0x1f);
+                $partialData = [substr($bytes, $offset, $partialLen)];
+                $partialPos = $offset + $partialLen;
                 while (true) {
-                    $length = ord($bytes[$pos++]);
-                    if ($length < 192) {
-                        $partialLength = $length;
-                        $partialData[] = substr($bytes, $pos, $partialLength);
-                        $pos += $partialLength;
+                    $partialLen = ord($bytes[$partialPos++]);
+                    if ($partialLen < 192) {
+                        $partialData[] = substr($bytes, $partialPos, $partialLen);
+                        $partialPos += $partialLen;
                         break;
                     }
-                    elseif ($length < 224) {
-                        $partialLength = (($length - 192) << 8) + (ord($bytes[$pos++])) + 192;
-                        $partialData[] = substr($bytes, $pos, $partialLength);
-                        $pos += $partialLength;
+                    elseif ($partialLen < 224) {
+                        $partialLen = (($partialLen - 192) << 8) + (ord($bytes[$partialPos++])) + 192;
+                        $partialData[] = substr($bytes, $partialPos, $partialLen);
+                        $partialPos += $partialLen;
                         break;
                     }
-                    elseif ($length < 255) {
-                        $partialLength = 1 << ($length & 0x1f);
-                        $partialData[] = substr($bytes, $pos, $partialLength);
-                        $pos += $partialLength;
+                    elseif ($partialLen < 255) {
+                        $partialLen = 1 << ($partialLen & 0x1f);
+                        $partialData[] = substr($bytes, $partialPos, $partialLen);
+                        $partialPos += $partialLen;
                     }
                     else {
-                        $partialLength = Helper::bytesToLong($bytes, $pos);
-                        $pos += 4;
-                        $partialData[] = substr($bytes, $pos, $partialLength);
-                        $pos += $partialLength;
+                        $partialLen = Helper::bytesToLong($bytes, $partialPos);
+                        $partialPos += 4;
+                        $partialData[] = substr($bytes, $partialPos, $partialLen);
+                        $partialPos += $partialLen;
                         break;
                     }
                 }
                 $packetData = implode($partialData);
-                $packetLength = $pos - $offset;
+                $packetLen = $partialPos - $offset;
             }
             else {
-                $packetLength = Helper::bytesToLong($bytes, $offset);
+                $packetLen = Helper::bytesToLong($bytes, $offset);
                 $offset += 4;
-                $packetData = substr($bytes, $offset, $packetLength);
+                $packetData = substr($bytes, $offset, $packetLen);
             }
         }
 
         return new self(
             $tag,
             $packetData,
-            $offset + $packetLength
+            $offset + $packetLen
         );
     }
 }
