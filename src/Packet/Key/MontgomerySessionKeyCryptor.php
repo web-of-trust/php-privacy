@@ -177,7 +177,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
         );
         return $this->pkeskVersion === self::PKESK_VERSION_3 ?
             new SessionKey(
-                substr($decrypted, 1)
+                substr($decrypted, 1),
                 SymmetricAlgorithm::from(ord($decrypted[0]))
             ) :
             new SessionKey(
