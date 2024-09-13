@@ -107,28 +107,28 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, 
      */
     private function partialEncode(): string
     {
-        $buffer = '';
-        $partialData = [];
-        $chunks = str_split($this->toBytes(), self::PARTIAL_CHUNK_SIZE);
-        foreach ($chunks as $chunk) {
-            $buffer .= $chunk;
-            $bufferLength = strlen($buffer);
-            if ($bufferLength >= self::PARTIAL_MIN_SIZE) {
-                $powerOf2 = min(log($bufferLength) / M_LN2 | 0, 30);
-                $chunkSize = 1 << $powerOf2;
-                $partialData[] = implode([
-                    self::partialBodyLength($powerOf2),
-                    substr($buffer, 0, $chunkSize),
-                ]);
-                $buffer = substr($buffer, $chunkSize);
-            }
-        }
-        if (!empty($buffer)) {
+        $data = $this->toBytes();
+        $dataLengh = strlen($data);
+
+        while ($dataLengh >= self::PARTIAL_MIN_SIZE) {
+            $maxSize = strlen(
+                substr($data, 0, self::PARTIAL_MAX_SIZE)
+            );
+            $powerOf2 = min(log($maxSize) / M_LN2 | 0, 30);
+            $chunkSize = 1 << $powerOf2;
+
             $partialData[] = implode([
-                self::bodyLength(strlen($buffer)),
-                $buffer,
+                self::partialBodyLength($powerOf2),
+                substr($data, 0, $chunkSize),
             ]);
+
+            $data = substr($data, $chunkSize);
+            $dataLengh = strlen($data);
         }
+        $partialData[] = implode([
+            self::bodyLength(strlen($data)),
+            $data,
+        ]);
 
         return implode([
             chr(0xc0 | $this->tag->value),

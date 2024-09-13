@@ -17,7 +17,7 @@ class CompressionTest extends OpenPGPTestCase
 
     public function testZip()
     {
-        $literalData = LiteralData::fromText($this->faker->sentence(100));
+        $literalData = LiteralData::fromText($this->faker->sentence(10000));
         $packets = new PacketList([$literalData]);
         $compressed = CompressedData::fromPacketList(
             $packets, CompressionAlgorithm::Zip
@@ -31,7 +31,7 @@ class CompressionTest extends OpenPGPTestCase
 
     public function testZlib()
     {
-        $literalData = LiteralData::fromText($this->faker->sentence(100));
+        $literalData = LiteralData::fromText($this->faker->sentence(10000));
         $packets = new PacketList([$literalData]);
         $compressed = CompressedData::fromPacketList(
             $packets, CompressionAlgorithm::Zlib
@@ -45,7 +45,7 @@ class CompressionTest extends OpenPGPTestCase
 
     public function testBZip2()
     {
-        $literalData = LiteralData::fromText($this->faker->sentence(100));
+        $literalData = LiteralData::fromText($this->faker->sentence(10000));
         $packets = new PacketList([$literalData]);
         $compressed = CompressedData::fromPacketList(
             $packets, CompressionAlgorithm::BZip2
