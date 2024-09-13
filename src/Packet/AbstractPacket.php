@@ -39,8 +39,8 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, 
         PacketTag::SymEncryptedIntegrityProtectedData,
     ];
 
-    const PARTIAL_CHUNK_SIZE = 1024;
-    const PARTIAL_MIN_SIZE   = 512;
+    const PARTIAL_MAX_SIZE = 1024;
+    const PARTIAL_MIN_SIZE = 512;
 
     /**
      * Constructor
