@@ -183,8 +183,8 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
         SecretKeyPacketInterface $secretKey
     ): SessionKeyInterface
     {
-        SessionKeyCryptor::sessionKeyFromBytes(
-            $this->decrypt($secretKey)
+        return SessionKeyCryptor::sessionKeyFromBytes(
+            $this->decrypt($secretKey), $this->pkeskVersion
         );
     }
 

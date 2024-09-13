@@ -72,9 +72,9 @@ abstract class SessionKeyCryptor implements SessionKeyCryptorInterface
         SecretKeyPacketInterface $secretKey
     ): SessionKeyInterface
     {
-        return self::sessionKeyFromBytes(this->decrypt(
+        return self::sessionKeyFromBytes($this->decrypt(
             $secretKey->getKeyMaterial()->getAsymmetricKey()
-        ));
+        ), $this->pkeskVersion);
     }
 
     /**
