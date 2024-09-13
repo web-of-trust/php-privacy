@@ -54,14 +54,9 @@ abstract class SessionKeyCryptor implements SessionKeyCryptorInterface
             $sessionKey = new SessionKey(
                 substr($bytes, 0, strlen($bytes) - 2)
             );
-
-            $checksum = substr($bytes, strlen($bytes) - 2);
-            if (strcmp($sessionKey->computeChecksum(), $checksum) !== 0) {
-                throw new \UnexpectedValueException(
-                    'Session key checksum mismatch!'
-                );
-            }
-            return $sessionKey;
+            return $sessionKey->checksum(
+                substr($bytes, strlen($bytes) - 2)
+            );
         }
     }
 

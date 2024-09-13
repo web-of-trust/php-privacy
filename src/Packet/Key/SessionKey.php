@@ -48,15 +48,9 @@ class SessionKey implements SessionKeyInterface
             substr($bytes, 1, strlen($bytes) - 3),
             Symmetric::from(ord($bytes[0]))
         );
-
-        $checksum = substr($bytes, strlen($bytes) - 2);
-        if (strcmp($sessionKey->computeChecksum(), $checksum) !== 0) {
-            throw new \UnexpectedValueException(
-                'Session key checksum mismatch!'
-            );
-        }
-
-        return $sessionKey;
+        return $sessionKey->checksum(
+            substr($bytes, strlen($bytes) - 2)
+        );
     }
 
     /**
@@ -89,6 +83,19 @@ class SessionKey implements SessionKeyInterface
     public function getSymmetric(): Symmetric
     {
         return $this->symmetric;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function checksum(string $checksum): self
+    {
+        if (strcmp($this->computeChecksum(), $checksum) !== 0) {
+            throw new \UnexpectedValueException(
+                'Session key checksum mismatch!'
+            );
+        }
+        return $this;
     }
 
     /**

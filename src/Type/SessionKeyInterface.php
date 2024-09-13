@@ -34,6 +34,14 @@ interface SessionKeyInterface
     function getSymmetric(): SymmetricAlgorithm;
 
     /**
+     * Checksum the encryption key
+     * 
+     * @param string $checksum
+     * @return string
+     */
+    function checksum(string $checksum): self;
+
+    /**
      * Compute checksum
      * 
      * @return string
