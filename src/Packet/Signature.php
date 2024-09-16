@@ -95,12 +95,17 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             );
         }
         if ($version === self::VERSION_6) {
+            self::validateHash($hashAlgorithm);
             if ($keyAlgorithm === KeyAlgorithm::Dsa) {
                 throw new \UnexpectedValueException(
                     "Public key {$keyAlgorithm->name} cannot be used with v{$version} signature packet.",
                 );
             }
-            self::validateHash($hashAlgorithm);
+            if (strlen($salt) !== $hashAlgorithm->saltSize()) {
+                throw new \LengthException(
+                    "Salt size must be {$hashAlgorithm->saltSize()} bytes."
+                );
+            };
         }
 
         $this->hashedSubpackets = array_filter(

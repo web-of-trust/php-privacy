@@ -11,6 +11,7 @@ namespace OpenPGP\Packet\Key;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\HashAlgorithm;
 use OpenPGP\Type\PublicKeyMaterialInterface;
+use phpseclib3\Crypt\EC\Curves\Ed25519;
 
 /**
  * EdDSALegacy public key material class
@@ -60,7 +61,10 @@ class EdDSALegacyPublicKeyMaterial extends ECPublicKeyMaterial implements Public
 
         return $this->getPublicKey()->verify(
             $hash->hash($message),
-            implode([$r, $s])
+            implode([
+                str_pad($r, Ed25519::SIZE, "\x00", STR_PAD_LEFT),
+                str_pad($s, Ed25519::SIZE, "\x00", STR_PAD_LEFT),
+            ])
         );
     }
 }
