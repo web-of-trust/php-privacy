@@ -29,12 +29,14 @@ class Verification implements VerificationInterface
      * @param string $keyID
      * @param SignaturePacketInterface $signaturePacket
      * @param bool $isVerified
+     * @param string $verificationError
      * @return self
      */
     public function __construct(
         private readonly string $keyID,
         private readonly SignaturePacketInterface $signaturePacket,
         private readonly bool $isVerified = false,
+        private readonly string $verificationError = '',
     )
     {
     }
@@ -53,6 +55,14 @@ class Verification implements VerificationInterface
     public function getSignaturePacket(): SignaturePacketInterface
     {
         return $this->signaturePacket;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVerificationError(): string
+    {
+        return $this->verificationError;
     }
 
     /**

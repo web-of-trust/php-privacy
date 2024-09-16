@@ -154,7 +154,10 @@ EOT;
             $message
         );
         $this->assertTrue($signature->verify($publicKey, $message));
-        $this->assertFalse($signature->verify($publicKey, self::LITERAL_TEXT));
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Signed digest mismatch!');
+        $signature->verify($publicKey, self::LITERAL_TEXT);
     }
 
     public function testVerifyDsaSignature()
@@ -183,7 +186,10 @@ EOT;
             $message
         );
         $this->assertTrue($signature->verify($publicKey, $message));
-        $this->assertFalse($signature->verify($publicKey, self::LITERAL_TEXT));
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Signed digest mismatch!');
+        $signature->verify($publicKey, self::LITERAL_TEXT);
     }
 
     public function testVerifyEcdsaP384Signature()
@@ -213,7 +219,10 @@ EOT;
             $message
         );
         $this->assertTrue($signature->verify($publicKey, $message));
-        $this->assertFalse($signature->verify($publicKey, self::LITERAL_TEXT));
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Signed digest mismatch!');
+        $signature->verify($publicKey, self::LITERAL_TEXT);
     }
 
     public function testVerifyEcdsaBrainpoolSignature()
@@ -242,7 +251,10 @@ EOT;
             $message
         );
         $this->assertTrue($signature->verify($publicKey, $message));
-        $this->assertFalse($signature->verify($publicKey, self::LITERAL_TEXT));
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Signed digest mismatch!');
+        $signature->verify($publicKey, self::LITERAL_TEXT);
     }
 
     public function testVerifyEddsaCurve25519Signature()
@@ -271,7 +283,10 @@ EOT;
             $message
         );
         $this->assertTrue($signature->verify($publicKey, $message));
-        $this->assertFalse($signature->verify($publicKey, self::LITERAL_TEXT));
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Signed digest mismatch!');
+        $signature->verify($publicKey, self::LITERAL_TEXT);
     }
 
     public function testVersion6Curve25519Signing()
@@ -298,7 +313,10 @@ EOT;
             $signature->getIssuerFingerprint(true)
         );
         $this->assertTrue($signature->verify($publicKey, $message));
-        $this->assertFalse($signature->verify($publicKey, self::LITERAL_TEXT));
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Signed digest mismatch!');
+        $signature->verify($publicKey, self::LITERAL_TEXT);
     }
 
     public function testVersion4Ed25519LegacySignature()

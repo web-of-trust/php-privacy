@@ -33,6 +33,13 @@ interface VerificationInterface
     function getSignaturePacket(): SignaturePacketInterface;
 
     /**
+     * Get verification error
+     *
+     * @return string
+     */
+    function getVerificationError(): string;
+
+    /**
      * Is verified
      *
      * @return bool

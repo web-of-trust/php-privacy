@@ -18,6 +18,7 @@ use OpenPGP\Type\{
     SecretKeyMaterialInterface,
 };
 use phpseclib3\Crypt\EC;
+use phpseclib3\Crypt\EC\Curves\Ed25519;
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
 use phpseclib3\File\ASN1;
 
@@ -30,9 +31,6 @@ use phpseclib3\File\ASN1;
  */
 class EdDSALegacySecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMaterialInterface
 {
-    const KEY_LENGTH  = 32;
-    const SIGN_LENGTH = 64;
-
     /**
      * Read key material from bytes
      *
@@ -62,7 +60,7 @@ class EdDSALegacySecretKeyMaterial extends ECSecretKeyMaterial implements Secret
             $privateKey = EC::createKey($curve->name);
             $params = PKCS8::load($privateKey->toString('PKCS8'));
             $d = Helper::bin2BigInt($params['secret']);
-        } while ($d->getLengthInBytes() !== self::KEY_LENGTH);
+        } while ($d->getLengthInBytes() !== Ed25519::SIZE);
         return new self(
             $d,
             new EdDSALegacyPublicKeyMaterial(
@@ -84,12 +82,17 @@ class EdDSALegacySecretKeyMaterial extends ECSecretKeyMaterial implements Secret
         $signature = $this->getPrivateKey()->sign(
             $hash->hash($message)
         );
-        $length = intval(self::SIGN_LENGTH / 2);
+        $length = Helper::bit2ByteLength(
+            $this->getPrivateKey()->getLength()
+        );
+        $r = substr($signature, 0, $length); // MPI of an EC point R
+        $s = substr($signature, $length, Ed25519::SIZE); // MPI of EdDSA value S
+
         return implode([
-            pack('n', $length * 8), // r bit length
-            substr($signature, 0, $length), // r
-            pack('n', $length * 8), // s bit length
-            substr($signature, $length, $length), // s
+            pack('n', strlen($r) * 8), // R bit length
+            $r,
+            pack('n', strlen($s) * 8), // S bit length
+            $s,
         ]);
     }
 }

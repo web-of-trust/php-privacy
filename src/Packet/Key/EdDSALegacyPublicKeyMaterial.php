@@ -48,7 +48,7 @@ class EdDSALegacyPublicKeyMaterial extends ECPublicKeyMaterial implements Public
         $bitLength = Helper::bytesToShort($signature);
         $r = substr(
             $signature, 2, Helper::bit2ByteLength($bitLength)
-        );
+        ); // MPI of an EC point R
 
         $bitLength = Helper::bytesToShort(
             substr($signature, strlen($r) + 2)
@@ -56,7 +56,8 @@ class EdDSALegacyPublicKeyMaterial extends ECPublicKeyMaterial implements Public
         $s = substr(
             $signature, strlen($r) + 4,
             Helper::bit2ByteLength($bitLength)
-        );
+        ); // MPI of EdDSA value S
+
         return $this->getPublicKey()->verify(
             $hash->hash($message),
             implode([$r, $s])

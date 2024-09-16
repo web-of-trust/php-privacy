@@ -117,23 +117,29 @@ class Signature implements SignatureInterface
         $verifications = [];
         foreach ($this->packetList as $packet) {
             foreach ($verificationKeys as $key) {
+                $isVerified = false;
+                $verificationError = '';
+                $keyPacket = $key->toPublic()->getSigningKeyPacket(
+                    $packet->getIssuerKeyID()
+                );
                 try {
-                    $keyPacket = $key->toPublic()->getSigningKeyPacket(
-                        $packet->getIssuerKeyID()
-                    );
-                    $verifications[] = new Verification(
-                        $keyPacket->getKeyID(),
-                        $packet,
-                        $packet->verify(
-                            $keyPacket,
-                            $literalData->getSignBytes(),
-                            $time,
-                        )
+                    $isVerified = $packet->verify(
+                        $keyPacket,
+                        $literalData->getSignBytes(),
+                        $time,
                     );
                 }
                 catch (\Throwable $e) {
-                    Config::getLogger()->error($e->getMessage());
+                    $verificationError = $e->getMessage();
+                    Config::getLogger()->error($verificationError);
                 }
+
+                $verifications[] = new Verification(
+                    $keyPacket->getKeyID(),
+                    $packet,
+                    $isVerified,
+                    $verificationError,
+                );
             }
         }
         return $verifications;

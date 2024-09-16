@@ -67,6 +67,13 @@ interface SignaturePacketInterface extends PacketInterface
     function getUnhashedSubpackets(): array;
 
     /**
+     * Get signature data
+     *
+     * @return string
+     */
+    function getSignatureData(): string;
+
+    /**
      * Get signed hash value
      *
      * @return string

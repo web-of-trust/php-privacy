@@ -33,6 +33,7 @@ use OpenPGP\Type\{
     NotationDataInterface,
     SignaturePacketInterface,
     SecretKeyMaterialInterface,
+    SecretKeyPacketInterface,
     SubkeyPacketInterface,
     SubpacketInterface,
     UserIDPacketInterface,
@@ -55,11 +56,11 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     const VERSION_4 = 4;
     const VERSION_6 = 6;
 
-    private readonly string $signatureData;
-
     private readonly array $hashedSubpackets;
 
     private readonly array $unhashedSubpackets;
+
+    private readonly string $signatureData;
 
     /**
      * Constructor
@@ -191,7 +192,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * Create signature
      *
-     * @param KeyPacketInterface $signKey
+     * @param SecretKeyPacketInterface $signKey
      * @param SignatureType $signatureType
      * @param string $dataToSign
      * @param HashAlgorithm $hashAlgorithm
@@ -200,7 +201,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @return self
      */
     public static function createSignature(
-        KeyPacketInterface $signKey,
+        SecretKeyPacketInterface $signKey,
         SignatureType $signatureType,
         string $dataToSign,
         HashAlgorithm $hashAlgorithm = HashAlgorithm::Sha256,
@@ -269,13 +270,13 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * Create direct key signature
      *
-     * @param KeyPacketInterface $signKey
+     * @param SecretKeyPacketInterface $signKey
      * @param int $keyExpiry
      * @param DateTimeInterface $time
      * @return self
      */
     public static function createDirectKeySignature(
-        KeyPacketInterface $signKey,
+        SecretKeyPacketInterface $signKey,
         int $keyExpiry = 0,
         ?DateTimeInterface $time = null
     )
@@ -297,7 +298,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * Create self signature
      *
-     * @param KeyPacketInterface $signKey
+     * @param SecretKeyPacketInterface $signKey
      * @param UserIDPacketInterface $userID
      * @param bool $isPrimaryUser
      * @param int $keyExpiry
@@ -305,7 +306,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @return self
      */
     public static function createSelfCertificate(
-        KeyPacketInterface $signKey,
+        SecretKeyPacketInterface $signKey,
         UserIDPacketInterface $userID,
         bool $isPrimaryUser = false,
         int $keyExpiry = 0,
@@ -338,14 +339,14 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * Create cert generic signature
      *
-     * @param KeyPacketInterface $signKey
+     * @param SecretKeyPacketInterface $signKey
      * @param KeyPacketInterface $userKey
      * @param UserIDPacketInterface $userID
      * @param DateTimeInterface $time
      * @return self
      */
     public static function createCertGeneric(
-        KeyPacketInterface $signKey,
+        SecretKeyPacketInterface $signKey,
         KeyPacketInterface $userKey,
         UserIDPacketInterface $userID,
         ?DateTimeInterface $time = null
@@ -371,7 +372,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * Create cert revocation signature
      *
-     * @param KeyPacketInterface $signKey
+     * @param SecretKeyPacketInterface $signKey
      * @param KeyPacketInterface $userKey
      * @param UserIDPacketInterface $userID
      * @param string $revocationReason
@@ -380,7 +381,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @return self
      */
     public static function createCertRevocation(
-        KeyPacketInterface $signKey,
+        SecretKeyPacketInterface $signKey,
         KeyPacketInterface $userKey,
         UserIDPacketInterface $userID,
         string $revocationReason = '',
@@ -408,7 +409,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * Create key revocation signature
      *
-     * @param KeyPacketInterface $signKey
+     * @param SecretKeyPacketInterface $signKey
      * @param KeyPacketInterface $keyPacket
      * @param string $revocationReason
      * @param RevocationReasonTag $reasonTag
@@ -416,7 +417,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @return self
      */
     public static function createKeyRevocation(
-        KeyPacketInterface $signKey,
+        SecretKeyPacketInterface $signKey,
         KeyPacketInterface $keyPacket,
         string $revocationReason = '',
         RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
@@ -440,7 +441,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * Create subkey binding signature
      *
-     * @param KeyPacketInterface $signKey
+     * @param SecretKeyPacketInterface $signKey
      * @param SubkeyPacketInterface $subkey
      * @param int $keyExpiry
      * @param bool $subkeySign
@@ -448,7 +449,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @return self
      */
     public static function createSubkeyBinding(
-        KeyPacketInterface $signKey,
+        SecretKeyPacketInterface $signKey,
         SubkeyPacketInterface $subkey,
         int $keyExpiry = 0,
         bool $subkeySign = false,
@@ -498,7 +499,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * Create subkey revocation signature
      *
-     * @param KeyPacketInterface $signKey
+     * @param SecretKeyPacketInterface $signKey
      * @param KeyPacketInterface $primaryKey
      * @param SubkeyPacketInterface $subkey
      * @param string $revocationReason
@@ -507,7 +508,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @return self
      */
     public static function createSubkeyRevocation(
-        KeyPacketInterface $signKey,
+        SecretKeyPacketInterface $signKey,
         KeyPacketInterface $primaryKey,
         SubkeyPacketInterface $subkey,
         string $revocationReason = '',
@@ -535,14 +536,14 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * Create literal data signature
      *
-     * @param KeyPacketInterface $signKey
+     * @param SecretKeyPacketInterface $signKey
      * @param LiteralDataInterface $literalData
      * @param NotationDataInterface $notationData
      * @param DateTimeInterface $time
      * @return self
      */
     public static function createLiteralData(
-        KeyPacketInterface $signKey,
+        SecretKeyPacketInterface $signKey,
         LiteralDataInterface $literalData,
         ?NotationDataInterface $notationData = null,
         ?DateTimeInterface $time = null
@@ -602,31 +603,23 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     ): bool
     {
         if (strcmp($this->getIssuerKeyID(), $verifyKey->getKeyID()) !== 0) {
-            $this->getLogger()->warning(
-                'Signature was not issued by the given public key.'
+            throw new \RuntimeException(
+                'Signature was not issued by the given public key.',
             );
-            return false;
         }
         if ($this->keyAlgorithm !== $verifyKey->getKeyAlgorithm()) {
-            $this->getLogger()->warning(
-                'Public key algorithm used to sign signature does not match issuer key algorithm.'
+            throw new \RuntimeException(
+                'Public key algorithm used to sign signature does not match issuer key algorithm.',
             );
-            return false;
         }
 
         $expirationTime = $this->getSignatureExpirationTime();
         if ($expirationTime instanceof DateTimeInterface) {
             $time = $time ?? new \DateTime();
             if ($expirationTime < $time) {
-                $this->getLogger()->warning(
-                    'Signature is expired at {expirationTime}.',
-                    [
-                        'expirationTime' => $expirationTime->format(
-                            DateTimeInterface::RFC3339_EXTENDED
-                        ),
-                    ]
+                throw new \RuntimeException(
+                    "Signature is expired at {$expirationTime->format(DateTimeInterface::RFC3339_EXTENDED)}.",
                 );
-                return false;
             }
         }
 
@@ -642,10 +635,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 
         $hash = $this->hashAlgorithm->hash($message);
         if (strcmp($this->signedHashValue, substr($hash, 0, 2)) !== 0) {
-            $this->getLogger()->warning(
-                'Signed digest mismatch!'
+            throw new \RuntimeException(
+                'Signed digest mismatch!',
             );
-            return false;
         }
 
         $keyMaterial = $verifyKey->getKeyMaterial();
@@ -655,10 +647,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             );
         }
         else {
-            $this->getLogger()->warning(
-                'Verify key material is not verifiable.'
+            throw new \RuntimeException(
+                'Verify key material is not verifiable.',
             );
-            return false;
         }
     }
 
@@ -708,6 +699,14 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getUnhashedSubpackets(): array
     {
         return $this->unhashedSubpackets;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSignatureData(): string
+    {
+        return $this->signatureData;
     }
 
     /**
@@ -1118,7 +1117,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     private static function signMessage(
-        KeyPacketInterface $signKey,
+        SecretKeyPacketInterface $signKey,
         HashAlgorithm $hash,
         string $message
     ): string
