@@ -23,9 +23,9 @@ use phpseclib3\Common\Functions\Strings;
 
 /**
  * Implementation Public-Key Encrypted Session Key (PKESK) packet (Tag 1).
- * 
+ *
  * See RFC 9580, section 5.1.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

@@ -27,7 +27,7 @@ use OpenPGP\Type\{
 
 /**
  * OpenPGP user class.
- * 
+ *
  * @package  OpenPGP
  * @category Key
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -36,21 +36,21 @@ class User implements UserInterface
 {
     /**
      * Revocation signature packets
-     * 
+     *
      * @var array
      */
     private array $revocationSignatures;
 
     /**
      * Self certification signature packets
-     * 
+     *
      * @var array
      */
     private array $selfCertifications;
 
     /**
      * Other certification signature packets
-     * 
+     *
      * @var array
      */
     private array $otherCertifications;
@@ -89,7 +89,7 @@ class User implements UserInterface
 
     /**
      * Get main key
-     * 
+     *
      * @return KeyInterface
      */
     public function getMainKey(): KeyInterface

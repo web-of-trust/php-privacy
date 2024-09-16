@@ -12,7 +12,7 @@ use phpseclib3\Crypt\Common\AsymmetricKey;
 
 /**
  * Key material interface
- * 
+ *
  * @package  OpenPGP
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -21,42 +21,42 @@ interface KeyMaterialInterface
 {
     /**
      * Get public key material
-     * 
+     *
      * @return KeyMaterialInterface
      */
     function getPublicMaterial(): KeyMaterialInterface;
 
     /**
      * Get asymmetric key
-     * 
+     *
      * @return AsymmetricKey
      */
     function getAsymmetricKey(): AsymmetricKey;
 
     /**
      * Get key length
-     * 
+     *
      * @return int
      */
     function getKeyLength(): int;
 
     /**
      * Get key material parameters
-     * 
+     *
      * @return array<mixed>
      */
     function getParameters(): array;
 
     /**
      * Return key material is valid
-     * 
+     *
      * @return bool
      */
     function isValid(): bool;
 
     /**
      * Serialize key material to bytes
-     * 
+     *
      * @return string
      */
     function toBytes(): string;

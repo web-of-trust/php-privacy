@@ -236,21 +236,21 @@ class Camellia extends BlockCipher
 
     /**
      * for whitening
-     * 
+     *
      * @var array<int>
      */
     private array $kw;
 
     /**
      * for FL and FL^(-1)
-     * 
+     *
      * @var array<int>
      */
     private array $ke;
 
     /**
      * for encryption and decryption
-     * 
+     *
      * @var array<int>
      */
     private array $state;
@@ -490,6 +490,7 @@ class Camellia extends BlockCipher
 
     /**
      * Compute K
+     *
      * @return array<int>
      */
     private function computeK(): array
@@ -528,7 +529,7 @@ class Camellia extends BlockCipher
 
     /**
      * Compute KA
-     * 
+     *
      * @param array<int> $k
      * @return array<int>
      */
@@ -547,7 +548,7 @@ class Camellia extends BlockCipher
 
     /**
      * Compute KB
-     * 
+     *
      * @param array<int> $k
      * @param array<int> $ka
      * @return array<int>

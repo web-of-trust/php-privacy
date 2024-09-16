@@ -14,7 +14,7 @@ use phpseclib3\Crypt\Common\BlockCipher;
 /**
  * GCM Authenticated-Encryption class
  * Implements the Galois/Counter mode (GCM) detailed in NIST Special Publication 800-38D.
- * 
+ *
  * @package  OpenPGP
  * @category Cryptor
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

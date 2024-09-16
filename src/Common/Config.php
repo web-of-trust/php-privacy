@@ -21,7 +21,7 @@ use Psr\Log\{
 
 /**
  * Config class
- * 
+ *
  * @package  OpenPGP
  * @category Common
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

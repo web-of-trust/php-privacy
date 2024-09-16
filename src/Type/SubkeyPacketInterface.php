@@ -10,7 +10,7 @@ namespace OpenPGP\Type;
 
 /**
  * Subkey packet interface
- * 
+ *
  * @package  OpenPGP
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

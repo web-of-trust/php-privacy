@@ -17,7 +17,7 @@ use OpenPGP\Enum\{
 
 /**
  * Signature packet interface
- * 
+ *
  * @package  OpenPGP
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -26,28 +26,28 @@ interface SignaturePacketInterface extends PacketInterface
 {
     /**
      * Get version
-     * 
+     *
      * @return int
      */
     function getVersion(): int;
 
     /**
      * Get signature type
-     * 
+     *
      * @return SignatureType
      */
     function getSignatureType(): SignatureType;
 
     /**
      * Get key algorithm
-     * 
+     *
      * @return KeyAlgorithm
      */
     function getKeyAlgorithm(): KeyAlgorithm;
 
     /**
      * Get hash algorithm
-     * 
+     *
      * @return HashAlgorithm
      */
     function getHashAlgorithm(): HashAlgorithm;

@@ -18,7 +18,7 @@ use phpseclib3\Math\BigInteger;
 
 /**
  * Helper class
- * 
+ *
  * @package  OpenPGP
  * @category Common
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -120,7 +120,7 @@ final class Helper
 
     /**
      * Create string 2 key instance
-     * 
+     *
      * @param S2kType $type
      * @return S2KInterface
      */
@@ -144,7 +144,7 @@ final class Helper
 
     /**
      * Calculate a 16bit sum of a string by adding each character codes modulus 65535
-     * 
+     *
      * @param string $text - To create a sum of
      * @return string - 2 bytes containing the sum of all charcodes % 65535.
      */
@@ -159,7 +159,7 @@ final class Helper
 
     /**
      * Generate random password
-     * 
+     *
      * @param int $length
      * @return string
      */
@@ -174,7 +174,7 @@ final class Helper
 
     /**
      * Remove trailing spaces, carriage returns and tabs from each line
-     * 
+     *
      * @param string $text
      * @return string
      */

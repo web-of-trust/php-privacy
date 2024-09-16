@@ -16,7 +16,7 @@ use OpenPGP\Packet\SignatureSubpacket;
 /**
  * SignatureExpirationTime sub-packet class
  * Giving giving signature expiration time.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -61,7 +61,7 @@ class SignatureExpirationTime extends SignatureSubpacket
 
     /**
      * Get expiration time
-     * 
+     *
      * @return DateTimeInterface
      */
     public function getExpirationTime(): DateTimeInterface

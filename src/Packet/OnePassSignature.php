@@ -17,9 +17,9 @@ use OpenPGP\Enum\{
 
 /**
  * Implementation an OpenPGP One-Pass Signature packet (Tag 4).
- * 
+ *
  * See RFC 9580, section 5.4.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

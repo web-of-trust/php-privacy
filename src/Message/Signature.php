@@ -29,7 +29,7 @@ use OpenPGP\Type\{
 
 /**
  * Signature class
- * 
+ *
  * Class that represents a detacted OpenPGP signature.
  *
  * @package  OpenPGP

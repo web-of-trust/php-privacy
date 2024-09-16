@@ -23,10 +23,10 @@ use phpseclib3\Crypt\Random;
 
 /**
  * AEAD Protected Data Packet class
- * 
+ *
  * Implementation of the Symmetrically Encrypted Authenticated Encryption with
  * Additional Data (AEAD) Protected Data Packet(Tag 20)
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -167,7 +167,7 @@ class AeadEncryptedData extends AbstractPacket implements AeadEncryptedDataPacke
 
     /**
      * Get initialization vector
-     * 
+     *
      * @return string
      */
     public function getIV(): string
@@ -210,7 +210,7 @@ class AeadEncryptedData extends AbstractPacket implements AeadEncryptedDataPacke
 
     /**
      * En/decrypt the payload.
-     * 
+     *
      * @param string $fn - Whether to encrypt or decrypt
      * @param string $key - The session key used to en/decrypt the payload
      * @param string $data - The data to en/decrypt

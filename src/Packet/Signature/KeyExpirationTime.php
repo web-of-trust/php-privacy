@@ -15,7 +15,7 @@ use OpenPGP\Packet\SignatureSubpacket;
 /**
  * KeyExpirationTime sub-packet class
  * Giving time after creation at which the key expires.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -60,7 +60,7 @@ class KeyExpirationTime extends SignatureSubpacket
 
     /**
      * Get expiration time
-     * 
+     *
      * @return int
      */
     public function getExpirationTime(): int

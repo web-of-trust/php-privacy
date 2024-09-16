@@ -32,7 +32,7 @@ use phpseclib3\Math\BigInteger;
 
 /**
  * ECDH session key cryptor class.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -242,7 +242,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
 
     /**
      * Key Derivation Function (RFC 9580)
-     * 
+     *
      * @return string
      */
     private static function ecdhKdf(
@@ -262,7 +262,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
 
     /**
      * Build KDF parameter for ECDH algorithm (RFC 9580)
-     * 
+     *
      * @return string
      */
     private static function kdfParameter(
@@ -285,7 +285,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
 
     /**
      * Add pkcs5 padding to a message
-     * 
+     *
      * @return string
      */
     private static function pkcs5Encode(string $message): string
@@ -299,7 +299,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
 
     /**
      * Remove pkcs5 padding from a message
-     * 
+     *
      * @return string
      */
     private static function pkcs5Decode(string $message): string

@@ -10,8 +10,8 @@ namespace OpenPGP\Enum;
 
 /**
  * Key flag enum
- * 
- * @see https://www.rfc-editor.org/rfc/rfc9580#name-key-flags
+ *
+ * @see https://www.rfc-editor.org/rfc/rfc9580#section-5.2.3.29
  *
  * @package  OpenPGP
  * @category Enum

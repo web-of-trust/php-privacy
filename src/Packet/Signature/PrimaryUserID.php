@@ -13,7 +13,7 @@ use OpenPGP\Packet\SignatureSubpacket;
 
 /**
  * PrimaryUserID sub-packet class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

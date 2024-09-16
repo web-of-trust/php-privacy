@@ -14,7 +14,9 @@ use phpseclib3\Crypt\Random;
 
 /**
  * Implementation of the Padding Packet Packet (Tag 21)
- * 
+ *
+ * See RFC 9580, section 5.14.
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

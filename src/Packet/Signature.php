@@ -44,9 +44,9 @@ use phpseclib3\Common\Functions\Strings;
 
 /**
  * Implementation an OpenPGP signature packet (Tag 2).
- * 
+ *
  * See RFC 9580, section 5.2.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -1045,7 +1045,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 
     /**
      * Create key signature subpackets
-     * 
+     *
      * @param int $version
      * @return array
      */
@@ -1107,7 +1107,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 
     /**
      * Read subpackets
-     * 
+     *
      * @param array $bytes
      * @return array
      */
@@ -1159,7 +1159,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 
     /**
      * Serialize subpackets to bytes
-     * 
+     *
      * @param array $subpackets
      * @param bool $isV6
      * @return string
@@ -1177,7 +1177,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 
     /**
      * Get subpacket by type
-     * 
+     *
      * @param array $subpackets
      * @param SignatureSubpacketType $type
      * @return SubpacketInterface

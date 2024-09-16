@@ -17,8 +17,9 @@ use OpenPGP\Packet\SignatureSubpacket;
 
 /**
  * SignatureTarget sub-packet class
- * RFC 4880, Section 5.2.3.25.
- * 
+ *
+ * RFC 9580, Section 5.2.3.33.
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

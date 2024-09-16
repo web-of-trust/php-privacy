@@ -16,7 +16,7 @@ use OpenPGP\Type\KeyPacketInterface;
 /**
  * IssuerFingerprint sub-packet class
  * Giving the issuer key fingerprint.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -76,7 +76,7 @@ class IssuerFingerprint extends SignatureSubpacket
 
     /**
      * Get key version
-     * 
+     *
      * @return int
      */
     public function getKeyVersion(): int
@@ -86,7 +86,7 @@ class IssuerFingerprint extends SignatureSubpacket
 
     /**
      * Get fingerprint
-     * 
+     *
      * @param bool $toHex
      * @return string
      */

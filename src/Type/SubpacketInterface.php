@@ -19,28 +19,28 @@ interface SubpacketInterface
 {
     /**
      * Get type
-     * 
+     *
      * @return int
      */
     function getType(): int;
 
     /**
      * Get data
-     * 
+     *
      * @return string
      */
     function getData(): string;
 
     /**
      * Get is long
-     * 
+     *
      * @return bool
      */
     function isLong(): bool;
 
     /**
      * Serialize subpacket to bytes
-     * 
+     *
      * @return string
      */
     function toBytes(): string;

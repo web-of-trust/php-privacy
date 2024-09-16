@@ -13,7 +13,7 @@ use OpenPGP\Type\SubpacketInterface;
 
 /**
  * Signature sub-packet class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -63,8 +63,8 @@ class SignatureSubpacket implements SubpacketInterface
     }
 
     /**
-     * Returns is critical
-     * 
+     * Return sub-packet is critical
+     *
      * @return bool
      */
     public function isCritical(): bool

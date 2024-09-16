@@ -10,7 +10,7 @@ namespace OpenPGP\Enum;
 
 /**
  * Key algorithm enum
- * 
+ *
  * Public Key Algorithms
  * See https://www.rfc-editor.org/rfc/rfc9580#section-9.1
  *

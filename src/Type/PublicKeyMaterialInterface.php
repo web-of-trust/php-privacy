@@ -13,7 +13,7 @@ use OpenPGP\Enum\HashAlgorithm;
 
 /**
  * Public key material interface
- * 
+ *
  * @package  OpenPGP
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -22,14 +22,14 @@ interface PublicKeyMaterialInterface extends KeyMaterialInterface
 {
     /**
      * Get phpseclib3 public key
-     * 
+     *
      * @return PublicKey
      */
     function getPublicKey(): PublicKey;
 
     /**
      * Verify a signature with message
-     * 
+     *
      * @param HashAlgorithm $hash
      * @param string $message
      * @param string $signature

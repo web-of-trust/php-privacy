@@ -23,7 +23,7 @@ use phpseclib3\Crypt\Common\BlockCipher;
  * cipher to encrypt and authenticate data. It's on-line (the length of a
  * message isn't needed to begin processing it), has good performances, it's
  * simple and provably secure (provided the underlying block cipher is secure).
- * 
+ *
  * @package  OpenPGP
  * @category Cryptor
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

@@ -29,7 +29,7 @@ use phpseclib3\Math\BigInteger;
 
 /**
  * RSA secret key material class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

@@ -17,9 +17,9 @@ use OpenPGP\Type\{
 
 /**
  * Implementation an OpenPGP sub public key packet (Tag 14).
- * 
+ *
  * See RFC 9580, section 5.5.1.2.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

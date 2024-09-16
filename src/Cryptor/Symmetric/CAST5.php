@@ -15,10 +15,10 @@ use OpenPGP\Cryptor\Math\Bitwise;
 
 /**
  * CAST5 cipher engine class. Ported from Bouncy Castle project.
- * 
+ *
  * A class that provides CAST key encryption operations,
  * such as encoding data and generating keys.
- * 
+ *
  * All the algorithms herein are from the Internet RFC's
  * RFC2144 - Cast5 (64bit block, 40-128bit key)
  * and implement a simplified cryptography interface.
@@ -340,14 +340,14 @@ class CAST5 extends BlockCipher
 
     /**
      * The rotating round key
-     * 
+     *
      * @var array<int>
      */
     private array $rotating;
 
     /**
      * The masking round key
-     * 
+     *
      * @var array<int>
      */
     private array $masking;

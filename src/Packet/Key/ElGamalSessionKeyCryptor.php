@@ -20,7 +20,7 @@ use phpseclib3\Math\BigInteger;
 
 /**
  * ElGamal session key cryptor class.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -144,7 +144,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
 
     /**
      * Create a EME-PKCS1-v1_5 padded message
-     * 
+     *
      * @return string
      */
     private static function pkcs1Encode(
@@ -171,7 +171,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
 
     /**
      * Decode a EME-PKCS1-v1_5 padded message
-     * 
+     *
      * @return string
      */
     private static function pkcs1Decode(string $message): string

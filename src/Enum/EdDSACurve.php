@@ -16,7 +16,7 @@ use phpseclib3\Crypt\EC\Curves\{
 
 /**
  * Ed DSA Curve Enum
- * 
+ *
  * @package  OpenPGP
  * @category Enum
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

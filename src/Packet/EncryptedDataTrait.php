@@ -16,7 +16,7 @@ use OpenPGP\Type\{
 
 /**
  * Encrypted data packet trait
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

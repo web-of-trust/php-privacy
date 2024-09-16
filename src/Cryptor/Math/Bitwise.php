@@ -10,7 +10,7 @@ namespace OpenPGP\Cryptor\Math;
 
 /**
  * Bitwise class
- * 
+ *
  * @package  OpenPGP
  * @category Cryptor
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

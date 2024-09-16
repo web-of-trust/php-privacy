@@ -28,9 +28,9 @@ use phpseclib3\Crypt\Random;
 
 /**
  * Implementation of the Symmetric-Key Encrypted Session Key packet (Tag 3)
- * 
+ *
  * See RFC 9580, section 5.3.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

@@ -13,9 +13,9 @@ use phpseclib3\Crypt\Common\BlockCipher;
 
 /**
  * KeyWrapper class
- * 
+ *
  * An implementation of the key wrapper based on RFC 3394.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

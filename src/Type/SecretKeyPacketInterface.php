@@ -15,7 +15,7 @@ use OpenPGP\Enum\{
 
 /**
  * Secret key packet interface
- * 
+ *
  * @package  OpenPGP
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

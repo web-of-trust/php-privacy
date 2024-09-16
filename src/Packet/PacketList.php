@@ -16,7 +16,7 @@ use OpenPGP\Type\{
 
 /**
  * Packet list class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -46,7 +46,7 @@ class PacketList implements PacketListInterface
 
     /**
      * Decode packets from bytes
-     * 
+     *
      * @param string $bytes
      * @return self
      */

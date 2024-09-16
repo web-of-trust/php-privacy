@@ -20,7 +20,7 @@ use phpseclib3\Crypt\EC\Formats\Keys\MontgomeryPublic;
 
 /**
  * Montgomery public key material class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

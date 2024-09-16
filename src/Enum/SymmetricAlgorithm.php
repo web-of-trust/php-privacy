@@ -14,7 +14,7 @@ use phpseclib3\Crypt\Common\BlockCipher;
 
 /**
  * Symmetric Key Algorithms Enum
- * 
+ *
  * See https://www.rfc-editor.org/rfc/rfc9580#name-symmetric-key-algorithms
  *
  * @package  OpenPGP

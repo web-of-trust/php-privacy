@@ -26,8 +26,9 @@ use OpenPGP\Type\{
 
 /**
  * Cleartext message class
- * 
+ *
  * Class that represents an OpenPGP cleartext message.
+ *
  * See RFC 9580, section 7.
  *
  * @package  OpenPGP
@@ -118,7 +119,7 @@ class CleartextMessage implements CleartextMessageInterface
     }
 
     /**
-     * Create literal signature.
+     * Create literal data signature.
      *
      * @param array $signingKeys
      * @param NotationDataInterface $notationData

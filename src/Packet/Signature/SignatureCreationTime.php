@@ -15,7 +15,7 @@ use OpenPGP\Packet\SignatureSubpacket;
 
 /**
  * SignatureCreationTime sub-packet class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -60,7 +60,7 @@ class SignatureCreationTime extends SignatureSubpacket
 
     /**
      * Get creation time
-     * 
+     *
      * @return DateTimeInterface
      */
     public function getCreationTime(): DateTimeInterface

@@ -16,7 +16,7 @@ use phpseclib3\Crypt\Common\BlockCipher;
  * CMac class
  * A Cipher based MAC generator (Based upon the CMAC specification)
  * See http://csrc.nist.gov/publications/nistpubs/800-38B/SP_800-38B.pdf
- * 
+ *
  * @package  OpenPGP
  * @category Cryptor
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

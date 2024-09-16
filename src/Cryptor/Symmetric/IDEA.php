@@ -14,13 +14,13 @@ use OpenPGP\Common\Helper;
 
 /**
  * IDEA cipher engine class. Ported from Bouncy Castle project.
- * 
+ *
  * A class that provides a basic International Data Encryption Algorithm (IDEA) engine.
- * 
+ *
  * This implementation is based on the "HOWTO: INTERNATIONAL DATA ENCRYPTION ALGORITHM"
  * implementation summary by Fauzan Mirza (F.U.Mirza@sheffield.ac.uk). (barring 1 typo at the
  * end of the MulInv function!).
- * 
+ *
  * It can be found at ftp://ftp.funet.fi/pub/crypt/cryptography/symmetric/idea/
  * Note: This algorithm was patented in the USA, Japan and Europe. These patents expired in 2011/2012.
  *

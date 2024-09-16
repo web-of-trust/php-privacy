@@ -15,7 +15,7 @@ use OpenPGP\Enum\{
 
 /**
  * Aead encrypted data packet packet interface
- * 
+ *
  * @package  OpenPGP
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

@@ -12,7 +12,7 @@ use OpenPGP\Enum\SymmetricAlgorithm;
 
 /**
  * Encrypted message interface
- * 
+ *
  * @package  OpenPGP
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

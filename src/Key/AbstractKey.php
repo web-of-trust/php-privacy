@@ -46,7 +46,7 @@ use Psr\Log\{
 
 /**
  * Abstract OpenPGP key class
- * 
+ *
  * @package  OpenPGP
  * @category Key
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -57,28 +57,28 @@ abstract class AbstractKey implements KeyInterface
 
     /**
      * Revocation signature packets
-     * 
+     *
      * @var array
      */
     private array $revocationSignatures = [];
 
     /**
      * Direct signature packets
-     * 
+     *
      * @var array
      */
     private array $directSignatures = [];
 
     /**
      * Users of the key
-     * 
+     *
      * @var array
      */
     private array $users = [];
 
     /**
      * Subkeys of the key
-     * 
+     *
      * @var array
      */
     private array $subkeys = [];
@@ -217,9 +217,7 @@ abstract class AbstractKey implements KeyInterface
     }
 
     /**
-     * Get users
-     * 
-     * @return array
+     * {@inheritdoc}
      */
     public function getUsers(): array
     {
@@ -227,43 +225,11 @@ abstract class AbstractKey implements KeyInterface
     }
 
     /**
-     * Get subkeys
-     * 
-     * @return array
+     * {@inheritdoc}
      */
     public function getSubkeys(): array
     {
         return $this->subkeys;
-    }
-
-    /**
-     * Set users
-     * 
-     * @param array $users
-     * @return static
-     */
-    protected function setUsers(array $users): static
-    {
-        $this->users = array_values(array_filter(
-            $users,
-            static fn ($user) => $user instanceof UserInterface
-        ));
-        return $this;
-    }
-
-    /**
-     * Set subkeys
-     * 
-     * @param array $subkeys
-     * @return static
-     */
-    protected function setSubkeys(array $subkeys): static
-    {
-        $this->subkeys = array_values(array_filter(
-            $subkeys,
-            static fn ($subkey) => $subkey instanceof SubkeyInterface
-        ));
-        return $this;
     }
 
     /**
@@ -639,8 +605,38 @@ abstract class AbstractKey implements KeyInterface
     }
 
     /**
+     * Set users
+     *
+     * @param array $users
+     * @return static
+     */
+    protected function setUsers(array $users): static
+    {
+        $this->users = array_values(array_filter(
+            $users,
+            static fn ($user) => $user instanceof UserInterface
+        ));
+        return $this;
+    }
+
+    /**
+     * Set subkeys
+     *
+     * @param array $subkeys
+     * @return static
+     */
+    protected function setSubkeys(array $subkeys): static
+    {
+        $this->subkeys = array_values(array_filter(
+            $subkeys,
+            static fn ($subkey) => $subkey instanceof SubkeyInterface
+        ));
+        return $this;
+    }
+
+    /**
      * Return the key is signing or verification key
-     * 
+     *
      * @return bool
      */
     protected function isSigningKey(): bool
@@ -659,7 +655,7 @@ abstract class AbstractKey implements KeyInterface
 
     /**
      * Return the key is encryption or decryption key
-     * 
+     *
      * @return bool
      */
     protected function isEncryptionKey(): bool

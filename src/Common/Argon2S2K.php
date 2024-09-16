@@ -16,13 +16,13 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 
 /**
  * Argon2 string-to-key class
- * 
+ *
  * See RFC 9580, section 3.7.
- * 
+ *
  * Implementation of the Argon2 string-to-key specifier.
  * This S2K method hashes the passphrase using Argon2, as specified in RFC9106.
  * This provides memory hardness, further protecting the passphrase against brute-force attacks.
- * 
+ *
  * @package  OpenPGP
  * @category Common
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -85,9 +85,9 @@ class Argon2S2K implements S2KInterface
                 );
             }
         }
-        if (strlen($salt) !== static::SALT_LENGTH) {
+        if (strlen($salt) !== self::SALT_LENGTH) {
             throw new \InvalidArgumentException(
-                'Salt size must be ' . static::SALT_LENGTH . ' bytes.',
+                'Salt size must be ' . self::SALT_LENGTH . ' bytes.',
             );
         }
         $this->type = S2kType::Argon2;
@@ -144,7 +144,7 @@ class Argon2S2K implements S2KInterface
 
     /**
      * Parsing function for argon2 string-to-key specifier.
-     * 
+     *
      * @param string $bytes - Payload of argon2 string-to-key specifier
      * @return self
      */
@@ -163,7 +163,7 @@ class Argon2S2K implements S2KInterface
 
     /**
      * Check argon2 supported.
-     * 
+     *
      * @return bool
      */
     public static function argon2Supported(): bool

@@ -12,9 +12,9 @@ use OpenPGP\Enum\KekSize;
 
 /**
  * AesKeyWrapper class
- * 
+ *
  * An implementation of the AES key wrapper based on RFC 3394.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

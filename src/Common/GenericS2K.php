@@ -16,9 +16,9 @@ use OpenPGP\Type\S2KInterface;
 
 /**
  * Implementation of the String-to-key specifier
- * 
+ *
  * See RFC 9580, section 3.7.
- * 
+ *
  * A string-to-key (S2K) Specifier is used to convert a passphrase string into a
  * symmetric key encryption/decryption key.
  * Passphrases requiring use of S2K conversion are currently used in two places:
@@ -146,7 +146,7 @@ class GenericS2K implements S2KInterface
 
     /**
      * Parsing function for a string-to-key specifier
-     * 
+     *
      * @param string $bytes - Payload of string-to-key specifier
      * @return self
      */

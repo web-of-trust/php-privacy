@@ -15,7 +15,7 @@ use OpenPGP\Packet\SignatureSubpacket;
 /**
  * IssuerKeyID sub-packet class
  * Giving the issuer key ID.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -73,7 +73,7 @@ class IssuerKeyID extends SignatureSubpacket
 
     /**
      * Get key ID
-     * 
+     *
      * @param bool $toHex
      * @return string
      */

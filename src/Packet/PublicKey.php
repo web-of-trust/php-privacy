@@ -30,9 +30,9 @@ use phpseclib3\Common\Functions\Strings;
 
 /**
  * Implementation an OpenPGP public key packet (Tag 6).
- * 
+ *
  * See RFC 9580, section 5.5.2.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

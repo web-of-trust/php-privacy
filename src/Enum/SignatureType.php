@@ -19,21 +19,21 @@ enum SignatureType: int
 {
     /**
      * Binary Signature of a Document.
-     * 
+     *
      * This means the signer owns it, created it, or certifies that it has not been modified.
      */
     case Binary = 0x00;
 
     /**
      * Text Signature of a Canonical Document.
-     * 
+     *
      * Canonicalyzing the document by converting line endings.
      */
     case Text = 0x01;
 
     /**
      * Standalone Signature.
-     * 
+     *
      * This signature is a signature of only its own subpacket contents.
      * It is calculated identically to a signature over a zero-length binary document.
      * Version 3 Standalone signatures MUST NOT be generated and MUST be ignored.
@@ -42,7 +42,7 @@ enum SignatureType: int
 
     /**
      * Generic Certification Signature of a User ID and Public Key Packet.
-     * 
+     *
      * The issuer of this certification does not make any particular assertion
      * as to how well the certifier has checked that the owner of the key is
      * in fact the person described by the User ID
@@ -51,7 +51,7 @@ enum SignatureType: int
 
     /**
      * Persona Certification Signature of a User ID and Public Key Packet.
-     * 
+     *
      * The issuer of this certification has not done any verification of
      * the claim that the owner of this key is the User ID specified.
      */
@@ -59,14 +59,14 @@ enum SignatureType: int
 
     /**
      * Casual Certification Signature of a User ID and Public Key Packet.
-     * 
+     *
      * The issuer of this certification has done some casual verification of the claim of identity.
      */
     case CertCasual = 0x12;
 
     /**
      * Positive Certification Signature of a User ID and Public Key Packet.
-     * 
+     *
      * The issuer of this certification has done substantial verification of the claim of identity.
      * Most OpenPGP implementations make their "key signatures" as generic (Type ID 0x10) certifications.
      * Some implementations can issue 0x11-0x13 certifications, but few differentiate between the types.
@@ -75,7 +75,7 @@ enum SignatureType: int
 
     /**
      * Subkey Binding Signature.
-     * 
+     *
      * This signature is a statement by the top-level signing key, indicating that it owns the subkey.
      * This signature is calculated directly on the primary key and subkey, and not on any User ID or other packets.
      * A signature that binds a signing subkey MUST have an Embedded Signature subpacket in this binding signature
@@ -85,7 +85,7 @@ enum SignatureType: int
 
     /**
      * Primary Key Binding Signature.
-     * 
+     *
      * This signature is a statement by a signing subkey, indicating that it is owned by the primary key.
      * This signature is calculated the same way as a Subkey Binding signature (Type ID 0x18):
      * directly on the primary key and subkey, and not on any User ID or other packets.
@@ -94,7 +94,7 @@ enum SignatureType: int
 
     /**
      * Direct Key Signature.
-     * 
+     *
      * This signature is calculated directly on a key. It binds the information
      * in the Signature subpackets to the key and is appropriate to be used for
      * subpackets that provide information about the key, such as the Key Flags
@@ -106,7 +106,7 @@ enum SignatureType: int
 
     /**
      * Key Revocation Signature.
-     * 
+     *
      * This signature is calculated directly on the key being revoked.
      * A revoked key is not to be used. Only Revocation Signatures by
      * the key being revoked, or by a (deprecated) Revocation Key,
@@ -116,7 +116,7 @@ enum SignatureType: int
 
     /**
      * Subkey Revocation Signature.
-     * 
+     *
      * This signature is calculated directly on the primary key and the subkey being revoked.
      * A revoked subkey is not to be used. Only Revocation Signatures by the top-level signature key
      * that is bound to this subkey, or by a (deprecated) Revocation Key,
@@ -126,7 +126,7 @@ enum SignatureType: int
 
     /**
      * Certification Revocation Signature.
-     * 
+     *
      * This signature revokes an earlier User ID certification signature
      * (Type IDs 0x10 through 0x13) or Direct Key signature (Type ID 0x1F).
      * It should be issued by the same key that issued the revoked signature
@@ -138,14 +138,14 @@ enum SignatureType: int
 
     /**
      * Timestamp Signature.
-     * 
+     *
      * This signature is only meaningful for the timestamp contained in it.
      */
     case Timestamp = 0x40;
 
     /**
      * Third-Party Confirmation Signature.
-     * 
+     *
      * This signature is a signature over another OpenPGP Signature packet.
      * It is analogous to a notary seal on the signed data.
      * A Third-Party Confirmation signature SHOULD include a Signature Target

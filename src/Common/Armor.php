@@ -267,7 +267,7 @@ final class Armor
 
     /**
      * Add additional information to the armor of an OpenPGP binary packet block.
-     * 
+     *
      * @param string $customComment
      * @return string
      */
@@ -285,7 +285,7 @@ final class Armor
 
     /**
      * Calculate a checksum over the given data and returns it base64 encoded
-     * 
+     *
      * @param string $data
      * @return string
      */

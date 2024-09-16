@@ -8,11 +8,11 @@
 
 namespace OpenPGP\Message;
 
-use phpseclib3\Common\Functions\Strings;
 use OpenPGP\Type\{
     SignaturePacketInterface,
     VerificationInterface,
 };
+use phpseclib3\Common\Functions\Strings;
 
 /**
  * Verification class

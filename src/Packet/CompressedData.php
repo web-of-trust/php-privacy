@@ -14,11 +14,9 @@ use OpenPGP\Type\PacketListInterface;
 
 /**
  * Implementation of the Compressed Data Packet (Tag 8)
- * 
- * The Compressed Data packet contains compressed data.
- * Typically, this packet is found as the contents of an encrypted packet,
- * or following a Signature or One-Pass Signature packet, and contains a literal data packet.
- * 
+ *
+ * See RFC 9580, section 5.6.
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

@@ -19,11 +19,11 @@ use OpenPGP\Type\{
 
 /**
  * Implementation of the Literal Data Packet (Tag 11)
- * 
+ *
  * See RFC 9580, section 5.9.
  * 
  * A Literal Data packet contains the body of a message; data that is not to be further interpreted.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

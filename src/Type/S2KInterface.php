@@ -12,7 +12,7 @@ use OpenPGP\Enum\S2kType;
 
 /**
  * String-to-key interface
- * 
+ *
  * @package  OpenPGP
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -42,14 +42,14 @@ interface S2KInterface
 
     /**
      * Serialize s2k information to binary string
-     * 
+     *
      * @return string
      */
     function toBytes(): string;
 
     /**
      * Produce a key using the specified passphrase and the defined hash algorithm
-     * 
+     *
      * @param string $passphrase
      * @param int $length
      * @return string

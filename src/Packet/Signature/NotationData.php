@@ -14,9 +14,9 @@ use OpenPGP\Type\NotationDataInterface;
 
 /**
  * NotationData sub-packet class.
- * 
+ *
  * Class provided a NotationData object according to RFC 9580, section 5.2.3.24.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

@@ -13,7 +13,7 @@ use OpenPGP\Enum\SignatureSubpacketType;
 
 /**
  * Sub packet reader class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -40,7 +40,7 @@ class SubpacketReader
 
     /**
      * Get type
-     * 
+     *
      * @return int
      */
     public function getType(): int
@@ -50,7 +50,7 @@ class SubpacketReader
 
     /**
      * Get data
-     * 
+     *
      * @return string
      */
     public function getData(): string
@@ -60,7 +60,7 @@ class SubpacketReader
 
     /**
      * Get offset
-     * 
+     *
      * @return int
      */
     public function getOffset(): int
@@ -69,8 +69,8 @@ class SubpacketReader
     }
 
     /**
-     * Get is long
-     * 
+     * Sub packet is long
+     *
      * @return bool
      */
     public function isLong(): bool

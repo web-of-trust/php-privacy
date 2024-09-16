@@ -24,16 +24,9 @@ use OpenPGP\Type\{
 
 /**
  * SymEncryptedData packet (tag 9) represents a Symmetrically Encrypted Data packet.
- * See RFC 4880, sections 5.7 and 5.13.
- * 
- * The encrypted contents will consist of more OpenPGP packets.
- * The Symmetrically Encrypted Data packet contains data encrypted
- * with a symmetric-key algorithm.
- * When it has been decrypted, it contains other packets
- * (usually a literal data packet or compressed data packet,
- * but in theory other Symmetrically Encrypted Data packets
- * or sequences of packets that form whole OpenPGP messages).
- * 
+ *
+ * See RFC 9580, section 5.7.
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

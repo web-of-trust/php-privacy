@@ -40,9 +40,9 @@ use phpseclib3\Crypt\Random;
 
 /**
  * Implementation a possibly encrypted private key (Tag 5).
- * 
+ *
  * See RFC 9580, section 5.5.3.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -537,7 +537,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 
     /**
      * Get S2k usage
-     * 
+     *
      * @return S2kUsage
      */
     public function getS2kUsage(): S2kUsage
@@ -547,7 +547,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 
     /**
      * Get symmetric algorithm
-     * 
+     *
      * @return SymmetricAlgorithm
      */
     public function getSymmetric(): SymmetricAlgorithm
@@ -557,7 +557,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 
     /**
      * Get string 2 key
-     * 
+     *
      * @return S2KInterface
      */
     public function getS2K(): ?S2KInterface
@@ -567,7 +567,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 
     /**
      * Get AEAD algorithm
-     * 
+     *
      * @return AeadAlgorithm
      */
     public function getAead(): ?AeadAlgorithm
@@ -577,7 +577,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 
     /**
      * Get initialization vector
-     * 
+     *
      * @return string
      */
     public function getIV(): string
@@ -587,7 +587,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 
     /**
      * Get key data
-     * 
+     *
      * @return string
      */
     public function getKeyData(): string
@@ -597,7 +597,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 
     /**
      * Derive encryption key
-     * 
+     *
      * @param string $passphrase
      * @param SymmetricAlgorithm $symmetric
      * @param S2KInterface $s2k

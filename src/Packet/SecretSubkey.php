@@ -26,9 +26,9 @@ use OpenPGP\Type\{
 
 /**
  * Implementation a possibly encrypted sub private key (Tag 7).
- * 
+ *
  * See RFC 9580, section 5.5.1.4.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

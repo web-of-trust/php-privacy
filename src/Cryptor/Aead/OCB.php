@@ -16,9 +16,9 @@ use phpseclib3\Crypt\Common\BlockCipher;
  * An implementation of RFC 7253 on The OCB Authenticated-Encryption Algorithm.
  * For those still concerned about the original patents around this, please see:
  * https://mailarchive.ietf.org/arch/msg/cfrg/qLTveWOdTJcLn4HP3ev-vrj05Vg/
- * 
+ *
  * see https://tools.ietf.org/html/rfc7253
- * 
+ *
  * @package  OpenPGP
  * @category Cryptor
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -120,7 +120,7 @@ final class OCB implements AeadCipher
 
     /**
      * Encrypt/decrypt data.
-     * 
+     *
      * @param BlockCipher $cipher - Encryption/decryption block cipher function
      * @param string $text - The cleartext or ciphertext (without tag) input
      * @param string $nonce - The nonce (15 bytes)
@@ -324,7 +324,7 @@ final class OCB implements AeadCipher
     }
 
     /**
-     * returns bit length of the integer x
+     * Return bit length of the integer x
      *
      * @param int $x
      * @return int

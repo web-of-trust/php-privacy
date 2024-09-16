@@ -22,7 +22,7 @@ use OpenPGP\Type\{
 
 /**
  * OpenPGP public key class
- * 
+ *
  * @package  OpenPGP
  * @category Key
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

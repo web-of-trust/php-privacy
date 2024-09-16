@@ -10,7 +10,7 @@ namespace OpenPGP\Type;
 
 /**
  * Session key cryptor interface
- * 
+ *
  * @package  OpenPGP
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -29,7 +29,7 @@ interface SessionKeyCryptorInterface
 
     /**
      * Serialize session key cryptor to bytes
-     * 
+     *
      * @return string
      */
     function toBytes(): string;

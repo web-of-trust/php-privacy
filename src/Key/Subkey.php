@@ -32,7 +32,7 @@ use OpenPGP\Type\{
 
 /**
  * OpenPGP sub key class
- * 
+ *
  * @package  OpenPGP
  * @category Key
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -41,14 +41,14 @@ class Subkey implements SubkeyInterface
 {
     /**
      * Revocation signature packets
-     * 
+     *
      * @var array
      */
     private array $revocationSignatures;
 
     /**
      * Binding signature packets
-     * 
+     *
      * @var array
      */
     private array $bindingSignatures;
@@ -81,7 +81,7 @@ class Subkey implements SubkeyInterface
 
     /**
      * Get main key
-     * 
+     *
      * @return KeyInterface
      */
     public function getMainKey(): KeyInterface

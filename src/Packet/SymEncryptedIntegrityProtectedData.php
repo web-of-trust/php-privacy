@@ -27,9 +27,9 @@ use phpseclib3\Crypt\Random;
 
 /**
  * Implementation of the Sym. Encrypted Integrity Protected Data Packet (Tag 18)
- * 
+ *
  * See RFC 9580, section 5.13.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -238,7 +238,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
 
     /**
      * Get salt
-     * 
+     *
      * @return string
      */
     public function getSalt(): string
@@ -309,7 +309,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
 
     /**
      * AEAD en/decrypt the payload.
-     * 
+     *
      * @param string $fn - Whether to encrypt or decrypt
      * @param string $key - The session key used to en/decrypt the payload
      * @param string $data - The data to en/decrypt

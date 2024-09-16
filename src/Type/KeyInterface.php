@@ -20,7 +20,7 @@ use Psr\Log\{
 
 /**
  * Key interface
- * 
+ *
  * @package  OpenPGP
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -57,21 +57,21 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
 
     /**
      * Get creation time
-     * 
+     *
      * @return DateTimeInterface
      */
     function getCreationTime(): DateTimeInterface;
 
     /**
      * Get key algorithm
-     * 
+     *
      * @return KeyAlgorithm
      */
     function getKeyAlgorithm(): KeyAlgorithm;
 
     /**
      * Get fingerprint
-     * 
+     *
      * @param bool $toHex
      * @return string
      */
@@ -79,7 +79,7 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
 
     /**
      * Get key ID
-     * 
+     *
      * @param bool $toHex
      * @return string
      */
@@ -87,28 +87,28 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
 
     /**
      * Get key strength
-     * 
+     *
      * @return int
      */
     function getKeyStrength(): int;
 
     /**
      * Get revocation signatures
-     * 
+     *
      * @return array
      */
     function getRevocationSignatures(): array;
 
     /**
      * Get direct signatures
-     * 
+     *
      * @return array
      */
     function getDirectSignatures(): array;
 
     /**
      * Get latest direct signature
-     * 
+     *
      * @return SignaturePacketInterface
      */
     function getLatestDirectSignature(): ?SignaturePacketInterface;
@@ -116,7 +116,7 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
     /**
      * Return last created key packet or key packet by given keyID
      * that is available for signing or verification
-     * 
+     *
      * @param string $keyID
      * @param DateTimeInterface $time
      * @return KeyPacketInterface
@@ -128,7 +128,7 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
     /**
      * Return last created key packet or key packet by given keyID
      * that is available for encryption or decryption
-     * 
+     *
      * @param string $keyID
      * @param DateTimeInterface $time
      * @return KeyPacketInterface
@@ -138,8 +138,22 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
     ): KeyPacketInterface;
 
     /**
+     * Get users
+     *
+     * @return array
+     */
+    function getUsers(): array;
+
+    /**
+     * Get subkeys
+     *
+     * @return array
+     */
+    function getSubkeys(): array;
+
+    /**
      * Return primary user
-     * 
+     *
      * @param DateTimeInterface $time
      * @return UserInterface
      */
@@ -147,14 +161,14 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
 
     /**
      * Return key is private
-     * 
+     *
      * @return bool
      */
     function isPrivate(): bool;
 
     /**
      * Return AEAD supported
-     * 
+     *
      * @return bool
      */
     function aeadSupported(): bool;
@@ -190,7 +204,7 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
     /**
      * Verify key.
      * Checks for revocation signatures, expiration time and valid self signature.
-     * 
+     *
      * @param string $userID
      * @param DateTimeInterface $time
      * @return bool
@@ -201,7 +215,7 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
 
     /**
      * Certify by private key.
-     * 
+     *
      * @param PrivateKeyInterface $signKey
      * @param DateTimeInterface $time
      * @return self
@@ -212,7 +226,7 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
 
     /**
      * Revoke by private key.
-     * 
+     *
      * @param PrivateKeyInterface $signKey
      * @param string $revocationReason
      * @param RevocationReasonTag $reasonTag
@@ -228,7 +242,7 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
 
     /**
      * Get the logger.
-     * 
+     *
      * @return LoggerInterface
      */
     function getLogger(): LoggerInterface;

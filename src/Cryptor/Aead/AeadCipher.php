@@ -10,7 +10,7 @@ namespace OpenPGP\Cryptor\Aead;
 
 /**
  * Aead cipher interface
- * 
+ *
  * @package  OpenPGP
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -43,7 +43,7 @@ interface AeadCipher
 
     /**
      * Get aead nonce
-     * 
+     *
      * @param string $iv - The initialization vector
      * @param string $chunkIndex - The chunk index
      * @return string

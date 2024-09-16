@@ -12,7 +12,7 @@ use OpenPGP\Enum\S2kType;
 
 /**
  * String-to-key trait
- * 
+ *
  * @package  OpenPGP
  * @category Common
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

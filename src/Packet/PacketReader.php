@@ -13,7 +13,7 @@ use OpenPGP\Enum\PacketTag;
 
 /**
  * Packet reader class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -38,7 +38,7 @@ class PacketReader
 
     /**
      * Get packet tag
-     * 
+     *
      * @return PacketTag
      */
     public function getPacketTag(): PacketTag
@@ -48,7 +48,7 @@ class PacketReader
 
     /**
      * Get packet data
-     * 
+     *
      * @return string
      */
     public function getData(): string
@@ -58,7 +58,7 @@ class PacketReader
 
     /**
      * Get offset
-     * 
+     *
      * @return int
      */
     public function getOffset(): int

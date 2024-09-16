@@ -10,7 +10,7 @@ namespace OpenPGP\Enum;
 
 /**
  * Support feature enum
- * 
+ *
  * See https://www.rfc-editor.org/rfc/rfc9580#name-features
  *
  * @package  OpenPGP

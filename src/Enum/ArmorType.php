@@ -60,7 +60,7 @@ enum ArmorType
 
     /**
      * Construct armor type from begin armored text.
-     * 
+     *
      * @param string $text
      * @return self
      */
