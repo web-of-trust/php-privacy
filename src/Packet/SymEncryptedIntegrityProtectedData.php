@@ -59,7 +59,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
     public function __construct(
         private readonly int $version,
         private readonly string $encrypted,
-        private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        private readonly ?SymmetricAlgorithm $symmetric = null,
         private readonly ?AeadAlgorithm $aead = null,
         private readonly int $chunkSize = 12,
         private readonly string $salt = '',
@@ -73,7 +73,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
             );
         }
         $isV2 = $version === self::VERSION_2;
-        if ($isV2) {
+        if ($symmetric instanceof SymmetricAlgorithm && $isV2) {
             self::validateSymmetric($symmetric);
         }
         if ($aead instanceof AeadAlgorithm && !$isV2) {
@@ -275,6 +275,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
                 );
             }
             else {
+                $symmetric = $this->symmetric ?? $symmetric;
                 $size = $symmetric->blockSize();
                 $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
                 $cipher->setKey($key);
