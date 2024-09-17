@@ -61,10 +61,7 @@ class EdDSALegacyPublicKeyMaterial extends ECPublicKeyMaterial implements Public
 
         return $this->getPublicKey()->verify(
             $hash->hash($message),
-            implode([
-                str_pad($r, Ed25519::SIZE, "\x00", STR_PAD_LEFT),
-                str_pad($s, Ed25519::SIZE, "\x00", STR_PAD_LEFT),
-            ])
+            implode([$r, $s])
         );
     }
 }

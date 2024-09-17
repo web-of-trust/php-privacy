@@ -82,19 +82,12 @@ class EdDSALegacySecretKeyMaterial extends ECSecretKeyMaterial implements Secret
         $signature = $this->getPrivateKey()->sign(
             $hash->hash($message)
         );
-        $length = Helper::bit2ByteLength(
-            $this->getPrivateKey()->getLength()
-        );
-        // MPI of an EC point R
-        $r = substr($signature, 0, $length);
-        // MPI of EdDSA value S
-        $s = substr($signature, $length);
 
         return implode([
             pack('n', Ed25519::SIZE * 8), // R bit length
-            str_pad($r, Ed25519::SIZE, "\x00", STR_PAD_LEFT),
+            substr($signature, 0, Ed25519::SIZE), // MPI of an EC point R
             pack('n', Ed25519::SIZE * 8), // S bit length
-            str_pad($s, Ed25519::SIZE, "\x00", STR_PAD_LEFT),
+            substr($signature, Ed25519::SIZE), // MPI of EdDSA value S
         ]);
     }
 }
