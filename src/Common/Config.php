@@ -31,7 +31,7 @@ final class Config
     const VERSION = 'PHP Privacy v1.1.8';
     const COMMENT = 'https://github.com/web-of-trust/php-privacy';
 
-    const SALT_NOTATION = 'PHP Privacy Salt Notation';
+    const SALT_NOTATION = 'salt@notation.weboftrust.org';
 
     private static HashAlgorithm $preferredHash = HashAlgorithm::Sha256;
 
