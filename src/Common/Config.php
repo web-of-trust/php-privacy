@@ -39,6 +39,9 @@ final class Config
 
     const SALT_NOTATION = 'PHP Privacy Salt Notation';
 
+    const AEAD_CHUNK_SIZE_MIN = 10;
+    const AEAD_CHUNK_SIZE_MAX = 16;
+
     private static HashAlgorithm $preferredHash = HashAlgorithm::Sha256;
 
     private static SymmetricAlgorithm $preferredSymmetric = SymmetricAlgorithm::Aes128;
@@ -283,7 +286,10 @@ final class Config
      */
     public static function getAeadChunkSize(): int
     {
-        return self::$aeadChunkSize;
+        return min(
+            max(self::$aeadChunkSize, self::AEAD_CHUNK_SIZE_MIN),
+            self::AEAD_CHUNK_SIZE_MAX
+        );
     }
 
     /**
@@ -293,7 +299,10 @@ final class Config
      */
     public static function setAeadChunkSize(int $aeadChunkSize): void
     {
-        self::$aeadChunkSize = $aeadChunkSize;
+        self::$aeadChunkSize = min(
+            max($aeadChunkSize, self::AEAD_CHUNK_SIZE_MIN),
+            self::AEAD_CHUNK_SIZE_MAX
+        );
     }
 
     /**
