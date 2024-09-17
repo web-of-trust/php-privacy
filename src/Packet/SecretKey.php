@@ -69,7 +69,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         private readonly string $keyData = '',
         private readonly ?KeyMaterialInterface $keyMaterial = null,
         private readonly S2kUsage $s2kUsage = S2kUsage::None,
-        private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Plaintext,
         private readonly ?S2KInterface $s2k = null,
         private readonly ?AeadAlgorithm $aead = null,
         private readonly string $iv = ''
@@ -79,6 +79,14 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             $this instanceof SubkeyPacketInterface ?
             PacketTag::SecretSubkey : PacketTag::SecretKey
         );
+
+        if ($publicKey->getVersion() === PublicKey::VERSION_6 &&
+           ($s2kUsage === S2kUsage::MalleableCfb))
+        {
+            throw new \UnexpectedValueException(
+                "S2k usage {$s2kUsage->name} cannot be used with v{$publicKey->getVersion()} key packet.",
+            );
+        }
     }
 
     /**
@@ -99,8 +107,8 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         $s2k = null;
         $aead = null;
         switch ($s2kUsage) {
-            case S2kUsage::Checksum:
-            case S2kUsage::Sha1:
+            case S2kUsage::MalleableCfb:
+            case S2kUsage::Cfb:
             case S2kUsage::AeadProtect:
                 // one-octet symmetric encryption algorithm.
                 $symmetric = SymmetricAlgorithm::from(
@@ -113,8 +121,8 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 }
 
                 // Only for a version 6 packet, and if string-to-key usage
-                // octet was 255, 254, or 253, an one-octet count of the following field.
-                if ($isV6) {
+                // octet was 253 or 254, an one-octet count of the following field.
+                if ($isV6 && ($s2kUsage === S2kUsage::AeadProtect || $s2kUsage === S2kUsage::Cfb)) {
                     $offset++;
                 }
 
@@ -122,7 +130,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $s2k = ($s2kType === S2kType::Argon2) ?
                     Argon2S2K::fromBytes(substr($bytes, $offset)) : 
                     GenericS2K::fromBytes(substr($bytes, $offset));
-                $offset += $s2kType->packetLength();
+                $offset += $s2kType->dataLength();
                 break;
             default:
                 $symmetric = SymmetricAlgorithm::Plaintext;
@@ -432,7 +440,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             $clearText = $this->keyMaterial?->toBytes() ?? '';
 
             if ($aeadProtect) {
-                $cipher = $aead->cipherEngine($key, $this->symmetric);
+                $cipher = $aead->cipherEngine($key, $symmetric);
                 $encrypted = $cipher->encrypt(
                     $clearText,
                     $iv,
@@ -443,7 +451,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 );
             }
             else {
-                $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
+                $cipher = $symmetric->cipherEngine(S2kUsage::Cfb->name);
                 $cipher->setIV($iv);
                 $cipher->setKey($key);
 
@@ -456,7 +464,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $this->publicKey,
                 $encrypted,
                 $this->keyMaterial,
-                $aeadProtect ? S2kUsage::AeadProtect : S2kUsage::Sha1,
+                $aeadProtect ? S2kUsage::AeadProtect : S2kUsage::Cfb,
                 $symmetric,
                 $s2k,
                 $aead,
@@ -503,7 +511,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 );
             }
             else {
-                $cipher = $this->symmetric->cipherEngine(Config::CIPHER_MODE);
+                $cipher = $this->symmetric->cipherEngine(S2kUsage::Cfb->name);
                 $cipher->setIV($this->iv);
                 $cipher->setKey($key);
                 $decrypted = $cipher->decrypt($this->keyData);

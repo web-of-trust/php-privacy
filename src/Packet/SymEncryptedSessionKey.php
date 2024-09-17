@@ -119,7 +119,7 @@ class SymEncryptedSessionKey extends AbstractPacket
         $s2k = ($s2kType === S2kType::Argon2) ?
             Argon2S2K::fromBytes(substr($bytes, $offset)) : 
             GenericS2K::fromBytes(substr($bytes, $offset));
-        $offset += $s2kType->packetLength();
+        $offset += $s2kType->dataLength();
 
         // A starting initialization vector of size specified by the AEAD algorithm.
         $iv = substr($bytes, $offset, $ivLength);

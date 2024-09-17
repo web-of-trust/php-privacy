@@ -42,7 +42,7 @@ enum S2kType: int
 
     case GNU = 101;
 
-    public function packetLength(): int
+    public function dataLength(): int
     {
         return match($this) {
             self::Simple => 2,

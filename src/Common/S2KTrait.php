@@ -40,6 +40,6 @@ trait S2KTrait
      */
     public function getLength(): int
     {
-        return $this->type->packetLength();
+        return $this->type->dataLength();
     }
 }

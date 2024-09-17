@@ -11,17 +11,23 @@ namespace OpenPGP\Enum;
 /**
  * S2k usage enum
  *
+ * S2k usage indicating whether and how the secret key material is protected by a passphrase
+ *
  * @package  OpenPGP
  * @category Enum
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 enum S2kUsage: int
 {
+    /// Indicates that the secret key data is not encrypted
     case None = 0;
 
-    case Checksum = 255;
-
-    case Sha1 = 254;
-
+    /// AEAD protect
     case AeadProtect = 253;
+
+    /// CFB
+    case Cfb = 254;
+
+    /// Malleable CFB
+    case MalleableCfb = 255;
 }
