@@ -278,7 +278,7 @@ class User implements UserInterface
     ): self
     {
         if (strcmp($signKey->getFingerprint(), $this->mainKey->getFingerprint()) === 0) {
-            throw new \InvalidArgumentException(
+            throw new \RuntimeException(
                 'The user\'s own key can only be used for self-certifications.'
             );
         }

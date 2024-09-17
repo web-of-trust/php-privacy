@@ -69,7 +69,7 @@ class SymEncryptedSessionKey extends AbstractPacket
             $version != self::VERSION_5 &&
             $version != self::VERSION_6
         ) {
-            throw new \UnexpectedValueException(
+            throw new \InvalidArgumentException(
                 "Version $version of the SKESK packet is unsupported."
             );
         }
@@ -77,7 +77,7 @@ class SymEncryptedSessionKey extends AbstractPacket
             self::validateSymmetric($symmetric);
         }
         if ($aead instanceof AeadAlgorithm && $version < self::VERSION_5) {
-            throw new \UnexpectedValueException(
+            throw new \InvalidArgumentException(
                 "Using AEAD with v{$version} SKESK packet is not allowed."
             );
         }

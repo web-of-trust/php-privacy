@@ -155,7 +155,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
 
         // length checking
         if ($mLength > $keyLength - 11) {
-            throw new \UnexpectedValueException(
+            throw new \RuntimeException(
                 'Message too long.'
             );
         }

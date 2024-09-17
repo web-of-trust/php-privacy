@@ -76,7 +76,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
             PacketTag::PublicSubkey : PacketTag::PublicKey
         );
         if ($version !== self::VERSION_4 && $version !== self::VERSION_6) {
-            throw new \UnexpectedValueException(
+            throw new \InvalidArgumentException(
                 "Version {$version} of the key packet is unsupported.",
             );
         }
@@ -87,7 +87,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
             if (($curveOid === CurveOid::Ed25519) ||
                ($curveOid === CurveOid::Curve25519)
             ) {
-                throw new \UnexpectedValueException(
+                throw new \InvalidArgumentException(
                     "Legacy {$curveOid->name} cannot be used with v{$version} key packet.",
                 );
             }
@@ -298,7 +298,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
                 => Key\EdDSAPublicKeyMaterial::fromBytes(
                     $bytes, EdDSACurve::Ed448
                 ),
-            default => throw new \UnexpectedValueException(
+            default => throw new \RuntimeException(
                 "Unsupported OpenPGP public key algorithm encountered.",
             ),
         };

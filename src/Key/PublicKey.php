@@ -128,7 +128,7 @@ class PublicKey extends AbstractKey
     {
         $keyStruct = self::readPacketList($packetList);
         if (!($keyStruct['keyPacket'] instanceof PublicKeyPacketInterface)) {
-            throw new \UnexpectedValueException(
+            throw new \RuntimeException(
                 'Key packet is not public key type.'
             );
         }

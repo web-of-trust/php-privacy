@@ -588,7 +588,7 @@ EOT;
 
     public function testGenerateEcDsaSecretKeyException()
     {
-        $this->expectException(\UnexpectedValueException::class);
+        $this->expectException(\InvalidArgumentException::class);
         SecretKey::generate(
             KeyAlgorithm::EcDsa,
             curveOid: CurveOid::Curve25519
@@ -597,7 +597,7 @@ EOT;
 
     public function testGenerateEcdhSecretKeyException()
     {
-        $this->expectException(\UnexpectedValueException::class);
+        $this->expectException(\InvalidArgumentException::class);
         SecretKey::generate(
             KeyAlgorithm::Ecdh,
             curveOid: CurveOid::Ed25519

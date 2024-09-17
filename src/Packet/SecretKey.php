@@ -83,7 +83,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         if ($publicKey->getVersion() === PublicKey::VERSION_6 &&
            ($s2kUsage === S2kUsage::MalleableCfb))
         {
-            throw new \UnexpectedValueException(
+            throw new \InvalidArgumentException(
                 "S2k usage {$s2kUsage->name} cannot be used with v{$publicKey->getVersion()} key packet.",
             );
         }
@@ -153,7 +153,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $checksum = substr($keyData, strlen($keyData) - 2);
                 $keyData = substr($keyData, 0, strlen($keyData) - 2);
                 if (strcmp(Helper::computeChecksum($keyData), $checksum) !== 0) {
-                    throw new \UnexpectedValueException('Key checksum mismatch!');
+                    throw new \RuntimeException('Key checksum mismatch!');
                 }
             }
             $keyMaterial = self::readKeyMaterial($keyData, $publicKey);
@@ -216,7 +216,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 => Key\EdDSASecretKeyMaterial::generate(EdDSACurve::Ed25519),
             KeyAlgorithm::Ed448
                 => Key\EdDSASecretKeyMaterial::generate(EdDSACurve::Ed448),
-            default => throw new \UnexpectedValueException(
+            default => throw new \RuntimeException(
                 'Unsupported OpenPGP public key algorithm encountered.'
             ),
         };
@@ -416,7 +416,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 
             $aeadProtect = $aead instanceof AeadAlgorithm;
             if ($aeadProtect && $this->getVersion() !== PublicKey::VERSION_6) {
-                throw new \UnexpectedValueException(
+                throw new \InvalidArgumentException(
                     "Using AEAD with version {$this->getVersion()} of the key packet is not allowed."
                 );
             }
@@ -520,7 +520,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $hashText = substr($decrypted, $length);
                 $hashed = hash(self::HASH_ALGO, $clearText, true);
                 if (strcmp($hashed, $hashText) !== 0) {
-                    throw new \UnexpectedValueException(
+                    throw new \RuntimeException(
                         'Incorrect key passphrase.'
                     );
                 }
@@ -622,7 +622,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     ): string
     {
         if ($s2k?->getType() === S2kType::Argon2 && empty($aead)) {
-            throw new \UnexpectedValueException(
+            throw new \InvalidArgumentException(
                 'Using Argon2 S2K without AEAD is not allowed.'
             );
         }
@@ -687,12 +687,12 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 => Key\EdDSASecretKeyMaterial::fromBytes(
                     $bytes, $publicKey->getKeyMaterial(), EdDSACurve::Ed448
                 ),
-            default => throw new \UnexpectedValueException(
+            default => throw new \RuntimeException(
                 'Unsupported OpenPGP public key algorithm encountered.',
             ),
         };
         if (!$keyMaterial->isValid()) {
-            throw new \UnexpectedValueException(
+            throw new \RuntimeException(
                 'The key material is not consistent.'
             );
         }

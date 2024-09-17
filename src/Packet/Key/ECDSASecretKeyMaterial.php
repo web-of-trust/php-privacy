@@ -60,7 +60,7 @@ class ECDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMat
         switch ($curveOid) {
             case CurveOid::Ed25519:
             case CurveOid::Curve25519:
-                throw new \UnexpectedValueException(
+                throw new \InvalidArgumentException(
                     "{$curveOid->name} is not supported for ECDSA key generation."
                 );
             default:

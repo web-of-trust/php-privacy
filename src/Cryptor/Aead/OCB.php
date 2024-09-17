@@ -95,7 +95,7 @@ final class OCB implements AeadCipher
     {
         $length = strlen($cipherText);
         if ($length < self::TAG_LENGTH) {
-            throw new \InvalidArgumentException('Invalid OCB cipher text.');
+            throw new \LengthException('Invalid OCB cipher text.');
         }
 
         $tag = substr($cipherText, $length - self::TAG_LENGTH);
@@ -107,7 +107,7 @@ final class OCB implements AeadCipher
         if (strcmp($tag, substr($crypted, $length - self::TAG_LENGTH)) === 0) {
             return substr($crypted, 0, $length - self::TAG_LENGTH);
         }
-        throw new \UnexpectedValueException('Authentication tag mismatch!');
+        throw new \RuntimeException('Authentication tag mismatch!');
     }
 
     /**

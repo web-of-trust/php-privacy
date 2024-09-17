@@ -168,7 +168,7 @@ final class Armor
         if (strcmp($checksum, self::crc24Checksum($data)) !== 0 &&
            (!empty($checksum) || $checksumRequired))
         {
-            throw new \UnexpectedValueException(
+            throw new \RuntimeException(
                 'Ascii armor integrity check failed!'
             );
         }

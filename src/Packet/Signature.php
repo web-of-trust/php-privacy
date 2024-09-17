@@ -90,14 +90,14 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     {
         parent::__construct(PacketTag::Signature);
         if ($version != self::VERSION_4 && $version != self::VERSION_6) {
-            throw new \UnexpectedValueException(
+            throw new \InvalidArgumentException(
                 "Version $version of the signature packet is unsupported.",
             );
         }
         if ($version === self::VERSION_6) {
             self::validateHash($hashAlgorithm);
             if ($keyAlgorithm === KeyAlgorithm::Dsa) {
-                throw new \UnexpectedValueException(
+                throw new \InvalidArgumentException(
                     "Public key {$keyAlgorithm->name} cannot be used with v{$version} signature packet.",
                 );
             }
@@ -1140,12 +1140,12 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
                     return $keyMaterial->sign($hash, $message);
                 }
                 else {
-                    throw new \UnexpectedValueException(
+                    throw new \RuntimeException(
                         'Invalid key material for signing.',
                     );
                 }
             default:
-                throw new \UnexpectedValueException(
+                throw new \RuntimeException(
                     'Unsupported public key algorithm for signing.',
                 );
         }

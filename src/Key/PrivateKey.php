@@ -119,7 +119,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     {
         $keyStruct = self::readPacketList($packetList);
         if (!($keyStruct['keyPacket'] instanceof SecretKeyPacketInterface)) {
-            throw new \UnexpectedValueException(
+            throw new \RuntimeException(
                 'Key packet is not secret key type.'
             );
         }
@@ -317,7 +317,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     ): array
     {
         if (!$this->verify(time: $time)) {
-            throw new \UnexpectedValueException(
+            throw new \RuntimeException(
                 'Primary key is invalid.'
             );
         }
@@ -359,7 +359,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             );
         }
         if (!$this->isDecrypted()) {
-            throw new \UnexpectedValueException(
+            throw new \RuntimeException(
                 'Private key must be decrypted before encrypting.'
             );
         }
@@ -417,7 +417,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     {
         if (empty($passphrase)) {
             throw new \InvalidArgumentException(
-                'passphrase is required for key decryption.'
+                'Passphrase is required for key decryption.'
             );
         }
         $secretKey = $this->secretKeyPacket->decrypt($passphrase);
@@ -502,7 +502,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     {
         if (empty($passphrase)) {
             throw new \InvalidArgumentException(
-                'passphrase is required for key generation.',
+                'Passphrase is required for key generation.',
             );
         }
 

@@ -68,7 +68,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
     {
         parent::__construct(PacketTag::SymEncryptedIntegrityProtectedData);
         if ($version !== self::VERSION_1 && $version !== self::VERSION_2) {
-            throw new \UnexpectedValueException(
+            throw new \InvalidArgumentException(
                 "Version $version of the SEIPD packet is unsupported.",
             );
         }
@@ -77,7 +77,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
             self::validateSymmetric($symmetric);
         }
         if ($aead instanceof AeadAlgorithm && !$isV2) {
-            throw new \UnexpectedValueException(
+            throw new \InvalidArgumentException(
                 "Using AEAD with v{$version} SEIPD packet is not allowed."
             );
         }
@@ -286,7 +286,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
                 $realHash = substr($decrypted, $digestSize);
                 $toHash = substr($decrypted, 0, $digestSize);
                 if (strcmp($realHash, hash(self::HASH_ALGO, $toHash, true)) !== 0) {
-                    throw new \UnexpectedValueException(
+                    throw new \RuntimeException(
                         'Modification detected.'
                     );
                 }

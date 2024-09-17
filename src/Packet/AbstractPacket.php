@@ -120,7 +120,7 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
             case HashAlgorithm::Md5:
             case HashAlgorithm::Sha1:
             case HashAlgorithm::Ripemd160:
-                throw new \UnexpectedValueException(
+                throw new \RuntimeException(
                     "Hash {$hash->name} is unsupported.",
                 );
         }
@@ -139,7 +139,7 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
             case SymmetricAlgorithm::Idea:
             case SymmetricAlgorithm::TripleDes:
             case SymmetricAlgorithm::Cast5:
-                throw new \UnexpectedValueException(
+                throw new \RuntimeException(
                     "Symmetric {$symmetric->name} is unsupported.",
                 );
         }

@@ -105,7 +105,7 @@ abstract class KeyWrapper
         }
 
         if (strcmp(self::IV, $a) !== 0) {
-            throw new \UnexpectedValueException(
+            throw new \RuntimeException(
                 'Integrity check failed.'
             );
         }

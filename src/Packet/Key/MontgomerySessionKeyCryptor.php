@@ -93,7 +93,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
     ): self
     {
         if ($sessionKey->getSymmetric() !== $curve->symmetricAlgorithm()) {
-            throw new \UnexpectedValueException(
+            throw new \InvalidArgumentException(
                 'Symmetric algorithm of the session key mismatch!'
             );
         }

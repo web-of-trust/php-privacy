@@ -169,7 +169,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
         }
 
         if (empty($sessionKeys)) {
-            throw new \UnexpectedValueException(
+            throw new \RuntimeException(
                 'Session key decryption failed.'
             );
         }
@@ -185,7 +185,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
             EncryptedDataPacketInterface::class
         )->getPackets();
         if (empty($encryptedPackets)) {
-            throw new \UnexpectedValueException(
+            throw new \RuntimeException(
                 'No encrypted data packets found.'
             );
         }

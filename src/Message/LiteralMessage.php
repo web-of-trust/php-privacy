@@ -110,7 +110,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
             static fn ($packet) => $packet instanceof LiteralDataInterface
         );
         if (empty($packets)) {
-            throw new \UnexpectedValueException(
+            throw new \RuntimeException(
                 'No literal data in packet list.'
             );
         }

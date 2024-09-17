@@ -265,7 +265,7 @@ abstract class AbstractKey implements KeyInterface
                     }
                 }
                 else {
-                    throw new \UnexpectedValueException(
+                    throw new \RuntimeException(
                         'Missing embedded signature.'
                     );
                 }
@@ -275,7 +275,7 @@ abstract class AbstractKey implements KeyInterface
         if (!$this->isSigningKey() ||
            (!empty($keyID) && strcmp($keyID, $this->getKeyID()) !== 0))
         {
-            throw new \UnexpectedValueException(
+            throw new \RuntimeException(
                 'Could not find valid signing key packet.'
             );
         }
@@ -308,7 +308,7 @@ abstract class AbstractKey implements KeyInterface
         if (!$this->isEncryptionKey() ||
            (!empty($keyID) && strcmp($keyID, $this->getKeyID()) !== 0))
         {
-            throw new \UnexpectedValueException(
+            throw new \RuntimeException(
                 'Could not find valid encryption key packet.'
             );
         }
@@ -773,7 +773,7 @@ abstract class AbstractKey implements KeyInterface
                 case PacketTag::PublicKey:
                 case PacketTag::SecretKey:
                     if (!empty($keyPacket)) {
-                        throw new \UnexpectedValueException(
+                        throw new \RuntimeException(
                             'Key block contains multiple keys.'
                         );
                     }
@@ -858,7 +858,7 @@ abstract class AbstractKey implements KeyInterface
         }
 
         if (empty($keyPacket)) {
-            throw new \UnexpectedValueException(
+            throw new \RuntimeException(
                 'Key packet not found in packet list.'
             );
         }

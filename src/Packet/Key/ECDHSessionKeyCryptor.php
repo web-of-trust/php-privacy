@@ -312,7 +312,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
         }
         $ps = substr($message, -$n);
         if (strcmp($ps, str_repeat(chr($n), $n)) !== 0) {
-            throw new \UnexpectedValueException(
+            throw new \RuntimeException(
                 'Invalid padding string.'
             );
         }

@@ -64,7 +64,7 @@ final class GCM implements AeadCipher
     {
         $length = strlen($cipherText);
         if ($length < self::TAG_LENGTH) {
-            throw new \InvalidArgumentException('Invalid GCM cipher text.');
+            throw new \LengthException('Invalid GCM cipher text.');
         }
         $this->cipher->setTag(
             substr($cipherText, $length - self::TAG_LENGTH)

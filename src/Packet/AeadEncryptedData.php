@@ -73,7 +73,7 @@ class AeadEncryptedData extends AbstractPacket implements AeadEncryptedDataPacke
         // The only currently defined version is 1.
         $version = ord($bytes[$offset++]);
         if ($version !== self::VERSION) {
-            throw new \UnexpectedValueException(
+            throw new \InvalidArgumentException(
                 "Version $version of the AEPD is not supported.",
           );
         }

@@ -71,7 +71,7 @@ class PrivateKey extends ElGamal
         $inputSize = Helper::bit2ByteLength($this->getBitSize()) * 2;
         $length = strlen($cipherText);
         if ($length > $inputSize) {
-            throw new \InvalidArgumentException(
+            throw new \RuntimeException(
                 'Cipher text too large for ' . self::ALGORITHM . ' cipher.'
             );
         }

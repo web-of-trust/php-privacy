@@ -91,7 +91,7 @@ class SessionKey implements SessionKeyInterface
     public function checksum(string $checksum): self
     {
         if (strcmp($this->computeChecksum(), $checksum) !== 0) {
-            throw new \UnexpectedValueException(
+            throw new \RuntimeException(
                 'Session key checksum mismatch!'
             );
         }

@@ -75,7 +75,7 @@ class Argon2S2K implements S2KInterface
         $finder = new ExecutableFinder();
         if (empty($this->argon2Path = $finder->find(self::ARGON2_COMMAND))) {
             if (!function_exists('sodium_crypto_pwhash')) {
-                throw new \UnexpectedValueException(
+                throw new \RuntimeException(
                     'Argon2 string to key is unsupported.',
                 );
             }

@@ -474,7 +474,7 @@ class Camellia extends BlockCipher
                 $this->keyIs128 = false;
                 break;
             default:
-                throw new \UnexpectedValueException(
+                throw new \LengthException(
                     'Key sizes are only 16/24/32 bytes.'
                 );
         }

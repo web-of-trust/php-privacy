@@ -55,7 +55,7 @@ class OnePassSignature extends AbstractPacket
     {
         parent::__construct(PacketTag::OnePassSignature);
         if ($version != self::VERSION_3 && $version != self::VERSION_6) {
-            throw new \RuntimeException(
+            throw new \InvalidArgumentException(
                 "Version $version of the one-pass signature packet is unsupported.",
             );
         }

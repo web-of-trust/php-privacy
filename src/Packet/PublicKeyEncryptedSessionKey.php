@@ -59,14 +59,14 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     {
         parent::__construct(PacketTag::PublicKeyEncryptedSessionKey);
         if ($version !== self::VERSION_3 && $version !== self::VERSION_6) {
-            throw new \UnexpectedValueException(
+            throw new \InvalidArgumentException(
                 "Version {$version} of the PKESK packet is unsupported.",
             );
         }
         if ($version === self::VERSION_6 &&
             $publicKeyAlgorithm === KeyAlgorithm::ElGamal
         ) {
-            throw new \UnexpectedValueException(
+            throw new \InvalidArgumentException(
                 "Public key {$publicKeyAlgorithm->name} cannot be used with v{$version} PKESK packet.",
             );
         }
@@ -275,7 +275,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
                     $secretKey
                 );
             default:
-                throw new \UnexpectedValueException(
+                throw new \RuntimeException(
                     "Public key algorithm {$this->publicKeyAlgorithm->name} of the PKESK packet is unsupported."
                 );
         }
@@ -314,7 +314,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
                 $pkeskVersion,
                 MontgomeryCurve::Curve448,
             ),
-            default => throw new \UnexpectedValueException(
+            default => throw new \RuntimeException(
                 "Public key algorithm {$keyPacket->getKeyAlgorithm()->name} of the PKESK packet is unsupported."
             ),
         };
@@ -335,7 +335,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
             KeyAlgorithm::X448 => Key\MontgomerySessionKeyCryptor::fromBytes(
                 $bytes, $pkeskVersion, MontgomeryCurve::Curve448
             ),
-            default => throw new \UnexpectedValueException(
+            default => throw new \RuntimeException(
                 "Public key algorithm {$keyAlgorithm->name} of the PKESK packet is unsupported."
             ),
         };

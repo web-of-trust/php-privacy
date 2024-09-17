@@ -148,7 +148,7 @@ class OCBTest extends OpenPGPTestCase
             // tampering detection test
             $ct = $ocb->encrypt($msg, $nonce, $header);
             $ct[2] = $ct[2] & "\x8";
-            $this->expectException(\UnexpectedValueException::class);
+            $this->expectException(\RuntimeException::class);
             $ocb->decrypt($ct, $nonce, $header);
         }
     }
