@@ -140,8 +140,11 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
         $index = 0;
         $opsPackets = array_reverse(array_map(
             static function ($packet) use (&$index) {
-                return OnePassSignature::fromSignature(
-                    $packet,
+                return new OnePassSignature(
+                    $packet->getSignatureType(),
+                    $packet->getHashAlgorithm(),
+                    $packet->getKeyAlgorithm(),
+                    $packet->getIssuerKeyID(),
                     (($index++) === 0) ? 1 : 0
                 );
             },
@@ -149,7 +152,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
         )); // innermost OPS refers to the first signature packet
 
         return new self(new PacketList([
-            ...$onePassSignaturePackets,
+            ...$opsPackets,
             $this->getLiteralData(),
             ...$signaturePackets,
         ]));
