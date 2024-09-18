@@ -37,7 +37,7 @@ final class Config
     const PADDING_MIN = 16;
     const PADDING_MAX = 32;
 
-    const SALT_NOTATION = 'salt@notation.weboftrust.org';
+    const SALT_NOTATION = 'salt@weboftrust.org';
 
     const AEAD_CHUNK_SIZE_MIN = 10;
     const AEAD_CHUNK_SIZE_MAX = 16;
