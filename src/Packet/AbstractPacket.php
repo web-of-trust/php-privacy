@@ -108,12 +108,12 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
     abstract public function toBytes(): string;
 
     /**
-     * Validate hash algorithm
+     * Assert hash algorithm
      *
      * @param HashAlgorithm $hash
      * @return void
      */
-    protected static function validateHash(HashAlgorithm $hash): void
+    protected static function assertHash(HashAlgorithm $hash): void
     {
         switch ($hash) {
             case HashAlgorithm::Unknown:
@@ -127,12 +127,12 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
     }
 
     /**
-     * Validate symmetric algorithm
+     * Assert symmetric algorithm
      *
-     * @param HashAlgorithm $symmetric
+     * @param SymmetricAlgorithm $symmetric
      * @return void
      */
-    protected static function validateSymmetric(SymmetricAlgorithm $symmetric): void
+    protected static function assertSymmetric(SymmetricAlgorithm $symmetric): void
     {
         switch ($symmetric) {
             case SymmetricAlgorithm::Plaintext:

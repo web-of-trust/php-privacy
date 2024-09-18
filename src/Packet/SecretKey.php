@@ -412,7 +412,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             $this->getLogger()->debug(
                 'Encrypt secret key material with passphrase.'
             );
-            self::validateSymmetric($symmetric);
+            self::assertSymmetric($symmetric);
 
             $aeadProtect = $aead instanceof AeadAlgorithm;
             if ($aeadProtect && $this->getVersion() !== PublicKey::VERSION_6) {
