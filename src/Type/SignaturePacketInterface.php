@@ -295,4 +295,11 @@ interface SignaturePacketInterface extends PacketInterface
      * @return SubpacketInterface
      */
     function getEmbeddedSignature(): ?SubpacketInterface;
+
+    /**
+     * Get intended recipient fingerprints sub packets
+     *
+     * @return array
+     */
+    function getIntendedRecipients(): array;
 }

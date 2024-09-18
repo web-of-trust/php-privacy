@@ -1049,6 +1049,19 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getIntendedRecipients(): array
+    {
+        return array_filter(
+            $this->hashedSubpackets,
+            static fn ($subpacket) =>
+                $this->hashedSubpackets->getType() ===
+                SignatureSubpacketType::IntendedRecipientFingerprint->value
+        );
+    }
+
+    /**
      * Create key signature subpackets
      *
      * @param int $version

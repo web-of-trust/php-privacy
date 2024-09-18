@@ -222,6 +222,11 @@ class SubpacketReader
                             $data, $critical, $reader->isLong()
                         );
                         break;
+                    case SignatureSubpacketType::IntendedRecipientFingerprint:
+                        $subpackets[] = new Signature\IntendedRecipientFingerprint(
+                            $data, $critical, $reader->isLong()
+                        );
+                        break;
                     case SignatureSubpacketType::PreferredAeadCiphers:
                         $subpackets[] = new Signature\PreferredAeadCiphers(
                             $data, $critical, $reader->isLong()
