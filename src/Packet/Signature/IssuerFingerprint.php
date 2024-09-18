@@ -62,16 +62,20 @@ class IssuerFingerprint extends SignatureSubpacket
     }
 
     /**
-     * From wildcard
+     * Create wildcard fingerprint sub-packet
      *
+     * @param bool $isV6
      * @param bool $critical
      * @return self
      */
     public static function wildcard(
-        bool $critical = false
+        bool $isV6 = true, bool $critical = false
     ): self
     {
-        return new self(chr(6) . str_repeat("\x00", 32), $critical);
+        return new self(
+            chr($isV6 ? 6 : 4) . str_repeat("\x00", $isV6 ? 32 : 20),
+            $critical
+        );
     }
 
     /**
@@ -85,7 +89,7 @@ class IssuerFingerprint extends SignatureSubpacket
     }
 
     /**
-     * Get fingerprint
+     * Get key fingerprint
      *
      * @param bool $toHex
      * @return string

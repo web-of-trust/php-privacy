@@ -1045,7 +1045,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         if ($subpacket instanceof Signature\IssuerFingerprint) {
             return $subpacket->getKeyFingerprint($toHex);
         }
-        return Signature\IssuerFingerprint::wildcard()->getKeyFingerprint($toHex);
+        return Signature\IssuerFingerprint::wildcard(
+            $this->version === self::VERSION_6
+        )->getKeyFingerprint($toHex);
     }
 
     /**
