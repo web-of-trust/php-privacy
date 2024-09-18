@@ -326,13 +326,11 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
         $chunkSize = (1 << ($this->chunkSize + 6)) + $tagLength;
 
         $aData = $this->getAData();
-        $zeroBytes = str_repeat(self::ZERO_CHAR, 8);
-
         $aDataTagBytes = implode([
             $aData,
-            $zeroBytes,
+            str_repeat(self::ZERO_CHAR, 8),
         ]);
-        $tagSize = strlen($aDataTagBytes);
+        $ciOffset = strlen($aDataTagBytes) - 4;
 
         $keySize = $this->symmetric->keySizeInByte();
         $ivLength = $this->aead->ivLength();
@@ -342,7 +340,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
         $encryptionKey = substr($derivedKey, 0, $keySize);
         $iv = substr($derivedKey, $keySize, $keySize + $ivLength);
         // The last 8 bytes of HKDF output are unneeded, but this avoids one copy.
-        $iv = substr_replace($iv, $zeroBytes, $ivLength - 8);
+        $iv = substr_replace($iv, str_repeat(self::ZERO_CHAR, 8), $ivLength - 8);
         $cipher = $this->aead->cipherEngine($encryptionKey, $this->symmetric);
 
         $crypted = [];
@@ -356,7 +354,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
             );
             $data = substr($data, $chunkSize);
             $aDataTagBytes = substr_replace(
-                $aDataTagBytes, pack('N', ++$chunkIndex), $tagSize - 4, 4
+                $aDataTagBytes, pack('N', ++$chunkIndex), $ciOffset, 4
             );
             $ciBytes = substr($aDataTagBytes, 5, 8);
         }
@@ -364,7 +362,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
             array_map(static fn ($bytes) => strlen($bytes), $crypted)
         );
         $aDataTagBytes = substr_replace(
-            $aDataTagBytes, pack('N', $processed), $tagSize - 4, 4
+            $aDataTagBytes, pack('N', $processed), $ciOffset, 4
         );
 
         // After the final chunk, we either encrypt a final, empty data
