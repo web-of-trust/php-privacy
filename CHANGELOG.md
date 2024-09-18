@@ -90,3 +90,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 1.1.13 - released 2024-09-13
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.1.12...1.1.13)
 - Support partial body length.
+
+## 1.1.14 - released 2024-09-18
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.1.13...1.1.14)
+- Reverse order OPS packets.
+- Change SALT_NOTATION
+- Refactor ECDH session key cryptor contants
+- Add build one-pass signature packet from signature packet
