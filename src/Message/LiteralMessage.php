@@ -139,13 +139,10 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
 
         $index = 0;
         $opsPackets = array_reverse(array_map(
-            static function ($packet) use (&$index) {
-                return new OnePassSignature(
-                    $packet->getSignatureType(),
-                    $packet->getHashAlgorithm(),
-                    $packet->getKeyAlgorithm(),
-                    $packet->getIssuerKeyID(),
-                    (($index++) === 0) ? 1 : 0
+            static function ($signature) use (&$index) {
+                return OnePassSignature::fromSignature(
+                    $signature,
+                    (($index++) === 0) ? 1 : 0,
                 );
             },
             $signaturePackets

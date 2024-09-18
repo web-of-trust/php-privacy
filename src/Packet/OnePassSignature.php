@@ -96,6 +96,24 @@ class OnePassSignature extends AbstractPacket
     }
 
     /**
+     * Build one-pass signature packet from signature packet
+     *
+     * @param Signature $signature
+     * @param int $nested
+     * @return self
+     */
+    public static function fromSignature(Signature $signature, int $nested = 0): self
+    {
+        return new self(
+            $signature->getSignatureType(),
+            $signature->getHashAlgorithm(),
+            $signature->getKeyAlgorithm(),
+            $signature->getIssuerKeyID(),
+            $nested,
+        );
+    }
+
+    /**
      * Get signature type
      *
      * @return SignatureType
