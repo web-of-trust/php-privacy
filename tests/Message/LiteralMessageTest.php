@@ -8,6 +8,7 @@ use OpenPGP\Enum\{
     CompressionAlgorithm,
     KeyType,
     LiteralFormat,
+    PacketTag,
 };
 use OpenPGP\Key\{PrivateKey, PublicKey};
 use OpenPGP\Message\{LiteralMessage, Signature};
@@ -580,12 +581,16 @@ EOT;
         $decryptedMessage = $encryptedMessage->decrypt(passwords: [self::PASSPHRASE]);
         $this->assertSame($literalData, $decryptedMessage->getLiteralData()->getData());
 
+        $padding = $decryptedMessage->getPacketList()->whereTag(PacketTag::Padding)[0];
+        $this->assertSame(PacketTag::Padding, $padding->getTag());
+
         Config::setAeadProtect(false);
     }
 
-    public function testSignMessageWithV6Key()
+    public function testSignAeadEncryptMessageWithV6Key()
     {
         Config::setUseV6Key(true);
+        Config::setAeadProtect(true);
 
         $name = $this->faker->unique()->name();
         $email = $this->faker->unique()->safeEmail();
@@ -597,7 +602,7 @@ EOT;
         $privateKey = PrivateKey::generate(
             [$userID],
             $passphrase,
-            KeyType::Rsa
+            KeyType::Curve25519
         );
         $publicKey = $privateKey->toPublic();
         $message = new LiteralMessage(new PacketList([
@@ -621,6 +626,19 @@ EOT;
         $verification = $message->verifyDetached([$publicKey], $signature)[0];
         $this->assertTrue($verification->isVerified());
 
+        $encryptedMessage = $signedMessage->encrypt(
+            [$publicKey]
+        );
+        $encryptedPacket = $encryptedMessage->getEncryptedPacket();
+        $this->assertTrue($encryptedPacket->getAead() instanceof AeadAlgorithm);
+
+        $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
+        $this->assertSame($literalData, $decryptedMessage->getLiteralData()->getData());
+
+        $padding = $decryptedMessage->getPacketList()->whereTag(PacketTag::Padding)[0];
+        $this->assertSame(PacketTag::Padding, $padding->getTag());
+
+        Config::setAeadProtect(false);
         Config::setUseV6Key(false);
     }
 }

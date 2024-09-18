@@ -3,6 +3,7 @@
 namespace OpenPGP\Tests\Key;
 
 use OpenPGP\Enum\KeyAlgorithm;
+use OpenPGP\Enum\PacketTag;
 use OpenPGP\Key\PublicKey;
 use OpenPGP\Tests\OpenPGPTestCase;
 
@@ -237,5 +238,8 @@ EOT;
         $signature = $subkey->getLatestBindingSignature();
         $this->assertSame(6, $signature->getVersion());
         $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $signature->getIssuerFingerprint(true));
+
+        $padding = $publicKey->getPacketList()->whereTag(PacketTag::Padding)[0];
+        $this->assertSame(PacketTag::Padding, $padding->getTag());
     }
 }

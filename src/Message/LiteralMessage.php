@@ -25,6 +25,7 @@ use OpenPGP\Packet\{
     OnePassSignature,
     LiteralData,
     PacketList,
+    Padding,
     PublicKeyEncryptedSessionKey,
     SymEncryptedIntegrityProtectedData,
     SymEncryptedSessionKey,
@@ -228,11 +229,14 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
             );
         }
 
+        $addPadding = false;
         $aeadSupported = true;
         foreach ($encryptionKeys as $key) {
             if (!$key->aeadSupported()) {
                 $aeadSupported = false;
-                break;
+            }
+            if ($key->getVersion() === 6) {
+                $addPadding = true;
             }
         }
         $aead = ($aeadSupported && Config::aeadProtect()) ?
@@ -244,9 +248,9 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
         $pkeskPackets = array_map(
             static fn ($key) => PublicKeyEncryptedSessionKey::encryptSessionKey(
                 $key->toPublic()->getEncryptionKeyPacket(),
-                $sessionKey
+                $sessionKey,
             ),
-            $encryptionKeys
+            $encryptionKeys,
         );
         $skeskPackets = array_map(
             static fn ($password) => SymEncryptedSessionKey::encryptSessionKey(
@@ -255,10 +259,16 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
                 $symmetric ?? Config::getPreferredSymmetric(),
                 $aead,
             ),
-            $passwords
+            $passwords,
         );
+        $packetList = ($addPadding || !empty($aead)) ? new PacketList([
+            ...$this->getPackets(),
+            Padding::createPadding(random_int(
+                Config::PADDING_MIN, Config::PADDING_MAX)
+            ),
+        ]) : $this->getPacketList();
         $encryptedPacket = SymEncryptedIntegrityProtectedData::encryptPacketsWithSessionKey(
-            $sessionKey, $this->getPacketList(), $aead
+            $sessionKey, $packetList, $aead,
         );
 
         return new EncryptedMessage(new PacketList([

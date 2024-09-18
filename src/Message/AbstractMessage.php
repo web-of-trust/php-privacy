@@ -13,11 +13,9 @@ use OpenPGP\Common\{
     Config,
 };
 use OpenPGP\Enum\ArmorType;
-use OpenPGP\Packet\PacketList;
 use OpenPGP\Type\{
     ArmorableInterface,
     PacketContainerInterface,
-    PacketInterface,
     PacketListInterface,
 };
 use Psr\Log\{

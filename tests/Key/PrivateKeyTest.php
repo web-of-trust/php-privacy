@@ -3,7 +3,7 @@
 namespace OpenPGP\Tests\Key;
 
 use OpenPGP\Common\Config;
-use OpenPGP\Enum\{CurveOid, KeyAlgorithm, KeyType};
+use OpenPGP\Enum\{CurveOid, KeyAlgorithm, KeyType, PacketTag};
 use OpenPGP\Key\{PrivateKey, PublicKey};
 use OpenPGP\Type\SecretKeyPacketInterface;
 use OpenPGP\Tests\OpenPGPTestCase;
@@ -823,6 +823,9 @@ EOT;
         $signature = $subkey->getLatestBindingSignature();
         $this->assertSame(6, $signature->getVersion());
         $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $signature->getIssuerFingerprint(true));
+
+        $padding = $privateKey->getPacketList()->whereTag(PacketTag::Padding)[0];
+        $this->assertSame(PacketTag::Padding, $padding->getTag());
     }
 
     public function testLockedVersion6Curve25519SecretKey()
@@ -872,5 +875,8 @@ EOT;
         $privateKey = $privateKey->decrypt('correct horse battery staple');
         $this->assertTrue($privateKey->isEncrypted());
         $this->assertTrue($privateKey->isDecrypted());
+
+        $padding = $privateKey->getPacketList()->whereTag(PacketTag::Padding)[0];
+        $this->assertSame(PacketTag::Padding, $padding->getTag());
     }
 }
