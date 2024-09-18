@@ -82,13 +82,22 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         }
         $isV6 = $version === self::VERSION_6;
 
-        if ($isV6 && ($keyMaterial instanceof Key\ECPublicKeyMaterial)) {
-            $curveOid = $keyMaterial->getCurveOid();
-            if (($curveOid === CurveOid::Ed25519) ||
-               ($curveOid === CurveOid::Curve25519)
+        if ($isV6) {
+            if (($keyMaterial instanceof Key\ECPublicKeyMaterial)) {
+                $curveOid = $keyMaterial->getCurveOid();
+                if (($curveOid === CurveOid::Ed25519) ||
+                   ($curveOid === CurveOid::Curve25519)
+                ) {
+                    throw new \InvalidArgumentException(
+                        "Legacy curve {$curveOid->name} cannot be used with v{$version} key packet.",
+                    );
+                }
+            }
+            if (($keyAlgorithm === KeyAlgorithm::Dsa) ||
+               ($keyAlgorithm === KeyAlgorithm::ElGamal)
             ) {
                 throw new \InvalidArgumentException(
-                    "Legacy {$curveOid->name} cannot be used with v{$version} key packet.",
+                    "Key algorithm {$keyAlgorithm->name} cannot be used with v{$version} key packet.",
                 );
             }
         }
