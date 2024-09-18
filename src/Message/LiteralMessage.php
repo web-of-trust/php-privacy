@@ -230,7 +230,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
         }
 
         $addPadding = false;
-        $aeadSupported = true;
+        $aeadSupported = Config::AEAD_SUPPORTED;
         foreach ($encryptionKeys as $key) {
             if (!$key->aeadSupported()) {
                 $aeadSupported = false;

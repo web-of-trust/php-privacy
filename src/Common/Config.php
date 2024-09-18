@@ -39,6 +39,7 @@ final class Config
 
     const SALT_NOTATION = 'salt@weboftrust.org';
 
+    const AEAD_SUPPORTED      = true;
     const AEAD_CHUNK_SIZE_MIN = 10;
     const AEAD_CHUNK_SIZE_MAX = 16;
 
