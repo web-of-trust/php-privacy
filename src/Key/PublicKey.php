@@ -57,23 +57,29 @@ class PublicKey extends AbstractKey
     }
 
     /**
-     * Read public keys from armored string
+     * Read public keys from armored/binary string
      * Return one or multiple key objects.
      *
-     * @param string $armored
+     * @param string $data
+     * @param bool $armored
      * @return array
      */
-    public static function readPublicKeys(string $armored): array
+    public static function readPublicKeys(
+        string $data, bool $armored = true
+    ): array
     {
-        $armor = Armor::decode($armored);
-        if ($armor->getType() !== ArmorType::PublicKey) {
-            throw new \UnexpectedValueException(
-                'Armored text not of public key type.'
-            );
+        if ($armored) {
+            $armor = Armor::decode($data);
+            if ($armor->getType() !== ArmorType::PublicKey) {
+                throw new \UnexpectedValueException(
+                    'Armored text not of public key type.'
+                );
+            }
+            $data = $armor->getData();
         }
 
         $publicKeys = [];
-        $packetList = PacketList::decode($armor->getData());
+        $packetList = PacketList::decode($data);
         $indexes = $packetList->indexOfTags(PacketTag::PublicKey);
         for ($i = 0, $count = count($indexes); $i < $count; $i++) {
             if (!empty($indexes[$i + 1])) {
