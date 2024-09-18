@@ -54,11 +54,17 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
         if ($curveOid !== CurveOid::Ed25519) {
             if ($curveOid === CurveOid::Curve25519) {
                 do {
-                    $privateKey = EC::createKey($curveOid->name);
-                    $d = Helper::bin2BigInt(
-                        strrev($privateKey->toString('MontgomeryPrivate'))
-                    );
+                    $secretKey = Random::string(self::CURVE25519_KEY_LENGTH);
+                    // The highest bit must be 0 & the second highest bit must be 1
+                    $secretKey[0] = ($secretKey[0] & "\x7f") | "\x40";
+                    /// The lowest three bits must be 0
+                    $secretKey[31] = $secretKey[31] & "\xf8";
+                    $d = Helper::bin2BigInt($secretKey);
                 } while ($d->getLengthInBytes() !== self::CURVE25519_KEY_LENGTH);
+
+                $privateKey = EC::loadPrivateKeyFormat(
+                    'MontgomeryPrivate', strrev($secretKey)
+                );
                 $q = Helper::bin2BigInt(
                     "\x40" . $privateKey->getEncodedCoordinates()
                 );
