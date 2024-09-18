@@ -210,12 +210,9 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $time,
         );
 
-        $aead = null;
         $v6Key = $secretKey->getVersion() === 6;
-
-        if ($v6Key && Config::aeadProtect()) {
-            $aead = Config::getPreferredAead();
-        }
+        $aead = ($v6Key && Config::aeadProtect()) ?
+            Config::getPreferredAead() : null;
         $secretKey = $secretKey->encrypt(
             $passphrase, Config::getPreferredSymmetric(), $aead
         );
