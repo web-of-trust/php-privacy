@@ -238,7 +238,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $packets[] = Signature::createSelfCertificate(
                 $secretKey,
                 $packet,
-                ($index === 0) ? true : false,
+                $index === 0,
                 $keyExpiry,
                 $time,
             );
@@ -321,8 +321,9 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         $subkeys = $this->getSubkeys();
         usort(
             $subkeys,
-            static fn ($a, $b): int => $b->getCreationTime()->getTimestamp()
-                                    -  $a->getCreationTime()->getTimestamp()
+            static fn ($a, $b): int =>
+                $b->getCreationTime()->getTimestamp() -
+                $a->getCreationTime()->getTimestamp()
         );
 
         $keyPackets = [];
@@ -491,7 +492,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
         DHKeySize $dhKeySize = DHKeySize::Normal,
-        CurveOid $curve = CurveOid::Ed25519,
+        CurveOid $curve = CurveOid::Secp521r1,
         int $keyExpiry = 0,
         bool $subkeySign = false,
         ?DateTimeInterface $time = null
@@ -503,6 +504,11 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             );
         }
 
+        $aead = null;
+        if ($this->getVersion() === 6 && Config::aeadProtect()) {
+            $aead = Config::getPreferredAead();
+        }
+
         $self = $this->clone();
         $subkeys = $self->getSubkeys();
         $secretSubkey = SecretSubkey::generate(
@@ -511,7 +517,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $dhKeySize,
             $curve,
             $time,
-        )->encrypt($passphrase, Config::getPreferredSymmetric());
+        )->encrypt($passphrase, Config::getPreferredSymmetric(), $aead);
         $bindingSignature = Signature::createSubkeyBinding(
             $self->getSigningKeyPacket(),
             $secretSubkey,
