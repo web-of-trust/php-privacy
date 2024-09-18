@@ -321,16 +321,18 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
         string $fn, string $key, string $data, string $finalChunk = ''
     ): string
     {
-        $tagLength = $fn === self::AEAD_DECRYPT ? $this->aead->tagLength() : 0;
         // chunkSize = (uint32_t) 1 << (c + 6)
-        $chunkSize = (1 << ($this->chunkSize + 6)) + $tagLength;
+        $chunkSize = (1 << ($this->chunkSize + 6));
+        if ($fn === self::AEAD_DECRYPT) {
+            $chunkSize += $this->aead->tagLength();
+        }
 
         $aData = $this->getAData();
         $aDataTagBytes = implode([
             $aData,
             str_repeat(self::ZERO_CHAR, 8),
         ]);
-        $ciOffset = strlen($aDataTagBytes) - 4;
+        $indexOffset = strlen($aDataTagBytes) - 4;
 
         $keySize = $this->symmetric->keySizeInByte();
         $ivLength = $this->aead->ivLength();
@@ -338,31 +340,31 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
             Config::HKDF_ALGO, $key, $keySize + $ivLength, $aData, $this->salt
         );
         $encryptionKey = substr($derivedKey, 0, $keySize);
-        $iv = substr($derivedKey, $keySize, $keySize + $ivLength);
+        $iv = substr($derivedKey, $keySize, $ivLength);
         // The last 8 bytes of HKDF output are unneeded, but this avoids one copy.
         $iv = substr_replace($iv, str_repeat(self::ZERO_CHAR, 8), $ivLength - 8);
         $cipher = $this->aead->cipherEngine($encryptionKey, $this->symmetric);
 
         $crypted = [];
-        $ciBytes = substr($aDataTagBytes, 5, 8);
-        for ($chunkIndex = 0; $chunkIndex === 0 || strlen($data);) {
+        $indexBytes = substr($aDataTagBytes, 5, 8);
+        for ($index = 0; $index === 0 || strlen($data);) {
             // Take a chunk of data, en/decrypt it, and shift `data` to the next chunk.
             $crypted[] = $cipher->$fn(
                 substr($data, 0, $chunkSize),
-                $cipher->getNonce($iv, $ciBytes),
+                $cipher->getNonce($iv, $indexBytes),
                 $aData
             );
             $data = substr($data, $chunkSize);
             $aDataTagBytes = substr_replace(
-                $aDataTagBytes, pack('N', ++$chunkIndex), $ciOffset, 4
+                $aDataTagBytes, pack('N', ++$index), $indexOffset, 4
             );
-            $ciBytes = substr($aDataTagBytes, 5, 8);
+            $indexBytes = substr($aDataTagBytes, 5, 8);
         }
         $processed = array_sum(
             array_map(static fn ($bytes) => strlen($bytes), $crypted)
         );
         $aDataTagBytes = substr_replace(
-            $aDataTagBytes, pack('N', $processed), $ciOffset, 4
+            $aDataTagBytes, pack('N', $processed), $indexOffset, 4
         );
 
         // After the final chunk, we either encrypt a final, empty data
