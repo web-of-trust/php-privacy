@@ -94,148 +94,119 @@ class SubpacketReader
             $data = $reader->getData();
             $critical = (($reader->getType() & 0x80) != 0);
             $type = SignatureSubpacketType::from($reader->getType() & 0x7f);
-            switch ($type) {
-                case SignatureSubpacketType::SignatureCreationTime:
-                    $subpackets[] = new Signature\SignatureCreationTime(
+            $subpackets[] = match ($type) {
+                SignatureSubpacketType::SignatureCreationTime
+                    => new Signature\SignatureCreationTime(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::SignatureExpirationTime:
-                    $subpackets[] = new Signature\SignatureExpirationTime(
+                    ),
+                SignatureSubpacketType::SignatureExpirationTime
+                    => new Signature\SignatureExpirationTime(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::ExportableCertification:
-                    $subpackets[] = new Signature\ExportableCertification(
+                    ),
+                SignatureSubpacketType::ExportableCertification
+                    => new Signature\ExportableCertification(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::TrustSignature:
-                    $subpackets[] = new Signature\TrustSignature(
+                    ),
+                SignatureSubpacketType::TrustSignature
+                    => new Signature\TrustSignature(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::RegularExpression:
-                    $subpackets[] = new Signature\RegularExpression(
+                    ),
+                SignatureSubpacketType::RegularExpression
+                    => new Signature\RegularExpression(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::Revocable:
-                    $subpackets[] = new Signature\Revocable(
+                    ),
+                SignatureSubpacketType::Revocable
+                    => new Signature\Revocable(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::KeyExpirationTime:
-                    $subpackets[] = new Signature\KeyExpirationTime(
+                    ),
+                SignatureSubpacketType::KeyExpirationTime
+                    => new Signature\KeyExpirationTime(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::PreferredSymmetricAlgorithms:
-                    $subpackets[] = new Signature\PreferredSymmetricAlgorithms(
+                    ),
+                SignatureSubpacketType::PreferredSymmetricAlgorithms
+                    => new Signature\PreferredSymmetricAlgorithms(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::RevocationKey:
-                    $subpackets[] = new Signature\RevocationKey(
+                    ),
+                SignatureSubpacketType::RevocationKey
+                    => new Signature\RevocationKey(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::IssuerKeyID:
-                    $subpackets[] = new Signature\IssuerKeyID(
+                    ),
+                SignatureSubpacketType::IssuerKeyID
+                    => new Signature\IssuerKeyID(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::NotationData:
-                    $subpackets[] = new Signature\NotationData(
+                    ),
+                SignatureSubpacketType::NotationData
+                    => new Signature\NotationData(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::PreferredHashAlgorithms:
-                    $subpackets[] = new Signature\PreferredHashAlgorithms(
+                    ),
+                SignatureSubpacketType::PreferredHashAlgorithms
+                    => new Signature\PreferredHashAlgorithms(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::PreferredCompressionAlgorithms:
-                    $subpackets[] = new Signature\PreferredCompressionAlgorithms(
+                    ),
+                SignatureSubpacketType::PreferredCompressionAlgorithms
+                    => new Signature\PreferredCompressionAlgorithms(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::KeyServerPreferences:
-                    $subpackets[] = new Signature\KeyServerPreferences(
+                    ),
+                SignatureSubpacketType::KeyServerPreferences
+                    => new Signature\KeyServerPreferences(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::PreferredKeyServer:
-                    $subpackets[] = new Signature\PreferredKeyServer(
+                    ),
+                SignatureSubpacketType::PreferredKeyServer
+                    => new Signature\PreferredKeyServer(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::PrimaryUserID:
-                    $subpackets[] = new Signature\PrimaryUserID(
+                    ),
+                SignatureSubpacketType::PrimaryUserID
+                    => new Signature\PrimaryUserID(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::PolicyURI:
-                    $subpackets[] = new Signature\PolicyURI(
+                    ),
+                SignatureSubpacketType::PolicyURI
+                    => new Signature\PolicyURI(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::KeyFlags:
-                    $subpackets[] = new Signature\KeyFlags(
+                    ),
+                SignatureSubpacketType::KeyFlags
+                    => new Signature\KeyFlags(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::SignerUserID:
-                    $subpackets[] = new Signature\SignerUserID(
+                    ),
+                SignatureSubpacketType::SignerUserID
+                    => new Signature\SignerUserID(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::RevocationReason:
-                    $subpackets[] = new Signature\RevocationReason(
+                    ),
+                SignatureSubpacketType::RevocationReason
+                    => new Signature\RevocationReason(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::Features:
-                    $subpackets[] = new Signature\Features(
+                    ),
+                SignatureSubpacketType::Features
+                    => new Signature\Features(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::SignatureTarget:
-                    $subpackets[] = new Signature\SignatureTarget(
+                    ),
+                SignatureSubpacketType::SignatureTarget
+                    => new Signature\SignatureTarget(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::EmbeddedSignature:
-                    $subpackets[] = new Signature\EmbeddedSignature(
+                    ),
+                SignatureSubpacketType::EmbeddedSignature
+                    => new Signature\EmbeddedSignature(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::IssuerFingerprint:
-                    $subpackets[] = new Signature\IssuerFingerprint(
+                    ),
+                SignatureSubpacketType::IssuerFingerprint
+                    => new Signature\IssuerFingerprint(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::PreferredAeadAlgorithms:
-                    $subpackets[] = new Signature\PreferredAeadAlgorithms(
+                    ),
+                SignatureSubpacketType::PreferredAeadAlgorithms
+                    => new Signature\PreferredAeadAlgorithms(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::IntendedRecipientFingerprint:
-                    $subpackets[] = new Signature\IntendedRecipientFingerprint(
+                    ),
+                SignatureSubpacketType::IntendedRecipientFingerprint
+                    => new Signature\IntendedRecipientFingerprint(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                case SignatureSubpacketType::PreferredAeadCiphers:
-                    $subpackets[] = new Signature\PreferredAeadCiphers(
+                    ),
+                SignatureSubpacketType::PreferredAeadCiphers
+                    => new Signature\PreferredAeadCiphers(
                         $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-                default:
-                    $subpackets[] = new SignatureSubpacket(
-                        $type->value, $reader->getData(), $critical, $reader->isLong()
-                    );
-                    break;
-            }
+                    ),
+                default => new SignatureSubpacket(
+                    $type->value, $reader->getData(), $critical, $reader->isLong()
+                ),
+            };
         }
         return $subpackets;
     }
@@ -252,21 +223,17 @@ class SubpacketReader
         while (strlen($bytes)) {
             $reader = self::read($bytes);
             Strings::shift($bytes, $reader->getLength());
-            switch ($reader->getType()) {
-                case ImageUserAttribute::JPEG:
-                    $attributes[] = new ImageUserAttribute(
-                        $reader->getData(),
-                        $reader->isLong()
-                    );
-                    break;
-                default:
-                    $attributes[] = new UserAttributeSubpacket(
-                        $reader->getType(),
-                        $reader->getData(),
-                        $reader->isLong()
-                    );
-                    break;
-            }
+            $attributes[] = match ($reader->getType()) {
+                ImageUserAttribute::JPEG => new ImageUserAttribute(
+                    $reader->getData(),
+                    $reader->isLong()
+                ),
+                default => new UserAttributeSubpacket(
+                    $reader->getType(),
+                    $reader->getData(),
+                    $reader->isLong()
+                ),
+            };
         }
         return $attributes;
     }
