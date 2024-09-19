@@ -91,7 +91,6 @@ class SubpacketReader
         while (strlen($bytes)) {
             $reader = self::read($bytes);
             Strings::shift($bytes, $reader->getLength());
-            $data = $reader->getData();
             $critical = (($reader->getType() & 0x80) != 0);
             $type = SignatureSubpacketType::from($reader->getType() & 0x7f);
             $subpackets[] = match ($type) {

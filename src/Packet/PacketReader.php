@@ -23,15 +23,15 @@ class PacketReader
     /**
      * Constructor
      *
-     * @param PacketTag $packetTag
+     * @param PacketTag $tag
      * @param string $data
-     * @param int $packetLength
+     * @param int $length
      * @return self
      */
     public function __construct(
-        private readonly PacketTag $packetTag,
+        private readonly PacketTag $tag,
         private readonly string $data = '',
-        private readonly int $packetLength = 0
+        private readonly int $length = 0
     )
     {
     }
@@ -41,9 +41,9 @@ class PacketReader
      *
      * @return PacketTag
      */
-    public function getPacketTag(): PacketTag
+    public function getTag(): PacketTag
     {
-        return $this->packetTag;
+        return $this->tag;
     }
 
     /**
@@ -61,9 +61,9 @@ class PacketReader
      *
      * @return int
      */
-    public function getPacketLength(): int
+    public function getLength(): int
     {
-        return $this->packetLength;
+        return $this->length;
     }
 
     /**
@@ -81,15 +81,15 @@ class PacketReader
             );
         }
 
-        $headerByte = ord($bytes[$offset++]);
-        $oldFormat = (($headerByte & 0x40) != 0) ? false : true;
-        $tagByte = $oldFormat ? ($headerByte & 0x3f) >> 2 : $headerByte & 0x3f;
-        $tag = PacketTag::from($tagByte);
+        $header = ord($bytes[$offset++]);
+        $isOld = (($header & 0x40) != 0) ? false : true;
+        $tag = PacketTag::from(
+            $isOld ? ($header & 0x3f) >> 2 : $header & 0x3f
+        );
 
-        $packetData = '';
-        if ($oldFormat) {
-            $lengthType = $headerByte & 0x03;
-            switch ($lengthType) {
+        $data = '';
+        if ($isOld) {
+            switch ($header & 0x03) {
                 case 0:
                     $dataLength = ord($bytes[$offset++]);
                     break;
@@ -104,16 +104,16 @@ class PacketReader
                 default:
                     $dataLength = strlen($bytes) - $offset;
             }
-            $packetData = substr($bytes, $offset, $dataLength);
+            $data = substr($bytes, $offset, $dataLength);
         }
         else {
             $dataLength = ord($bytes[$offset++]);
             if ($dataLength < 192) {
-                $packetData = substr($bytes, $offset, $dataLength);
+                $data = substr($bytes, $offset, $dataLength);
             }
             elseif ($dataLength < 224) {
                 $dataLength = (($dataLength - 192) << 8) + (ord($bytes[$offset++])) + 192;
-                $packetData = substr($bytes, $offset, $dataLength);
+                $data = substr($bytes, $offset, $dataLength);
             }
             elseif ($dataLength < 255) {
                 $partialLen = 1 << ($dataLength & 0x1f);
@@ -145,19 +145,19 @@ class PacketReader
                         break;
                     }
                 }
-                $packetData = implode($partialData);
+                $data = implode($partialData);
                 $dataLength = $partialPos - $offset;
             }
             else {
                 $dataLength = Helper::bytesToLong($bytes, $offset);
                 $offset += 4;
-                $packetData = substr($bytes, $offset, $dataLength);
+                $data = substr($bytes, $offset, $dataLength);
             }
         }
 
         return new self(
             $tag,
-            $packetData,
+            $data,
             $offset + $dataLength
         );
     }

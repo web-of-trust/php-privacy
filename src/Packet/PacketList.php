@@ -56,8 +56,8 @@ class PacketList implements PacketListInterface
         $packets = [];
         while (strlen($bytes)) {
             $reader = PacketReader::read($bytes);
-            Strings::shift($bytes, $reader->getPacketLength());
-            $packets[] = match ($reader->getPacketTag()) {
+            Strings::shift($bytes, $reader->getLength());
+            $packets[] = match ($reader->getTag()) {
                 PacketTag::PublicKeyEncryptedSessionKey
                     => PublicKeyEncryptedSessionKey::fromBytes(
                         $reader->getData()

@@ -152,20 +152,17 @@ class GenericS2K implements S2KInterface
      */
     public static function fromBytes(string $bytes): self
     {
-        $salt = '';
-        $itCount = self::DEFAULT_IT_COUNT;
-
         $type = S2kType::from(ord($bytes[0]));
         $hash = HashAlgorithm::from(ord($bytes[1]));
-        switch ($type) {
-            case S2kType::Salted:
-                $salt = substr($bytes, 2, self::SALT_LENGTH);
-                break;
-            case S2kType::Iterated:
-                $salt = substr($bytes, 2, self::SALT_LENGTH);
-                $itCount = ord($bytes[10]);
-                break;
-        }
+
+        $salt = match ($type) {
+            S2kType::Salted, S2kType::Iterated => substr(
+                $bytes, 2, self::SALT_LENGTH
+            ),
+            default => '',
+        };
+        $itCount = $type === S2kType::Iterated ?
+            ord($bytes[self::SALT_LENGTH + 2]) : 0;
         return new self($salt, $type, $hash, $itCount);
     }
 
