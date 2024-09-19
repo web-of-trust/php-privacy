@@ -143,7 +143,7 @@ interface PrivateKeyInterface extends KeyInterface
     function revokeKey(
         KeyInterface $key,
         string $revocationReason = '',
-        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
+        ?RevocationReasonTag $reasonTag = null,
         ?DateTimeInterface $time = null
     ): KeyInterface;
 
@@ -160,7 +160,7 @@ interface PrivateKeyInterface extends KeyInterface
     function revokeUser(
         string $userID,
         string $revocationReason = '',
-        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
+        ?RevocationReasonTag $reasonTag = null,
         ?DateTimeInterface $time = null
     ): self;
 
@@ -176,7 +176,7 @@ interface PrivateKeyInterface extends KeyInterface
     function revokeSubkey(
         string $keyID,
         string $revocationReason = '',
-        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
+        ?RevocationReasonTag $reasonTag = null,
         ?DateTimeInterface $time = null
     ): self;
 }

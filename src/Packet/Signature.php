@@ -390,7 +390,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         KeyPacketInterface $userKey,
         UserIDPacketInterface $userID,
         string $revocationReason = '',
-        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
+        ?RevocationReasonTag $reasonTag = null,
         ?DateTimeInterface $time = null
     ): self
     {
@@ -404,7 +404,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             Config::getPreferredHash(),
             [
                 Signature\RevocationReason::fromRevocation(
-                    $reasonTag, $revocationReason
+                    $reasonTag ?? RevocationReasonTag::NoReason,
+                    $revocationReason
                 )
             ],
             $time
@@ -425,7 +426,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         SecretKeyPacketInterface $signKey,
         KeyPacketInterface $keyPacket,
         string $revocationReason = '',
-        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
+        ?RevocationReasonTag $reasonTag = null,
         ?DateTimeInterface $time = null
     ): self
     {
@@ -436,7 +437,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             Config::getPreferredHash(),
             [
                 Signature\RevocationReason::fromRevocation(
-                    $reasonTag, $revocationReason
+                    $reasonTag ?? RevocationReasonTag::NoReason,
+                    $revocationReason
                 )
             ],
             $time
@@ -517,7 +519,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         KeyPacketInterface $primaryKey,
         SubkeyPacketInterface $subkey,
         string $revocationReason = '',
-        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
+        ?RevocationReasonTag $reasonTag = null,
         ?DateTimeInterface $time = null
     ): self
     {
@@ -531,7 +533,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             Config::getPreferredHash(),
             [
                 Signature\RevocationReason::fromRevocation(
-                    $reasonTag, $revocationReason
+                    $reasonTag ?? RevocationReasonTag::NoReason,
+                    $revocationReason
                 )
             ],
             $time

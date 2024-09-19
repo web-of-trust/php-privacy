@@ -546,7 +546,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     public function revokeKey(
         KeyInterface $key,
         string $revocationReason = '',
-        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
+        ?RevocationReasonTag $reasonTag = null,
         ?DateTimeInterface $time = null
     ): KeyInterface
     {
@@ -561,7 +561,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     public function revokeUser(
         string $userID,
         string $revocationReason = '',
-        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
+        ?RevocationReasonTag $reasonTag = null,
         ?DateTimeInterface $time = null
     ): self
     {
@@ -586,7 +586,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     public function revokeSubkey(
         string $keyID,
         string $revocationReason = '',
-        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
+        ?RevocationReasonTag $reasonTag = null,
         ?DateTimeInterface $time = null
     ): self
     {

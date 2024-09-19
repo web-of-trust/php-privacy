@@ -549,7 +549,7 @@ abstract class AbstractKey implements KeyInterface
     public function revokeBy(
         PrivateKeyInterface $signKey,
         string $revocationReason = '',
-        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
+        ?RevocationReasonTag $reasonTag = null,
         ?DateTimeInterface $time = null
     ): self
     {

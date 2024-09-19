@@ -151,7 +151,7 @@ interface SubkeyInterface extends PacketContainerInterface
     function revokeBy(
         PrivateKeyInterface $signKey,
         string $revocationReason = '',
-        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
+        ?RevocationReasonTag $reasonTag = null,
         ?DateTimeInterface $time = null
     ): self;
 }

@@ -8,38 +8,6 @@
 
 namespace OpenPGP;
 
-use DateTimeInterface;
-use OpenPGP\Enum\{
-    CompressionAlgorithm,
-    CurveOid,
-    DHKeySize,
-    KeyType,
-    RevocationReasonTag,
-    RSAKeySize,
-    SymmetricAlgorithm,
-};
-use OpenPGP\Key\{
-    PrivateKey,
-    PublicKey,
-};
-use OpenPGP\Message\{
-    CleartextMessage,
-    EncryptedMessage,
-    LiteralMessage,
-    Signature,
-    SignedMessage,
-};
-use OpenPGP\Type\{
-    CleartextMessageInterface,
-    EncryptedMessageInterface,
-    KeyInterface,
-    LiteralMessageInterface,
-    NotationDataInterface,
-    PrivateKeyInterface,
-    SignatureInterface,
-    SignedMessageInterface,
-};
-
 /**
  * OpenPGP class
  * Export high level API for developers.
@@ -67,15 +35,15 @@ final class OpenPGP
     public static function generateKey(
         array $userIDs,
         string $passphrase,
-        KeyType $type = KeyType::Rsa,
-        RSAKeySize $rsaKeySize = RSAKeySize::Normal,
-        DHKeySize $dhKeySize = DHKeySize::Normal,
-        CurveOid $curve = CurveOid::Secp521r1,
+        Enum\KeyType $type = Enum\KeyType::Rsa,
+        Enum\RSAKeySize $rsaKeySize = Enum\RSAKeySize::Normal,
+        Enum\DHKeySize $dhKeySize = Enum\DHKeySize::Normal,
+        Enum\CurveOid $curve = Enum\CurveOid::Secp521r1,
         int $keyExpiry = 0,
-        ?DateTimeInterface $time = null
-    ): PrivateKeyInterface
+        ?\DateTimeInterface $time = null
+    ): Type\PrivateKeyInterface
     {
-        return PrivateKey::generate(
+        return Key\PrivateKey::generate(
             $userIDs,
             $passphrase,
             $type,
@@ -97,11 +65,11 @@ final class OpenPGP
      */
     public static function readPrivateKey(
         string $privateKey, bool $armored = true
-    ): PrivateKeyInterface
+    ): Type\PrivateKeyInterface
     {
         return $armored ?
-            PrivateKey::fromArmored($privateKey) :
-            PrivateKey::fromBytes($privateKey);
+            Key\PrivateKey::fromArmored($privateKey) :
+            Key\PrivateKey::fromBytes($privateKey);
     }
 
     /**
@@ -114,11 +82,11 @@ final class OpenPGP
      */
     public static function readPublicKey(
         string $publicKey, bool $armored = true
-    ): KeyInterface
+    ): Type\KeyInterface
     {
         return $armored ?
-            PublicKey::fromArmored($publicKey) :
-            PublicKey::fromBytes($publicKey);
+            Key\PublicKey::fromArmored($publicKey) :
+            Key\PublicKey::fromBytes($publicKey);
     }
 
     /**
@@ -133,7 +101,7 @@ final class OpenPGP
         string $publicKeys, bool $armored = true
     ): array
     {
-        return PublicKey::readPublicKeys($publicKeys, $armored);
+        return Key\PublicKey::readPublicKeys($publicKeys, $armored);
     }
 
     /**
@@ -146,10 +114,10 @@ final class OpenPGP
      * @return PrivateKeyInterface
      */
     public static function encryptPrivateKey(
-        PrivateKeyInterface $privateKey,
+        Type\PrivateKeyInterface $privateKey,
         string $passphrase,
         array $subkeyPassphrases = []
-    ): PrivateKeyInterface
+    ): Type\PrivateKeyInterface
     {
         return $privateKey->encrypt(
             $passphrase, $subkeyPassphrases
@@ -170,7 +138,7 @@ final class OpenPGP
         string $passphrase,
         array $subkeyPassphrases = [],
         bool $armored = true
-    ): PrivateKeyInterface
+    ): Type\PrivateKeyInterface
     {
         return self::readPrivateKey($privateKey, $armored)->decrypt(
             $passphrase, $subkeyPassphrases
@@ -187,10 +155,10 @@ final class OpenPGP
      * @return KeyInterface
      */
     public static function certifyKey(
-        PrivateKeyInterface $privateKey,
-        KeyInterface $key,
-        ?DateTimeInterface $time = null
-    ): KeyInterface
+        Type\PrivateKeyInterface $privateKey,
+        Type\KeyInterface $key,
+        ?\DateTimeInterface $time = null
+    ): Type\KeyInterface
     {
         return $privateKey->certifyKey($key, $time);
     }
@@ -207,12 +175,12 @@ final class OpenPGP
      * @return KeyInterface
      */
     public static function revokeKey(
-        PrivateKeyInterface $privateKey,
-        KeyInterface $key,
+        Type\PrivateKeyInterface $privateKey,
+        Type\KeyInterface $key,
         string $revocationReason = '',
-        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
-        ?DateTimeInterface $time = null
-    ): KeyInterface
+        ?Enum\RevocationReasonTag $reasonTag = null,
+        ?\DateTimeInterface $time = null
+    ): Type\KeyInterface
     {
         return $privateKey->revokeKey(
             $key, $revocationReason, $reasonTag, $time
@@ -229,11 +197,11 @@ final class OpenPGP
      */
     public static function readSignature(
         string $signature, bool $armored = true
-    ): SignatureInterface
+    ): Type\SignatureInterface
     {
         return $armored ?
-            Signature::fromArmored($signature) :
-            Signature::fromBytes($signature);
+            Message\Signature::fromArmored($signature) :
+            Message\Signature::fromBytes($signature);
     }
 
     /**
@@ -245,9 +213,9 @@ final class OpenPGP
      */
     public static function readSignedMessage(
         string $signedMessage
-    ): SignedMessageInterface
+    ): Type\SignedMessageInterface
     {
-        return SignedMessage::fromArmored($signedMessage);
+        return Message\SignedMessage::fromArmored($signedMessage);
     }
 
     /**
@@ -260,11 +228,11 @@ final class OpenPGP
      */
     public static function readEncryptedMessage(
         string $message, bool $armored = true
-    ): EncryptedMessageInterface
+    ): Type\EncryptedMessageInterface
     {
         return $armored ?
-            EncryptedMessage::fromArmored($message) :
-            EncryptedMessage::fromBytes($message);
+            Message\EncryptedMessage::fromArmored($message) :
+            Message\EncryptedMessage::fromBytes($message);
     }
 
     /**
@@ -277,11 +245,11 @@ final class OpenPGP
      */
     public static function readLiteralMessage(
         string $message, bool $armored = true
-    ): LiteralMessageInterface
+    ): Type\LiteralMessageInterface
     {
         return $armored ?
-            LiteralMessage::fromArmored($message) :
-            LiteralMessage::fromBytes($message);
+            Message\LiteralMessage::fromArmored($message) :
+            Message\LiteralMessage::fromBytes($message);
     }
 
     /**
@@ -292,9 +260,9 @@ final class OpenPGP
      */
     public static function createCleartextMessage(
         string $text
-    ): CleartextMessageInterface
+    ): Type\CleartextMessageInterface
     {
-        return new CleartextMessage($text);
+        return new Message\CleartextMessage($text);
     }
 
     /**
@@ -308,10 +276,10 @@ final class OpenPGP
     public static function createLiteralMessage(
         string $literalData,
         string $filename = '',
-        ?DateTimeInterface $time = null
-    ): LiteralMessageInterface
+        ?\DateTimeInterface $time = null
+    ): Type\LiteralMessageInterface
     {
-        return LiteralMessage::fromLiteralData(
+        return Message\LiteralMessage::fromLiteralData(
             $literalData, $filename, $time
         );
     }
@@ -329,9 +297,9 @@ final class OpenPGP
     public static function signCleartext(
         string $text,
         array $signingKeys,
-        ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null
-    ): SignedMessageInterface
+        ?Type\NotationDataInterface $notationData = null,
+        ?\DateTimeInterface $time = null
+    ): Type\SignedMessageInterface
     {
         return self::createCleartextMessage($text)->sign(
             $signingKeys, $notationData, $time
@@ -350,9 +318,9 @@ final class OpenPGP
     public static function signDetachedCleartext(
         string $text,
         array $signingKeys,
-        ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null
-    ): SignatureInterface
+        ?Type\NotationDataInterface $notationData = null,
+        ?\DateTimeInterface $time = null
+    ): Type\SignatureInterface
     {
         return self::createCleartextMessage($text)->signDetached(
             $signingKeys, $notationData, $time
@@ -369,11 +337,11 @@ final class OpenPGP
      * @return LiteralMessageInterface
      */
     public static function sign(
-        LiteralMessageInterface $message,
+        Type\LiteralMessageInterface $message,
         array $signingKeys,
-        ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null
-    ): LiteralMessageInterface
+        ?Type\NotationDataInterface $notationData = null,
+        ?\DateTimeInterface $time = null
+    ): Type\LiteralMessageInterface
     {
         return $message->sign(
             $signingKeys, $notationData, $time
@@ -390,11 +358,11 @@ final class OpenPGP
      * @return SignatureInterface
      */
     public static function signDetached(
-        LiteralMessageInterface $message,
+        Type\LiteralMessageInterface $message,
         array $signingKeys,
-        ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null
-    ): SignatureInterface
+        ?Type\NotationDataInterface $notationData = null,
+        ?\DateTimeInterface $time = null
+    ): Type\SignatureInterface
     {
         return $message->signDetached(
             $signingKeys, $notationData, $time
@@ -413,7 +381,7 @@ final class OpenPGP
     public static function verify(
         string $armoredSignedMessage,
         array $verificationKeys,
-        ?DateTimeInterface $time = null
+        ?\DateTimeInterface $time = null
     ): array
     {
         return self::readSignedMessage(
@@ -437,7 +405,7 @@ final class OpenPGP
         string $signature,
         array $verificationKeys,
         bool $armored = true,
-        ?DateTimeInterface $time = null
+        ?\DateTimeInterface $time = null
     ): array
     {
         return self::createCleartextMessage($text)->verifyDetached(
@@ -463,15 +431,15 @@ final class OpenPGP
      * @return EncryptedMessageInterface
      */
     public static function encrypt(
-        LiteralMessageInterface $message,
+        Type\LiteralMessageInterface $message,
         array $encryptionKeys = [],
         array $passwords = [],
         array $signingKeys = [],
-        ?SymmetricAlgorithm $symmetric = null,
-        ?CompressionAlgorithm $compression = null,
-        ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null
-    ): EncryptedMessageInterface
+        ?Enum\SymmetricAlgorithm $symmetric = null,
+        ?Enum\CompressionAlgorithm $compression = null,
+        ?Type\NotationDataInterface $notationData = null,
+        ?\DateTimeInterface $time = null
+    ): Type\EncryptedMessageInterface
     {
         if (!empty($signingKeys)) {
             return $message->sign(
@@ -497,10 +465,10 @@ final class OpenPGP
      * @return LiteralMessageInterface
      */
     public static function decrypt(
-        EncryptedMessageInterface $message,
+        Type\EncryptedMessageInterface $message,
         array $decryptionKeys = [],
         array $passwords = []
-    ): LiteralMessageInterface
+    ): Type\LiteralMessageInterface
     {
         return $message->decrypt(
             $decryptionKeys, $passwords

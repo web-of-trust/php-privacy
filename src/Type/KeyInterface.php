@@ -236,7 +236,7 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
     function revokeBy(
         PrivateKeyInterface $signKey,
         string $revocationReason = '',
-        RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
+        ?RevocationReasonTag $reasonTag = null,
         ?DateTimeInterface $time = null
     ): self;
 
