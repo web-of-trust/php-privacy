@@ -157,20 +157,22 @@ final class OpenPGP
     }
 
     /**
-     * Read an armored & unlock OpenPGP private key with the given passphrase.
+     * Read & unlock OpenPGP private key with the given passphrase.
      *
-     * @param string $armoredPrivateKey
+     * @param string $privateKey
      * @param string $passphrase
      * @param array $subkeyPassphrases
+     * @param bool $armored
      * @return PrivateKeyInterface
      */
     public static function decryptPrivateKey(
-        string $armoredPrivateKey,
+        string $privateKey,
         string $passphrase,
-        array $subkeyPassphrases = []
+        array $subkeyPassphrases = [],
+        bool $armored = true
     ): PrivateKeyInterface
     {
-        return self::readPrivateKey($armoredPrivateKey)->decrypt(
+        return self::readPrivateKey($privateKey, $armored)->decrypt(
             $passphrase, $subkeyPassphrases
         );
     }
