@@ -106,6 +106,22 @@ final class Armor
     }
 
     /**
+     * Assert armor type
+     *
+     * @param ArmorType $type
+     * @return self
+     */
+    public function assert(ArmorType $type): self
+    {
+        if ($this->type !== $type) {
+            throw new \UnexpectedValueException(
+                "Armored text not of {$type->name} type."
+            );
+        }
+        return $this;
+    }
+
+    /**
      * Dearmor an OpenPGP armored message.
      * Verify the checksum and return the encoded bytes
      *

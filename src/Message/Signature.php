@@ -63,12 +63,7 @@ class Signature implements SignatureInterface
      */
     public static function fromArmored(string $armored): self
     {
-        $armor = Armor::decode($armored);
-        if ($armor->getType() !== ArmorType::Signature) {
-            throw new \UnexpectedValueException(
-                'Armored text not of signature type.'
-            );
-        }
+        $armor = Armor::decode($armored)->assert(ArmorType::Signature);
         return self::fromBytes($armor->getData());
     }
 

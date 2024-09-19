@@ -69,12 +69,7 @@ class PublicKey extends AbstractKey
     ): array
     {
         if ($armored) {
-            $armor = Armor::decode($data);
-            if ($armor->getType() !== ArmorType::PublicKey) {
-                throw new \UnexpectedValueException(
-                    'Armored text not of public key type.'
-                );
-            }
+            $armor = Armor::decode($data)->assert(ArmorType::PublicKey);
             $data = $armor->getData();
         }
 

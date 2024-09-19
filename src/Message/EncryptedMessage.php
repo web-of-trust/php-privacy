@@ -43,12 +43,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
      */
     public static function fromArmored(string $armored): self
     {
-        $armor = Armor::decode($armored);
-        if ($armor->getType() !== ArmorType::Message) {
-            throw new \UnexpectedValueException(
-                'Armored text not of message type.'
-            );
-        }
+        $armor = Armor::decode($armored)->assert(ArmorType::Message);
         return self::fromBytes($armor->getData());
     }
 
@@ -61,7 +56,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
     public static function fromBytes(string $bytes): self
     {
         $packetList = PacketList::decode($bytes);
-        self::validatePacketList($packetList);
+        self::assertEncryptedPacket($packetList);
         return new self($packetList);
     }
 
@@ -70,10 +65,9 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
      */
     public function getEncryptedPacket(): EncryptedDataPacketInterface
     {
-        $encryptedPackets = self::validatePacketList(
+        return self::assertEncryptedPacket(
             $this->getPacketList()
         );
-        return array_pop($encryptedPackets);
     }
 
     /**
@@ -177,9 +171,15 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
         return array_pop($sessionKeys);
     }
 
-    private static function validatePacketList(
+    /**
+     * Assert packet list contain encrypted data packet
+     *
+     * @param PacketListInterface $packetList
+     * @return EncryptedDataPacketInterface
+     */
+    private static function assertEncryptedPacket(
         PacketListInterface $packetList
-    ): array
+    ): EncryptedDataPacketInterface
     {
         $encryptedPackets = $packetList->whereType(
             EncryptedDataPacketInterface::class
@@ -189,6 +189,6 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
                 'No encrypted data packets found.'
             );
         }
-        return $encryptedPackets;
+        return array_pop($encryptedPackets);
     }
 }

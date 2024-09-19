@@ -85,12 +85,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
      */
     public static function fromArmored(string $armored): self
     {
-        $armor = Armor::decode($armored);
-        if ($armor->getType() !== ArmorType::PrivateKey) {
-            throw new \UnexpectedValueException(
-                'Armored text not of private key type.'
-            );
-        }
+        $armor = Armor::decode($armored)->assert(ArmorType::PrivateKey);
         return self::fromBytes($armor->getData());
     }
 
