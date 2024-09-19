@@ -329,11 +329,6 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
         }
 
         $aData = $this->getAData();
-        $aDataTagBytes = implode([
-            $aData,
-            str_repeat(self::ZERO_CHAR, 8),
-        ]);
-        $ciOffset = strlen($aDataTagBytes) - 4;
 
         $keySize = $this->symmetric->keySizeInByte();
         $ivLength = $this->aead->ivLength();
@@ -341,31 +336,32 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
             Config::HKDF_ALGO, $key, $keySize + $ivLength, $aData, $this->salt
         );
         $encryptionKey = substr($derivedKey, 0, $keySize);
-        $iv = substr($derivedKey, $keySize, $ivLength);
+        $nonce = substr($derivedKey, $keySize, $ivLength);
         // The last 8 bytes of HKDF output are unneeded, but this avoids one copy.
-        $iv = substr_replace($iv, str_repeat(self::ZERO_CHAR, 8), $ivLength - 8);
+        $nonce = substr_replace($nonce, str_repeat(self::ZERO_CHAR, 8), $ivLength - 8);
         $cipher = $this->aead->cipherEngine($encryptionKey, $this->symmetric);
 
         $crypted = [];
-        $ciBytes = substr($aDataTagBytes, 5, 8);
         for ($index = 0; $index === 0 || strlen($data);) {
             // Take a chunk of `data`, en/decrypt it, and shift `data` to the next chunk.
             $crypted[] = $cipher->$fn(
                 Strings::shift($data, $chunkSize),
-                $cipher->getNonce($iv, $ciBytes),
+                $nonce,
                 $aData
             );
-
-            $aDataTagBytes = substr_replace(
-                $aDataTagBytes, pack('N', ++$index), $ciOffset, 4
+            $nonce = substr_replace(
+                $nonce, pack('N', ++$index), $ivLength - 4, 4
             );
-            $ciBytes = substr($aDataTagBytes, 5, 8);
         }
         $processed = array_sum(
             array_map(static fn ($bytes) => strlen($bytes), $crypted)
         );
-        $aDataTagBytes = substr_replace(
-            $aDataTagBytes, pack('N', $processed), $ciOffset, 4
+        $aDataTag = implode([
+            $aData,
+            str_repeat(self::ZERO_CHAR, 8),
+        ]);
+        $aDataTag = substr_replace(
+            $aDataTag, pack('N', $processed), strlen($aDataTag) - 4, 4
         );
 
         // After the final chunk, we either encrypt a final, empty data
@@ -373,8 +369,8 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
         // authentication tag.
         $crypted[] = $cipher->$fn(
             $finalChunk,
-            $cipher->getNonce($iv, $ciBytes),
-            $aDataTagBytes
+            $nonce,
+            $aDataTag
         );
         return implode($crypted);
     }
