@@ -25,13 +25,13 @@ class PacketReader
      *
      * @param PacketTag $packetTag
      * @param string $data
-     * @param int $offset
+     * @param int $packetLength
      * @return self
      */
     public function __construct(
         private readonly PacketTag $packetTag,
         private readonly string $data = '',
-        private readonly int $offset = 0
+        private readonly int $packetLength = 0
     )
     {
     }
@@ -57,28 +57,25 @@ class PacketReader
     }
 
     /**
-     * Get offset
+     * Get packet length
      *
      * @return int
      */
-    public function getOffset(): int
+    public function getPacketLength(): int
     {
-        return $this->offset;
+        return $this->packetLength;
     }
 
     /**
      * Read packet from byte string
      *
      * @param string $bytes
-     * @param int $offset
      * @return self
      */
-    public static function read(string $bytes, int $offset = 0): self
+    public static function read(string $bytes): self
     {
-        if (strlen($bytes) <= $offset ||
-            strlen(substr($bytes, $offset)) < 2 ||
-            (ord($bytes[$offset]) & 0x80) === 0
-        ) {
+        $offset = 0;
+        if (strlen(substr($bytes, $offset)) < 2 || (ord($bytes[$offset]) & 0x80) === 0) {
             throw new \RuntimeException(
                 'Error during parsing. This data probably does not conform to a valid OpenPGP format.',
             );
@@ -94,32 +91,32 @@ class PacketReader
             $lengthType = $headerByte & 0x03;
             switch ($lengthType) {
                 case 0:
-                    $packetLen = ord($bytes[$offset++]);
+                    $dataLength = ord($bytes[$offset++]);
                     break;
                 case 1:
-                    $packetLen = Helper::bytesToShort($bytes, $offset);
+                    $dataLength = Helper::bytesToShort($bytes, $offset);
                     $offset += 2;
                     break;
                 case 2:
-                    $packetLen = Helper::bytesToLong($bytes, $offset);
+                    $dataLength = Helper::bytesToLong($bytes, $offset);
                     $offset += 4;
                     break;
                 default:
-                    $packetLen = strlen($bytes) - $offset;
+                    $dataLength = strlen($bytes) - $offset;
             }
-            $packetData = substr($bytes, $offset, $packetLen);
+            $packetData = substr($bytes, $offset, $dataLength);
         }
         else {
-            $packetLen = ord($bytes[$offset++]);
-            if ($packetLen < 192) {
-                $packetData = substr($bytes, $offset, $packetLen);
+            $dataLength = ord($bytes[$offset++]);
+            if ($dataLength < 192) {
+                $packetData = substr($bytes, $offset, $dataLength);
             }
-            elseif ($packetLen < 224) {
-                $packetLen = (($packetLen - 192) << 8) + (ord($bytes[$offset++])) + 192;
-                $packetData = substr($bytes, $offset, $packetLen);
+            elseif ($dataLength < 224) {
+                $dataLength = (($dataLength - 192) << 8) + (ord($bytes[$offset++])) + 192;
+                $packetData = substr($bytes, $offset, $dataLength);
             }
-            elseif ($packetLen < 255) {
-                $partialLen = 1 << ($packetLen & 0x1f);
+            elseif ($dataLength < 255) {
+                $partialLen = 1 << ($dataLength & 0x1f);
                 $partialData = [substr($bytes, $offset, $partialLen)];
                 $partialPos = $offset + $partialLen;
                 while (true) {
@@ -149,19 +146,19 @@ class PacketReader
                     }
                 }
                 $packetData = implode($partialData);
-                $packetLen = $partialPos - $offset;
+                $dataLength = $partialPos - $offset;
             }
             else {
-                $packetLen = Helper::bytesToLong($bytes, $offset);
+                $dataLength = Helper::bytesToLong($bytes, $offset);
                 $offset += 4;
-                $packetData = substr($bytes, $offset, $packetLen);
+                $packetData = substr($bytes, $offset, $dataLength);
             }
         }
 
         return new self(
             $tag,
             $packetData,
-            $offset + $packetLen
+            $offset + $dataLength
         );
     }
 }

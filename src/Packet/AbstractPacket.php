@@ -18,6 +18,7 @@ use OpenPGP\Enum\{
     SymmetricAlgorithm,
 };
 use OpenPGP\Type\PacketInterface;
+use phpseclib3\Common\Functions\Strings;
 use Psr\Log\{
     LoggerAwareInterface,
     LoggerAwareTrait,
@@ -153,9 +154,8 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
     private function partialEncode(): string
     {
         $data = $this->toBytes();
-        $dataLengh = strlen($data);
 
-        while ($dataLengh >= self::PARTIAL_MIN_SIZE) {
+        while (strlen($data) >= self::PARTIAL_MIN_SIZE) {
             $maxSize = strlen(
                 substr($data, 0, self::PARTIAL_MAX_SIZE)
             );
@@ -164,11 +164,8 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
 
             $partialData[] = implode([
                 self::partialLength($powerOf2),
-                substr($data, 0, $chunkSize),
+                Strings::shift($data, $chunkSize),
             ]);
-
-            $data = substr($data, $chunkSize);
-            $dataLengh = strlen($data);
         }
         $partialData[] = implode([
             Helper::simpleLength(strlen($data)),

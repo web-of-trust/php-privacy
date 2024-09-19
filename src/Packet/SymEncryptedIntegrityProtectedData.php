@@ -23,6 +23,7 @@ use OpenPGP\Type\{
     PacketListInterface,
     SessionKeyInterface,
 };
+use phpseclib3\Common\Functions\Strings;
 use phpseclib3\Crypt\Random;
 
 /**
@@ -348,15 +349,12 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
         $crypted = [];
         $ciBytes = substr($aDataTagBytes, 5, 8);
         for ($index = 0; $index === 0 || strlen($data);) {
-            // Take a chunk of `data`, en/decrypt it
+            // Take a chunk of `data`, en/decrypt it, and shift `data` to the next chunk.
             $crypted[] = $cipher->$fn(
-                substr($data, 0, $chunkSize),
+                Strings::shift($data, $chunkSize),
                 $cipher->getNonce($iv, $ciBytes),
                 $aData
             );
-
-            // Shift `data` to the next chunk.
-            $data = substr($data, $chunkSize);
 
             $aDataTagBytes = substr_replace(
                 $aDataTagBytes, pack('N', ++$index), $ciOffset, 4
