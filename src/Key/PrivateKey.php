@@ -90,10 +90,22 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 'Armored text not of private key type.'
             );
         }
+        return self::fromBytes($armor->getData());
+    }
+
+    /**
+     * Read private key from binary string
+     *
+     * @param string $bytes
+     * @return self
+     */
+    public static function fromBytes(string $bytes): self
+    {
         return self::fromPacketList(
-            PacketList::decode($armor->getData())
+            PacketList::decode($bytes)
         );
     }
+
 
     /**
      * Read private key from packet list

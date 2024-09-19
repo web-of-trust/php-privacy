@@ -88,45 +88,52 @@ final class OpenPGP
     }
 
     /**
-     * Read an armored OpenPGP private key.
+     * Read OpenPGP private key from armored/binary string.
      * Return a private key object.
      *
-     * @param string $armoredPrivateKey
+     * @param string $privateKey
+     * @param bool $armored
      * @return PrivateKeyInterface
      */
     public static function readPrivateKey(
-        string $armoredPrivateKey
+        string $privateKey, bool $armored = true
     ): PrivateKeyInterface
     {
-        return PrivateKey::fromArmored($armoredPrivateKey);
+        return $armored ?
+            PrivateKey::fromArmored($privateKey) :
+            PrivateKey::fromBytes($privateKey);
     }
 
     /**
-     * Read an armored OpenPGP public key.
+     * Read OpenPGP public key from armored/binary string.
      * Return a public key object.
      *
-     * @param string $armoredPublicKey
+     * @param string $publicKey
+     * @param bool $armored
      * @return KeyInterface
      */
     public static function readPublicKey(
-        string $armoredPublicKey
+        string $publicKey, bool $armored = true
     ): KeyInterface
     {
-        return PublicKey::fromArmored($armoredPublicKey);
+        return $armored ?
+            PublicKey::fromArmored($publicKey) :
+            PublicKey::fromBytes($publicKey);
     }
 
     /**
-     * Read an armored OpenPGP public key list.
+     * Read OpenPGP public key list from armored/binary string.
      * Return array of public key objects.
      *
-     * @param string $armoredPublicKeys
+     * @param string $publicKeys
+     * @param bool $armored
      * @return array
      */
     public static function readPublicKeys(
-        string $armoredPublicKeys
+        string $publicKeys, bool $armored = true
     ): array
     {
-        return PublicKey::readPublicKeys($armoredPublicKeys);
+        return PublicKey::readPublicKeys($publicKeys, $armored);
     }
 
     /**
@@ -211,59 +218,68 @@ final class OpenPGP
     }
 
     /**
-     * Read an armored OpenPGP signature.
+     * Read OpenPGP signature from armored/binary string.
      * Return a signature object.
      *
-     * @param string $armoredSignature
+     * @param string $signature
+     * @param bool $armored
      * @return SignatureInterface
      */
     public static function readSignature(
-        string $armoredSignature
+        string $signature, bool $armored = true
     ): SignatureInterface
     {
-        return Signature::fromArmored($armoredSignature);
+        return $armored ?
+            Signature::fromArmored($signature) :
+            Signature::fromBytes($signature);
     }
 
     /**
-     * Read an armored OpenPGP signed message.
+     * Read OpenPGP signed message from armored string.
      * Return a signed message object.
      *
-     * @param string $armoredSignedMessage
+     * @param string $signedMessage
      * @return SignedMessageInterface
      */
     public static function readSignedMessage(
-        string $armoredSignedMessage
+        string $signedMessage
     ): SignedMessageInterface
     {
-        return SignedMessage::fromArmored($armoredSignedMessage);
+        return SignedMessage::fromArmored($signedMessage);
     }
 
     /**
-     * Read an armored OpenPGP message.
+     * Read OpenPGP encrypted message from armored/binary string.
      * Return an encrypted message object.
      *
-     * @param string $armoredMessage
+     * @param string $message
+     * @param bool $armored
      * @return EncryptedMessageInterface
      */
     public static function readEncryptedMessage(
-        string $armoredMessage
+        string $message, bool $armored = true
     ): EncryptedMessageInterface
     {
-        return EncryptedMessage::fromArmored($armoredMessage);
+        return $armored ?
+            EncryptedMessage::fromArmored($message) :
+            EncryptedMessage::fromBytes($message);
     }
 
     /**
-     * Read an armored OpenPGP message.
+     * Read OpenPGP literal message from armored/binary string.
      * Return a literal message object.
      *
-     * @param string $armoredMessage
+     * @param string $message
+     * @param bool $armored
      * @return LiteralMessageInterface
      */
     public static function readLiteralMessage(
-        string $armoredMessage
+        string $message, bool $armored = true
     ): LiteralMessageInterface
     {
-        return LiteralMessage::fromArmored($armoredMessage);
+        return $armored ?
+            LiteralMessage::fromArmored($message) :
+            LiteralMessage::fromBytes($message);
     }
 
     /**
@@ -408,21 +424,23 @@ final class OpenPGP
      * Return verification array.
      *
      * @param string $text
-     * @param string $armoredSignature
+     * @param string $signature
      * @param array $verificationKeys
+     * @param bool $armored
      * @param DateTimeInterface $time
      * @return array
      */
     public static function verifyDetached(
         string $text,
-        string $armoredSignature,
+        string $signature,
         array $verificationKeys,
+        bool $armored = true,
         ?DateTimeInterface $time = null
     ): array
     {
         return self::createCleartextMessage($text)->verifyDetached(
             $verificationKeys,
-            self::readSignature($armoredSignature),
+            self::readSignature($signature, $armored),
             $time
         );
     }

@@ -66,8 +66,19 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
                 'Armored text not of message type.'
             );
         }
+        return self::fromBytes($armor->getData());
+    }
+
+    /**
+     * Read message from binary string
+     *
+     * @param string $bytes
+     * @return self
+     */
+    public static function fromBytes(string $bytes): self
+    {
         return new self(
-            PacketList::decode($armor->getData())
+            PacketList::decode($bytes)
         );
     }
 

@@ -68,8 +68,19 @@ class Signature implements SignatureInterface
                 'Armored text not of signature type.'
             );
         }
+        return self::fromBytes($armor->getData());
+    }
+
+    /**
+     * Read signature from binary string
+     *
+     * @param string $bytes
+     * @return self
+     */
+    public static function fromBytes(string $bytes): self
+    {
         return new self(
-            PacketList::decode($armor->getData())
+            PacketList::decode($bytes)
         );
     }
 
