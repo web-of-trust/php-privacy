@@ -97,3 +97,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Change SALT_NOTATION
 - Refactor ECDH session key cryptor contants
 - Add build one-pass signature packet from signature packet
+
+## 1.2.0 - released 2024-09-19
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.1.14...1.2.0)
+- Support reading openpgp message & key from binary string.
