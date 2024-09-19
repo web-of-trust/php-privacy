@@ -50,7 +50,7 @@ use OpenPGP\Type\{
 final class OpenPGP
 {
     /**
-     * Generate a new OpenPGP key pair. Support RSA, DSA and ECC key types.
+     * Generate a new OpenPGP key pair. Support RSA, DSA, ECC, Curve25519 and Curve448 key types.
      * The generated primary key will have signing capabilities.
      * One subkey with encryption capabilities is also generated.
      *

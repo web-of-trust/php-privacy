@@ -39,7 +39,7 @@ class OnePassSignature extends AbstractPacket
      * @param string $salt
      * @param string $issuerFingerprint
      * @param string $issuerKeyID
-     * @param int $isLast
+     * @param int $nested
      * @return self
      */
     public function __construct(
@@ -50,7 +50,7 @@ class OnePassSignature extends AbstractPacket
         private readonly string $salt,
         private readonly string $issuerFingerprint,
         private readonly string $issuerKeyID,
-        private readonly int $isLast = 0,
+        private readonly int $nested = 0,
     )
     {
         parent::__construct(PacketTag::OnePassSignature);
@@ -101,7 +101,7 @@ class OnePassSignature extends AbstractPacket
          * A zero value indicates that the next packet is another One-Pass Signature packet
          * that describes another signature to be applied to the same message data.
          */
-        $isLast = ord($bytes[$offset]);
+        $nested = ord($bytes[$offset]);
 
         return new self(
             $version,
@@ -111,7 +111,7 @@ class OnePassSignature extends AbstractPacket
             $salt,
             $issuerFingerprint,
             $issuerKeyID,
-            $isLast
+            $nested
         );
     }
 
@@ -119,10 +119,10 @@ class OnePassSignature extends AbstractPacket
      * Build one-pass signature packet from signature packet
      *
      * @param Signature $signature
-     * @param int $isLast
+     * @param int $nested
      * @return self
      */
-    public static function fromSignature(Signature $signature, int $isLast = 0): self
+    public static function fromSignature(Signature $signature, int $nested = 0): self
     {
         return new self(
             $signature->getVersion() === self::VERSION_6 ?
@@ -133,7 +133,7 @@ class OnePassSignature extends AbstractPacket
             $signature->getSalt(),
             $signature->getIssuerFingerprint(),
             $signature->getIssuerKeyID(),
-            $isLast
+            $nested
         );
     }
 
@@ -212,9 +212,9 @@ class OnePassSignature extends AbstractPacket
      *
      * @return int
      */
-    public function isLast(): int
+    public function nested(): int
     {
-        return $this->isLast;
+        return $this->nested;
     }
 
     /**
@@ -236,7 +236,7 @@ class OnePassSignature extends AbstractPacket
         else {
             $data[] = $this->issuerKeyID;
         }
-        $data[] = chr($this->isLast);
+        $data[] = chr($this->nested);
         return implode($data);
     }
 }
