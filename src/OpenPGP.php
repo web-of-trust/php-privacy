@@ -50,7 +50,7 @@ use OpenPGP\Type\{
 final class OpenPGP
 {
     /**
-     * Generate a new OpenPGP key pair. Support RSA, DSA and ECC key types.
+     * Generate a new OpenPGP key pair. Support RSA, DSA, ECC, Curve25519 and Curve448 key types.
      * The generated primary key will have signing capabilities.
      * One subkey with encryption capabilities is also generated.
      *
@@ -157,20 +157,22 @@ final class OpenPGP
     }
 
     /**
-     * Read an armored & unlock OpenPGP private key with the given passphrase.
+     * Read & unlock OpenPGP private key with the given passphrase.
      *
-     * @param string $armoredPrivateKey
+     * @param string $privateKey
      * @param string $passphrase
      * @param array $subkeyPassphrases
+     * @param bool $armored
      * @return PrivateKeyInterface
      */
     public static function decryptPrivateKey(
-        string $armoredPrivateKey,
+        string $privateKey,
         string $passphrase,
-        array $subkeyPassphrases = []
+        array $subkeyPassphrases = [],
+        bool $armored = true
     ): PrivateKeyInterface
     {
-        return self::readPrivateKey($armoredPrivateKey)->decrypt(
+        return self::readPrivateKey($privateKey, $armored)->decrypt(
             $passphrase, $subkeyPassphrases
         );
     }
