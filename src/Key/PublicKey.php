@@ -105,7 +105,7 @@ class PublicKey extends AbstractKey
     }
 
     /**
-     * Read public key from byte string
+     * Read public key from binary string
      *
      * @param string $bytes
      * @return self

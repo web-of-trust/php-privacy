@@ -68,7 +68,7 @@ class Signature implements SignatureInterface
     }
 
     /**
-     * Read signature from byte string
+     * Read signature from binary string
      *
      * @param string $bytes
      * @return self

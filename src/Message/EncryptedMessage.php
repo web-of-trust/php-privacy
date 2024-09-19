@@ -48,7 +48,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
     }
 
     /**
-     * Read message from byte string
+     * Read message from binary string
      *
      * @param string $bytes
      * @return self

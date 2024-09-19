@@ -90,7 +90,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     }
 
     /**
-     * Read private key from byte string
+     * Read private key from binary string
      *
      * @param string $bytes
      * @return self
