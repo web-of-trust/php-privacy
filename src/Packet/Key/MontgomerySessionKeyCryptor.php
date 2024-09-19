@@ -21,10 +21,7 @@ use phpseclib3\Crypt\{
     DH,
     EC,
 };
-use phpseclib3\Crypt\EC\{
-    PrivateKey,
-    PublicKey,
-};
+use phpseclib3\Crypt\EC\PrivateKey;
 
 /**
  * Montgomery session key cryptor class.
@@ -80,14 +77,14 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
      * Produce cryptor by encrypting session key
      *
      * @param SessionKeyInterface $sessionKey
-     * @param PublicKey $publicKey
+     * @param EC $publicKey
      * @param int $pkeskVersion
      * @param MontgomeryCurve $curve
      * @return self
      */
     public static function encryptSessionKey(
         SessionKeyInterface $sessionKey,
-        PublicKey $publicKey,
+        EC $publicKey,
         int $pkeskVersion,
         MontgomeryCurve $curve = MontgomeryCurve::Curve25519
     ): self

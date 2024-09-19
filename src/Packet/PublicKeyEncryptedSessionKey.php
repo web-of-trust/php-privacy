@@ -297,20 +297,19 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
             KeyAlgorithm::ElGamal => Key\ElGamalSessionKeyCryptor::encryptSessionKey(
                 $sessionKey,
                 $keyPacket->getKeyMaterial()->getAsymmetricKey(),
-                $pkeskVersion,
             ),
             KeyAlgorithm::Ecdh => Key\ECDHSessionKeyCryptor::encryptSessionKey(
                 $sessionKey, $keyPacket, $pkeskVersion
             ),
             KeyAlgorithm::X25519 => Key\MontgomerySessionKeyCryptor::encryptSessionKey(
                 $sessionKey,
-                $keyPacket->getKeyMaterial()->getECPublicKey(),
+                $keyPacket->getKeyMaterial()->getAsymmetricKey(),
                 $pkeskVersion,
                 MontgomeryCurve::Curve25519,
             ),
             KeyAlgorithm::X448 => Key\MontgomerySessionKeyCryptor::encryptSessionKey(
                 $sessionKey,
-                $keyPacket->getKeyMaterial()->getECPublicKey(),
+                $keyPacket->getKeyMaterial()->getAsymmetricKey(),
                 $pkeskVersion,
                 MontgomeryCurve::Curve448,
             ),
@@ -327,7 +326,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
         return match($keyAlgorithm) {
             KeyAlgorithm::RsaEncryptSign, KeyAlgorithm::RsaEncrypt
             => Key\RSASessionKeyCryptor::fromBytes($bytes, $pkeskVersion),
-            KeyAlgorithm::ElGamal => Key\ElGamalSessionKeyCryptor::fromBytes($bytes, $pkeskVersion),
+            KeyAlgorithm::ElGamal => Key\ElGamalSessionKeyCryptor::fromBytes($bytes),
             KeyAlgorithm::Ecdh => Key\ECDHSessionKeyCryptor::fromBytes($bytes, $pkeskVersion),
             KeyAlgorithm::X25519 => Key\MontgomerySessionKeyCryptor::fromBytes(
                 $bytes, $pkeskVersion, MontgomeryCurve::Curve25519

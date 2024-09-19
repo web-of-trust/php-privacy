@@ -52,7 +52,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         PublicSubkey $publicKey,
         string $keyData = '',
         ?KeyMaterialInterface $keyMaterial = null,
-        S2kUsage $s2kUsage = S2kUsage::Sha1,
+        S2kUsage $s2kUsage = S2kUsage::None,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         ?S2KInterface $s2k = null,
         ?AeadAlgorithm $aead = null,

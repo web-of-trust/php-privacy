@@ -102,6 +102,7 @@ class GenericS2K implements S2KInterface
                 'GNU',
                 "\x01",
             ]),
+            default => '',
         };
     }
 
@@ -121,6 +122,7 @@ class GenericS2K implements S2KInterface
                 $this->iterate($this->salt . $passphrase), $length
             ),
             S2kType::GNU => $this->hash($passphrase, $length),
+            default => '',
         };
     }
 

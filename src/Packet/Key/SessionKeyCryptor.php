@@ -41,7 +41,7 @@ abstract class SessionKeyCryptor implements SessionKeyCryptorInterface
      *
      * @param string $bytes
      * @param int $pkeskVersion
-     * @return string
+     * @return SessionKeyInterface
      */
     public static function sessionKeyFromBytes(
         string $bytes, int $pkeskVersion

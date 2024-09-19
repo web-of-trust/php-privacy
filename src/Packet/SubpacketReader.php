@@ -26,7 +26,7 @@ class SubpacketReader
      *
      * @param int $type
      * @param string $data
-     * @param int $offset
+     * @param int $length
      * @param bool $isLong
      * @return self
      */

@@ -84,7 +84,7 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
      * @return self
      */
     public static function generate(
-        DHKeySize $keySize = DHKeySize::L2048_N224
+        DHKeySize $keySize = DHKeySize::Medium
     ): self
     {
         $privateKey = DSA::createKey(

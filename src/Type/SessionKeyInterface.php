@@ -37,7 +37,7 @@ interface SessionKeyInterface
      * Checksum the encryption key
      *
      * @param string $checksum
-     * @return string
+     * @return self
      */
     function checksum(string $checksum): self;
 

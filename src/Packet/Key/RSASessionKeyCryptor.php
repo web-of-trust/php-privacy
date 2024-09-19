@@ -60,8 +60,8 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
      * Produce cryptor by encrypting session key
      *
      * @param SessionKeyInterface $sessionKey
-     * @param AsymmetricKey $pkeskVersion
-     * @param int $publicKey
+     * @param AsymmetricKey $publicKey
+     * @param int $pkeskVersion
      * @return self
      */
     public static function encryptSessionKey(

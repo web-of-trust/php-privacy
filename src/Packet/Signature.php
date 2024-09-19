@@ -473,7 +473,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             );
             $subpackets[] = Signature\EmbeddedSignature::fromSignature(
                 self::createSignature(
-                    $subkey,
+                    $signKey,
                     SignatureType::KeyBinding,
                     implode([
                         $signKey->getSignBytes(),
@@ -885,7 +885,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         return array_filter(
             $this->hashedSubpackets,
             static fn ($subpacket) =>
-                $this->hashedSubpackets->getType() ===
+                $subpacket->getType() ===
                 SignatureSubpacketType::NotationData->value
         );
     }
@@ -1061,7 +1061,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         return array_filter(
             $this->hashedSubpackets,
             static fn ($subpacket) =>
-                $this->hashedSubpackets->getType() ===
+                $subpacket->getType() ===
                 SignatureSubpacketType::IntendedRecipientFingerprint->value
         );
     }
@@ -1131,7 +1131,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     /**
      * Read subpackets
      *
-     * @param array $bytes
+     * @param string $bytes
      * @return array
      */
     private static function readSubpackets(string $bytes): array

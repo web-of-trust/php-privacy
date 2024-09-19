@@ -30,7 +30,7 @@ enum EdDSACurve
     /**
      * Get curve
      *
-     * @return int
+     * @return TwistedEdwards
      */
     public function getCurve(): TwistedEdwards
     {
