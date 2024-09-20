@@ -242,8 +242,9 @@ abstract class AbstractKey implements KeyInterface
         $subkeys = $this->subkeys;
         usort(
             $subkeys,
-            static fn ($a, $b): int => $b->getCreationTime()->getTimestamp()
-                                     - $a->getCreationTime()->getTimestamp()
+            static fn ($a, $b): int =>
+                $b->getCreationTime()->getTimestamp() -
+                $a->getCreationTime()->getTimestamp()
         );
         foreach ($subkeys as $subkey) {
             if (empty($keyID) || strcmp($keyID, $subkey->getKeyID()) === 0) {
@@ -293,8 +294,9 @@ abstract class AbstractKey implements KeyInterface
         $subkeys = $this->subkeys;
         usort(
             $subkeys,
-            static fn ($a, $b): int => $b->getCreationTime()->getTimestamp()
-                                     - $a->getCreationTime()->getTimestamp()
+            static fn ($a, $b): int =>
+                $b->getCreationTime()->getTimestamp() -
+                $a->getCreationTime()->getTimestamp()
         );
         foreach ($subkeys as $subkey) {
             if (empty($keyID) || strcmp($keyID, $subkey->getKeyID()) === 0) {
