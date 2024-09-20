@@ -9,7 +9,10 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Enum\MontgomeryCurve;
-use OpenPGP\Type\KeyMaterialInterface;
+use OpenPGP\Type\{
+    ECKeyMaterialInterface,
+    KeyMaterialInterface,
+};
 use phpseclib3\Crypt\Common\{
     AsymmetricKey,
     PublicKey,
@@ -25,7 +28,7 @@ use phpseclib3\Crypt\EC\Formats\Keys\MontgomeryPublic;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class MontgomeryPublicKeyMaterial implements KeyMaterialInterface
+class MontgomeryPublicKeyMaterial implements ECKeyMaterialInterface, KeyMaterialInterface
 {
     /**
      * phpseclib3 EC public key
@@ -66,11 +69,9 @@ class MontgomeryPublicKeyMaterial implements KeyMaterialInterface
     }
 
     /**
-     * Get EC public key
-     *
-     * @return ECPublicKey
+     * {@inheritdoc}
      */
-    public function getECPublicKey(): ECPublicKey
+    public function getECKey(): EC
     {
         return $this->publicKey;
     }

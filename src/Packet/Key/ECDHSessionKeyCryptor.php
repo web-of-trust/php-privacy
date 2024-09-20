@@ -94,11 +94,11 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
         $keyMaterial = $keyPacket->getKeyMaterial();
         if ($keyMaterial instanceof ECDHPublicKeyMaterial) {
             $privateKey = EC::createKey(
-                $keyMaterial->getECPublicKey()->getCurve()
+                $keyMaterial->getECKey()->getCurve()
             );
             $sharedSecret = DH::computeSecret(
                 $privateKey,
-                $keyMaterial->getECPublicKey()->getEncodedCoordinates()
+                $keyMaterial->getECKey()->getEncodedCoordinates()
             );
 
             $keyWrapper = self::selectKeyWrapper(
@@ -216,7 +216,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
             }
             $publicKey = EC::loadFormat($format, $key);
             $sharedSecret = DH::computeSecret(
-                $keyMaterial->getECPrivateKey(),
+                $keyMaterial->getECKey(),
                 $publicKey->getEncodedCoordinates()
             );
 

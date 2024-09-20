@@ -574,9 +574,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     }
 
     /**
-     * Get AEAD algorithm
-     *
-     * @return AeadAlgorithm
+     * {@inheritdoc}
      */
     public function getAead(): ?AeadAlgorithm
     {

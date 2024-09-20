@@ -13,6 +13,7 @@ use OpenPGP\Enum\{
     HashAlgorithm,
 };
 use OpenPGP\Type\{
+    ECKeyMaterialInterface,
     KeyMaterialInterface,
     SecretKeyMaterialInterface,
 };
@@ -32,7 +33,7 @@ use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class EdDSASecretKeyMaterial implements SecretKeyMaterialInterface
+class EdDSASecretKeyMaterial implements ECKeyMaterialInterface, SecretKeyMaterialInterface
 {
     /**
      * phpseclib3 EC private key
@@ -112,6 +113,14 @@ class EdDSASecretKeyMaterial implements SecretKeyMaterialInterface
             ),
             $privateKey,
         );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getECKey(): EC
+    {
+        return $this->privateKey;
     }
 
     /**

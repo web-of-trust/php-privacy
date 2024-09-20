@@ -170,7 +170,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
     ): SessionKeyInterface
     {
         $decrypted = $this->decrypt(
-            $secretKey->getKeyMaterial()->getECPrivateKey(),
+            $secretKey->getKeyMaterial()->getECKey(),
         );
         return $this->pkeskVersion === self::PKESK_VERSION_3 ?
             new SessionKey(

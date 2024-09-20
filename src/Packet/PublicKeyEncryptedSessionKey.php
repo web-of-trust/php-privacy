@@ -303,13 +303,13 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
             ),
             KeyAlgorithm::X25519 => Key\MontgomerySessionKeyCryptor::encryptSessionKey(
                 $sessionKey,
-                $keyPacket->getKeyMaterial()->getAsymmetricKey(),
+                $keyPacket->getKeyMaterial()->getECKey(),
                 $pkeskVersion,
                 MontgomeryCurve::Curve25519,
             ),
             KeyAlgorithm::X448 => Key\MontgomerySessionKeyCryptor::encryptSessionKey(
                 $sessionKey,
-                $keyPacket->getKeyMaterial()->getAsymmetricKey(),
+                $keyPacket->getKeyMaterial()->getECKey(),
                 $pkeskVersion,
                 MontgomeryCurve::Curve448,
             ),

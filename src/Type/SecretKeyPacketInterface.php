@@ -30,6 +30,13 @@ interface SecretKeyPacketInterface extends KeyPacketInterface
     function getPublicKey(): PublicKeyPacketInterface;
 
     /**
+     * Get AEAD algorithm
+     *
+     * @return AeadAlgorithm
+     */
+    function getAead(): ?AeadAlgorithm;
+
+    /**
      * Return secret key packed is encrypted
      *
      * @return bool

@@ -9,7 +9,10 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Enum\CurveOid;
-use OpenPGP\Type\KeyMaterialInterface;
+use OpenPGP\Type\{
+    ECKeyMaterialInterface,
+    KeyMaterialInterface,
+};
 use phpseclib3\Crypt\Common\{
     AsymmetricKey,
     PublicKey,
@@ -27,7 +30,7 @@ use phpseclib3\Math\BigInteger;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-abstract class ECPublicKeyMaterial implements KeyMaterialInterface
+abstract class ECPublicKeyMaterial implements ECKeyMaterialInterface, KeyMaterialInterface
 {
     private readonly CurveOid $curveOid;
 
@@ -96,11 +99,9 @@ abstract class ECPublicKeyMaterial implements KeyMaterialInterface
     }
 
     /**
-     * Get EC public key
-     *
-     * @return ECPublicKey
+     * {@inheritdoc}
      */
-    public function getECPublicKey(): ECPublicKey
+    public function getECKey(): EC
     {
         return $this->publicKey;
     }
