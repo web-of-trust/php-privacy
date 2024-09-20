@@ -30,6 +30,7 @@ use OpenPGP\Enum\{
     SymmetricAlgorithm,
 };
 use OpenPGP\Type\{
+    ECKeyMaterialInterface,
     KeyMaterialInterface,
     PublicKeyPacketInterface,
     S2KInterface,
@@ -322,6 +323,15 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     public function getKeyMaterial(): ?KeyMaterialInterface
     {
         return $this->keyMaterial;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getECKeyMaterial(): ?ECKeyMaterialInterface
+    {
+        return $this->keyMaterial instanceof ECKeyMaterialInterface ?
+            $this->keyMaterial : null;
     }
 
     /**

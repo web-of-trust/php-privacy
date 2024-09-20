@@ -22,6 +22,7 @@ use OpenPGP\Enum\{
     PacketTag,
 };
 use OpenPGP\Type\{
+    ECKeyMaterialInterface,
     PublicKeyPacketInterface,
     KeyMaterialInterface,
     SubkeyPacketInterface,
@@ -192,6 +193,15 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
     public function getKeyMaterial(): ?KeyMaterialInterface
     {
         return $this->keyMaterial;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getECKeyMaterial(): ?ECKeyMaterialInterface
+    {
+        return $this->keyMaterial instanceof ECKeyMaterialInterface ? 
+            $this->keyMaterial : null;
     }
 
     /**

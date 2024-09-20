@@ -96,6 +96,13 @@ interface KeyPacketInterface extends ForSigningInterface, PacketInterface
     function getKeyMaterial(): ?KeyMaterialInterface;
 
     /**
+     * Get EC key material
+     *
+     * @return ECKeyMaterialInterface
+     */
+    function getECKeyMaterial(): ?ECKeyMaterialInterface;
+
+    /**
      * Get preferred hash algorithm
      *
      * @param HashAlgorithm $preferredHash

@@ -21,7 +21,6 @@ use phpseclib3\Crypt\{
     DH,
     EC,
 };
-use phpseclib3\Crypt\EC\PrivateKey;
 
 /**
  * Montgomery session key cryptor class.
@@ -99,7 +98,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
         );
         $sharedSecret = DH::computeSecret(
             $privateKey,
-            $publicKey
+            $publicKey->getEncodedCoordinates()
         );
         $ephemeralKey = $privateKey->getPublicKey()->getEncodedCoordinates();
 
@@ -170,7 +169,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
     ): SessionKeyInterface
     {
         $decrypted = $this->decrypt(
-            $secretKey->getKeyMaterial()->getECKey(),
+            $secretKey->getECKeyMaterial()->getECKey(),
         );
         return $this->pkeskVersion === self::PKESK_VERSION_3 ?
             new SessionKey(
@@ -185,17 +184,15 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
     /**
      * Decrypt session key by using private key
      *
-     * @param PrivateKey $privateKey
+     * @param EC $privateKey
      * @return string
      */
-    protected function decrypt(
-        PrivateKey $privateKey
-    ): string
+    private function decrypt(EC $privateKey): string
     {
         $publicKey = EC::loadFormat('MontgomeryPublic', $this->ephemeralKey);
         $sharedSecret = DH::computeSecret(
             $privateKey,
-            $publicKey
+            $publicKey->getEncodedCoordinates()
         );
 
         $kek = hash_hkdf(
