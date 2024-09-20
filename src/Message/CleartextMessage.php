@@ -74,6 +74,7 @@ class CleartextMessage implements CleartextMessageInterface
      */
     public function sign(
         array $signingKeys,
+        array $recipients = [],
         ?NotationDataInterface $notationData = null,
         ?DateTimeInterface $time = null
     ): SignedMessageInterface
@@ -82,6 +83,7 @@ class CleartextMessage implements CleartextMessageInterface
             $this->getText(),
             $this->createSignature(
                 $signingKeys,
+                $recipients,
                 $notationData,
                 $time
             )
@@ -93,12 +95,14 @@ class CleartextMessage implements CleartextMessageInterface
      */
     public function signDetached(
         array $signingKeys,
+        array $recipients = [],
         ?NotationDataInterface $notationData = null,
         ?DateTimeInterface $time = null
     ): SignatureInterface
     {
         return $this->createSignature(
             $signingKeys,
+            $recipients,
             $notationData,
             $time
         );
@@ -128,6 +132,7 @@ class CleartextMessage implements CleartextMessageInterface
      */
     private function createSignature(
         array $signingKeys,
+        array $recipients = [],
         ?NotationDataInterface $notationData = null,
         ?DateTimeInterface $time = null,
     ): SignatureInterface
@@ -145,6 +150,7 @@ class CleartextMessage implements CleartextMessageInterface
             fn ($key) => SignaturePacket::createLiteralData(
                 $key->getSigningKeyPacket(),
                 LiteralData::fromText($this->getText()),
+                $recipients,
                 $notationData,
                 $time
             ),

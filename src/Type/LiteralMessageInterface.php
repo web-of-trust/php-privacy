@@ -34,12 +34,14 @@ interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInt
      * Sign the message
      *
      * @param array $signingKeys
+     * @param array $recipients
      * @param NotationDataInterface $notationData
      * @param DateTimeInterface $time
      * @return self
      */
     function sign(
         array $signingKeys,
+        array $recipients = [],
         ?NotationDataInterface $notationData = null,
         ?DateTimeInterface $time = null
     ): self;
@@ -48,12 +50,14 @@ interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInt
      * Create a detached signature for the message
      *
      * @param array $signingKeys
+     * @param array $recipients
      * @param NotationDataInterface $notationData
      * @param DateTimeInterface $time
      * @return SignatureInterface
      */
     function signDetached(
         array $signingKeys,
+        array $recipients = [],
         ?NotationDataInterface $notationData = null,
         ?DateTimeInterface $time = null
     ): SignatureInterface;

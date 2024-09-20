@@ -129,6 +129,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
      */
     public function sign(
         array $signingKeys,
+        array $recipients = [],
         ?NotationDataInterface $notationData = null,
         ?DateTimeInterface $time = null
     ): self
@@ -139,7 +140,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
                 static fn ($packet) => $packet instanceof SignaturePacketInterface
             ),
             ...$this->createSignature(
-                $signingKeys, $notationData, $time
+                $signingKeys, $recipients, $notationData, $time
             )->getPackets(),
         ];
 
@@ -166,12 +167,14 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
      */
     public function signDetached(
         array $signingKeys,
+        array $recipients = [],
         ?NotationDataInterface $notationData = null,
         ?DateTimeInterface $time = null
     ): SignatureInterface
     {
         return $this->createSignature(
             $signingKeys,
+            $recipients,
             $notationData,
             $time,
         );
@@ -293,12 +296,14 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
      * Create literal signature.
      *
      * @param array $signingKeys
+     * @param array $recipients
      * @param NotationDataInterface $notationData
      * @param DateTimeInterface $time
      * @return SignatureInterface
      */
     private function createSignature(
         array $signingKeys,
+        array $recipients = [],
         ?NotationDataInterface $notationData = null,
         ?DateTimeInterface $time = null
     ): SignatureInterface
@@ -316,6 +321,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
             fn ($key) => SignaturePacket::createLiteralData(
                 $key->getSigningKeyPacket(),
                 $this->getLiteralData(),
+                $recipients,
                 $notationData,
                 $time
             ),

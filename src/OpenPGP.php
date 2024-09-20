@@ -442,8 +442,14 @@ final class OpenPGP
     ): Type\EncryptedMessageInterface
     {
         if (!empty($signingKeys)) {
+            $recipients = [];
+            foreach ($encryptionKeys as $key) {
+                if ($key instanceof Type\KeyInterface) {
+                    $recipients[] = $key->getKeyPacket();
+                }
+            }
             return $message->sign(
-                $signingKeys, $notationData, $time
+                $signingKeys, $recipients, $notationData, $time
             )->compress($compression)->encrypt(
                 $encryptionKeys, $passwords, $symmetric
             );

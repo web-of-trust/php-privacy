@@ -548,6 +548,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      *
      * @param SecretKeyPacketInterface $signKey
      * @param LiteralDataInterface $literalData
+     * @param array $recipients
      * @param NotationDataInterface $notationData
      * @param DateTimeInterface $time
      * @return self
@@ -555,6 +556,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public static function createLiteralData(
         SecretKeyPacketInterface $signKey,
         LiteralDataInterface $literalData,
+        array $recipients = [],
         ?NotationDataInterface $notationData = null,
         ?DateTimeInterface $time = null
     )
@@ -564,6 +566,14 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             default => SignatureType::Binary,
         };
         $subpackets = [];
+        foreach ($recipients as $recipient) {
+            if ($recipient instanceof KeyPacketInterface) {
+                $subpackets[] = Signature\IntendedRecipientFingerprint::fromKeyPacket($recipient);
+            }
+            elseif (is_string($recipient)) {
+                $subpackets[] = new Signature\IntendedRecipientFingerprint($recipient);
+            }
+        }
         if ($notationData instanceof NotationDataInterface) {
             $subpackets[] = Signature\NotationData::fromNotation(
                 $notationData->getNotationName(),
