@@ -34,7 +34,7 @@ final class CMac
     /**
      * Constructor
      *
-     * @param SymmetricAlgorithm $symmetric - The symmetric cipher algorithm to use
+     * @param SymmetricAlgorithm $symmetric
      * @param int $macSize
      * @return self
      */

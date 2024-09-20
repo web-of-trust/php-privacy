@@ -161,7 +161,8 @@ final class OCB implements AeadCipher
         ]);
         // Offset_0 = Stretch[1+bottom..128+bottom]
         $offset = substr(self::shiftRight(
-            substr($stretched, 0 + ($bottom >> 3), 17 + ($bottom >> 3)), 8 - ($bottom & 7)
+            substr($stretched, 0 + ($bottom >> 3), 17 + ($bottom >> 3)),
+            8 - ($bottom & 7)
         ), 1);
         // Checksum_0 = zeros(128)
         $checksum = self::ZERO_BLOCK;
@@ -177,10 +178,14 @@ final class OCB implements AeadCipher
             // C_i = Offset_i xor ENCIPHER(K, P_i xor Offset_i)
             // P_i = Offset_i xor DECIPHER(K, C_i xor Offset_i)
             if ($cipher === $this->encipher) {
-                $encrypted = self::xor($cipher->encryptBlock(self::xor($offset, $text)), $offset);
+                $encrypted = self::xor(
+                    $cipher->encryptBlock(self::xor($offset, $text)), $offset
+                );
             }
             else {
-                $encrypted = self::xor($cipher->decryptBlock(self::xor($offset, $text)), $offset);
+                $encrypted = self::xor(
+                    $cipher->decryptBlock(self::xor($offset, $text)), $offset
+                );
             }
             $ct = substr_replace(
                 $ct,
@@ -214,7 +219,8 @@ final class OCB implements AeadCipher
             );
 
             // Checksum_* = Checksum_m xor (P_* || 1 || new Uint8Array(127-bitlen(P_*)))
-            $input = $cipher === $this->encipher ? $text : substr($ct, $pos, strlen($ct) - self::TAG_LENGTH);
+            $input = $cipher === $this->encipher ?
+                $text : substr($ct, $pos, strlen($ct) - self::TAG_LENGTH);
             $xorInput = substr_replace(
                 self::ZERO_BLOCK,
                 $input,
@@ -277,11 +283,15 @@ final class OCB implements AeadCipher
         if ($length) {
             $offset = self::xor($offset, $this->mask[self::MASK_ASTERISK]);
 
-            $cipherInput = substr_replace(self::ZERO_BLOCK, $aData, 0, strlen($aData));
+            $cipherInput = substr_replace(
+                self::ZERO_BLOCK, $aData, 0, strlen($aData)
+            );
             $cipherInput[$length] = "\x80";
             $cipherInput = self::xor($cipherInput, $offset);
 
-            $sum = self::xor($sum, $this->encipher->encryptBlock($cipherInput));
+            $sum = self::xor(
+                $sum, $this->encipher->encryptBlock($cipherInput)
+            );
         }
 
         return $sum;

@@ -59,10 +59,10 @@ final class EAX implements AeadCipher
         $this->cipher->setKey($key);
         $this->mac = new CMac($symmetric);
 
-        $tagLength = $this->mac->getMacSize();
-        $this->zeroBlock = str_repeat(self::N_TAG, $tagLength);
-        $this->oneBlock  = str_repeat(self::N_TAG, $tagLength - 1) . self::H_TAG;
-        $this->twoBlock  = str_repeat(self::N_TAG, $tagLength - 1) . self::C_TAG;
+        $size = $this->mac->getMacSize();
+        $this->zeroBlock = str_repeat(self::N_TAG, $size);
+        $this->oneBlock  = str_repeat(self::N_TAG, $size - 1) . self::H_TAG;
+        $this->twoBlock  = str_repeat(self::N_TAG, $size - 1) . self::C_TAG;
     }
 
     /**
