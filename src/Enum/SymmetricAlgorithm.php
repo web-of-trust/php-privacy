@@ -171,35 +171,35 @@ enum SymmetricAlgorithm: int
     /**
      * Get ecb block cipher engine
      *
-     * @return BlockCipher
+     * @return Symmetric\EcbCipher
      */
-    public function ecbCipherEngine(): BlockCipher
+    public function ecbCipherEngine(): Symmetric\EcbCipher
     {
         return match($this) {
             self::Plaintext => throw new \InvalidArgumentException(
                 'Symmetric algorithm "Plaintext" is unsupported.'
             ),
-            self::Idea => new class extends Symmetric\IDEA {
+            self::Idea => new class extends Symmetric\IDEA implements Symmetric\EcbCipher {
                 use Symmetric\EcbCipherTrait;
             },
-            self::TripleDes => new class extends Crypt\TripleDES {
+            self::TripleDes => new class extends Crypt\TripleDES implements Symmetric\EcbCipher {
                 use Symmetric\EcbCipherTrait;
             },
-            self::Cast5 => new class extends Symmetric\CAST5 {
+            self::Cast5 => new class extends Symmetric\CAST5 implements Symmetric\EcbCipher {
                 use Symmetric\EcbCipherTrait;
             },
-            self::Blowfish => new class extends Crypt\Blowfish {
+            self::Blowfish => new class extends Crypt\Blowfish implements Symmetric\EcbCipher {
                 use Symmetric\EcbCipherTrait;
             },
             self::Aes128, self::Aes192, self::Aes256
-                => new class extends Crypt\AES {
+                => new class extends Crypt\AES implements Symmetric\EcbCipher {
                     use Symmetric\EcbCipherTrait;
                 },
-            self::Twofish => new class extends Crypt\Twofish {
+            self::Twofish => new class extends Crypt\Twofish implements Symmetric\EcbCipher {
                 use Symmetric\EcbCipherTrait;
             },
             self::Camellia128, self::Camellia192, self::Camellia256
-                => new class extends Symmetric\Camellia {
+                => new class extends Symmetric\Camellia implements Symmetric\EcbCipher {
                     use Symmetric\EcbCipherTrait;
                 },
         };

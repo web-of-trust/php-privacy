@@ -8,8 +8,8 @@
 
 namespace OpenPGP\Cryptor\Aead;
 
+use OpenPGP\Cryptor\Symmetric\EcbCipher;
 use OpenPGP\Enum\SymmetricAlgorithm;
-use phpseclib3\Crypt\Common\BlockCipher;
 
 /**
  * OCB Authenticated-Encryption class
@@ -36,9 +36,9 @@ final class OCB implements AeadCipher
     const MASK_ASTERISK = 'x';
     const MASK_DOLLAR   = '$';
 
-    private readonly BlockCipher $encipher;
+    private readonly EcbCipher $encipher;
 
-    private readonly BlockCipher $decipher;
+    private readonly EcbCipher $decipher;
 
     private array $mask;
 
@@ -121,14 +121,14 @@ final class OCB implements AeadCipher
     /**
      * Encrypt/decrypt data.
      *
-     * @param BlockCipher $cipher - Encryption/decryption block cipher function
+     * @param EcbCipher $cipher - Encryption/decryption block cipher function
      * @param string $text - The cleartext or ciphertext (without tag) input
      * @param string $nonce - The nonce (15 bytes)
      * @param string $aData - Associated data to sign
      * @return string The ciphertext or plaintext output, with tag appended in both cases.
      */
     private function crypt(
-        BlockCipher $cipher, string $text, string $nonce, string $aData
+        EcbCipher $cipher, string $text, string $nonce, string $aData
     ): string
     {
         $length = strlen($text);

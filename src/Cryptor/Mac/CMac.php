@@ -10,7 +10,7 @@ namespace OpenPGP\Cryptor\Mac;
 
 use OpenPGP\Enum\SymmetricAlgorithm;
 use OpenPGP\Cryptor\Math\Bitwise;
-use phpseclib3\Crypt\Common\BlockCipher;
+use OpenPGP\Cryptor\Symmetric\EcbCipher;
 
 /**
  * CMac class
@@ -25,7 +25,7 @@ final class CMac
 {
     const ZERO_CHAR = "\x00";
 
-    private readonly BlockCipher $cipher;
+    private readonly EcbCipher $cipher;
 
     private readonly int $blockSize;
 
