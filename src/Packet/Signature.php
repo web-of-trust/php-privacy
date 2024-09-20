@@ -471,19 +471,21 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             $subpackets[] = Signature\KeyFlags::fromFlags(
                 KeyFlag::SignData->value
             );
-            $subpackets[] = Signature\EmbeddedSignature::fromSignature(
-                self::createSignature(
-                    $signKey,
-                    SignatureType::KeyBinding,
-                    implode([
-                        $signKey->getSignBytes(),
-                        $subkey->getSignBytes(),
-                    ]),
-                    Config::getPreferredHash(),
-                    [],
-                    $time
-                )
-            );
+            if ($subkey instanceof SecretKeyPacketInterface) {
+                $subpackets[] = Signature\EmbeddedSignature::fromSignature(
+                    self::createSignature(
+                        $subkey,
+                        SignatureType::KeyBinding,
+                        implode([
+                            $signKey->getSignBytes(),
+                            $subkey->getSignBytes(),
+                        ]),
+                        Config::getPreferredHash(),
+                        [],
+                        $time
+                    )
+                );
+            }
         }
         else {
             $subpackets[] = Signature\KeyFlags::fromFlags(

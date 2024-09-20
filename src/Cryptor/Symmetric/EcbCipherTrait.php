@@ -30,7 +30,8 @@ trait EcbCipherTrait
     /**
      * {@inheritdoc}
      */
-    public function encryptBlock($in) {
+    public function encryptBlock($in): string
+    {
         $this->setup();
         return parent::encryptBlock($in);
     }
@@ -38,7 +39,8 @@ trait EcbCipherTrait
     /**
      * {@inheritdoc}
      */
-    public function decryptBlock($in) {
+    public function decryptBlock($in): string
+    {
         $this->setup();
         return parent::decryptBlock($in);
     }
