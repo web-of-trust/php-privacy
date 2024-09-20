@@ -39,20 +39,20 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     /**
      * Constructor
      *
-     * @param string $publicKeyID
-     * @param int $publicKeyVersion
-     * @param string $publicKeyFingerprint
-     * @param KeyAlgorithm $publicKeyAlgorithm
+     * @param string $keyID
+     * @param int $keyVersion
+     * @param string $keyFingerprint
+     * @param KeyAlgorithm $keyAlgorithm
      * @param SessionKeyCryptorInterface $sessionKeyCryptor
      * @param SessionKeyInterface $sessionKey
      * @return self
      */
     public function __construct(
         private readonly int $version,
-        private readonly string $publicKeyID,
-        private readonly int $publicKeyVersion,
-        private readonly string $publicKeyFingerprint,
-        private readonly KeyAlgorithm $publicKeyAlgorithm,
+        private readonly string $keyID,
+        private readonly int $keyVersion,
+        private readonly string $keyFingerprint,
+        private readonly KeyAlgorithm $keyAlgorithm,
         private readonly SessionKeyCryptorInterface $sessionKeyCryptor,
         private readonly ?SessionKeyInterface $sessionKey = null
     )
@@ -64,10 +64,10 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
             );
         }
         if ($version === self::VERSION_6 &&
-            $publicKeyAlgorithm === KeyAlgorithm::ElGamal
+            $keyAlgorithm === KeyAlgorithm::ElGamal
         ) {
             throw new \InvalidArgumentException(
-                "Public key {$publicKeyAlgorithm->name} cannot be used with v{$version} PKESK packet.",
+                "Public key {$keyAlgorithm->name} cannot be used with v{$version} PKESK packet.",
             );
         }
     }
@@ -145,14 +145,14 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
             chr($this->version),
         ];
         if ($this->version === self::VERSION_6) {
-            $bytes[] = chr(strlen($this->publicKeyFingerprint) + 1);
-            $bytes[] = chr($this->publicKeyVersion);
-            $bytes[] = $this->publicKeyFingerprint;
+            $bytes[] = chr(strlen($this->keyFingerprint) + 1);
+            $bytes[] = chr($this->keyVersion);
+            $bytes[] = $this->keyFingerprint;
         }
         else {
-            $bytes[] = $this->publicKeyID;
+            $bytes[] = $this->keyID;
         }
-        $bytes[] = chr($this->publicKeyAlgorithm->value);
+        $bytes[] = chr($this->keyAlgorithm->value);
         $bytes[] = $this->sessionKeyCryptor->toBytes();
         return implode($bytes);
     }
@@ -173,11 +173,11 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
      * @param bool $toHex
      * @return string
      */
-    public function getPublicKeyID(bool $toHex = false): string
+    public function getKeyID(bool $toHex = false): string
     {
         return $toHex ?
-            Strings::bin2hex($this->publicKeyID) :
-            $this->publicKeyID;
+            Strings::bin2hex($this->keyID) :
+            $this->keyID;
     }
 
     /**
@@ -185,9 +185,9 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
      *
      * @return int
      */
-    public function getPublicKeyVersion(): int
+    public function getKeyVersion(): int
     {
-        return $this->publicKeyVersion;
+        return $this->keyVersion;
     }
 
     /**
@@ -196,11 +196,11 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
      * @param bool $toHex
      * @return string
      */
-    public function getPublicKeyFingerprint(bool $toHex = false): string
+    public function getKeyFingerprint(bool $toHex = false): string
     {
         return $toHex ?
-            Strings::bin2hex($this->publicKeyFingerprint) :
-            $this->publicKeyFingerprint;
+            Strings::bin2hex($this->keyFingerprint) :
+            $this->keyFingerprint;
     }
 
     /**
@@ -208,9 +208,9 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
      *
      * @return KeyAlgorithm
      */
-    public function getPublicKeyAlgorithm(): KeyAlgorithm
+    public function getKeyAlgorithm(): KeyAlgorithm
     {
-        return $this->publicKeyAlgorithm;
+        return $this->keyAlgorithm;
     }
 
     /**
@@ -264,7 +264,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
         $this->getLogger()->debug(
             'Decrypt public key encrypted session key.'
         );
-        switch ($this->publicKeyAlgorithm) {
+        switch ($this->keyAlgorithm) {
             case KeyAlgorithm::RsaEncryptSign:
             case KeyAlgorithm::RsaEncrypt:
             case KeyAlgorithm::ElGamal:
@@ -276,7 +276,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
                 );
             default:
                 throw new \RuntimeException(
-                    "Public key algorithm {$this->publicKeyAlgorithm->name} of the PKESK packet is unsupported."
+                    "Public key algorithm {$this->keyAlgorithm->name} of the PKESK packet is unsupported."
                 );
         }
     }

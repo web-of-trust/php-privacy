@@ -91,7 +91,7 @@ EOT;
         $packets = PacketList::decode(base64_decode($data));
         $secretSubkey = SecretSubkey::fromBytes(base64_decode(self::$rsaSecretSubkey))->decrypt(self::PASSPHRASE);
         $pkesk = $packets->offsetGet(0);
-        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getPublicKeyID());
+        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getKeyID());
         $this->assertNull($pkesk->getSessionKey());
 
         $pkesk = $pkesk->decrypt($secretSubkey);
@@ -103,11 +103,11 @@ EOT;
         $sessionKey = SessionKey::produceKey();
         $secretSubkey = SecretSubkey::fromBytes(base64_decode(self::$rsaSecretSubkey))->decrypt(self::PASSPHRASE);
         $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey($secretSubkey->getPublicKey(), $sessionKey);
-        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getPublicKeyID());
+        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getKeyID());
 
         $packets = PacketList::decode($pkesk->encode());
         $pkesk = $packets->offsetGet(0)->decrypt($secretSubkey);
-        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getPublicKeyID());
+        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getKeyID());
         $this->assertEquals($sessionKey, $pkesk->getSessionKey());
     }
 
@@ -134,7 +134,7 @@ EOT;
             base64_decode(self::$elGamalSecretSubkey)
         )->decrypt(self::PASSPHRASE);
         $pkesk = $packets->offsetGet(0);
-        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getPublicKeyID());
+        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getKeyID());
         $this->assertNull($pkesk->getSessionKey());
 
         $pkesk = $pkesk->decrypt($secretSubkey);
@@ -148,11 +148,11 @@ EOT;
             base64_decode(self::$elGamalSecretSubkey)
         )->decrypt(self::PASSPHRASE);
         $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey($secretSubkey->getPublicKey(), $sessionKey);
-        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getPublicKeyID());
+        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getKeyID());
 
         $packets = PacketList::decode($pkesk->encode());
         $pkesk = $packets->offsetGet(0)->decrypt($secretSubkey);
-        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getPublicKeyID());
+        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getKeyID());
         $this->assertEquals($sessionKey, $pkesk->getSessionKey());
     }
 
@@ -171,7 +171,7 @@ EOT;
             base64_decode(self::$ecdhP384SecretSubkey)
         )->decrypt(self::PASSPHRASE);
         $pkesk = $packets->offsetGet(0);
-        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getPublicKeyID());
+        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getKeyID());
         $this->assertNull($pkesk->getSessionKey());
 
         $pkesk = $pkesk->decrypt($secretSubkey);
@@ -185,11 +185,11 @@ EOT;
             base64_decode(self::$ecdhP384SecretSubkey)
         )->decrypt(self::PASSPHRASE);
         $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey($secretSubkey->getPublicKey(), $sessionKey);
-        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getPublicKeyID());
+        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getKeyID());
 
         $packets = PacketList::decode($pkesk->encode());
         $pkesk = $packets->offsetGet(0)->decrypt($secretSubkey);
-        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getPublicKeyID());
+        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getKeyID());
         $this->assertEquals($sessionKey, $pkesk->getSessionKey());
     }
 
@@ -208,7 +208,7 @@ EOT;
             base64_decode(self::$ecdhBrainpoolSecretSubkey)
         )->decrypt(self::PASSPHRASE);
         $pkesk = $packets->offsetGet(0);
-        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getPublicKeyID());
+        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getKeyID());
         $this->assertNull($pkesk->getSessionKey());
 
         $pkesk = $pkesk->decrypt($secretSubkey);
@@ -222,11 +222,11 @@ EOT;
             base64_decode(self::$ecdhBrainpoolSecretSubkey)
         )->decrypt(self::PASSPHRASE);
         $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey($secretSubkey->getPublicKey(), $sessionKey);
-        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getPublicKeyID());
+        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getKeyID());
 
         $packets = PacketList::decode($pkesk->encode());
         $pkesk = $packets->offsetGet(0)->decrypt($secretSubkey);
-        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getPublicKeyID());
+        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getKeyID());
         $this->assertEquals($sessionKey, $pkesk->getSessionKey());
     }
 
@@ -244,7 +244,7 @@ EOT;
             base64_decode(self::$ecdhCurve25519SecretSubkey)
         )->decrypt(self::PASSPHRASE);
         $pkesk = $packets->offsetGet(0);
-        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getPublicKeyID());
+        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getKeyID());
         $this->assertNull($pkesk->getSessionKey());
 
         $pkesk = $pkesk->decrypt($secretSubkey);
@@ -258,11 +258,11 @@ EOT;
             base64_decode(self::$ecdhCurve25519SecretSubkey)
         )->decrypt(self::PASSPHRASE);
         $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey($secretSubkey->getPublicKey(), $sessionKey);
-        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getPublicKeyID());
+        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getKeyID());
 
         $packets = PacketList::decode($pkesk->encode());
         $pkesk = $packets->offsetGet(0)->decrypt($secretSubkey);
-        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getPublicKeyID());
+        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getKeyID());
         $this->assertEquals($sessionKey, $pkesk->getSessionKey());
     }
 
@@ -291,11 +291,11 @@ EOT;
         $sessionKey = SessionKey::produceKey(SymmetricAlgorithm::Aes128);
         $secretSubkey = SecretSubkey::generate(KeyAlgorithm::X25519);
         $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey($secretSubkey->getPublicKey(), $sessionKey);
-        $this->assertSame($secretSubkey->getFingerprint(), $pkesk->getPublicKeyFingerprint());
+        $this->assertSame($secretSubkey->getFingerprint(), $pkesk->getKeyFingerprint());
 
         $packets = PacketList::decode($pkesk->encode());
         $pkesk = $packets->offsetGet(0)->decrypt($secretSubkey);
-        $this->assertSame($secretSubkey->getFingerprint(), $pkesk->getPublicKeyFingerprint());
+        $this->assertSame($secretSubkey->getFingerprint(), $pkesk->getKeyFingerprint());
         $this->assertEquals($sessionKey, $pkesk->getSessionKey());
     }
 
@@ -304,11 +304,11 @@ EOT;
         $sessionKey = SessionKey::produceKey(SymmetricAlgorithm::Aes256);
         $secretSubkey = SecretSubkey::generate(KeyAlgorithm::X448);
         $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey($secretSubkey->getPublicKey(), $sessionKey);
-        $this->assertSame($secretSubkey->getFingerprint(), $pkesk->getPublicKeyFingerprint());
+        $this->assertSame($secretSubkey->getFingerprint(), $pkesk->getKeyFingerprint());
 
         $packets = PacketList::decode($pkesk->encode());
         $pkesk = $packets->offsetGet(0)->decrypt($secretSubkey);
-        $this->assertSame($secretSubkey->getFingerprint(), $pkesk->getPublicKeyFingerprint());
+        $this->assertSame($secretSubkey->getFingerprint(), $pkesk->getKeyFingerprint());
         $this->assertEquals($sessionKey, $pkesk->getSessionKey());
     }
 }
