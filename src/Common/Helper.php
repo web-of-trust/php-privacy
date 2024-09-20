@@ -27,8 +27,8 @@ final class Helper
 {
     const EOL = "\n";
     const CRLF = "\r\n";
-    const LINE_SPLIT_PATTERN = '/\r\n|\n|\r/';
-    const EMPTY_LINE_PATTERN = '/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/';
+    const SPACES = " \r\t";
+    const EOL_PATTERN = '/\r?\n/m';
 
     /**
      * Read multiprecision integer (MPI) from binary data
@@ -180,8 +180,8 @@ final class Helper
      */
     public static function removeTrailingSpaces(string $text): string
     {
-        $lines = preg_split(self::LINE_SPLIT_PATTERN, $text);
-        $lines = array_map(static fn ($line) => rtrim($line, " \r\t"), $lines);
+        $lines = explode(self::EOL, $text);
+        $lines = array_map(static fn ($line) => rtrim($line, self::SPACES), $lines);
         return implode(self::EOL, $lines);
     }
 

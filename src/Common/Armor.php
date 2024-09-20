@@ -42,8 +42,10 @@ final class Armor
     const SIGNATURE_BEGIN = "-----BEGIN PGP SIGNATURE-----\n";
     const SIGNATURE_END   = "-----END PGP SIGNATURE-----\n";
 
-    const SPLIT_PATTERN  = '/^-----[^-]+-----$/';
+    const DASH_PATTERN   = '/^- /m';
+    const EMPTY_PATTERN  = '/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/';
     const HEADER_PATTERN = '/^([^\s:]|[^\s:][^:]*[^\s:]): .+$/';
+    const SPLIT_PATTERN  = '/^-----[^-]+-----$/';
 
     const TRUNK_SIZE = 76;
 
@@ -141,11 +143,11 @@ final class Armor
         $textLines = [];
         $dataLines = [];
 
-        $lines = preg_split(Helper::LINE_SPLIT_PATTERN, $armoredText);
+        $lines = explode(Helper::EOL, $armoredText);
         if (!empty($lines)) {
             foreach ($lines as $line) {
-                /// Remove trailing whitespaces
-                $line = rtrim($line, " \r\t");
+                /// Remove trailing spaces
+                $line = rtrim($line, Helper::SPACES);
                 if ($type === null && preg_match(self::SPLIT_PATTERN, $line)) {
                     $type = ArmorType::fromBegin($line);
                 }
@@ -166,7 +168,7 @@ final class Armor
                         }
                     }
                     elseif (!preg_match(self::SPLIT_PATTERN, $line)) {
-                        if (preg_match(Helper::EMPTY_LINE_PATTERN, $line)) {
+                        if (preg_match(self::EMPTY_PATTERN, $line)) {
                             continue;
                         }
                         if (strpos($line, '=') === 0) {
@@ -194,7 +196,7 @@ final class Armor
             $headers,
             $data,
             preg_replace(
-                '/^- /m', '', implode(Helper::CRLF, $textLines)
+                self::DASH_PATTERN, '', implode(Helper::CRLF, $textLines)
             ), // Reverse dash-escaped text
         );
     }
@@ -242,7 +244,7 @@ final class Armor
                     Helper::EOL,
                     array_map(static fn ($hashAlgo) => "Hash: $hashAlgo", $hashAlgos)
                 ) . Helper::EOL . Helper::EOL : Helper::EOL,
-                preg_replace('/^- /m', '- -', $text) . Helper::EOL, // Dash-escape text
+                preg_replace(self::DASH_PATTERN, '- -', $text) . Helper::EOL, // Dash-escape text
                 self::SIGNATURE_BEGIN,
                 self::addHeader($customComment) . Helper::EOL,
                 chunk_split(Strings::base64_encode($data), self::TRUNK_SIZE, Helper::EOL),

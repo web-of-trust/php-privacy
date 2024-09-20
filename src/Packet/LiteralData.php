@@ -161,7 +161,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface, Literal
                 mb_convert_encoding($this->data, 'UTF-8')
             );
             return preg_replace(
-                '/\r?\n/m', "\r\n", $data
+                Helper::EOL_PATTERN, Helper::CRLF, $data
             ) ?? $data;
         }
         else {

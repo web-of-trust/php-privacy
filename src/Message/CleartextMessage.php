@@ -65,7 +65,7 @@ class CleartextMessage implements CleartextMessageInterface
         // Remove trailing whitespace and normalize EOL to canonical form <CR><LF>
         $text = Helper::removeTrailingSpaces($this->text);
         return preg_replace(
-            '/\r?\n/m', "\r\n", $text
+            Helper::EOL_PATTERN, Helper::CRLF, $text
         ) ?? $text;
     }
 
