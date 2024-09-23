@@ -101,15 +101,9 @@ abstract class AbstractKey implements KeyInterface
         array $subkeys = [],
     )
     {
-        $this->revocationSignatures = array_values(array_filter(
-            $revocationSignatures,
-            static fn ($signature) => $signature instanceof SignaturePacketInterface
-        ));
-        $this->directSignatures = array_values(array_filter(
-            $directSignatures,
-            static fn ($signature) => $signature instanceof SignaturePacketInterface
-        ));
-        $this->setUsers($users)
+        $this->setRevocationSignatures($revocationSignatures)
+             ->setDirectSignatures($directSignatures)
+             ->setUsers($users)
              ->setSubkeys($subkeys)
              ->setLogger(Config::getLogger());
     }
@@ -325,7 +319,6 @@ abstract class AbstractKey implements KeyInterface
     {
         $expirationTime = self::getKeyExpiration($this->directSignatures);
         if (empty($expirationTime)) {
-            return self::getKeyExpiration($this->directSignatures);
             $selfCertifications = [];
             foreach ($this->users as $user) {
                 $selfCertifications = array_merge(
@@ -544,9 +537,7 @@ abstract class AbstractKey implements KeyInterface
                 $users[] = $user;
             }
         }
-        $self->setUsers($users);
-
-        return $self;
+        return $self->setUsers($users);
     }
 
     /**
@@ -559,16 +550,16 @@ abstract class AbstractKey implements KeyInterface
         ?DateTimeInterface $time = null
     ): self
     {
-        $self = $this->clone();
-        $self->revocationSignatures[] = Signature::createKeyRevocation(
-            $signKey->getSigningKeyPacket(),
-            $self->getKeyPacket(),
-            $revocationReason,
-            $reasonTag,
-            $time
-        );
-
-        return $self;
+        return $this->clone()->setRevocationSignatures([
+            ...$this->getRevocationSignatures(),
+            Signature::createKeyRevocation(
+                $signKey->getSigningKeyPacket(),
+                $this->getKeyPacket(),
+                $revocationReason,
+                $reasonTag,
+                $time
+            ),
+        ]);
     }
 
     /**
@@ -608,6 +599,40 @@ abstract class AbstractKey implements KeyInterface
             }
         }
         return null;
+    }
+
+    /**
+     * Set revocation signatures
+     *
+     * @param array $revocationSignatures
+     * @return static
+     */
+    protected function setRevocationSignatures(
+        array $revocationSignatures
+    ): static
+    {
+        $this->revocationSignatures = array_values(array_filter(
+            $revocationSignatures,
+            static fn ($signature) => $signature instanceof SignaturePacketInterface
+        ));
+        return $this;
+    }
+
+    /**
+     * Set direct signatures
+     *
+     * @param array $directSignatures
+     * @return static
+     */
+    protected function setDirectSignatures(
+        array $directSignatures
+    ): static
+    {
+        $this->directSignatures = array_values(array_filter(
+            $directSignatures,
+            static fn ($signature) => $signature instanceof SignaturePacketInterface
+        ));
+        return $this;
     }
 
     /**
@@ -721,7 +746,7 @@ abstract class AbstractKey implements KeyInterface
     {
         $self = clone $this;
 
-        $self->setUsers(array_map(
+        return $self->setUsers(array_map(
             static fn ($user) => new User(
                 $self,
                 $user->getUserIDPacket(),
@@ -729,7 +754,7 @@ abstract class AbstractKey implements KeyInterface
                 $user->getSelfCertifications(),
                 $user->getOtherCertifications()
             ),
-            $self->getUsers()
+            $this->getUsers()
         ))->setSubkeys(array_map(
             static fn ($subkey) => new Subkey(
                 $self,
@@ -737,10 +762,8 @@ abstract class AbstractKey implements KeyInterface
                 $subkey->getRevocationSignatures(),
                 $subkey->getBindingSignatures()
             ),
-            $self->getSubkeys()
+            $this->getSubkeys()
         ));
-
-        return $self;
     }
 
     protected static function applyKeyStructure(

@@ -474,9 +474,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 selfCertifications: [$selfCertificate],
             );
         }
-        $self->setUsers($users);
-
-        return $self;
+        return $self->setUsers($users);
     }
 
     /**
@@ -525,9 +523,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $secretSubkey,
             bindingSignatures: [$bindingSignature]
         );
-        $self->setSubkeys($subkeys);
-
-        return $self;
+        return $self->setSubkeys($subkeys);
     }
 
     /**
@@ -575,9 +571,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 );
             }
         }
-        $self->setUsers($users);
-
-        return $self;
+        return $self->setUsers($users);
     }
 
     /**
@@ -599,8 +593,6 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 );
             }
         }
-        $self->setSubkeys($subkeys);
-
-        return $self;
+        return $self->setSubkeys($subkeys);
     }
 }
