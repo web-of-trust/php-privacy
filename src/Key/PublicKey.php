@@ -58,7 +58,7 @@ class PublicKey extends AbstractKey
 
     /**
      * Read public keys from armored/binary string
-     * Return one or multiple key objects.
+     * Return one or multiple key objects
      *
      * @param string $data
      * @param bool $armored
@@ -85,6 +85,26 @@ class PublicKey extends AbstractKey
             }
         }
         return $publicKeys;
+    }
+
+    /**
+     * Armor multiple public key.
+     *
+     * @param array $publicKeys
+     * @return string
+     */
+    public static function armorPublicKeys(array $publicKeys): string
+    {
+        return Armor::encode(
+            ArmorType::PublicKey,
+            implode(array_map(
+                static fn ($key) => $key->toPublic()->getPacketList()->encode(),
+                array_filter(
+                    $publicKeys,
+                    static fn ($key) => $key instanceof KeyInterface
+                )
+            ))
+        );
     }
 
     /**
