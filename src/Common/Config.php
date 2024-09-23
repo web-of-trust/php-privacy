@@ -28,7 +28,7 @@ use Psr\Log\{
  */
 final class Config
 {
-    const VERSION = 'PHP Privacy v2.0.0';
+    const VERSION = 'PHP Privacy v2';
     const COMMENT = 'https://github.com/web-of-trust/php-privacy';
 
     const CIPHER_MODE = 'cfb';
