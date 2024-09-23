@@ -28,7 +28,7 @@ use Psr\Log\{
  */
 final class Config
 {
-    const VERSION = 'PHP Privacy v1.1.14';
+    const VERSION = 'PHP Privacy v1';
     const COMMENT = 'https://github.com/web-of-trust/php-privacy';
 
     const SALT_NOTATION = 'salt@weboftrust.org';
