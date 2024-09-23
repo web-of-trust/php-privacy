@@ -323,19 +323,20 @@ abstract class AbstractKey implements KeyInterface
      */
     public function getExpirationTime(): ?DateTimeInterface
     {
-        $selfCertifications = [];
-        foreach ($this->users as $user) {
-            $selfCertifications = array_merge(
-                $selfCertifications, $user->getSelfCertifications()
-            );
-        }
-        if (!empty($selfCertifications)) {
-            return self::getKeyExpiration($selfCertifications);
-        }
-        if (!empty($this->directSignatures)) {
+        $expirationTime = self::getKeyExpiration($this->directSignatures);
+        if (empty($expirationTime)) {
             return self::getKeyExpiration($this->directSignatures);
+            $selfCertifications = [];
+            foreach ($this->users as $user) {
+                $selfCertifications = array_merge(
+                    $selfCertifications, $user->getSelfCertifications()
+                );
+            }
+            if (!empty($selfCertifications)) {
+                $expirationTime = self::getKeyExpiration($selfCertifications);
+            }
         }
-        return null;
+        return $expirationTime;
     }
 
     /**
@@ -399,8 +400,11 @@ abstract class AbstractKey implements KeyInterface
      */
     public function aeadSupported(): bool
     {
-        $primaryUser = $this->getPrimaryUser();
-        $features = $primaryUser?->getLatestSelfCertification()?->getFeatures();
+        $features = $this->getLatestDirectSignature()?->getFeatures();
+        if (empty($features)) {
+            $primaryUser = $this->getPrimaryUser();
+            $features = $primaryUser?->getLatestSelfCertification()?->getFeatures();
+        }
         if (($features instanceof Features) && $features->supportVersion2SEIPD()) {
             return true;
         }
