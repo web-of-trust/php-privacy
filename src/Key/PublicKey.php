@@ -90,17 +90,17 @@ class PublicKey extends AbstractKey
     /**
      * Armor multiple public key.
      *
-     * @param array $publicKeys
+     * @param array $keys
      * @return string
      */
-    public static function armorPublicKeys(array $publicKeys): string
+    public static function armorPublicKeys(array $keys): string
     {
         return Armor::encode(
             ArmorType::PublicKey,
             implode(array_map(
                 static fn ($key) => $key->toPublic()->getPacketList()->encode(),
                 array_filter(
-                    $publicKeys,
+                    $keys,
                     static fn ($key) => $key instanceof KeyInterface
                 )
             ))

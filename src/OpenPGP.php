@@ -107,10 +107,10 @@ final class OpenPGP
     /**
      * Armor multiple public key.
      *
-     * @param array $publicKeys
+     * @param array $keys
      * @return string
      */
-    public static function armorPublicKeys(array $publicKeys): string
+    public static function armorPublicKeys(array $keys): string
     {
         return Key\PublicKey::armorPublicKeys($keys);
     }
@@ -250,7 +250,7 @@ final class OpenPGP
      * Read OpenPGP literal message from armored/binary string.
      * Return a literal message object.
      *
-     * @param string $message
+     * @param string $messageData
      * @param bool $armored
      * @return Type\LiteralMessageInterface
      */
