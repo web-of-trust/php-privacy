@@ -396,9 +396,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 $subkey->getBindingSignatures()
             );
         }
-        $privateKey->setSubkeys($subkeys);
-
-        return $privateKey;
+        return $privateKey->setSubkeys($subkeys);
     }
 
     /**
@@ -444,9 +442,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 $subkey->getBindingSignatures()
             );
         }
-        $privateKey->setSubkeys($subkeys);
-
-        return $privateKey;
+        return $privateKey->setSubkeys($subkeys);
     }
 
     /**
