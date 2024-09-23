@@ -80,9 +80,7 @@ class Subkey implements SubkeyInterface
     }
 
     /**
-     * Get main key
-     *
-     * @return KeyInterface
+     * {@inheritdoc}
      */
     public function getMainKey(): KeyInterface
     {

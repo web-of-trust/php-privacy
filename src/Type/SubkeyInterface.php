@@ -24,6 +24,13 @@ use OpenPGP\Enum\{
 interface SubkeyInterface extends PacketContainerInterface
 {
     /**
+     * Get main key
+     *
+     * @return KeyInterface
+     */
+    function getMainKey(): KeyInterface;
+
+    /**
      * Get key packet
      *
      * @return SubkeyPacketInterface

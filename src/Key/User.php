@@ -88,9 +88,7 @@ class User implements UserInterface
     }
 
     /**
-     * Get main key
-     *
-     * @return KeyInterface
+     * {@inheritdoc}
      */
     public function getMainKey(): KeyInterface
     {

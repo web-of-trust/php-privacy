@@ -22,6 +22,13 @@ use OpenPGP\Enum\RevocationReasonTag;
 interface UserInterface extends PacketContainerInterface
 {
     /**
+     * Get main key
+     *
+     * @return KeyInterface
+     */
+    function getMainKey(): KeyInterface;
+
+    /**
      * Get user ID packet
      *
      * @return UserIDPacketInterface

@@ -620,7 +620,9 @@ abstract class AbstractKey implements KeyInterface
     {
         $this->users = array_values(array_filter(
             $users,
-            static fn ($user) => $user instanceof UserInterface
+            fn ($user) =>
+                $user instanceof UserInterface && 
+                $user->getMainKey() === $this
         ));
         return $this;
     }
@@ -635,7 +637,9 @@ abstract class AbstractKey implements KeyInterface
     {
         $this->subkeys = array_values(array_filter(
             $subkeys,
-            static fn ($subkey) => $subkey instanceof SubkeyInterface
+            fn ($subkey) =>
+                $subkey instanceof SubkeyInterface &&
+                $subkey->getMainKey() === $this
         ));
         return $this;
     }
