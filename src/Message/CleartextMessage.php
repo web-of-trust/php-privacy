@@ -62,7 +62,8 @@ class CleartextMessage implements CleartextMessageInterface
      */
     public function getNormalizeText(): string
     {
-        // Remove trailing whitespace and normalize EOL to canonical form <CR><LF>
+        // Remove trailing whitespace and
+        // normalize EOL to canonical form <CR><LF>
         $text = Helper::removeTrailingSpaces($this->text);
         return preg_replace(
             Helper::EOL_PATTERN, Helper::CRLF, $text
@@ -76,7 +77,7 @@ class CleartextMessage implements CleartextMessageInterface
         array $signingKeys,
         array $recipients = [],
         ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): SignedMessageInterface
     {
         return new SignedMessage(
@@ -85,7 +86,7 @@ class CleartextMessage implements CleartextMessageInterface
                 $signingKeys,
                 $recipients,
                 $notationData,
-                $time
+                $time,
             )
         );
     }
@@ -97,14 +98,14 @@ class CleartextMessage implements CleartextMessageInterface
         array $signingKeys,
         array $recipients = [],
         ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): SignatureInterface
     {
         return $this->createSignature(
             $signingKeys,
             $recipients,
             $notationData,
-            $time
+            $time,
         );
     }
 
@@ -114,7 +115,7 @@ class CleartextMessage implements CleartextMessageInterface
     public function verifyDetached(
         array $verificationKeys,
         SignatureInterface $signature,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): array
     {
         return $signature->verifyCleartext(
@@ -152,9 +153,9 @@ class CleartextMessage implements CleartextMessageInterface
                 LiteralData::fromText($this->getText()),
                 $recipients,
                 $notationData,
-                $time
+                $time,
             ),
-            $signingKeys
+            $signingKeys,
         );
         return new Signature(new PacketList($packets));
     }

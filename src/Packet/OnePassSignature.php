@@ -111,7 +111,7 @@ class OnePassSignature extends AbstractPacket
             $salt,
             $issuerFingerprint,
             $issuerKeyID,
-            $nested
+            $nested,
         );
     }
 
@@ -133,7 +133,7 @@ class OnePassSignature extends AbstractPacket
             $signature->getSalt(),
             $signature->getIssuerFingerprint(),
             $signature->getIssuerKeyID(),
-            $nested
+            $nested,
         );
     }
 

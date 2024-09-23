@@ -43,7 +43,7 @@ class EdDSALegacyPublicKeyMaterial extends ECPublicKeyMaterial implements Public
     public function verify(
         HashAlgorithm $hash,
         string $message,
-        string $signature
+        string $signature,
     ): bool
     {
         $bitLength = Helper::bytesToShort($signature);
@@ -56,12 +56,12 @@ class EdDSALegacyPublicKeyMaterial extends ECPublicKeyMaterial implements Public
         );
         $s = substr(
             $signature, strlen($r) + 4,
-            Helper::bit2ByteLength($bitLength)
+            Helper::bit2ByteLength($bitLength),
         ); // MPI of EdDSA value S
 
         return $this->getPublicKey()->verify(
             $hash->hash($message),
-            implode([$r, $s])
+            implode([$r, $s]),
         );
     }
 }

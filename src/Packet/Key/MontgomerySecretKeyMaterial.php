@@ -47,7 +47,7 @@ class MontgomerySecretKeyMaterial implements ECKeyMaterialInterface, KeyMaterial
     public function __construct(
         private readonly string $secret,
         private readonly KeyMaterialInterface $publicMaterial,
-        ?ECPrivateKey $privateKey = null
+        ?ECPrivateKey $privateKey = null,
     )
     {
         if ($privateKey instanceof ECPrivateKey) {
@@ -70,12 +70,12 @@ class MontgomerySecretKeyMaterial implements ECKeyMaterialInterface, KeyMaterial
     public static function fromBytes(
         string $bytes,
         KeyMaterialInterface $publicMaterial,
-        MontgomeryCurve $curve = MontgomeryCurve::Curve25519
+        MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
     ): self
     {
         return new self(
             substr($bytes, 0, $curve->payloadSize()),
-            $publicMaterial
+            $publicMaterial,
         );
     }
 
@@ -98,7 +98,7 @@ class MontgomerySecretKeyMaterial implements ECKeyMaterialInterface, KeyMaterial
             $secret,
             new MontgomeryPublicKeyMaterial(
                 $privateKey->getEncodedCoordinates(),
-                $privateKey->getPublicKey()
+                $privateKey->getPublicKey(),
             ),
             $privateKey,
         );

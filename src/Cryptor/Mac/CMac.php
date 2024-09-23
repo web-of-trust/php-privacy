@@ -40,7 +40,7 @@ final class CMac
      */
     public function __construct(
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        private int $macSize = 0
+        private int $macSize = 0,
     )
     {
         $this->cipher = $symmetric->ecbCipherEngine();

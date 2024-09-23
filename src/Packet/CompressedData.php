@@ -39,7 +39,7 @@ class CompressedData extends AbstractPacket
     public function __construct(
         private readonly string $compressed,
         private readonly PacketListInterface $packetList,
-        private readonly Algorithm $algorithm = Algorithm::Uncompressed
+        private readonly Algorithm $algorithm = Algorithm::Uncompressed,
     )
     {
         parent::__construct(PacketTag::CompressedData);
@@ -55,7 +55,7 @@ class CompressedData extends AbstractPacket
         return new self(
             $compressed,
             self::decompress($compressed, $algorithm),
-            $algorithm
+            $algorithm,
         );
     }
 
@@ -74,7 +74,7 @@ class CompressedData extends AbstractPacket
         return new self(
             self::compress($packetList, $algorithm),
             $packetList,
-            $algorithm
+            $algorithm,
         );
     }
 
@@ -87,7 +87,7 @@ class CompressedData extends AbstractPacket
      */
     public static function fromPackets(
         array $packets,
-        Algorithm $algorithm = Algorithm::Uncompressed
+        Algorithm $algorithm = Algorithm::Uncompressed,
     )
     {
         return self::fromPacketList(new PacketList($packets), $algorithm);

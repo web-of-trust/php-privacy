@@ -56,7 +56,7 @@ interface SubkeyInterface extends PacketContainerInterface
      *
      * @return DateTimeInterface
      */
-    function getCreationTime(): DateTimeInterface;
+    function getCreationTime(): ?DateTimeInterface;
 
     /**
      * Get key algorithm
@@ -134,7 +134,7 @@ interface SubkeyInterface extends PacketContainerInterface
     function isRevoked(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): bool;
 
     /**
@@ -159,6 +159,6 @@ interface SubkeyInterface extends PacketContainerInterface
         PrivateKeyInterface $signKey,
         string $revocationReason = '',
         ?RevocationReasonTag $reasonTag = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self;
 }

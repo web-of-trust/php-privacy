@@ -44,7 +44,7 @@ class EdDSALegacySecretKeyMaterial extends ECSecretKeyMaterial implements Secret
     {
         return new self(
             Helper::readMPI($bytes),
-            $publicMaterial
+            $publicMaterial,
         );
     }
 
@@ -68,7 +68,7 @@ class EdDSALegacySecretKeyMaterial extends ECSecretKeyMaterial implements Secret
                 Helper::bin2BigInt(
                     "\x40" . $privateKey->getEncodedCoordinates()
                 ),
-                $privateKey->getPublicKey()
+                $privateKey->getPublicKey(),
             ),
             $privateKey,
         );

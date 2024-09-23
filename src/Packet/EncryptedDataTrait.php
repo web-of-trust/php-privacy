@@ -48,7 +48,11 @@ trait EncryptedDataTrait
     ): self
     {
         if ($this->packetList instanceof PacketListInterface) {
-            return self::encryptPackets($key, $this->packetList, $symmetric);
+            return self::encryptPackets(
+                $key,
+                $this->packetList,
+                $symmetric,
+            );
         }
         return $this;
     }
@@ -62,7 +66,7 @@ trait EncryptedDataTrait
     {
         return $this->encrypt(
             $sessionKey->getEncryptionKey(),
-            $sessionKey->getSymmetric()
+            $sessionKey->getSymmetric(),
         );
     }
 
@@ -75,7 +79,7 @@ trait EncryptedDataTrait
     {
         return $this->decrypt(
             $sessionKey->getEncryptionKey(),
-            $sessionKey->getSymmetric()
+            $sessionKey->getSymmetric(),
         );
     }
 }

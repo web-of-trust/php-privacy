@@ -64,7 +64,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
         private readonly ?AeadAlgorithm $aead = null,
         private readonly int $chunkSize = 12,
         private readonly string $salt = '',
-        private readonly ?PacketListInterface $packetList = null
+        private readonly ?PacketListInterface $packetList = null,
     )
     {
         parent::__construct(PacketTag::SymEncryptedIntegrityProtectedData);
@@ -253,7 +253,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
      */
     public function decrypt(
         string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
     ): self
     {
         if ($this->packetList instanceof PacketListInterface) {
@@ -304,7 +304,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
                 $this->aead,
                 $this->chunkSize,
                 $this->salt,
-                PacketList::decode($packetBytes)
+                PacketList::decode($packetBytes),
             );
         }
     }
@@ -335,11 +335,13 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
         $derivedKey = hash_hkdf(
             Config::HKDF_ALGO, $key, $keySize + $ivLength, $aData, $this->salt
         );
-        $encryptionKey = substr($derivedKey, 0, $keySize);
+        $kek = substr($derivedKey, 0, $keySize);
         $nonce = substr($derivedKey, $keySize, $ivLength);
         // The last 8 bytes of HKDF output are unneeded, but this avoids one copy.
-        $nonce = substr_replace($nonce, str_repeat(self::ZERO_CHAR, 8), $ivLength - 8);
-        $cipher = $this->aead->cipherEngine($encryptionKey, $this->symmetric);
+        $nonce = substr_replace(
+            $nonce, str_repeat(self::ZERO_CHAR, 8), $ivLength - 8
+        );
+        $cipher = $this->aead->cipherEngine($kek, $this->symmetric);
 
         $crypted = [];
         for ($index = 0; $index === 0 || strlen($data);) {
@@ -347,7 +349,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
             $crypted[] = $cipher->$fn(
                 Strings::shift($data, $chunkSize),
                 $nonce,
-                $aData
+                $aData,
             );
             $nonce = substr_replace(
                 $nonce, pack('N', ++$index), $ivLength - 4, 4
@@ -370,7 +372,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
         $crypted[] = $cipher->$fn(
             $finalChunk,
             $nonce,
-            $aDataTag
+            $aDataTag,
         );
         return implode($crypted);
     }

@@ -51,7 +51,7 @@ class EdDSASecretKeyMaterial implements ECKeyMaterialInterface, SecretKeyMateria
     public function __construct(
         private readonly string $secret,
         private readonly KeyMaterialInterface $publicMaterial,
-        ?ECPrivateKey $privateKey = null
+        ?ECPrivateKey $privateKey = null,
     )
     {
         if ($privateKey instanceof ECPrivateKey) {
@@ -79,12 +79,12 @@ class EdDSASecretKeyMaterial implements ECKeyMaterialInterface, SecretKeyMateria
     public static function fromBytes(
         string $bytes,
         KeyMaterialInterface $publicMaterial,
-        EdDSACurve $curve = EdDSACurve::Ed25519
+        EdDSACurve $curve = EdDSACurve::Ed25519,
     ): self
     {
         return new self(
             substr($bytes, 0, $curve->payloadSize()),
-            $publicMaterial
+            $publicMaterial,
         );
     }
 
@@ -109,7 +109,7 @@ class EdDSASecretKeyMaterial implements ECKeyMaterialInterface, SecretKeyMateria
             new EdDSAPublicKeyMaterial(
                 $privateKey->getEncodedCoordinates(),
                 $params['curve'],
-                $privateKey->getPublicKey()
+                $privateKey->getPublicKey(),
             ),
             $privateKey,
         );

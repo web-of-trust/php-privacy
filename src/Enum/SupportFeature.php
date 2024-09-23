@@ -25,13 +25,13 @@ enum SupportFeature: int
     case Version1SEIPD = 1;
 
     /**
-     * Aead supported for AEAD Encrypted Data Packet (packet 20)
-     * and version 5 Symmetric-Key Encrypted Session Key Packets (packet 3)
+     * AEAD Encrypted Data packet (packet 20). 
+     * Version 5 Symmetric Encrypted Session Key packet.
      */
-    case AeadSupported = 2;
+    case AeadEncrypted = 2;
 
     /**
-     * Version 5 Public-Key Packet format and corresponding new fingerprint format
+     * Version 5 PublicKey packet.
      */
     case Version5PublicKey = 4;
 

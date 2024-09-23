@@ -50,7 +50,7 @@ abstract class ECPublicKeyMaterial implements ECKeyMaterialInterface, KeyMateria
     public function __construct(
         private readonly string $oid,
         private readonly BigInteger $q,
-        ?ECPublicKey $publicKey = null
+        ?ECPublicKey $publicKey = null,
     )
     {
         $this->curveOid = CurveOid::fromOid($oid);
@@ -70,7 +70,7 @@ abstract class ECPublicKeyMaterial implements ECKeyMaterialInterface, KeyMateria
                              substr($q->toBytes(), 1) : "\x00" . $q->toBytes();
                     $key = PKCS8::savePublicKey(
                         $curve,
-                        PKCS8::extractPoint($point, $curve)
+                        PKCS8::extractPoint($point, $curve),
                     );
                     break;
             }

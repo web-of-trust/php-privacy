@@ -43,7 +43,7 @@ interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInt
         array $signingKeys,
         array $recipients = [],
         ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self;
 
     /**
@@ -59,7 +59,7 @@ interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInt
         array $signingKeys,
         array $recipients = [],
         ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): SignatureInterface;
 
     /**
@@ -74,7 +74,7 @@ interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInt
     function verifyDetached(
         array $verificationKeys,
         SignatureInterface $signature,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): array;
 
     /**
@@ -89,11 +89,11 @@ interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInt
     function encrypt(
         array $encryptionKeys = [],
         array $passwords = [],
-        ?SymmetricAlgorithm $symmetric = null
+        ?SymmetricAlgorithm $symmetric = null,
     ): EncryptedMessageInterface;
 
     /**
-     * Compress the message (the literal and -if signed- signature data packets of the message)
+     * Compress the message (the literal and signature packets of the message)
      * Return new message with compressed content.
      *
      * @param CompressionAlgorithm $algorithm

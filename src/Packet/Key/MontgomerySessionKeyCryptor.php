@@ -85,7 +85,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
         SessionKeyInterface $sessionKey,
         EC $publicKey,
         int $pkeskVersion,
-        MontgomeryCurve $curve = MontgomeryCurve::Curve25519
+        MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
     ): self
     {
         if ($sessionKey->getSymmetric() !== $curve->symmetricAlgorithm()) {
@@ -98,7 +98,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
         );
         $sharedSecret = DH::computeSecret(
             $privateKey,
-            $publicKey->getEncodedCoordinates()
+            $publicKey->getEncodedCoordinates(),
         );
         $ephemeralKey = $privateKey->getPublicKey()->getEncodedCoordinates();
 
@@ -110,7 +110,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
                 $sharedSecret,
             ]),
             $curve->kekSize()->value,
-            $curve->hkdfInfo()
+            $curve->hkdfInfo(),
         );
         $keyWrapper = new AesKeyWrapper(
             $curve->kekSize()
@@ -122,7 +122,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
                 $kek,
                 $pkeskVersion === self::PKESK_VERSION_3 ?
                     $sessionKey->toBytes() :
-                    $sessionKey->getEncryptionKey()
+                    $sessionKey->getEncryptionKey(),
             ),
             $pkeskVersion,
             $curve,
@@ -174,7 +174,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
         return $this->pkeskVersion === self::PKESK_VERSION_3 ?
             new SessionKey(
                 substr($decrypted, 1),
-                SymmetricAlgorithm::from(ord($decrypted[0]))
+                SymmetricAlgorithm::from(ord($decrypted[0])),
             ) :
             new SessionKey(
                 $decrypted, $this->curve->symmetricAlgorithm()
@@ -192,7 +192,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
         $publicKey = EC::loadFormat('MontgomeryPublic', $this->ephemeralKey);
         $sharedSecret = DH::computeSecret(
             $privateKey,
-            $publicKey->getEncodedCoordinates()
+            $publicKey->getEncodedCoordinates(),
         );
 
         $kek = hash_hkdf(
@@ -203,7 +203,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
                 $sharedSecret,
             ]),
             $this->curve->kekSize()->value,
-            $this->curve->hkdfInfo()
+            $this->curve->hkdfInfo(),
         );
         $keyWrapper = new AesKeyWrapper(
             $this->curve->kekSize()

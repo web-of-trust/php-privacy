@@ -151,7 +151,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         DHKeySize $dhKeySize = DHKeySize::Normal,
         CurveOid $curve = CurveOid::Secp521r1,
         int $keyExpiry = 0,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self
     {
         if (empty($userIDs) || empty($passphrase)) {
@@ -243,7 +243,11 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         // Wrap secret subkey with binding signature
         $packets[] = $secretSubkey;
         $packets[] = Signature::createSubkeyBinding(
-            $secretKey, $secretSubkey, $keyExpiry, false, $time
+            $secretKey,
+            $secretSubkey,
+            $keyExpiry,
+            false,
+            $time,
         );
 
         return self::fromPacketList(new PacketList($packets));
@@ -256,7 +260,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     {
         return Armor::encode(
             ArmorType::PrivateKey,
-            $this->getPacketList()->encode()
+            $this->getPacketList()->encode(),
         );
     }
 
@@ -317,8 +321,8 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         usort(
             $subkeys,
             static fn ($a, $b): int =>
-                $b->getCreationTime()->getTimestamp() -
-                $a->getCreationTime()->getTimestamp()
+                (int) $b->getCreationTime()?->getTimestamp() -
+                (int) $a->getCreationTime()?->getTimestamp()
         );
 
         $keyPackets = [];
@@ -343,7 +347,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
      */
     public function encrypt(
         string $passphrase,
-        array $subkeyPassphrases = []
+        array $subkeyPassphrases = [],
     ): self
     {
         if (empty($passphrase)) {
@@ -375,9 +379,9 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 $user->getUserIDPacket(),
                 $user->getRevocationCertifications(),
                 $user->getSelfCertifications(),
-                $user->getOtherCertifications()
+                $user->getOtherCertifications(),
             ),
-            $this->getUsers()
+            $this->getUsers(),
         ));
 
         $subkeys = [];
@@ -393,7 +397,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 $privateKey,
                 $keyPacket,
                 $subkey->getRevocationSignatures(),
-                $subkey->getBindingSignatures()
+                $subkey->getBindingSignatures(),
             );
         }
         return $privateKey->setSubkeys($subkeys);
@@ -403,7 +407,8 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
      * {@inheritdoc}
      */
     public function decrypt(
-        string $passphrase, array $subkeyPassphrases = []
+        string $passphrase,
+        array $subkeyPassphrases = [],
     ): self
     {
         if (empty($passphrase)) {
@@ -423,9 +428,9 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 $user->getUserIDPacket(),
                 $user->getRevocationCertifications(),
                 $user->getSelfCertifications(),
-                $user->getOtherCertifications()
+                $user->getOtherCertifications(),
             ),
-            $this->getUsers()
+            $this->getUsers(),
         ));
 
         $subkeys = [];
@@ -439,7 +444,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 $privateKey,
                 $keyPacket,
                 $subkey->getRevocationSignatures(),
-                $subkey->getBindingSignatures()
+                $subkey->getBindingSignatures(),
             );
         }
         return $privateKey->setSubkeys($subkeys);
@@ -462,7 +467,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $packet = new UserID($userID);
             $selfCertificate = Signature::createSelfCertificate(
                 $self->getSigningKeyPacket(),
-                $packet
+                $packet,
             );
             $users[] = new User(
                 $self,
@@ -484,7 +489,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         CurveOid $curve = CurveOid::Secp521r1,
         int $keyExpiry = 0,
         bool $subkeySign = false,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self
     {
         if (empty($passphrase)) {
@@ -512,12 +517,12 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $secretSubkey,
             $keyExpiry,
             $subkeySign,
-            $time
+            $time,
         );
         $subkeys[] = new Subkey(
             $self,
             $secretSubkey,
-            bindingSignatures: [$bindingSignature]
+            bindingSignatures: [$bindingSignature],
         );
         return $self->setSubkeys($subkeys);
     }
@@ -539,7 +544,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         KeyInterface $key,
         string $revocationReason = '',
         ?RevocationReasonTag $reasonTag = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): KeyInterface
     {
         return $key->revokeBy(
@@ -554,7 +559,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         string $userID,
         string $revocationReason = '',
         ?RevocationReasonTag $reasonTag = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self
     {
         $self = $this->clone();
@@ -577,7 +582,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         string $keyID,
         string $revocationReason = '',
         ?RevocationReasonTag $reasonTag = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self
     {
         $self = $this->clone();

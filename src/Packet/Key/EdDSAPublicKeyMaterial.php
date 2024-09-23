@@ -51,7 +51,7 @@ class EdDSAPublicKeyMaterial implements ECKeyMaterialInterface, PublicKeyMateria
     public function __construct(
         private readonly string $public,
         TwistedEdwards $curve,
-        ?ECPublicKey $publicKey = null
+        ?ECPublicKey $publicKey = null,
     )
     {
         if ($publicKey instanceof ECPublicKey) {
@@ -62,8 +62,8 @@ class EdDSAPublicKeyMaterial implements ECKeyMaterialInterface, PublicKeyMateria
                 'PKCS8',
                 PKCS8::savePublicKey(
                     $curve,
-                    PKCS8::extractPoint($public, $curve)
-                )
+                    PKCS8::extractPoint($public, $curve),
+                ),
             );
         }
     }
@@ -160,7 +160,7 @@ class EdDSAPublicKeyMaterial implements ECKeyMaterialInterface, PublicKeyMateria
     {
         return $this->publicKey->verify(
             $hash->hash($message),
-            $signature
+            $signature,
         );
     }
 }

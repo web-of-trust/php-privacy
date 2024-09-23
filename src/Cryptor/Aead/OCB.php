@@ -53,7 +53,7 @@ final class OCB implements AeadCipher
      */
     public function __construct(
         string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
     )
     {
         if ($symmetric->blockSize() !== self::BLOCK_LENGTH) {
@@ -162,7 +162,7 @@ final class OCB implements AeadCipher
         // Offset_0 = Stretch[1+bottom..128+bottom]
         $offset = substr(self::shiftRight(
             substr($stretched, 0 + ($bottom >> 3), 17 + ($bottom >> 3)),
-            8 - ($bottom & 7)
+            8 - ($bottom & 7),
         ), 1);
         // Checksum_0 = zeros(128)
         $checksum = self::ZERO_BLOCK;
@@ -191,7 +191,7 @@ final class OCB implements AeadCipher
                 $ct,
                 $encrypted,
                 $pos,
-                strlen($encrypted)
+                strlen($encrypted),
             );
             // Checksum_i = Checksum_{i-1} xor P_i
             $checksum = self::xor(
@@ -215,7 +215,7 @@ final class OCB implements AeadCipher
                 $ct,
                 $paddedText,
                 $pos,
-                strlen($paddedText)
+                strlen($paddedText),
             );
 
             // Checksum_* = Checksum_m xor (P_* || 1 || new Uint8Array(127-bitlen(P_*)))
@@ -225,7 +225,7 @@ final class OCB implements AeadCipher
                 self::ZERO_BLOCK,
                 $input,
                 0,
-                strlen($input)
+                strlen($input),
             );
             $xorInput[$length] = "\x80";
             $checksum = self::xor($checksum, $xorInput);
@@ -236,7 +236,7 @@ final class OCB implements AeadCipher
             $this->encipher->encryptBlock(
                 self::xor(
                     self::xor($checksum, $offset),
-                    $this->mask[self::MASK_DOLLAR]
+                    $this->mask[self::MASK_DOLLAR],
                 )
             ),
             self::hash($aData)
@@ -273,7 +273,7 @@ final class OCB implements AeadCipher
             $offset = self::xor($offset, $this->mask[self::ntz($i + 1)]);
             $sum = self::xor(
                 $sum,
-                $this->encipher->encryptBlock(self::xor($offset, $aData))
+                $this->encipher->encryptBlock(self::xor($offset, $aData)),
             );
             $aData = substr($aData, self::BLOCK_LENGTH);
         }

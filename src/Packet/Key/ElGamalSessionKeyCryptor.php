@@ -38,7 +38,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
      */
     public function __construct(
         private readonly BigInteger $gamma,
-        private readonly BigInteger $phi
+        private readonly BigInteger $phi,
     )
     {
         parent::__construct(self::PKESK_VERSION_3);
@@ -79,7 +79,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
             $encrypted = $publicKey->encrypt($padded);
             return new self(
                 Helper::bin2BigInt(substr($encrypted, 0, $size)),
-                Helper::bin2BigInt(substr($encrypted, $size, $size))
+                Helper::bin2BigInt(substr($encrypted, $size, $size)),
             );
         }
         else {

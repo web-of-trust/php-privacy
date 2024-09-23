@@ -34,7 +34,8 @@ interface EncryptedMessageInterface
     function getSessionKey(): ?SessionKeyInterface;
 
     /**
-     * Decrypt the message. One of `decryptionKeys` or `passwords` must be specified.
+     * Decrypt the message.
+     * One of `decryptionKeys` or `passwords` must be specified.
      * Return new message with decrypted content.
      *
      * @param array $decryptionKeys

@@ -39,7 +39,7 @@ interface SignatureInterface extends ArmorableInterface, PacketContainerInterfac
     function verify(
         array $verificationKeys,
         LiteralDataInterface $literalData,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): array;
 
     /**
@@ -54,6 +54,6 @@ interface SignatureInterface extends ArmorableInterface, PacketContainerInterfac
     function verifyCleartext(
         array $verificationKeys,
         CleartextMessageInterface $cleartext,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): array;
 }

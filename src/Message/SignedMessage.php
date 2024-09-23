@@ -38,7 +38,7 @@ class SignedMessage extends CleartextMessage implements SignedMessageInterface
      */
     public function __construct(
         string $text,
-        private readonly SignatureInterface $signature
+        private readonly SignatureInterface $signature,
     )
     {
         parent::__construct($text);
@@ -57,7 +57,7 @@ class SignedMessage extends CleartextMessage implements SignedMessageInterface
             $armor->getText(),
             new Signature(
                 PacketList::decode($armor->getData())
-            )
+            ),
         );
     }
 

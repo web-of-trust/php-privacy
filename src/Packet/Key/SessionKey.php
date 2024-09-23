@@ -31,7 +31,7 @@ class SessionKey implements SessionKeyInterface
      */
     public function __construct(
         private readonly string $encryptionKey,
-        private readonly Symmetric $symmetric = Symmetric::Aes128
+        private readonly Symmetric $symmetric = Symmetric::Aes128,
     )
     {
     }

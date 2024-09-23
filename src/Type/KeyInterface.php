@@ -60,7 +60,7 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
      *
      * @return DateTimeInterface
      */
-    function getCreationTime(): DateTimeInterface;
+    function getCreationTime(): ?DateTimeInterface;
 
     /**
      * Get key algorithm
@@ -184,7 +184,7 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
     function isRevoked(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): bool;
 
     /**
@@ -198,7 +198,7 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
     function isCertified(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): bool;
 
     /**
@@ -237,7 +237,7 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
         PrivateKeyInterface $signKey,
         string $revocationReason = '',
         ?RevocationReasonTag $reasonTag = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self;
 
     /**

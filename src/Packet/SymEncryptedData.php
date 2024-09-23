@@ -46,7 +46,7 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
      */
     public function __construct(
         private readonly string $encrypted,
-        private readonly ?PacketListInterface $packetList = null
+        private readonly ?PacketListInterface $packetList = null,
     )
     {
         parent::__construct(PacketTag::SymEncryptedData);
@@ -71,7 +71,7 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
     public static function encryptPackets(
         string $key,
         PacketListInterface $packetList,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
     ): self
     {
         self::assertSymmetric($symmetric);
@@ -100,7 +100,7 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
         return self::encryptPackets(
             $sessionKey->getEncryptionKey(),
             $packetList,
-            $sessionKey->getSymmetric()
+            $sessionKey->getSymmetric(),
         );
     }
 
@@ -117,7 +117,7 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
      */
     public function decrypt(
         string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
     ): self
     {
         if (!Config::allowUnauthenticated()) {
@@ -138,7 +138,7 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
                 $this->encrypted,
                 PacketList::decode(
                     $cipher->decrypt(substr($this->encrypted, $blockSize + 2))
-                )
+                ),
             );
         }
     }

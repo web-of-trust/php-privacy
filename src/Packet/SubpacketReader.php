@@ -34,7 +34,7 @@ class SubpacketReader
         private readonly int $type = 0,
         private readonly string $data = '',
         private readonly int $length = 0,
-        private readonly bool $isLong = false
+        private readonly bool $isLong = false,
     )
     {
     }
@@ -225,12 +225,12 @@ class SubpacketReader
             $attributes[] = match ($reader->getType()) {
                 ImageUserAttribute::JPEG => new ImageUserAttribute(
                     $reader->getData(),
-                    $reader->isLong()
+                    $reader->isLong(),
                 ),
                 default => new UserAttributeSubpacket(
                     $reader->getType(),
                     $reader->getData(),
-                    $reader->isLong()
+                    $reader->isLong(),
                 ),
             };
         }
@@ -264,7 +264,7 @@ class SubpacketReader
             ord($bytes[$offset]),
             substr($bytes, $offset + 1, $length - 1),
             $offset + $length,
-            $isLong
+            $isLong,
         );
     }
 }

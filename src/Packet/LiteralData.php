@@ -45,7 +45,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface, Literal
         private readonly string $data,
         private readonly Format $format = Format::Utf8,
         private readonly string $filename = '',
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     )
     {
         parent::__construct(PacketTag::LiteralData);

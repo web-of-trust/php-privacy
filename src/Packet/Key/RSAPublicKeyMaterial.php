@@ -48,7 +48,7 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
     public function __construct(
         private readonly BigInteger $modulus,
         private readonly BigInteger $exponent,
-        ?RSAPublicKey $publicKey = null
+        ?RSAPublicKey $publicKey = null,
     )
     {
         $this->publicKey = $publicKey ?? RSA::loadPublicKey([

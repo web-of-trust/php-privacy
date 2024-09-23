@@ -56,7 +56,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         ?S2KInterface $s2k = null,
         ?AeadAlgorithm $aead = null,
-        string $iv = ''
+        string $iv = '',
     )
     {
         parent::__construct(
@@ -67,7 +67,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
             $symmetric,
             $s2k,
             $aead,
-            $iv
+            $iv,
         );
     }
 
@@ -94,7 +94,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
         DHKeySize $dhKeySize = DHKeySize::Normal,
         CurveOid $curveOid = CurveOid::Ed25519,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self
     {
         return self::fromSecretKey(SecretKey::generate(
@@ -102,7 +102,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
             $rsaKeySize,
             $dhKeySize,
             $curveOid,
-            $time
+            $time,
         ));
     }
 

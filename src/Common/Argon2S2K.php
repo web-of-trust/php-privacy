@@ -120,7 +120,7 @@ class Argon2S2K implements S2KInterface
                 $passphrase,
                 $this->salt,
                 $this->iteration,
-                1 << ($this->memoryExponent + 10)
+                1 << ($this->memoryExponent + 10),
             );
         }
         else {

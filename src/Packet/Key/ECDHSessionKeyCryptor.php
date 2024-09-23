@@ -98,7 +98,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
             );
             $sharedSecret = DH::computeSecret(
                 $privateKey,
-                $keyMaterial->getECKey()->getEncodedCoordinates()
+                $keyMaterial->getECKey()->getEncodedCoordinates(),
             );
 
             $keyWrapper = self::selectKeyWrapper(
@@ -108,7 +108,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
                 $keyMaterial->getKdfHash(),
                 $sharedSecret,
                 self::kdfParameter($keyMaterial, $keyPacket->getFingerprint()),
-                $keyMaterial->getKdfSymmetric()->keySizeInByte()
+                $keyMaterial->getKdfSymmetric()->keySizeInByte(),
             );
             $wrappedKey = $keyWrapper->wrap(
                 $kek, self::pkcs5Encode(implode([
@@ -217,7 +217,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
             $publicKey = EC::loadFormat($format, $key);
             $sharedSecret = DH::computeSecret(
                 $keyMaterial->getECKey(),
-                $publicKey->getEncodedCoordinates()
+                $publicKey->getEncodedCoordinates(),
             );
 
             $keyWrapper = self::selectKeyWrapper(
@@ -227,7 +227,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
                 $publicMaterial->getKdfHash(),
                 $sharedSecret,
                 self::kdfParameter($publicMaterial, $secretKey->getFingerprint()),
-                $publicMaterial->getKdfSymmetric()->keySizeInByte()
+                $publicMaterial->getKdfSymmetric()->keySizeInByte(),
             );
             $key = $keyWrapper->unwrap($kek, $this->wrappedKey);
             return self::pkcs5Decode($key);
@@ -248,7 +248,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
         HashAlgorithm $hash,
         string $sharedSecret,
         string $param,
-        int $keySize
+        int $keySize,
     ): string
     {
         $toHash = implode([

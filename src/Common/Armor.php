@@ -62,7 +62,7 @@ final class Armor
         private ArmorType $type,
         private array $headers = [],
         private string $data = '',
-        private string $text = ''
+        private string $text = '',
     )
     {
     }
@@ -184,8 +184,8 @@ final class Armor
 
         $data = Strings::base64_decode(implode($dataLines));
         if (strcmp($checksum, self::crc24Checksum($data)) !== 0 &&
-           (!empty($checksum) || $checksumRequired))
-        {
+           (!empty($checksum) || $checksumRequired)
+        ) {
             throw new \RuntimeException(
                 'Ascii armor integrity check failed!'
             );
@@ -220,7 +220,7 @@ final class Armor
         array $hashAlgos = [],
         int $partIndex = 0,
         int $partTotal = 0,
-        string $customComment = ''
+        string $customComment = '',
     ): string
     {
         $result = match($type) {

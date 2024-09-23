@@ -54,7 +54,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
         private readonly string $keyFingerprint,
         private readonly KeyAlgorithm $keyAlgorithm,
         private readonly SessionKeyCryptorInterface $sessionKeyCryptor,
-        private readonly ?SessionKeyInterface $sessionKey = null
+        private readonly ?SessionKeyInterface $sessionKey = null,
     )
     {
         parent::__construct(PacketTag::PublicKeyEncryptedSessionKey);
@@ -105,7 +105,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
             $keyAlgorithm,
             self::readMaterial(
                 substr($bytes, $offset), $version, $keyAlgorithm
-            )
+            ),
         );
     }
 
@@ -118,7 +118,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
      */
     public static function encryptSessionKey(
         KeyPacketInterface $keyPacket,
-        SessionKeyInterface $sessionKey
+        SessionKeyInterface $sessionKey,
     ): self
     {
         $version = $keyPacket->getVersion() === self::VERSION_6 ?

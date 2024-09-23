@@ -124,14 +124,14 @@ interface SignaturePacketInterface extends PacketInterface
      *
      * @return DateTimeInterface
      */
-    function getSignatureCreationTime(): ?DateTimeInterface;
+    function getCreationTime(): ?DateTimeInterface;
 
     /**
      * Get signature expiration time
      *
      * @return DateTimeInterface
      */
-    function getSignatureExpirationTime(): ?DateTimeInterface;
+    function getExpirationTime(): ?DateTimeInterface;
 
     /**
      * Get exportable certification sub packet

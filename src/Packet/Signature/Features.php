@@ -64,10 +64,34 @@ class Features extends SignatureSubpacket
      *
      * @return bool
      */
-    public function supportVersion1SEIPD(): bool
+    public function supportV1SEIPD(): bool
     {
         return (ord($this->getData()[0]) & SupportFeature::Version1SEIPD->value)
             === SupportFeature::Version1SEIPD->value;
+    }
+
+    /**
+     * Support:
+     * AEAD Encrypted Data packet (packet 20). 
+     * Version 5 Symmetric Encrypted Session Key packet.
+     *
+     * @return bool
+     */
+    public function supportAead(): bool
+    {
+        return (ord($this->getData()[0]) & SupportFeature::AeadEncrypted->value)
+            === SupportFeature::AeadEncrypted->value;
+    }
+
+    /**
+     * Support version 5 PublicKey packet.
+     *
+     * @return bool
+     */
+    public function supportV5PublicKey(): bool
+    {
+        return (ord($this->getData()[0]) & SupportFeature::Version5PublicKey->value)
+            === SupportFeature::Version5PublicKey->value;
     }
 
     /**
@@ -75,7 +99,7 @@ class Features extends SignatureSubpacket
      *
      * @return bool
      */
-    public function supportVersion2SEIPD(): bool
+    public function supportV2SEIPD(): bool
     {
         return (ord($this->getData()[0]) & SupportFeature::Version2SEIPD->value)
             === SupportFeature::Version2SEIPD->value;

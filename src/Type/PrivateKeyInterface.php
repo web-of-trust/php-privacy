@@ -68,7 +68,7 @@ interface PrivateKeyInterface extends KeyInterface
      */
     function encrypt(
         string $passphrase,
-        array $subkeyPassphrases = []
+        array $subkeyPassphrases = [],
     ): self;
 
     /**
@@ -80,7 +80,8 @@ interface PrivateKeyInterface extends KeyInterface
      * @return self
      */
     function decrypt(
-        string $passphrase, array $subkeyPassphrases = []
+        string $passphrase,
+        array $subkeyPassphrases = [],
     ): self;
 
     /**
@@ -114,7 +115,7 @@ interface PrivateKeyInterface extends KeyInterface
         CurveOid $curve = CurveOid::Secp521r1,
         int $keyExpiry = 0,
         bool $subkeySign = false,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self;
 
     /**
@@ -127,7 +128,7 @@ interface PrivateKeyInterface extends KeyInterface
      */
     function certifyKey(
         KeyInterface $key,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): KeyInterface;
 
     /**
@@ -144,7 +145,7 @@ interface PrivateKeyInterface extends KeyInterface
         KeyInterface $key,
         string $revocationReason = '',
         ?RevocationReasonTag $reasonTag = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): KeyInterface;
 
 
@@ -161,7 +162,7 @@ interface PrivateKeyInterface extends KeyInterface
         string $userID,
         string $revocationReason = '',
         ?RevocationReasonTag $reasonTag = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self;
 
     /**
@@ -177,6 +178,6 @@ interface PrivateKeyInterface extends KeyInterface
         string $keyID,
         string $revocationReason = '',
         ?RevocationReasonTag $reasonTag = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self;
 }

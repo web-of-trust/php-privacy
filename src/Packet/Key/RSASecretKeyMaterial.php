@@ -58,7 +58,7 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
         private readonly BigInteger $primeQ,
         private readonly BigInteger $coefficient,
         private readonly KeyMaterialInterface $publicMaterial,
-        ?RSAPrivateKey $privateKey = null
+        ?RSAPrivateKey $privateKey = null,
     )
     {
         $this->privateKey = $privateKey ?? RSA::loadPrivateKey([

@@ -38,6 +38,6 @@ interface PublicKeyMaterialInterface extends KeyMaterialInterface
     function verify(
         HashAlgorithm $hash,
         string $message,
-        string $signature
+        string $signature,
     ): bool;
 }

@@ -61,7 +61,7 @@ class SymEncryptedSessionKey extends AbstractPacket
         private readonly ?AeadAlgorithm $aead = null,
         private readonly string $iv = '',
         private readonly string $encrypted = '',
-        private readonly ?SessionKeyInterface $sessionKey = null
+        private readonly ?SessionKeyInterface $sessionKey = null,
     )
     {
         parent::__construct(PacketTag::SymEncryptedSessionKey);
@@ -131,7 +131,7 @@ class SymEncryptedSessionKey extends AbstractPacket
             $symmetric,
             $aead,
             $iv,
-            substr($bytes, $offset)
+            substr($bytes, $offset),
         );
     }
 
@@ -177,10 +177,12 @@ class SymEncryptedSessionKey extends AbstractPacket
                     chr($aead->value),
                 ]);
                 $iv = Random::string($aead->ivLength());
-                $encryptionKey = hash_hkdf(
-                    Config::HKDF_ALGO, $key, $keySize, $aData
+                $cipher = $aead->cipherEngine(
+                    hash_hkdf(
+                        Config::HKDF_ALGO, $key, $keySize, $aData
+                    ),
+                    $symmetric,
                 );
-                $cipher = $aead->cipherEngine($encryptionKey, $symmetric);
                 $encrypted = $cipher->encrypt(
                     $sessionKey->getEncryptionKey(), $iv, $aData
                 );
@@ -307,11 +309,11 @@ class SymEncryptedSessionKey extends AbstractPacket
                         chr($this->symmetric->value),
                         chr($this->aead->value),
                     ]);
-                    $encryptionKey = $this->version === self::VERSION_6 ? hash_hkdf(
+                    $kek = $this->version === self::VERSION_6 ? hash_hkdf(
                         Config::HKDF_ALGO, $key, $keySize, $aData
                     ) : $key;
                     $cipher = $this->aead->cipherEngine(
-                        $encryptionKey, $this->symmetric
+                        $kek, $this->symmetric
                     );
                     $decrypted = $cipher->decrypt(
                         $this->encrypted, $this->iv, $aData

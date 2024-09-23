@@ -41,7 +41,7 @@ class ElGamalPublicKeyMaterial implements KeyMaterialInterface
         private readonly BigInteger $prime,
         private readonly BigInteger $generator,
         private readonly BigInteger $exponent,
-        ?PublicKey $publicKey = null
+        ?PublicKey $publicKey = null,
     )
     {
         $this->publicKey = $publicKey ?? new PublicKey(

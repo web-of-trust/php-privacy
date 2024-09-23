@@ -34,5 +34,8 @@ interface SignedMessageInterface extends ArmorableInterface
      * @param DateTimeInterface $time
      * @return array
      */
-    function verify(array $verificationKeys, ?DateTimeInterface $time = null): array;
+    function verify(
+        array $verificationKeys,
+        ?DateTimeInterface $time = null,
+    ): array;
 }

@@ -66,16 +66,18 @@ class Subkey implements SubkeyInterface
         private readonly KeyInterface $mainKey,
         private readonly SubkeyPacketInterface $keyPacket,
         array $revocationSignatures = [],
-        array $bindingSignatures = []
+        array $bindingSignatures = [],
     )
     {
         $this->revocationSignatures = array_filter(
             $revocationSignatures,
-            static fn ($signature) => $signature instanceof SignaturePacketInterface
+            static fn ($signature) =>
+                $signature instanceof SignaturePacketInterface,
         );
         $this->bindingSignatures = array_filter(
             $bindingSignatures,
-            static fn ($signature) => $signature instanceof SignaturePacketInterface
+            static fn ($signature) =>
+                $signature instanceof SignaturePacketInterface,
         );
     }
 
@@ -113,8 +115,8 @@ class Subkey implements SubkeyInterface
             usort(
                 $signatures,
                 static function ($a, $b): int {
-                    $aTime = $a->getSignatureCreationTime() ?? new \DateTime();
-                    $bTime = $b->getSignatureCreationTime() ?? new \DateTime();
+                    $aTime = $a->getCreationTime() ?? new \DateTime();
+                    $bTime = $b->getCreationTime() ?? new \DateTime();
                     return $aTime->getTimestamp() - $bTime->getTimestamp();
                 }
             );
@@ -150,7 +152,7 @@ class Subkey implements SubkeyInterface
     /**
      * {@inheritdoc}
      */
-    public function getCreationTime(): DateTimeInterface
+    public function getCreationTime(): ?DateTimeInterface
     {
         return $this->keyPacket->getCreationTime();
     }
@@ -212,8 +214,8 @@ class Subkey implements SubkeyInterface
         }
         $keyFlags = $this->getLatestBindingSignature()?->getKeyFlags();
         if (($keyFlags instanceof KeyFlags) &&
-           !($keyFlags->isEncryptCommunication() || $keyFlags->isEncryptStorage()))
-        {
+           !($keyFlags->isEncryptCommunication() || $keyFlags->isEncryptStorage())
+        ) {
             return false;
         }
         return true;
@@ -225,7 +227,7 @@ class Subkey implements SubkeyInterface
     public function isRevoked(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): bool
     {
         if (!empty($this->revocationSignatures)) {
@@ -241,7 +243,7 @@ class Subkey implements SubkeyInterface
                             $this->mainKey->getKeyPacket()->getSignBytes(),
                             $this->keyPacket->getSignBytes(),
                         ]),
-                        $time
+                        $time,
                     )) {
                         $reason = $signature->getRevocationReason();
                         if ($reason instanceof RevocationReason) {
@@ -249,7 +251,7 @@ class Subkey implements SubkeyInterface
                                 'Subkey is revoked. Reason: {reason}',
                                 [
                                     'reason' => $reason->getDescription(),
-                                ]
+                                ],
                             );
                         }
                         else {
@@ -283,7 +285,7 @@ class Subkey implements SubkeyInterface
                     $this->mainKey->getKeyPacket()->getSignBytes(),
                     $this->keyPacket->getSignBytes(),
                 ]),
-                $time
+                $time,
             )) {
                 return false;
             }
@@ -298,7 +300,7 @@ class Subkey implements SubkeyInterface
         PrivateKeyInterface $signKey,
         string $revocationReason = '',
         ?RevocationReasonTag $reasonTag = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self
     {
         $self = clone $this;
@@ -309,7 +311,7 @@ class Subkey implements SubkeyInterface
             $self->getKeyPacket(),
             $revocationReason,
             $reasonTag,
-            $time
+            $time,
         );
         return $self;
     }

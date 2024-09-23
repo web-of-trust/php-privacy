@@ -73,7 +73,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Plaintext,
         private readonly ?S2KInterface $s2k = null,
         private readonly ?AeadAlgorithm $aead = null,
-        private readonly string $iv = ''
+        private readonly string $iv = '',
     )
     {
         parent::__construct(
@@ -168,7 +168,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             $symmetric,
             $s2k,
             $aead,
-            $iv
+            $iv,
         );
     }
 
@@ -187,7 +187,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
         DHKeySize $dhKeySize = DHKeySize::Normal,
         CurveOid $curveOid = CurveOid::Secp521r1,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self
     {
         $keyMaterial = match($keyAlgorithm) {
@@ -440,30 +440,30 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 Random::string($symmetric->blockSize());
 
             $packetTag = chr(0xc0 | $this->getTag()->value);
-            $key = self::produceEncryptionKey(
+            $kek = self::produceEncryptionKey(
                 $passphrase,
                 $symmetric,
                 $s2k,
                 $aead,
-                $packetTag
+                $packetTag,
             );
             $clearText = $this->keyMaterial?->toBytes() ?? '';
 
             if ($aeadProtect) {
-                $cipher = $aead->cipherEngine($key, $symmetric);
+                $cipher = $aead->cipherEngine($kek, $symmetric);
                 $encrypted = $cipher->encrypt(
                     $clearText,
                     $iv,
                     implode([
                         $packetTag,
                         $this->publicKey->toBytes(),
-                    ])
+                    ]),
                 );
             }
             else {
                 $cipher = $symmetric->cipherEngine(S2kUsage::Cfb->name);
                 $cipher->setIV($iv);
-                $cipher->setKey($key);
+                $cipher->setKey($kek);
 
                 $encrypted = $cipher->encrypt(implode([
                     $clearText,
@@ -478,7 +478,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $symmetric,
                 $s2k,
                 $aead,
-                $iv
+                $iv,
             );
         }
         else {
@@ -501,16 +501,16 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 
             $clearText = '';
             $packetTag = chr(0xc0 | $this->getTag()->value);
-            $key = self::produceEncryptionKey(
+            $kek = self::produceEncryptionKey(
                 $passphrase,
                 $this->symmetric,
                 $this->s2k,
                 $this->aead,
-                $packetTag
+                $packetTag,
             );
 
             if ($this->aead instanceof AeadAlgorithm) {
-                $cipher = $this->aead->cipherEngine($key, $this->symmetric);
+                $cipher = $this->aead->cipherEngine($kek, $this->symmetric);
                 $clearText = $cipher->decrypt(
                     $this->keyData,
                     $this->iv,
@@ -523,7 +523,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             else {
                 $cipher = $this->symmetric->cipherEngine(S2kUsage::Cfb->name);
                 $cipher->setIV($this->iv);
-                $cipher->setKey($key);
+                $cipher->setKey($kek);
                 $decrypted = $cipher->decrypt($this->keyData);
                 $length = strlen($decrypted) - HashAlgorithm::Sha1->digestSize();
                 $clearText = substr($decrypted, 0, $length);
@@ -548,7 +548,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $this->symmetric,
                 $this->s2k,
                 $this->aead,
-                $this->iv
+                $this->iv,
             );
         }
     }
@@ -647,7 +647,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                     chr(PublicKey::VERSION_6),
                     chr($symmetric->value),
                     chr($aead->value),
-                ])
+                ]),
             );
         }
         return $derivedKey;

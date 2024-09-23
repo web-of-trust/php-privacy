@@ -56,7 +56,7 @@ abstract class ECSecretKeyMaterial implements ECKeyMaterialInterface, KeyMateria
     public function __construct(
         private readonly BigInteger $d,
         private readonly KeyMaterialInterface $publicMaterial,
-        ?ECPrivateKey $privateKey = null
+        ?ECPrivateKey $privateKey = null,
     )
     {
         if ($privateKey instanceof ECPrivateKey) {

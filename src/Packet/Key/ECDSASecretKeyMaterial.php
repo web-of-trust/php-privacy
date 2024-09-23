@@ -45,7 +45,7 @@ class ECDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMat
     {
         return new self(
             Helper::readMPI($bytes),
-            $publicMaterial
+            $publicMaterial,
         );
     }
 
@@ -73,7 +73,7 @@ class ECDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMat
                         Helper::bin2BigInt(
                             $privateKey->getEncodedCoordinates()
                         ),
-                        $privateKey->getPublicKey()
+                        $privateKey->getPublicKey(),
                     ),
                     $privateKey,
                 );

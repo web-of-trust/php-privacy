@@ -52,7 +52,7 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
         private readonly BigInteger $order,
         private readonly BigInteger $generator,
         private readonly BigInteger $exponent,
-        ?DSAPublicKey $publicKey = null
+        ?DSAPublicKey $publicKey = null,
     )
     {
         $this->publicKey = $publicKey ?? DSA::loadPublicKey([
@@ -86,7 +86,7 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
             $prime,
             $order,
             $generator,
-            $exponent
+            $exponent,
         );
     }
 

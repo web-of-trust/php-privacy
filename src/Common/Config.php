@@ -294,7 +294,8 @@ final class Config
     }
 
     /**
-     * Set Chunk Size Byte for Authenticated Encryption with Additional Data (AEAD) mode.
+     * Set Chunk Size Byte for Authenticated Encryption
+     * with Additional Data (AEAD) mode.
      *
      * @param int $aeadChunkSize
      */
@@ -308,7 +309,8 @@ final class Config
 
     /**
      * Get AEAD protection.
-     * Use Authenticated Encryption with Additional Data (AEAD) protection for symmetric encryption.
+     * Use Authenticated Encryption with Additional Data (AEAD)
+     * protection for symmetric encryption.
      *
      * @return bool
      */

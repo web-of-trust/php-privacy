@@ -52,7 +52,7 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
     public function __construct(
         private readonly BigInteger $exponent,
         private readonly KeyMaterialInterface $publicMaterial,
-        ?DSAPrivateKey $privateKey = null
+        ?DSAPrivateKey $privateKey = null,
     )
     {
         $this->privateKey = $privateKey ?? DSA::loadPrivateKey([
@@ -100,7 +100,7 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
                 $params['g']->powMod($params['x'], $params['p']),
                 $privateKey->getPublicKey(),
             ),
-            $privateKey
+            $privateKey,
         );
     }
 

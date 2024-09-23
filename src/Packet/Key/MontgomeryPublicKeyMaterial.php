@@ -44,7 +44,7 @@ class MontgomeryPublicKeyMaterial implements ECKeyMaterialInterface, KeyMaterial
      */
     public function __construct(
         private readonly string $public,
-        ?ECPublicKey $publicKey = null
+        ?ECPublicKey $publicKey = null,
     )
     {
         if ($publicKey instanceof ECPublicKey) {

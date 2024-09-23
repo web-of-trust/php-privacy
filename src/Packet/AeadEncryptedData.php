@@ -57,7 +57,7 @@ class AeadEncryptedData extends AbstractPacket implements AeadEncryptedDataPacke
         private readonly int $chunkSize,
         private readonly string $iv,
         private readonly string $encrypted = '',
-        private readonly ?PacketListInterface $packetList = null
+        private readonly ?PacketListInterface $packetList = null,
     )
     {
         parent::__construct(PacketTag::AeadEncryptedData);
@@ -91,7 +91,7 @@ class AeadEncryptedData extends AbstractPacket implements AeadEncryptedDataPacke
             $aead,
             $chunkSize,
             $iv,
-            $encrypted
+            $encrypted,
         );
     }
 
@@ -106,7 +106,7 @@ class AeadEncryptedData extends AbstractPacket implements AeadEncryptedDataPacke
     public static function encryptPackets(
         string $key,
         PacketListInterface $packetList,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
     ): self
     {
         self::assertSymmetric($symmetric);
@@ -119,7 +119,7 @@ class AeadEncryptedData extends AbstractPacket implements AeadEncryptedDataPacke
             $symmetric,
             $aead,
             $chunkSize,
-            $iv
+            $iv,
         );
 
         return new self(
@@ -128,7 +128,7 @@ class AeadEncryptedData extends AbstractPacket implements AeadEncryptedDataPacke
             $chunkSize,
             $iv,
             $encryptor->crypt(self::AEAD_ENCRYPT, $key, $packetList->encode()),
-            $packetList
+            $packetList,
         );
     }
 
@@ -181,7 +181,7 @@ class AeadEncryptedData extends AbstractPacket implements AeadEncryptedDataPacke
      */
     public function decrypt(
         string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
     ): self
     {
         if ($this->packetList instanceof PacketListInterface) {
@@ -204,7 +204,7 @@ class AeadEncryptedData extends AbstractPacket implements AeadEncryptedDataPacke
                 $this->encrypted,
                 PacketList::decode(
                     $this->crypt(self::AEAD_DECRYPT, $key, $data, $authTag)
-                )
+                ),
             );
         }
     }
@@ -239,7 +239,7 @@ class AeadEncryptedData extends AbstractPacket implements AeadEncryptedDataPacke
             $crypted[] = $cipher->$fn(
                 Strings::shift($data, $chunkSize),
                 $cipher->getNonce($this->iv, $ciBytes),
-                $aDataBytes
+                $aDataBytes,
             );
 
             $aDataBytes = substr_replace(
@@ -261,7 +261,7 @@ class AeadEncryptedData extends AbstractPacket implements AeadEncryptedDataPacke
         $crypted[] = $cipher->$fn(
             $finalChunk,
             $cipher->getNonce($this->iv, $ciBytes),
-            $aDataTagBytes
+            $aDataTagBytes,
         );
 
         return implode($crypted);

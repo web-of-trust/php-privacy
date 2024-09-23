@@ -83,12 +83,12 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
      */
     public function decrypt(
         array $decryptionKeys = [],
-        array $passwords = []
+        array $passwords = [],
     ): LiteralMessageInterface
     {
         $decryptionKeys = array_filter(
             $decryptionKeys,
-            static fn ($key) => $key instanceof PrivateKeyInterface
+            static fn ($key) => $key instanceof PrivateKeyInterface,
         );
         if (empty($decryptionKeys) && empty($passwords)) {
             throw new \InvalidArgumentException(
@@ -149,7 +149,8 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
                 foreach ($decryptionKeys as $key) {
                     $keyPacket = $key->getEncryptionKeyPacket();
                     if ($pkesk->getKeyAlgorithm() === $keyPacket->getKeyAlgorithm() &&
-                        strcmp($pkesk->getKeyID(), $keyPacket->getKeyID()) === 0) {
+                        strcmp($pkesk->getKeyID(), $keyPacket->getKeyID()) === 0
+                    ) {
                         try {
                             $sessionKeys[] = $pkesk->decrypt($keyPacket)->getSessionKey();
                             break;

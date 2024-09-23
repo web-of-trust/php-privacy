@@ -152,7 +152,7 @@ final class Helper
     {
         $sum = array_sum(array_map(
             static fn ($char) => ord($char),
-            str_split($text)
+            str_split($text),
         ));
         return pack('n', $sum & 0xffff);
     }
@@ -168,7 +168,7 @@ final class Helper
         return preg_replace_callback(
             '/\*/u',
             static fn () => chr(random_int(33, 126)),
-            str_repeat('*', $length)
+            str_repeat('*', $length),
         );
     }
 
@@ -181,7 +181,10 @@ final class Helper
     public static function removeTrailingSpaces(string $text): string
     {
         $lines = explode(self::EOL, $text);
-        $lines = array_map(static fn ($line) => rtrim($line, self::SPACES), $lines);
+        $lines = array_map(
+            static fn ($line) => rtrim($line, self::SPACES),
+            $lines,
+        );
         return implode(self::EOL, $lines);
     }
 

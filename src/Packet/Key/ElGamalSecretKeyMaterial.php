@@ -43,7 +43,7 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
     public function __construct(
         private readonly BigInteger $exponent,
         private readonly KeyMaterialInterface $publicMaterial,
-        ?PrivateKey $privateKey = null
+        ?PrivateKey $privateKey = null,
     )
     {
         $parameters = $publicMaterial->getParameters();
@@ -51,7 +51,7 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
             $exponent,
             $parameters['y'],
             $parameters['p'],
-            $parameters['g']
+            $parameters['g'],
         );
     }
 
@@ -92,7 +92,7 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
                 $privateKey->getY(),
                 $privateKey->getPublicKey(),
             ),
-            $privateKey
+            $privateKey,
         );
     }
 

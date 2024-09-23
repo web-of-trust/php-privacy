@@ -88,7 +88,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
     public static function fromLiteralData(
         string $literalData,
         string $filename = '',
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self
     {
         return new self(new PacketList([new LiteralData(
@@ -103,7 +103,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
     {
         $packets = array_filter(
             self::unwrapCompressed($this->getPackets()),
-            static fn ($packet) => $packet instanceof LiteralDataInterface
+            static fn ($packet) => $packet instanceof LiteralDataInterface,
         );
         if (empty($packets)) {
             throw new \RuntimeException(
@@ -120,7 +120,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
     {
         return new Signature(new PacketList(array_filter(
             self::unwrapCompressed($this->getPackets()),
-            static fn ($packet) => $packet instanceof SignaturePacketInterface
+            static fn ($packet) => $packet instanceof SignaturePacketInterface,
         )));
     }
 
@@ -131,13 +131,13 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
         array $signingKeys,
         array $recipients = [],
         ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self
     {
         $signaturePackets = [
             ...array_filter(
                 self::unwrapCompressed($this->getPackets()),
-                static fn ($packet) => $packet instanceof SignaturePacketInterface
+                static fn ($packet) => $packet instanceof SignaturePacketInterface,
             ),
             ...$this->createSignature(
                 $signingKeys, $recipients, $notationData, $time
@@ -169,7 +169,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
         array $signingKeys,
         array $recipients = [],
         ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): SignatureInterface
     {
         return $this->createSignature(
@@ -200,7 +200,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
     public function verifyDetached(
         array $verificationKeys,
         SignatureInterface $signature,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): array
     {
         return $signature->verify(
@@ -214,7 +214,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
     public function encrypt(
         array $encryptionKeys = [],
         array $passwords = [],
-        ?SymmetricAlgorithm $symmetric = null
+        ?SymmetricAlgorithm $symmetric = null,
     ): EncryptedMessageInterface
     {
         $encryptionKeys = array_filter(
@@ -286,7 +286,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
         $algorithm = $algorithm ?? Config::getPreferredCompression();
         if ($algorithm !== CompressionAlgorithm::Uncompressed) {
             return new self(new PacketList([
-                CompressedData::fromPackets($this->getPackets(), $algorithm)
+                CompressedData::fromPackets($this->getPackets(), $algorithm),
             ]));
         }
         return $this;
@@ -305,12 +305,12 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
         array $signingKeys,
         array $recipients = [],
         ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): SignatureInterface
     {
         $signingKeys = array_filter(
             $signingKeys,
-            static fn ($key) => $key instanceof PrivateKeyInterface
+            static fn ($key) => $key instanceof PrivateKeyInterface,
         );
         if (empty($signingKeys)) {
             throw new \InvalidArgumentException(
@@ -323,9 +323,9 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
                 $this->getLiteralData(),
                 $recipients,
                 $notationData,
-                $time
+                $time,
             ),
-            $signingKeys
+            $signingKeys,
         )));
     }
 
@@ -339,7 +339,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
     {
         $compressedPackets = array_filter(
             $packets,
-            static fn ($packet) => $packet instanceof CompressedData
+            static fn ($packet) => $packet instanceof CompressedData,
         );
         return array_pop(
             $compressedPackets

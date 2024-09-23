@@ -65,7 +65,7 @@ class GenericS2K implements S2KInterface
         private readonly string $salt,
         private readonly S2kType $type = S2kType::Iterated,
         private readonly HashAlgorithm $hash = HashAlgorithm::Sha256,
-        private readonly int $itCount = self::DEFAULT_IT_COUNT
+        private readonly int $itCount = self::DEFAULT_IT_COUNT,
     )
     {
         if ($type === S2kType::Argon2) {

@@ -31,7 +31,7 @@ class PacketReader
     public function __construct(
         private readonly PacketTag $tag,
         private readonly string $data = '',
-        private readonly int $length = 0
+        private readonly int $length = 0,
     )
     {
     }
@@ -158,7 +158,7 @@ class PacketReader
         return new self(
             $tag,
             $data,
-            $offset + $dataLength
+            $offset + $dataLength,
         );
     }
 }

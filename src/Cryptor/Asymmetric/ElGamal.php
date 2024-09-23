@@ -38,7 +38,7 @@ abstract class ElGamal extends AsymmetricKey
     public function __construct(
         private readonly BigInteger $y,
         private readonly BigInteger $prime,
-        private readonly BigInteger $generator
+        private readonly BigInteger $generator,
     )
     {
         $this->bitSize = $prime->getLength();

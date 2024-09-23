@@ -338,11 +338,15 @@ EOT;
     public function testFeatures()
     {
         $features = Features::fromFeatures(
-            SupportFeature::Version2SEIPD->value |
+            SupportFeature::Version1SEIPD->value |
+            SupportFeature::AeadEncrypted->value |
+            SupportFeature::Version5PublicKey->value |
             SupportFeature::Version2SEIPD->value
         );
-        $this->assertTrue($features->supportVersion2SEIPD());
-        $this->assertTrue($features->supportVersion2SEIPD());
+        $this->assertTrue($features->supportV1SEIPD());
+        $this->assertTrue($features->supportAead());
+        $this->assertTrue($features->supportV5PublicKey());
+        $this->assertTrue($features->supportV2SEIPD());
     }
 
     public function testKeyFlag()

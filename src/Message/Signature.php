@@ -97,7 +97,7 @@ class Signature implements SignatureInterface
     public function verify(
         array $verificationKeys,
         LiteralDataInterface $literalData,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): array
     {
         $verificationKeys = array_filter(
@@ -146,13 +146,13 @@ class Signature implements SignatureInterface
     public function verifyCleartext(
         array $verificationKeys,
         CleartextMessageInterface $cleartext,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): array
     {
         return $this->verify(
             $verificationKeys,
             LiteralData::fromText($cleartext->getText()),
-            $time
+            $time,
         );
     }
 
