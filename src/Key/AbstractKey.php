@@ -477,13 +477,6 @@ abstract class AbstractKey implements KeyInterface
         if ($this->isRevoked(time: $time)) {
             return false;
         }
-        foreach ($this->users as $user) {
-            if (empty($userID) || strcmp($user->getUserID(), $userID) === 0) {
-                if (!$user->verify($time)) {
-                    return false;
-                }
-            }
-        }
         foreach ($this->directSignatures as $signature) {
             if (!$signature->verify(
                 $this->toPublic()->getKeyPacket(),
@@ -491,6 +484,13 @@ abstract class AbstractKey implements KeyInterface
                 $time,
             )) {
                 return false;
+            }
+        }
+        foreach ($this->users as $user) {
+            if (empty($userID) || strcmp($user->getUserID(), $userID) === 0) {
+                if (!$user->verify($time)) {
+                    return false;
+                }
             }
         }
         $expirationTime = $this->getExpirationTime();
@@ -684,9 +684,12 @@ abstract class AbstractKey implements KeyInterface
         if (!$this->keyPacket->isSigningKey()) {
             return false;
         }
-        $users = $this->getSortedPrimaryUsers();
-        $user = array_pop($users);
-        $keyFlags = $user?->getLatestSelfCertification()?->getKeyFlags();
+        $keyFlags = $this->getLatestDirectSignature()?->getKeyFlags();
+        if (empty($keyFlags)) {
+            $users = $this->getSortedPrimaryUsers();
+            $user = array_pop($users);
+            $keyFlags = $user?->getLatestSelfCertification()?->getKeyFlags();
+        }
         if (($keyFlags instanceof KeyFlags) && !$keyFlags->isSignData()) {
             return false;
         }
@@ -703,9 +706,12 @@ abstract class AbstractKey implements KeyInterface
         if (!$this->keyPacket->isEncryptionKey()) {
             return false;
         }
-        $users = $this->getSortedPrimaryUsers();
-        $user = array_pop($users);
-        $keyFlags = $user?->getLatestSelfCertification()?->getKeyFlags();
+        $keyFlags = $this->getLatestDirectSignature()?->getKeyFlags();
+        if (empty($keyFlags)) {
+            $users = $this->getSortedPrimaryUsers();
+            $user = array_pop($users);
+            $keyFlags = $user?->getLatestSelfCertification()?->getKeyFlags();
+        }
         if (($keyFlags instanceof KeyFlags) &&
            !($keyFlags->isEncryptCommunication() || $keyFlags->isEncryptStorage())
         ) {

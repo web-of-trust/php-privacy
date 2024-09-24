@@ -155,7 +155,6 @@ interface PrivateKeyInterface extends KeyInterface
         ?DateTimeInterface $time = null,
     ): KeyInterface;
 
-
     /**
      * Revoke user & return a clone of the key object with the new revoked user.
      *

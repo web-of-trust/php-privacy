@@ -17,6 +17,7 @@ use OpenPGP\Packet\PacketList;
 use OpenPGP\Type\{
     KeyInterface,
     PacketListInterface,
+    PublicKeyInterface,
     PublicKeyPacketInterface,
 };
 
@@ -27,7 +28,7 @@ use OpenPGP\Type\{
  * @category Key
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class PublicKey extends AbstractKey
+class PublicKey extends AbstractKey implements PublicKeyInterface
 {
     /**
      * Constructor
@@ -40,7 +41,7 @@ class PublicKey extends AbstractKey
      * @return self
      */
     public function __construct(
-        PublicKeyPacketInterface $keyPacket,
+        private readonly PublicKeyPacketInterface $publicKeyPacket,
         array $revocationSignatures = [],
         array $directSignatures = [],
         array $users = [],
@@ -48,7 +49,7 @@ class PublicKey extends AbstractKey
     )
     {
         parent::__construct(
-            $keyPacket,
+            $publicKeyPacket,
             $revocationSignatures,
             $directSignatures,
             $users,
@@ -162,6 +163,14 @@ class PublicKey extends AbstractKey
         self::applyKeyStructure($publicKey, $keyStruct);
 
         return $publicKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPublicKeyPacket(): PublicKeyPacketInterface
+    {
+        return $this->publicKeyPacket;
     }
 
     /**
