@@ -749,11 +749,11 @@ abstract class AbstractKey implements KeyInterface
      */
     protected function clone(): static
     {
-        $key = clone $this;
+        $self = clone $this;
 
-        return $key->setUsers(array_map(
+        return $self->setUsers(array_map(
             static fn ($user) => new User(
-                $key,
+                $self,
                 $user->getUserIDPacket(),
                 $user->getRevocationCertifications(),
                 $user->getSelfCertifications(),
@@ -762,7 +762,7 @@ abstract class AbstractKey implements KeyInterface
             $this->users,
         ))->setSubkeys(array_map(
             static fn ($subkey) => new Subkey(
-                $key,
+                $self,
                 $subkey->getKeyPacket(),
                 $subkey->getRevocationSignatures(),
                 $subkey->getBindingSignatures(),
