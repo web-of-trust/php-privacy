@@ -9,10 +9,7 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
-use OpenPGP\Enum\{
-    DHKeySize,
-    HashAlgorithm,
-};
+use OpenPGP\Enum\HashAlgorithm;
 use OpenPGP\Type\{
     KeyMaterialInterface,
     SecretKeyMaterialInterface,
@@ -80,15 +77,16 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
     /**
      * Generate key material by using DSA create key
      *
-     * @param DHKeySize $keySize
+     * @param int $lSize
+     * @param int $nSize
      * @return self
      */
     public static function generate(
-        DHKeySize $keySize = DHKeySize::Medium
+        int $lSize = 2048, int $nSize = 224
     ): self
     {
         $privateKey = DSA::createKey(
-            $keySize->lSize(), $keySize->nSize()
+            $lSize, $nSize
         );
         $params = PKCS8::load($privateKey->toString('PKCS8'));
         return new self(

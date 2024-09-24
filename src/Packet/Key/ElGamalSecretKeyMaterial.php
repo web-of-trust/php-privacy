@@ -14,7 +14,6 @@ use OpenPGP\Cryptor\Asymmetric\ElGamal\{
     PrivateKey,
     PublicKey,
 };
-use OpenPGP\Enum\DHKeySize;
 use OpenPGP\Type\KeyMaterialInterface;
 use phpseclib3\Crypt\Common\AsymmetricKey;
 use phpseclib3\Math\BigInteger;
@@ -74,15 +73,16 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
     /**
      * Generate key material by using ElGamal create key
      *
-     * @param DHKeySize $keySize
+     * @param int $lSize
+     * @param int $nSize
      * @return self
      */
     public static function generate(
-        DHKeySize $keySize = DHKeySize::Medium
+        int $lSize = 2048, int $nSize = 224
     ): self
     {
         $privateKey = ElGamal::createKey(
-            $keySize->lSize(), $keySize->nSize()
+            $lSize, $nSize
         );
         return new self(
             $privateKey->getX(),
