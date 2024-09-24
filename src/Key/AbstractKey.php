@@ -799,7 +799,7 @@ abstract class AbstractKey implements KeyInterface
     }
 
     /**
-     * Read packet list to key map.
+     * Build key map from packet list.
      *
      * @param PacketListInterface $packetList
      * @return array
