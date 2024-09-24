@@ -460,14 +460,15 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         $users = $self->getUsers();
         foreach ($userIDs as $userID) {
             $packet = new UserID($userID);
-            $selfCertificate = Signature::createSelfCertificate(
-                $self->getSecretKeyPacket(),
-                $packet,
-            );
             $users[] = new User(
                 $self,
                 $packet,
-                selfCertifications: [$selfCertificate],
+                selfCertifications: [
+                    Signature::createSelfCertificate(
+                        $self->getSecretKeyPacket(),
+                        $packet,
+                    ),
+                ],
             );
         }
         return $self->setUsers($users);
@@ -505,17 +506,18 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $curve,
             $time,
         )->encrypt($passphrase, Config::getPreferredSymmetric(), $aead);
-        $bindingSignature = Signature::createSubkeyBinding(
-            $self->getSecretKeyPacket(),
-            $secretSubkey,
-            $keyExpiry,
-            $subkeySign,
-            $time,
-        );
         $subkeys[] = new Subkey(
             $self,
             $secretSubkey,
-            bindingSignatures: [$bindingSignature],
+            bindingSignatures: [
+                Signature::createSubkeyBinding(
+                    $self->getSecretKeyPacket(),
+                    $secretSubkey,
+                    $keyExpiry,
+                    $subkeySign,
+                    $time,
+                ),
+            ],
         );
         return $self->setSubkeys($subkeys);
     }

@@ -60,8 +60,9 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
      */
     public static function fromArmored(string $armored): self
     {
-        $armor = Armor::decode($armored)->assert(ArmorType::Message);
-        return self::fromBytes($armor->getData());
+        return self::fromBytes(
+            Armor::decode($armored)->assert(ArmorType::Message)->getData()
+        );
     }
 
     /**

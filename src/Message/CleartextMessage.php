@@ -147,7 +147,7 @@ class CleartextMessage implements CleartextMessageInterface
                 'No signing keys provided.'
             );
         }
-        $packets = array_map(
+        return new Signature(new PacketList(array_map(
             fn ($key) => SignaturePacket::createLiteralData(
                 $key->getSecretKeyPacket(),
                 LiteralData::fromText($this->getText()),
@@ -156,7 +156,6 @@ class CleartextMessage implements CleartextMessageInterface
                 $time,
             ),
             $signingKeys,
-        );
-        return new Signature(new PacketList($packets));
+        )));
     }
 }

@@ -74,17 +74,16 @@ class SignedMessage extends CleartextMessage implements SignedMessageInterface
      */
     public function armor(): string
     {
-        $hashes = array_map(
-            static fn ($packet) => strtoupper(
-                str_replace('_', '-', $packet->getHashAlgorithm()->name)
-            ),
-            $this->signature->getPackets()
-        );
         return Armor::encode(
             ArmorType::SignedMessage,
             $this->signature->getPacketList()->encode(),
             $this->getText(),
-            $hashes,
+            array_map(
+                static fn ($packet) => strtoupper(
+                    str_replace('_', '-', $packet->getHashAlgorithm()->name)
+                ),
+                $this->signature->getPackets()
+            ),
         );
     }
 

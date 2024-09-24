@@ -63,8 +63,9 @@ class Signature implements SignatureInterface
      */
     public static function fromArmored(string $armored): self
     {
-        $armor = Armor::decode($armored)->assert(ArmorType::Signature);
-        return self::fromBytes($armor->getData());
+        return self::fromBytes(
+            Armor::decode($armored)->assert(ArmorType::Signature)->getData()
+        );
     }
 
     /**

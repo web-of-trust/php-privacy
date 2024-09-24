@@ -96,14 +96,12 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
             );
         }
 
-        $decryptedPacket = $this->getEncryptedPacket()->decryptWithSessionKey(
-            $this->sessionKey = $this->decryptSessionKey(
-                $decryptionKeys, $passwords
-            )
-        );
-
         return new LiteralMessage(
-            $decryptedPacket->getPacketList()
+            $this->getEncryptedPacket()->decryptWithSessionKey(
+                $this->sessionKey = $this->decryptSessionKey(
+                    $decryptionKeys, $passwords
+                )
+            )->getPacketList()
         );
     }
 
