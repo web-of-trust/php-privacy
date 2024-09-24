@@ -458,15 +458,17 @@ final class OpenPGP
     ): Type\EncryptedMessageInterface
     {
         if (!empty($signingKeys)) {
-            $recipients = array_map(
-                static fn ($key) => $key->getKeyPacket(),
-                array_filter(
-                    $encryptionKeys,
-                    static fn ($key) => $key instanceof Type\KeyInterface,
-                ),
-            );
             return $message->sign(
-                $signingKeys, $recipients, $notationData, $time
+                $signingKeys,
+                array_map(
+                    static fn ($key) => $key->getKeyPacket(),
+                    array_filter(
+                        $encryptionKeys,
+                        static fn ($key) => $key instanceof Type\KeyInterface,
+                    ),
+                ),
+                $notationData,
+                $time,
             )->compress($compression)->encrypt(
                 $encryptionKeys, $passwords, $symmetric
             );
