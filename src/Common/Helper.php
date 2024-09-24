@@ -138,7 +138,7 @@ final class Helper
             ) : new GenericS2K(
                 Random::string(GenericS2K::SALT_LENGTH),
                 $type,
-                Config::getS2kHash(),
+                Config::getPreferredHash(),
                 Config::getS2kItCount(),
             );
     }

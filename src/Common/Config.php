@@ -49,11 +49,9 @@ final class Config
 
     private static CompressionAlgorithm $preferredCompression = CompressionAlgorithm::Uncompressed;
 
-    private static ?LoggerInterface $logger = null;
-
-    private static HashAlgorithm $s2kHash = HashAlgorithm::Sha256;
-
     private static AeadAlgorithm $preferredAead = AeadAlgorithm::Gcm;
+
+    private static ?LoggerInterface $logger = null;
 
     private static int $s2kItCount = 224;
 
@@ -138,6 +136,28 @@ final class Config
     }
 
     /**
+     * Get preferred AEAD algorithm.
+     *
+     * @return AeadAlgorithm
+     */
+    public static function getPreferredAead(): AeadAlgorithm
+    {
+        return self::$preferredAead;
+    }
+
+    /**
+     * Set preferred AEAD algorithm.
+     *
+     * @param AeadAlgorithm $algo
+     */
+    public static function setPreferredAead(
+        AeadAlgorithm $algo
+    ): void
+    {
+        self::$preferredAead = $algo;
+    }
+
+    /**
      * Get a logger.
      *
      * @return LoggerInterface
@@ -158,49 +178,6 @@ final class Config
     public static function setLogger(LoggerInterface $logger): void
     {
         self::$logger = $logger;
-    }
-
-    /**
-     * Get S2K hash algorithm.
-     *
-     * @return HashAlgorithm
-     */
-    public static function getS2kHash(): HashAlgorithm
-    {
-        return self::$s2kHash;
-    }
-
-    /**
-     * Set S2K hash algorithm.
-     *
-     * @param HashAlgorithm $s2kHash
-     */
-    public static function setS2kHash(HashAlgorithm $s2kHash): void
-    {
-        Helper::assertHash($s2kHash);
-        self::$s2kHash = $s2kHash;
-    }
-
-    /**
-     * Get preferred AEAD algorithm.
-     *
-     * @return AeadAlgorithm
-     */
-    public static function getPreferredAead(): AeadAlgorithm
-    {
-        return self::$preferredAead;
-    }
-
-    /**
-     * Set preferred AEAD algorithm.
-     *
-     * @param AeadAlgorithm $algo
-     */
-    public static function setPreferredAead(
-        AeadAlgorithm $algo
-    ): void
-    {
-        self::$preferredAead = $algo;
     }
 
     /**
