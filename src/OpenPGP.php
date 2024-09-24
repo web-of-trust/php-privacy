@@ -26,7 +26,6 @@ final class OpenPGP
      * @param string $passphrase
      * @param Enum\KeyType $type
      * @param Enum\RSAKeySize $rsaKeySize
-     * @param Enum\DHKeySize $dhKeySize
      * @param Enum\CurveOid $curve
      * @param int $keyExpiry
      * @param \DateTimeInterface $time
@@ -37,7 +36,6 @@ final class OpenPGP
         string $passphrase,
         Enum\KeyType $type = Enum\KeyType::Rsa,
         Enum\RSAKeySize $rsaKeySize = Enum\RSAKeySize::Normal,
-        Enum\DHKeySize $dhKeySize = Enum\DHKeySize::Normal,
         Enum\CurveOid $curve = Enum\CurveOid::Secp521r1,
         int $keyExpiry = 0,
         ?\DateTimeInterface $time = null,
@@ -48,7 +46,6 @@ final class OpenPGP
             $passphrase,
             $type,
             $rsaKeySize,
-            $dhKeySize,
             $curve,
             $keyExpiry,
             $time,

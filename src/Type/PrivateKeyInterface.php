@@ -11,7 +11,6 @@ namespace OpenPGP\Type;
 use DateTimeInterface;
 use OpenPGP\Enum\{
     CurveOid,
-    DHKeySize,
     KeyAlgorithm,
     RevocationReasonTag,
     RSAKeySize,
@@ -107,7 +106,6 @@ interface PrivateKeyInterface extends KeyInterface
      * @param string $passphrase
      * @param KeyAlgorithm $keyAlgorithm
      * @param RSAKeySize $rsaKeySize
-     * @param DHKeySize $dhKeySize
      * @param CurveOid $curve
      * @param int $keyExpiry
      * @param bool $subkeySign
@@ -118,7 +116,6 @@ interface PrivateKeyInterface extends KeyInterface
         string $passphrase,
         KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
-        DHKeySize $dhKeySize = DHKeySize::Normal,
         CurveOid $curve = CurveOid::Secp521r1,
         int $keyExpiry = 0,
         bool $subkeySign = false,

@@ -18,8 +18,6 @@ namespace OpenPGP\Enum;
 enum KeyType {
     case Rsa;
 
-    case Dsa;
-
     case Ecc;
 
     case Curve25519;

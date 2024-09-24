@@ -18,7 +18,6 @@ use OpenPGP\Common\{
 use OpenPGP\Enum\{
     AeadAlgorithm,
     CurveOid,
-    DHKeySize,
     EdDSACurve,
     HashAlgorithm,
     KeyAlgorithm,
@@ -177,7 +176,6 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
      *
      * @param KeyAlgorithm $keyAlgorithm
      * @param RSAKeySize $rsaKeySize
-     * @param DHKeySize $dhKeySize
      * @param CurveOid $curveOid
      * @param DateTimeInterface $time
      * @return self
@@ -185,7 +183,6 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     public static function generate(
         KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
-        DHKeySize $dhKeySize = DHKeySize::Normal,
         CurveOid $curveOid = CurveOid::Secp521r1,
         ?DateTimeInterface $time = null,
     ): self
@@ -195,10 +192,6 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             KeyAlgorithm::RsaEncrypt,
             KeyAlgorithm::RsaSign
                 => Key\RSASecretKeyMaterial::generate($rsaKeySize),
-            KeyAlgorithm::ElGamal
-                => Key\ElGamalSecretKeyMaterial::generate($dhKeySize),
-            KeyAlgorithm::Dsa
-                => Key\DSASecretKeyMaterial::generate($dhKeySize),
             KeyAlgorithm::Ecdh
                 => Key\ECDHSecretKeyMaterial::generate($curveOid),
             KeyAlgorithm::EcDsa
@@ -218,7 +211,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             KeyAlgorithm::Ed448
                 => Key\EdDSASecretKeyMaterial::generate(EdDSACurve::Ed448),
             default => throw new \RuntimeException(
-                'Unsupported OpenPGP public key algorithm encountered.'
+                "Key algorithm {$keyAlgorithm->name} is unsupported."
             ),
         };
         switch ($keyAlgorithm) {

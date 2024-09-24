@@ -17,7 +17,6 @@ use OpenPGP\Enum\{
     AeadAlgorithm,
     ArmorType,
     CurveOid,
-    DHKeySize,
     KeyAlgorithm,
     KeyType,
     PacketTag,
@@ -133,7 +132,6 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
      * @param string $passphrase
      * @param KeyType $type
      * @param RSAKeySize $rsaKeySize
-     * @param DHKeySize $dhKeySize
      * @param CurveOid $curve
      * @param int $keyExpiry
      * @param DateTimeInterface $time
@@ -144,7 +142,6 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         string $passphrase,
         KeyType $type = KeyType::Rsa,
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
-        DHKeySize $dhKeySize = DHKeySize::Normal,
         CurveOid $curve = CurveOid::Secp521r1,
         int $keyExpiry = 0,
         ?DateTimeInterface $time = null,
@@ -157,10 +154,6 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         }
         $subkeyCurve = $curve;
         switch ($type) {
-            case KeyType::Dsa:
-                $keyAlgorithm = KeyAlgorithm::Dsa;
-                $subkeyAlgorithm = KeyAlgorithm::ElGamal;
-                break;
             case KeyType::Ecc:
                 if ($curve === CurveOid::Ed25519 || $curve === CurveOid::Curve25519) {
                     $keyAlgorithm = KeyAlgorithm::EdDsaLegacy;
@@ -189,14 +182,12 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         $secretKey = SecretKey::generate(
             $keyAlgorithm,
             $rsaKeySize,
-            $dhKeySize,
             $curve,
             $time,
         );
         $secretSubkey = SecretSubkey::generate(
             $subkeyAlgorithm,
             $rsaKeySize,
-            $dhKeySize,
             $subkeyCurve,
             $time,
         );
@@ -489,7 +480,6 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         string $passphrase,
         KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
-        DHKeySize $dhKeySize = DHKeySize::Normal,
         CurveOid $curve = CurveOid::Secp521r1,
         int $keyExpiry = 0,
         bool $subkeySign = false,
@@ -512,7 +502,6 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         $secretSubkey = SecretSubkey::generate(
             $keyAlgorithm,
             $rsaKeySize,
-            $dhKeySize,
             $curve,
             $time,
         )->encrypt($passphrase, Config::getPreferredSymmetric(), $aead);

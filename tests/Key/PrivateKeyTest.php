@@ -349,65 +349,6 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertTrue($user->isRevoked());
     }
 
-    public function testGenerateDSAPrivateKey()
-    {
-        $name = $this->faker->unique()->name();
-        $email = $this->faker->unique()->safeEmail();
-        $comment = $this->faker->unique()->sentence(1);
-        $passphrase = $this->faker->unique()->password();
-        $keyExpiry = $this->faker->unique()->randomNumber(3, true);
-        $now = new \DateTime();
-        $userID = implode([$name, "($comment)", "<$email>"]);
-
-        $privateKey = PrivateKey::generate(
-            [$userID],
-            $passphrase,
-            KeyType::Dsa
-        );
-        $this->assertTrue($privateKey->isEncrypted());
-        $this->assertTrue($privateKey->isDecrypted());
-        $this->assertSame(1024, $privateKey->getKeyStrength());
-
-        $subkey = $privateKey->getSubKeys()[0];
-        $this->assertSame(1024, $subkey->getKeyStrength());
-        $this->assertTrue($subkey->verify());
-
-        $user = $privateKey->getUsers()[0];
-        $this->assertSame($userID, $user->getUserID());
-        $this->assertTrue($user->verify());
-        $this->assertTrue($user->isPrimary());
-        $primaryUser = $privateKey->getPrimaryUser();
-        $this->assertSame($userID, $primaryUser->getUserID());
-
-        $publicKey = $privateKey->toPublic();
-        $this->assertTrue($publicKey instanceof PublicKey);
-        $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
-
-        $privateKey = PrivateKey::fromArmored($privateKey->armor());
-        $this->assertTrue($privateKey->isEncrypted());
-        $this->assertFalse($privateKey->isDecrypted());
-        $privateKey = $privateKey->decrypt($passphrase);
-        $this->assertTrue($privateKey->isDecrypted());
-
-        $privateKey = $privateKey->addSubkey(
-            $passphrase,
-            KeyAlgorithm::ElGamal,
-            keyExpiry: $keyExpiry,
-            time: $now
-        );
-        $subkey = $privateKey->getSubKeys()[1];
-        $this->assertTrue($subkey->verify());
-        $expirationTime = $subkey->getExpirationTime();
-        $this->assertSame(
-            $expirationTime->getTimestamp(), $now->getTimestamp() + $keyExpiry
-        );
-
-        $subkey = $privateKey->revokeSubkey($subkey->getKeyID())->getSubKeys()[1];
-        $this->assertTrue($subkey->isRevoked());
-        $user = $privateKey->revokeUser($userID)->getUsers()[0];
-        $this->assertTrue($user->isRevoked());
-    }
-
     public function testGenerateEccSecp521r1PrivateKey()
     {
         $name = $this->faker->unique()->name();

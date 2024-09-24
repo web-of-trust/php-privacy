@@ -12,7 +12,6 @@ use DateTimeInterface;
 use OpenPGP\Enum\{
     AeadAlgorithm,
     CurveOid,
-    DHKeySize,
     KeyAlgorithm,
     RSAKeySize,
     S2kUsage,
@@ -84,7 +83,6 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
      *
      * @param KeyAlgorithm $keyAlgorithm
      * @param RSAKeySize $rsaKeySize
-     * @param DHKeySize $dhKeySize
      * @param CurveOid $curveOid
      * @param DateTimeInterface $time
      * @return self
@@ -92,7 +90,6 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
     public static function generate(
         KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
-        DHKeySize $dhKeySize = DHKeySize::Normal,
         CurveOid $curveOid = CurveOid::Ed25519,
         ?DateTimeInterface $time = null,
     ): self
@@ -100,7 +97,6 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         return self::fromSecretKey(SecretKey::generate(
             $keyAlgorithm,
             $rsaKeySize,
-            $dhKeySize,
             $curveOid,
             $time,
         ));

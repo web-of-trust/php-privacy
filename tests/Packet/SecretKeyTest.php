@@ -283,44 +283,6 @@ EOT;
         );
     }
 
-    public function testGenerateDSASecretKey()
-    {
-        $secretKey = SecretKey::generate(KeyAlgorithm::Dsa);
-        $this->assertFalse($secretKey->isEncrypted());
-        $this->assertTrue($secretKey->getKeyMaterial()->isValid());
-        $this->assertSame(1024, $secretKey->getKeyStrength());
-        $this->assertSame(4, $secretKey->getVersion());
-
-        $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
-        $this->assertTrue($encryptedSecretKey->isEncrypted());
-
-        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
-        $this->assertSame($secretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
-        $this->assertEquals(
-            $secretKey->getKeyMaterial()->getPrivateKey()->toString('Raw'),
-            $decryptedSecretKey->getKeyMaterial()->getPrivateKey()->toString('Raw')
-        );
-    }
-
-    public function testGenerateElGamalSecretKey()
-    {
-        $secretKey = SecretKey::generate(KeyAlgorithm::ElGamal);
-        $this->assertFalse($secretKey->isEncrypted());
-        $this->assertTrue($secretKey->getKeyMaterial()->isValid());
-        $this->assertSame(1024, $secretKey->getKeyStrength());
-        $this->assertSame(4, $secretKey->getVersion());
-
-        $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
-        $this->assertTrue($encryptedSecretKey->isEncrypted());
-
-        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
-        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
-        $this->assertEquals(
-            $secretKey->getKeyMaterial(),
-            $decryptedSecretKey->getKeyMaterial()
-        );
-    }
-
     public function testGenerateEcDsaSecretKeySecp521r1()
     {
         $secretKey = SecretKey::generate(
