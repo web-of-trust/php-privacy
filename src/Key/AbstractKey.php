@@ -555,7 +555,7 @@ abstract class AbstractKey implements KeyInterface
         return $this->clone()->setRevocationSignatures([
             ...$this->getRevocationSignatures(),
             Signature::createKeyRevocation(
-                $signKey->getSigningKeyPacket(),
+                $signKey->getSecretKeyPacket(),
                 $this->getKeyPacket(),
                 $revocationReason,
                 $reasonTag,

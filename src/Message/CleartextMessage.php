@@ -149,7 +149,7 @@ class CleartextMessage implements CleartextMessageInterface
         }
         $packets = array_map(
             fn ($key) => SignaturePacket::createLiteralData(
-                $key->getSigningKeyPacket(),
+                $key->getSecretKeyPacket(),
                 LiteralData::fromText($this->getText()),
                 $recipients,
                 $notationData,

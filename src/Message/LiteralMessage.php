@@ -319,7 +319,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
         }
         return new Signature(new PacketList(array_map(
             fn ($key) => SignaturePacket::createLiteralData(
-                $key->getSigningKeyPacket(),
+                $key->getSecretKeyPacket(),
                 $this->getLiteralData(),
                 $recipients,
                 $notationData,

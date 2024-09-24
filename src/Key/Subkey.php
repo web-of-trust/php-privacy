@@ -309,7 +309,7 @@ class Subkey implements SubkeyInterface
             [
                 ...$this->revocationSignatures,
                 Signature::createSubkeyRevocation(
-                    $signKey->getSigningKeyPacket(),
+                    $signKey->getSecretKeyPacket(),
                     $this->mainKey->getKeyPacket(),
                     $this->keyPacket,
                     $revocationReason,

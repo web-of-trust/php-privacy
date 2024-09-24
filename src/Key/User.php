@@ -294,7 +294,7 @@ class User implements UserInterface
             [
                 ...$this->otherCertifications,
                 Signature::createCertGeneric(
-                    $signKey->getSigningKeyPacket(),
+                    $signKey->getSecretKeyPacket(),
                     $this->mainKey->getKeyPacket(),
                     $this->userIDPacket,
                     $time,
@@ -319,7 +319,7 @@ class User implements UserInterface
             [
                 ...$this->revocationSignatures,
                 Signature::createCertRevocation(
-                    $signKey->getSigningKeyPacket(),
+                    $signKey->getSecretKeyPacket(),
                     $this->mainKey->getKeyPacket(),
                     $this->userIDPacket,
                     $revocationReason,

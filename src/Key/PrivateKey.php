@@ -47,12 +47,10 @@ use OpenPGP\Type\{
  */
 class PrivateKey extends AbstractKey implements PrivateKeyInterface
 {
-    private readonly SecretKeyPacketInterface $secretKeyPacket;
-
     /**
      * Constructor
      *
-     * @param SecretKeyPacketInterface $keyPacket
+     * @param SecretKeyPacketInterface $secretKeyPacket
      * @param array $revocationSignatures
      * @param array $directSignatures
      * @param array $users
@@ -60,7 +58,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
      * @return self
      */
     public function __construct(
-        SecretKeyPacketInterface $keyPacket,
+        private readonly SecretKeyPacketInterface $secretKeyPacket,
         array $revocationSignatures = [],
         array $directSignatures = [],
         array $users = [],
@@ -68,13 +66,12 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     )
     {
         parent::__construct(
-            $keyPacket,
+            $secretKeyPacket,
             $revocationSignatures,
             $directSignatures,
             $users,
             $subkeys,
         );
-        $this->secretKeyPacket = $keyPacket;
     }
 
     /**
@@ -308,6 +305,14 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     /**
      * {@inheritdoc}
      */
+    public function getSecretKeyPacket(): SecretKeyPacketInterface
+    {
+        return $this->secretKeyPacket;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getDecryptionKeyPackets(
         string $keyID = '', ?DateTimeInterface $time = null
     ): array
@@ -466,7 +471,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         foreach ($userIDs as $userID) {
             $packet = new UserID($userID);
             $selfCertificate = Signature::createSelfCertificate(
-                $self->getSigningKeyPacket(),
+                $self->getSecretKeyPacket(),
                 $packet,
             );
             $users[] = new User(
@@ -513,7 +518,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $time,
         )->encrypt($passphrase, Config::getPreferredSymmetric(), $aead);
         $bindingSignature = Signature::createSubkeyBinding(
-            $self->getSigningKeyPacket(),
+            $self->getSecretKeyPacket(),
             $secretSubkey,
             $keyExpiry,
             $subkeySign,

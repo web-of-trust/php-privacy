@@ -48,6 +48,13 @@ interface PrivateKeyInterface extends KeyInterface
     function aeadProtected(): bool;
 
     /**
+     * Get secret key packet.
+     *
+     * @return SecretKeyPacketInterface
+     */
+    function getSecretKeyPacket(): SecretKeyPacketInterface;
+
+    /**
      * Get array of key packets that is available for decryption
      *
      * @param string $keyID
