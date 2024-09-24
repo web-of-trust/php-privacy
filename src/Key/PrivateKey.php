@@ -109,20 +109,19 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         PacketListInterface $packetList
     ): self
     {
-        $keyStruct = self::readPacketList($packetList);
-        if (!($keyStruct['keyPacket'] instanceof SecretKeyPacketInterface)) {
+        $keyMap = self::packetListToKeyMap($packetList);
+        if (!($keyMap['keyPacket'] instanceof SecretKeyPacketInterface)) {
             throw new \RuntimeException(
                 'Key packet is not secret key type.'
             );
         }
-        $privateKey = new self(
-            $keyStruct['keyPacket'],
-            $keyStruct['revocationSignatures'],
-            $keyStruct['directSignatures'],
+        return new self(
+            $keyMap['keyPacket'],
+            $keyMap['revocationSignatures'],
+            $keyMap['directSignatures'],
+            $keyMap['users'],
+            $keyMap['subkeys'],
         );
-        self::applyKeyStructure($privateKey, $keyStruct);
-
-        return $privateKey;
     }
 
     /**

@@ -648,12 +648,23 @@ abstract class AbstractKey implements KeyInterface
      */
     protected function setUsers(array $users): static
     {
-        $this->users = array_values(array_filter(
-            $users,
-            fn ($user) =>
-                $user instanceof UserInterface && 
-                $user->getMainKey() === $this,
-        ));
+        $this->users = [];
+        foreach ($users as $user) {
+            if ($user instanceof UserInterface &&
+                $user->getMainKey() === $this
+            ) {
+                $this->users[] = $user;
+            }
+            elseif (is_array($user)) {
+                $this->users[] = new User(
+                    $this,
+                    $user['userIDPacket'],
+                    $user['revocationSignatures'],
+                    $user['selfCertifications'],
+                    $user['otherCertifications'],
+                );
+            }
+        }
         return $this;
     }
 
@@ -665,12 +676,22 @@ abstract class AbstractKey implements KeyInterface
      */
     protected function setSubkeys(array $subkeys): static
     {
-        $this->subkeys = array_values(array_filter(
-            $subkeys,
-            fn ($subkey) =>
-                $subkey instanceof SubkeyInterface &&
-                $subkey->getMainKey() === $this,
-        ));
+        $this->subkeys = [];
+        foreach ($subkeys as $subkey) {
+            if ($subkey instanceof SubkeyInterface &&
+                $subkey->getMainKey() === $this
+            ) {
+                $this->subkeys[] = $subkey;
+            }
+            elseif (is_array($subkey)) {
+                $this->subkeys[] = new Subkey(
+                    $this,
+                    $subkey['keyPacket'],
+                    $subkey['revocationSignatures'],
+                    $subkey['bindingSignatures'],
+                );
+            }
+        }
         return $this;
     }
 
@@ -777,37 +798,13 @@ abstract class AbstractKey implements KeyInterface
         ));
     }
 
-    protected static function applyKeyStructure(
-        AbstractKey $key, array $keyMap
-    ): void
-    {
-        $key->setUsers(array_map(
-            static fn (array $user) => new User(
-                $key,
-                $user['userIDPacket'],
-                $user['revocationSignatures'],
-                $user['selfCertifications'],
-                $user['otherCertifications'],
-            ),
-            $keyMap['users'],
-        ))->setSubkeys(array_map(
-            static fn (array $subkey) => new Subkey(
-                $key,
-                $subkey['keyPacket'],
-                $subkey['revocationSignatures'],
-                $subkey['bindingSignatures'],
-            ),
-            $keyMap['subkeys'],
-        ));
-    }
-
     /**
-     * Read packet list to key structure.
+     * Read packet list to key map.
      *
      * @param PacketListInterface $packetList
      * @return array
      */
-    protected static function readPacketList(PacketListInterface $packetList): array
+    protected static function packetListToKeyMap(PacketListInterface $packetList): array
     {
         $revocationSignatures = $directSignatures = $users = $subkeys = [];
         $keyPacket = $primaryKeyID = null;

@@ -33,7 +33,7 @@ class PublicKey extends AbstractKey implements PublicKeyInterface
     /**
      * Constructor
      *
-     * @param PublicKeyPacketInterface $keyPacket
+     * @param PublicKeyPacketInterface $publicKeyPacket
      * @param array $revocationSignatures
      * @param array $directSignatures
      * @param array $users
@@ -149,20 +149,19 @@ class PublicKey extends AbstractKey implements PublicKeyInterface
         PacketListInterface $packetList
     ): self
     {
-        $keyStruct = self::readPacketList($packetList);
-        if (!($keyStruct['keyPacket'] instanceof PublicKeyPacketInterface)) {
+        $keyMap = self::packetListToKeyMap($packetList);
+        if (!($keyMap['keyPacket'] instanceof PublicKeyPacketInterface)) {
             throw new \RuntimeException(
                 'Key packet is not public key type.'
             );
         }
-        $publicKey = new self(
-            $keyStruct['keyPacket'],
-            $keyStruct['revocationSignatures'],
-            $keyStruct['directSignatures'],
+        return new self(
+            $keyMap['keyPacket'],
+            $keyMap['revocationSignatures'],
+            $keyMap['directSignatures'],
+            $keyMap['users'],
+            $keyMap['subkeys'],
         );
-        self::applyKeyStructure($publicKey, $keyStruct);
-
-        return $publicKey;
     }
 
     /**
