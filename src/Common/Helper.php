@@ -9,6 +9,7 @@
 namespace OpenPGP\Common;
 
 use OpenPGP\Enum\{
+    HashAlgorithm,
     S2kType,
     SymmetricAlgorithm,
 };
@@ -207,6 +208,44 @@ final class Helper
         }
         else {
             return implode(["\xff", pack('N', $length)]);
+        }
+    }
+
+    /**
+     * Assert hash algorithm
+     *
+     * @param HashAlgorithm $hash
+     * @return void
+     */
+    public static function assertHash(HashAlgorithm $hash): void
+    {
+        switch ($hash) {
+            case HashAlgorithm::Unknown:
+            case HashAlgorithm::Md5:
+            case HashAlgorithm::Sha1:
+            case HashAlgorithm::Ripemd160:
+                throw new \RuntimeException(
+                    "Hash {$hash->name} is unsupported.",
+                );
+        }
+    }
+
+    /**
+     * Assert symmetric algorithm
+     *
+     * @param SymmetricAlgorithm $symmetric
+     * @return void
+     */
+    public static function assertSymmetric(SymmetricAlgorithm $symmetric): void
+    {
+        switch ($symmetric) {
+            case SymmetricAlgorithm::Plaintext:
+            case SymmetricAlgorithm::Idea:
+            case SymmetricAlgorithm::TripleDes:
+            case SymmetricAlgorithm::Cast5:
+                throw new \RuntimeException(
+                    "Symmetric {$symmetric->name} is unsupported.",
+                );
         }
     }
 }

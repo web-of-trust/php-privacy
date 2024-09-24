@@ -74,7 +74,7 @@ class SymEncryptedSessionKey extends AbstractPacket
             );
         }
         if ($version === self::VERSION_6) {
-            self::assertSymmetric($symmetric);
+            Helper::assertSymmetric($symmetric);
         }
         if ($aead instanceof AeadAlgorithm && $version < self::VERSION_5) {
             throw new \InvalidArgumentException(
@@ -154,7 +154,7 @@ class SymEncryptedSessionKey extends AbstractPacket
         $aeadProtect = $aead instanceof AeadAlgorithm;
         $version = $aeadProtect ? self::VERSION_6 : self::VERSION_4;
         $symmetric = $sessionKey?->getSymmetric() ?? $symmetric;
-        self::assertSymmetric($symmetric);
+        Helper::assertSymmetric($symmetric);
 
         $s2k = $aeadProtect && Argon2S2K::argon2Supported() ?
             Helper::stringToKey(S2kType::Argon2) :

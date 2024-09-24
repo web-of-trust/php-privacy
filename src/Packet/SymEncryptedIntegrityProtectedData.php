@@ -75,7 +75,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
         }
         $isV2 = $version === self::VERSION_2;
         if ($symmetric instanceof SymmetricAlgorithm && $isV2) {
-            self::assertSymmetric($symmetric);
+            Helper::assertSymmetric($symmetric);
         }
         if ($aead instanceof AeadAlgorithm && !$isV2) {
             throw new \InvalidArgumentException(
@@ -146,7 +146,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
     {
         $aeadProtect = $aead instanceof AeadAlgorithm;
         $version = $aeadProtect ? self::VERSION_2 : self::VERSION_1;
-        self::assertSymmetric($symmetric);
+        Helper::assertSymmetric($symmetric);
 
         $salt = '';
         $chunkSize = 0;

@@ -95,7 +95,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             );
         }
         if ($version === self::VERSION_6) {
-            self::assertHash($hashAlgorithm);
+            Helper::assertHash($hashAlgorithm);
             if ($keyAlgorithm === KeyAlgorithm::Dsa) {
                 throw new \InvalidArgumentException(
                     "Public key {$keyAlgorithm->name} cannot be used with v{$version} signature packet.",
@@ -217,7 +217,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         $version = $signKey->getVersion();
         $keyAlgorithm = $signKey->getKeyAlgorithm();
         $hashAlgorithm = $signKey->getPreferredHash($hashAlgorithm);
-        self::assertHash($hashAlgorithm);
+        Helper::assertHash($hashAlgorithm);
 
         $hashedSubpackets = [
             Signature\SignatureCreationTime::fromTime(

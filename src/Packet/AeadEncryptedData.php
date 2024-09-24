@@ -8,7 +8,10 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Common\Config;
+use OpenPGP\Common\{
+    Config,
+    Helper,
+};
 use OpenPGP\Enum\{
     AeadAlgorithm,
     PacketTag,
@@ -109,7 +112,7 @@ class AeadEncryptedData extends AbstractPacket implements AeadEncryptedDataPacke
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
     ): self
     {
-        self::assertSymmetric($symmetric);
+        Helper::assertSymmetric($symmetric);
 
         $aead = Config::getPreferredAead();
         $chunkSize = Config::getAeadChunkSize();

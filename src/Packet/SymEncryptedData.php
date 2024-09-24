@@ -74,7 +74,7 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
     ): self
     {
-        self::assertSymmetric($symmetric);
+        Helper::assertSymmetric($symmetric);
         $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
         $cipher->setKey($key);
         $cipher->setIV(str_repeat(self::ZERO_CHAR, $symmetric->blockSize()));

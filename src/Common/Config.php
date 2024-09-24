@@ -88,6 +88,7 @@ final class Config
      */
     public static function setPreferredHash(HashAlgorithm $hash): void
     {
+        Helper::assertHash($hash);
         self::$preferredHash = $hash;
     }
 
@@ -110,6 +111,7 @@ final class Config
         SymmetricAlgorithm $symmetric
     ): void
     {
+        Helper::assertSymmetric($symmetric);
         self::$preferredSymmetric = $symmetric;
     }
 
@@ -175,6 +177,7 @@ final class Config
      */
     public static function setS2kHash(HashAlgorithm $s2kHash): void
     {
+        Helper::assertHash($s2kHash);
         self::$s2kHash = $s2kHash;
     }
 
