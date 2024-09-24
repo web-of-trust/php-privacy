@@ -617,7 +617,8 @@ abstract class AbstractKey implements KeyInterface
         $this->revocationSignatures = array_values(array_filter(
             $revocationSignatures,
             static fn ($signature) =>
-                $signature instanceof SignaturePacketInterface,
+                $signature instanceof SignaturePacketInterface &&
+                $signature->isKeyRevocation(),
         ));
         return $this;
     }
@@ -635,7 +636,8 @@ abstract class AbstractKey implements KeyInterface
         $this->directSignatures = array_values(array_filter(
             $directSignatures,
             static fn ($signature) =>
-                $signature instanceof SignaturePacketInterface,
+                $signature instanceof SignaturePacketInterface &&
+                $signature->isDirectKey(),
         ));
         return $this;
     }

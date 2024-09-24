@@ -302,4 +302,46 @@ interface SignaturePacketInterface extends PacketInterface
      * @return array
      */
     function getIntendedRecipients(): array;
+
+    /**
+     * Return is certification
+     *
+     * @return bool
+     */
+    function isCertification(): bool;
+
+    /**
+     * Return is revocation certification
+     *
+     * @return bool
+     */
+    function isCertRevocation(): bool;
+
+    /**
+     * Return is direct key
+     *
+     * @return bool
+     */
+    function isDirectKey(): bool;
+
+    /**
+     * Return is key revocation
+     *
+     * @return bool
+     */
+    function isKeyRevocation(): bool;
+
+    /**
+     * Return is subkey binding
+     *
+     * @return bool
+     */
+    function isSubkeyBinding(): bool;
+
+    /**
+     * Return is subkey revocation
+     *
+     * @return bool
+     */
+    function isSubkeyRevocation(): bool;
 }

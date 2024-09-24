@@ -73,21 +73,24 @@ class User implements UserInterface
         array $otherCertifications = [],
     )
     {
-        $this->revocationSignatures = array_filter(
+        $this->revocationSignatures = array_values(array_filter(
             $revocationSignatures,
             static fn ($signature) =>
-                $signature instanceof SignaturePacketInterface,
-        );
-        $this->selfCertifications = array_filter(
+                $signature instanceof SignaturePacketInterface &&
+                $signature->isCertRevocation(),
+        ));
+        $this->selfCertifications = array_values(array_filter(
             $selfCertifications,
             static fn ($signature) =>
-                $signature instanceof SignaturePacketInterface,
-        );
-        $this->otherCertifications = array_filter(
+                $signature instanceof SignaturePacketInterface &&
+                $signature->isCertification(),
+        ));
+        $this->otherCertifications = array_values(array_filter(
             $otherCertifications,
             static fn ($signature) =>
-                $signature instanceof SignaturePacketInterface,
-        );
+                $signature instanceof SignaturePacketInterface &&
+                $signature->isCertification(),
+        ));
     }
 
     /**

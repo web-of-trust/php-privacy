@@ -1080,6 +1080,61 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function isCertification(): bool
+    {
+        return match ($this->signatureType) {
+            SignatureType::CertGeneric,
+            SignatureType::CertPersona,
+            SignatureType::CertCasual,
+            SignatureType::CertPositive
+                => true,
+            default => false,
+        };
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isDirectKey(): bool
+    {
+        return $this->signatureType === SignatureType::DirectKey;        
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isKeyRevocation(): bool
+    {
+        return $this->signatureType === SignatureType::KeyRevocation;        
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isCertRevocation(): bool
+    {
+        return $this->signatureType === SignatureType::CertRevocation;        
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isSubkeyBinding(): bool
+    {
+        return $this->signatureType === SignatureType::SubkeyBinding;        
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isSubkeyRevocation(): bool
+    {
+        return $this->signatureType === SignatureType::SubkeyRevocation;        
+    }
+
+    /**
      * Create key signature subpackets
      *
      * @param int $version

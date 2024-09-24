@@ -69,16 +69,18 @@ class Subkey implements SubkeyInterface
         array $bindingSignatures = [],
     )
     {
-        $this->revocationSignatures = array_filter(
+        $this->revocationSignatures = array_values(array_filter(
             $revocationSignatures,
             static fn ($signature) =>
-                $signature instanceof SignaturePacketInterface,
-        );
-        $this->bindingSignatures = array_filter(
+                $signature instanceof SignaturePacketInterface &&
+                $signature->isSubkeyRevocation(),
+        ));
+        $this->bindingSignatures = array_values(array_filter(
             $bindingSignatures,
             static fn ($signature) =>
-                $signature instanceof SignaturePacketInterface,
-        );
+                $signature instanceof SignaturePacketInterface &&
+                $signature->isSubkeyBinding(),
+        ));
     }
 
     /**
