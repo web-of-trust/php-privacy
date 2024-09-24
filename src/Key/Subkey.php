@@ -44,14 +44,14 @@ class Subkey implements SubkeyInterface
      *
      * @var array
      */
-    private array $revocationSignatures;
+    private readonly array $revocationSignatures;
 
     /**
      * Binding signature packets
      *
      * @var array
      */
-    private array $bindingSignatures;
+    private readonly array $bindingSignatures;
 
     /**
      * Constructor
@@ -303,17 +303,22 @@ class Subkey implements SubkeyInterface
         ?DateTimeInterface $time = null,
     ): self
     {
-        $self = clone $this;
-        $keyPacket = $signKey->getSigningKeyPacket();
-        $self->revocationSignatures[] = Signature::createSubkeyRevocation(
-            $keyPacket,
-            $self->getMainKey()->getKeyPacket(),
-            $self->getKeyPacket(),
-            $revocationReason,
-            $reasonTag,
-            $time,
+        return new self(
+            $this->mainKey,
+            $this->keyPacket,
+            [
+                ...$this->revocationSignatures,
+                Signature::createSubkeyRevocation(
+                    $signKey->getSigningKeyPacket(),
+                    $this->mainKey->getKeyPacket(),
+                    $this->keyPacket,
+                    $revocationReason,
+                    $reasonTag,
+                    $time,
+                ),
+            ],
+            $this->bindingSignatures,
         );
-        return $self;
     }
 
     /**

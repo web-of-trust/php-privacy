@@ -39,21 +39,21 @@ class User implements UserInterface
      *
      * @var array
      */
-    private array $revocationSignatures;
+    private readonly array $revocationSignatures;
 
     /**
      * Self certification signature packets
      *
      * @var array
      */
-    private array $selfCertifications;
+    private readonly array $selfCertifications;
 
     /**
      * Other certification signature packets
      *
      * @var array
      */
-    private array $otherCertifications;
+    private readonly array $otherCertifications;
 
     /**
      * Constructor
@@ -286,14 +286,21 @@ class User implements UserInterface
                 'The user\'s own key can only be used for self-certifications.'
             );
         }
-        $self = clone $this;
-        $self->otherCertifications[] = Signature::createCertGeneric(
-            $signKey->getSigningKeyPacket(),
-            $self->getMainKey()->getKeyPacket(),
-            $self->getUserIDPacket(),
-            $time,
+        return new self(
+            $this->mainKey,
+            $this->userIDPacket,
+            $this->revocationSignatures,
+            $this->selfCertifications,
+            [
+                ...$this->otherCertifications,
+                Signature::createCertGeneric(
+                    $signKey->getSigningKeyPacket(),
+                    $this->mainKey->getKeyPacket(),
+                    $this->userIDPacket,
+                    $time,
+                ),
+            ],
         );
-        return $self;
     }
 
     /**
@@ -306,16 +313,23 @@ class User implements UserInterface
         ?DateTimeInterface $time = null,
     ): self
     {
-        $self = clone $this;
-        $self->revocationSignatures[] = Signature::createCertRevocation(
-            $signKey->getSigningKeyPacket(),
-            $self->getMainKey()->getKeyPacket(),
-            $self->getUserIDPacket(),
-            $revocationReason,
-            $reasonTag,
-            $time,
+        return new self(
+            $this->mainKey,
+            $this->userIDPacket,
+            [
+                ...$this->revocationSignatures,
+                Signature::createCertRevocation(
+                    $signKey->getSigningKeyPacket(),
+                    $this->mainKey->getKeyPacket(),
+                    $this->userIDPacket,
+                    $revocationReason,
+                    $reasonTag,
+                    $time,
+                ),
+            ],
+            $this->selfCertifications,
+            $this->otherCertifications,
         );
-        return $self;
     }
 
     /**
