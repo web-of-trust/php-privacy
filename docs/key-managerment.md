@@ -18,21 +18,6 @@ $publicKey = $privateKey->toPublic();
 echo $publicKey; // '-----BEGIN PGP PUBLIC KEY BLOCK ... '
 ```
 
-Dsa key type (uses Dsa algorithm for signing & ElGamal algorithm for encryption):
-```php
-const PASSPHRASE = 'Your passphase';
-const USER_ID = 'Your name <name@example.com>';
-$privateKey = OpenPGP::generateKey(
-    [USER_ID],
-    PASSPHRASE,
-    type: KeyType::Dsa,
-    dhKeySize: RSAKeySize::Normal,
-);
-file_put_contents('privateKey.asc', $privateKey->armor());
-$publicKey = $privateKey->toPublic();
-echo $publicKey; // '-----BEGIN PGP PUBLIC KEY BLOCK ... '
-```
-
 Ecc key type (uses EcDsa/EdDsaLegacy algorithm for signing & Ecdh algorithm for encryption):
 ```php
 const PASSPHRASE = 'Your passphase';
