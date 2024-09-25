@@ -31,29 +31,21 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
      * Constructor
      *
      * @param BigInteger $encrypted
-     * @param int $pkeskVersion
      * @return self
      */
-    public function __construct(
-        private readonly BigInteger $encrypted,
-        int $pkeskVersion,
-    )
+    public function __construct(private readonly BigInteger $encrypted)
     {
-        parent::__construct($pkeskVersion);
     }
 
     /**
      * Read encrypted session key from byte string
      *
      * @param string $bytes
-     * @param int $pkeskVersion
      * @return self
      */
-    public static function fromBytes(
-        string $bytes, int $pkeskVersion,
-    ): self
+    public static function fromBytes(string $bytes): self
     {
-        return new self(Helper::readMPI($bytes), $pkeskVersion);
+        return new self(Helper::readMPI($bytes));
     }
 
     /**
@@ -61,25 +53,19 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
      *
      * @param SessionKeyInterface $sessionKey
      * @param AsymmetricKey $publicKey
-     * @param int $pkeskVersion
      * @return self
      */
     public static function encryptSessionKey(
-        SessionKeyInterface $sessionKey,
-        AsymmetricKey $publicKey,
-        int $pkeskVersion,
+        SessionKeyInterface $sessionKey, AsymmetricKey $publicKey,
     ): self
     {
         if ($publicKey instanceof PublicKey) {
             $publicKey = $publicKey->withPadding(RSA::ENCRYPTION_PKCS1);
             return new self(
                 Helper::bin2BigInt($publicKey->encrypt(implode([
-                    $pkeskVersion === self::PKESK_VERSION_3 ?
-                        $sessionKey->toBytes() :
-                        $sessionKey->getEncryptionKey(),
+                    $sessionKey->toBytes(),
                     $sessionKey->computeChecksum(),
                 ]))),
-                $pkeskVersion,
             );
         }
         else {

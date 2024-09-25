@@ -47,13 +47,11 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
      *
      * @param BigInteger $ephemeralKey
      * @param string $wrappedKey
-     * @param int $pkeskVersion
      * @return self
      */
     public function __construct(
         private readonly BigInteger $ephemeralKey,
         private readonly string $wrappedKey,
-        private readonly int $pkeskVersion,
     )
     {
     }
@@ -62,10 +60,9 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
      * Read encrypted session key from byte string
      *
      * @param string $bytes
-     * @param int $pkeskVersion
      * @return self
      */
-    public static function fromBytes(string $bytes, int $pkeskVersion): self
+    public static function fromBytes(string $bytes): self
     {
         $ephemeralKey = Helper::readMPI($bytes);
         $offset = $ephemeralKey->getLengthInBytes() + 2;
@@ -73,7 +70,6 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
         return new self(
             $ephemeralKey,
             substr($bytes, $offset, $length),
-            $pkeskVersion,
         );
     }
 
@@ -82,13 +78,11 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
      *
      * @param SessionKeyInterface $sessionKey
      * @param KeyPacketInterface $keyPacket
-     * @param int $pkeskVersion
      * @return self
      */
     public static function encryptSessionKey(
         SessionKeyInterface $sessionKey,
         KeyPacketInterface $keyPacket,
-        int $pkeskVersion,
     ): self
     {
         $keyMaterial = $keyPacket->getKeyMaterial();
@@ -96,25 +90,24 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
             $privateKey = EC::createKey(
                 $keyMaterial->getECKey()->getCurve()
             );
-            $sharedSecret = DH::computeSecret(
-                $privateKey,
-                $keyMaterial->getECKey()->getEncodedCoordinates(),
-            );
 
+            $kek = self::ecdhKdf(
+                $keyMaterial->getKdfHash(),
+                DH::computeSecret(
+                    $privateKey,
+                    $keyMaterial->getECKey()->getEncodedCoordinates(),
+                ),
+                self::kdfParameter(
+                    $keyMaterial, $keyPacket->getFingerprint()
+                ),
+                $keyMaterial->getKdfSymmetric()->keySizeInByte(),
+            );
             $keyWrapper = self::selectKeyWrapper(
                 $keyMaterial->getKdfSymmetric()
             );
-            $kek = self::ecdhKdf(
-                $keyMaterial->getKdfHash(),
-                $sharedSecret,
-                self::kdfParameter($keyMaterial, $keyPacket->getFingerprint()),
-                $keyMaterial->getKdfSymmetric()->keySizeInByte(),
-            );
             $wrappedKey = $keyWrapper->wrap(
                 $kek, self::pkcs5Encode(implode([
-                    $pkeskVersion === self::PKESK_VERSION_3 ?
-                        $sessionKey->toBytes() :
-                        $sessionKey->getEncryptionKey(),
+                    $sessionKey->toBytes(),
                     $sessionKey->computeChecksum(),
                 ]))
             );
@@ -132,7 +125,6 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
             return new self(
                 $ephemeralKey,
                 $wrappedKey,
-                $pkeskVersion,
             );
         }
         else {
@@ -183,7 +175,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
     ): SessionKeyInterface
     {
         return SessionKeyCryptor::sessionKeyFromBytes(
-            $this->decrypt($secretKey), $this->pkeskVersion
+            $this->decrypt($secretKey)
         );
     }
 
@@ -214,23 +206,22 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
                     )
                 );
             }
-            $publicKey = EC::loadFormat($format, $key);
-            $sharedSecret = DH::computeSecret(
-                $keyMaterial->getECKey(),
-                $publicKey->getEncodedCoordinates(),
-            );
 
-            $keyWrapper = self::selectKeyWrapper(
-                $publicMaterial->getKdfSymmetric()
-            );
             $kek = self::ecdhKdf(
                 $publicMaterial->getKdfHash(),
-                $sharedSecret,
+                DH::computeSecret(
+                    $keyMaterial->getECKey(),
+                    EC::loadFormat($format, $key)->getEncodedCoordinates(),
+                ),
                 self::kdfParameter($publicMaterial, $secretKey->getFingerprint()),
                 $publicMaterial->getKdfSymmetric()->keySizeInByte(),
             );
-            $key = $keyWrapper->unwrap($kek, $this->wrappedKey);
-            return self::pkcs5Decode($key);
+            $keyWrapper = self::selectKeyWrapper(
+                $publicMaterial->getKdfSymmetric()
+            );
+            return self::pkcs5Decode(
+                $keyWrapper->unwrap($kek, $this->wrappedKey)
+            );
         }
         else {
             throw new \InvalidArgumentException(
@@ -251,12 +242,11 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
         int $keySize,
     ): string
     {
-        $toHash = implode([
+        return substr($hash->hash(implode([
             pack('N', 1),
             $sharedSecret,
             $param,
-        ]);
-        return substr($hash->hash($toHash), 0, $keySize);
+        ])), 0, $keySize);
     }
 
     /**

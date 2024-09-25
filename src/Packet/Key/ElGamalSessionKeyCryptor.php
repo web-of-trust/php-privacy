@@ -41,7 +41,6 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
         private readonly BigInteger $phi,
     )
     {
-        parent::__construct(self::PKESK_VERSION_3);
     }
 
     /**

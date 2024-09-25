@@ -36,14 +36,12 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
      *
      * @param string $ephemeralKey
      * @param string $wrappedKey
-     * @param int $pkeskVersion
      * @param MontgomeryCurve $curve
      * @return self
      */
     public function __construct(
         private readonly string $ephemeralKey,
         private readonly string $wrappedKey,
-        private readonly int $pkeskVersion,
         private readonly MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
     )
     {
@@ -53,21 +51,21 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
      * Read encrypted session key from byte string
      *
      * @param string $bytes
-     * @param int $pkeskVersion
      * @param MontgomeryCurve $curve
      * @return self
      */
     public static function fromBytes(
         string $bytes,
-        int $pkeskVersion,
         MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
     ): self
     {
-        $length = ord($bytes[$curve->payloadSize()]);
         return new self(
             substr($bytes, 0, $curve->payloadSize()),
-            substr($bytes, $curve->payloadSize() + 1, $length),
-            $pkeskVersion,
+            substr(
+                $bytes,
+                $curve->payloadSize() + 1,
+                ord($bytes[$curve->payloadSize()]),
+            ),
             $curve,
         );
     }
@@ -77,30 +75,21 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
      *
      * @param SessionKeyInterface $sessionKey
      * @param EC $publicKey
-     * @param int $pkeskVersion
      * @param MontgomeryCurve $curve
      * @return self
      */
     public static function encryptSessionKey(
         SessionKeyInterface $sessionKey,
         EC $publicKey,
-        int $pkeskVersion,
         MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
     ): self
     {
-        $pkeskV6 = $pkeskVersion === self::PKESK_VERSION_6;
-        if ($pkeskV6 && $sessionKey->getSymmetric() !== $curve->symmetricAlgorithm()) {
+        if ($sessionKey->getSymmetric() !== $curve->symmetricAlgorithm()) {
             throw new \InvalidArgumentException(
                 'Symmetric algorithm of the session key mismatch!'
             );
         }
-        $privateKey = EC::createKey(
-            $publicKey->getCurve()
-        );
-        $sharedSecret = DH::computeSecret(
-            $privateKey,
-            $publicKey->getEncodedCoordinates(),
-        );
+        $privateKey = EC::createKey($publicKey->getCurve());
         $ephemeralKey = $privateKey->getPublicKey()->getEncodedCoordinates();
 
         $kek = hash_hkdf(
@@ -108,7 +97,10 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
             implode([
                 $ephemeralKey,
                 $publicKey->getEncodedCoordinates(),
-                $sharedSecret,
+                DH::computeSecret(
+                    $privateKey,
+                    $publicKey->getEncodedCoordinates(),
+                ),
             ]),
             $curve->kekSize()->value,
             $curve->hkdfInfo(),
@@ -121,11 +113,8 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
             $ephemeralKey,
             $keyWrapper->wrap(
                 $kek,
-                $pkeskV6 ?
-                    $sessionKey->getEncryptionKey() :
-                    $sessionKey->toBytes(),
+                $sessionKey->getEncryptionKey(),
             ),
-            $pkeskVersion,
             $curve,
         );
     }
@@ -169,17 +158,12 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
         SecretKeyPacketInterface $secretKey
     ): SessionKeyInterface
     {
-        $decrypted = $this->decrypt(
-            $secretKey->getECKeyMaterial()->getECKey(),
+        return new SessionKey(
+            $this->decrypt(
+                $secretKey->getECKeyMaterial()->getECKey(),
+            ),
+            $this->curve->symmetricAlgorithm(),
         );
-        return $this->pkeskVersion === self::PKESK_VERSION_3 ?
-            new SessionKey(
-                substr($decrypted, 1),
-                SymmetricAlgorithm::from(ord($decrypted[0])),
-            ) :
-            new SessionKey(
-                $decrypted, $this->curve->symmetricAlgorithm()
-            );
     }
 
     /**
@@ -190,18 +174,17 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
      */
     private function decrypt(EC $privateKey): string
     {
-        $publicKey = EC::loadFormat('MontgomeryPublic', $this->ephemeralKey);
-        $sharedSecret = DH::computeSecret(
-            $privateKey,
-            $publicKey->getEncodedCoordinates(),
-        );
-
         $kek = hash_hkdf(
             $this->curve->hashAlgorithm(),
             implode([
                 $this->ephemeralKey,
                 $privateKey->getEncodedCoordinates(),
-                $sharedSecret,
+                DH::computeSecret(
+                    $privateKey,
+                    EC::loadFormat(
+                        'MontgomeryPublic', $this->ephemeralKey
+                    )->getEncodedCoordinates(),
+                ),
             ]),
             $this->curve->kekSize()->value,
             $this->curve->hkdfInfo(),
