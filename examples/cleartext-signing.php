@@ -184,6 +184,7 @@ $curve4489PrivateKey = OpenPGP::decryptPrivateKey(
     $passphase,
 );
 
+echo 'Sign cleartext message:' . PHP_EOL . PHP_EOL;
 $text = <<<EOT
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc felis neque, interdum id iaculis ut, faucibus a ex.
 Nam quam tortor, pharetra at dignissim ut, semper nec arcu. Vivamus mollis tortor vitae urna fringilla lacinia id
@@ -214,6 +215,35 @@ $verifications = OpenPGP::verify($armored, [
     $curve25519PrivateKey->toPublic(),
     $curve4489PrivateKey->toPublic(),
 ]);
+foreach ($verifications as $verification) {
+    echo "Key ID: {$verification->getKeyID(true)}" . PHP_EOL;
+    echo "Signature is verified: {$verification->isVerified()}" . PHP_EOL;
+    echo "Verification error: {$verification->getVerificationError()}" . PHP_EOL . PHP_EOL;
+}
+
+echo 'Sign detached cleartext message:' . PHP_EOL . PHP_EOL;
+$signature = OpenPGP::signDetachedCleartext(
+    $text,
+    [
+        $rsaPrivateKey,
+        $eccPrivateKey,
+        $curve25519PrivateKey,
+        $curve4489PrivateKey,
+    ],
+);
+echo $armored = $signature->armor() . PHP_EOL;
+
+echo 'Verify detached signature:' . PHP_EOL . PHP_EOL;
+$verifications = OpenPGP::verifyDetached(
+    $text,
+    $armored,
+    [
+        $rsaPrivateKey->toPublic(),
+        $eccPrivateKey->toPublic(),
+        $curve25519PrivateKey->toPublic(),
+        $curve4489PrivateKey->toPublic(),
+    ],
+);
 foreach ($verifications as $verification) {
     echo "Key ID: {$verification->getKeyID(true)}" . PHP_EOL;
     echo "Signature is verified: {$verification->isVerified()}" . PHP_EOL;
