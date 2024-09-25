@@ -130,7 +130,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
             $keyPacket->getFingerprint(),
             $keyPacket->getKeyAlgorithm(),
             self::produceSessionKeyCryptor(
-                $sessionKey, $keyPacket, $version
+                $sessionKey, $keyPacket
             ),
             $sessionKey,
         );
