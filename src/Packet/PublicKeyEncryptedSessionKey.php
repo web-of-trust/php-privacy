@@ -294,10 +294,6 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
                 $keyPacket->getKeyMaterial()->getAsymmetricKey(),
                 $pkeskVersion,
             ),
-            KeyAlgorithm::ElGamal => Key\ElGamalSessionKeyCryptor::encryptSessionKey(
-                $sessionKey,
-                $keyPacket->getKeyMaterial()->getAsymmetricKey(),
-            ),
             KeyAlgorithm::Ecdh => Key\ECDHSessionKeyCryptor::encryptSessionKey(
                 $sessionKey, $keyPacket, $pkeskVersion
             ),

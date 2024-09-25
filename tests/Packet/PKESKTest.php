@@ -141,21 +141,6 @@ EOT;
         $this->assertNotNull($pkesk->getSessionKey());
     }
 
-    public function testEncryptElGamalSessionKey()
-    {
-        $sessionKey = SessionKey::produceKey();
-        $secretSubkey = SecretSubkey::fromBytes(
-            base64_decode(self::$elGamalSecretSubkey)
-        )->decrypt(self::PASSPHRASE);
-        $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey($secretSubkey->getPublicKey(), $sessionKey);
-        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getKeyID());
-
-        $packets = PacketList::decode($pkesk->encode());
-        $pkesk = $packets->offsetGet(0)->decrypt($secretSubkey);
-        $this->assertSame($secretSubkey->getKeyID(), $pkesk->getKeyID());
-        $this->assertEquals($sessionKey, $pkesk->getSessionKey());
-    }
-
     public function testDecryptEcdhP384SessionKey()
     {
         $data = <<<EOT

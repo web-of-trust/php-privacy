@@ -464,9 +464,6 @@ EOT;
         $rsaPublicKey = PublicKey::fromArmored(
             file_get_contents('tests/Data/RsaPublicKey.asc')
         );
-        $dsaPublicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/DsaPublicKey.asc')
-        );
         $ecP384PublicKey = PublicKey::fromArmored(
             file_get_contents('tests/Data/EcP384PublicKey.asc')
         );
@@ -484,7 +481,6 @@ EOT;
         $encryptedMessage = $message->compress(CompressionAlgorithm::BZip2)->encrypt(
             [
                 $rsaPublicKey,
-                $dsaPublicKey,
                 $ecP384PublicKey,
                 $ecBrainpoolPublicKey,
                 $ecCurve25519PublicKey,
@@ -497,12 +493,6 @@ EOT;
 
         $privateKey = PrivateKey::fromArmored(
             file_get_contents('tests/Data/RsaPrivateKey.asc')
-        )->decrypt(self::PASSPHRASE);
-        $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
-        $this->assertSame($literalData, $decryptedMessage->getLiteralData()->getData());
-
-        $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/DsaPrivateKey.asc')
         )->decrypt(self::PASSPHRASE);
         $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
         $this->assertSame($literalData, $decryptedMessage->getLiteralData()->getData());
