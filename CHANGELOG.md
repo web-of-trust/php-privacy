@@ -101,3 +101,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 1.2.0 - released 2024-09-19
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.1.14...1.2.0)
 - Support reading openpgp message & key from binary string.
+
+## 1.2.1 - released 2024-09-25
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.0...1.2.1)
+- Change VERSION const.
+- Change SALT_NOTATION const.
+- Fix armor text dash escape.
