@@ -88,6 +88,11 @@ class PublicKey extends AbstractKey
                     $packetList->slice($indexes[$i], $length)
                 );
             }
+            else {
+                $publicKeys[] = self::fromPacketList(
+                    $packetList->slice($indexes[$i])
+                );
+            }
         }
         return $publicKeys;
     }
