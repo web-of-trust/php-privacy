@@ -244,7 +244,7 @@ final class Armor
                     Helper::EOL,
                     array_map(static fn ($hashAlgo) => "Hash: $hashAlgo", $hashAlgos)
                 ) . Helper::EOL . Helper::EOL : Helper::EOL,
-                preg_replace(self::DASH_PATTERN, '- -', $text) . Helper::EOL, // Dash-escape text
+                preg_replace(self::DASH_PATTERN, '- - ', $text) . Helper::EOL, // Dash-escape text
                 self::SIGNATURE_BEGIN,
                 self::addHeader($customComment) . Helper::EOL,
                 chunk_split(Strings::base64_encode($data), self::TRUNK_SIZE, Helper::EOL),

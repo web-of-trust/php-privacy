@@ -21,6 +21,7 @@ use OpenPGP\Packet\{
 use OpenPGP\Type\{
     CleartextMessageInterface,
     KeyInterface,
+    KeyPacketInterface,
     LiteralDataInterface,
     PacketListInterface,
     SignatureInterface,
@@ -113,29 +114,37 @@ class Signature implements SignatureInterface
         $verifications = [];
         foreach ($this->packetList as $packet) {
             foreach ($verificationKeys as $key) {
-                $isVerified = false;
-                $verificationError = '';
-                $keyPacket = $key->toPublic()->getSigningKeyPacket(
-                    $packet->getIssuerKeyID()
-                );
+                $keyPacket = null;
                 try {
-                    $isVerified = $packet->verify(
-                        $keyPacket,
-                        $literalData->getSignBytes(),
-                        $time,
+                    $keyPacket = $key->toPublic()->getSigningKeyPacket(
+                        $packet->getIssuerKeyID()
                     );
                 }
                 catch (\Throwable $e) {
-                    $verificationError = $e->getMessage();
-                    Config::getLogger()->error($verificationError);
+                    Config::getLogger()->error($e->getMessage());
                 }
+                if ($keyPacket instanceof KeyPacketInterface) {
+                    $isVerified = false;
+                    $verificationError = '';
+                    try {
+                        $isVerified = $packet->verify(
+                            $keyPacket,
+                            $literalData->getSignBytes(),
+                            $time,
+                        );
+                    }
+                    catch (\Throwable $e) {
+                        $verificationError = $e->getMessage();
+                        Config::getLogger()->error($verificationError);
+                    }
 
-                $verifications[] = new Verification(
-                    $keyPacket->getKeyID(),
-                    $packet,
-                    $isVerified,
-                    $verificationError,
-                );
+                    $verifications[] = new Verification(
+                        $keyPacket->getKeyID(),
+                        $packet,
+                        $isVerified,
+                        $verificationError,
+                    );
+                }
             }
         }
         return $verifications;
