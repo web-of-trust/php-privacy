@@ -8,10 +8,7 @@
 
 namespace OpenPGP\Packet\Key;
 
-use OpenPGP\Enum\{
-    MontgomeryCurve,
-    SymmetricAlgorithm,
-};
+use OpenPGP\Enum\MontgomeryCurve;
 use OpenPGP\Type\{
     SecretKeyPacketInterface,
     SessionKeyCryptorInterface,

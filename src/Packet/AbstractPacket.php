@@ -12,11 +12,7 @@ use OpenPGP\Common\{
     Config,
     Helper,
 };
-use OpenPGP\Enum\{
-    HashAlgorithm,
-    PacketTag,
-    SymmetricAlgorithm,
-};
+use OpenPGP\Enum\PacketTag;
 use OpenPGP\Type\PacketInterface;
 use phpseclib3\Common\Functions\Strings;
 use Psr\Log\{
@@ -116,6 +112,7 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
     private function partialEncode(): string
     {
         $data = $this->toBytes();
+        $partialData = [];
 
         while (strlen($data) >= self::PARTIAL_MIN_SIZE) {
             $maxSize = strlen(

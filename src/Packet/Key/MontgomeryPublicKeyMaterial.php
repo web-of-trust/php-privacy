@@ -8,7 +8,6 @@
 
 namespace OpenPGP\Packet\Key;
 
-use OpenPGP\Enum\MontgomeryCurve;
 use OpenPGP\Type\{
     ECKeyMaterialInterface,
     KeyMaterialInterface,

@@ -19,7 +19,6 @@ use OpenPGP\Enum\{
     CurveOid,
     KeyAlgorithm,
     KeyType,
-    PacketTag,
     RevocationReasonTag,
     RSAKeySize,
 };

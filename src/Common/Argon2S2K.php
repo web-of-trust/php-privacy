@@ -10,8 +10,10 @@ namespace OpenPGP\Common;
 
 use OpenPGP\Enum\S2kType;
 use OpenPGP\Type\S2KInterface;
-use Symfony\Component\Process\ExecutableFinder;
-use Symfony\Component\Process\Process;
+use Symfony\Component\Process\{
+    ExecutableFinder,
+    Process,
+};
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
 /**

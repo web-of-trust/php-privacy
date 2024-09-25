@@ -284,7 +284,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         SecretKeyPacketInterface $signKey,
         int $keyExpiry = 0,
         ?DateTimeInterface $time = null,
-    )
+    ): self
     {
         $props = self::keySignatureProperties($signKey->getVersion());
         if ($keyExpiry > 0) {
@@ -316,7 +316,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         bool $isPrimaryUser = false,
         int $keyExpiry = 0,
         ?DateTimeInterface $time = null,
-    )
+    ): self
     {
         $props = [];
         if ($signKey->getVersion() === self::VERSION_6) {
@@ -560,7 +560,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         array $recipients = [],
         ?NotationDataInterface $notationData = null,
         ?DateTimeInterface $time = null,
-    )
+    ): self
     {
         $signatureType = match ($literalData->getFormat()) {
             LiteralFormat::Text, LiteralFormat::Utf8 => SignatureType::Text,

@@ -213,11 +213,11 @@ interface SignaturePacketInterface extends PacketInterface
     function getPreferredHashAlgorithms(): ?SubpacketInterface;
 
     /**
-     * Get preferred AEAD ciphers sub packet
+     * Get preferred Aead ciphers sub packet
      *
      * @return SubpacketInterface
      */
-    function getPreferredAEADCiphers(): ?SubpacketInterface;
+    function getPreferredAeadCiphers(): ?SubpacketInterface;
 
     /**
      * Get preferred compression algorithms sub packet
