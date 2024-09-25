@@ -318,7 +318,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
                     $bytes, EdDSACurve::Ed448
                 ),
             default => throw new \RuntimeException(
-                "Unsupported OpenPGP public key algorithm encountered.",
+                "Key algorithm {$keyAlgorithm->name} is unsupported.",
             ),
         };
     }

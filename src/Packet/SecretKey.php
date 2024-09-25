@@ -689,7 +689,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                     $bytes, $publicKey->getKeyMaterial(), EdDSACurve::Ed448
                 ),
             default => throw new \RuntimeException(
-                'Unsupported OpenPGP public key algorithm encountered.',
+                "Key algorithm {$publicKey->getKeyAlgorithm()->name} is unsupported.",
             ),
         };
         if (!$keyMaterial->isValid()) {
