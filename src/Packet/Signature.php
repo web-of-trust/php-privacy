@@ -567,12 +567,14 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             default => SignatureType::Binary,
         };
         $subpackets = [];
-        foreach ($recipients as $recipient) {
-            if ($recipient instanceof KeyPacketInterface) {
-                $subpackets[] = Signature\IntendedRecipientFingerprint::fromKeyPacket($recipient);
-            }
-            elseif (is_string($recipient)) {
-                $subpackets[] = new Signature\IntendedRecipientFingerprint($recipient);
+        if ($signKey->getVersion() === PublicKey::VERSION_6) {
+            foreach ($recipients as $recipient) {
+                if ($recipient instanceof KeyPacketInterface) {
+                    $subpackets[] = Signature\IntendedRecipientFingerprint::fromKeyPacket($recipient);
+                }
+                elseif (is_string($recipient)) {
+                    $subpackets[] = new Signature\IntendedRecipientFingerprint($recipient);
+                }
             }
         }
         if ($notationData instanceof NotationDataInterface) {
