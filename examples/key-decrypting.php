@@ -1,0 +1,209 @@
+<?php declare(strict_types=1);
+
+require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+use OpenPGP\OpenPGP;
+
+$passphase = 'password';
+
+$keyData = <<<EOT
+-----BEGIN PGP PRIVATE KEY BLOCK-----
+Version: PHP Privacy v2
+Comment: https://github.com/web-of-trust/php-privacy
+
+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
+euvmiy/khrPm2L950YJ3KxHg1hpW
+=6IZX
+-----END PGP PRIVATE KEY BLOCK-----
+EOT;
+echo 'Decrypt RSA private key' . PHP_EOL;
+$privateKey = OpenPGP::decryptPrivateKey(
+    $keyData,
+    $passphase,
+);
+echo "Key algorithm: {$privateKey->getKeyAlgorithm()->name}" . PHP_EOL;
+echo "Key version: {$privateKey->getVersion()}" . PHP_EOL;
+echo "Key fingerprint: {$privateKey->getFingerprint(true)}" . PHP_EOL;
+echo "Key is decrypted: {$privateKey->isDecrypted()}" . PHP_EOL;
+echo "User ID: {$privateKey->getPrimaryUser()->getUserID()}" . PHP_EOL . PHP_EOL;
+
+$keyData = <<<EOT
+-----BEGIN PGP PRIVATE KEY BLOCK-----
+Version: PHP Privacy v2
+Comment: https://github.com/web-of-trust/php-privacy
+
+xcBIBGbzdF8TBSuBBAAjBCMEAcNsz/wqmSIz8bFREs6m6wPUIW/tYPX7HHWr6/L7c/sTVNbYMVYG
+XNLdJwtfW6K0WU88WAEmLXOtnnZyrZXaLM+MARgWfN0pHSdgEYthaq9qEnE0E4C8pVD03qtla9RF
+gN7X2rt50n0cC5Sh8oqfJuTpJd1hYowYiSKni8rbr8xYUrzq/gcDCMgsS8RTG0zO4CNSync2UPtk
+xIQJ6HNMp85MAWC7zGo6agvPtWCVRhcJc1I4NuKDcZUwucO/Ka5+0C5JUfDfibCAuUJOx3VXBW7v
+3y1FcgWHLE1KKZVIb/lhQ1UKV+zjqHOJJkoVuAVjBEg+1rBBl5ZTzSpOZ3V5ZW4gVmFuIE5ndXll
+biA8bmd1eWVubnYxOTgxQGdtYWlsLmNvbT7CwDgEEBMKAGcFAmbzdF8WIQQIg+QtsR1YoYixAg+J
+c/V+Mj9P/gkQiXP1fjI/T/4CGQE8FAAAAAAAEwAgc2FsdEB3ZWJvZnRydXN0Lm9yZy6QMig1Yacf
+7Te2IPGxIo5cAK/2YrJRLwi+Cbs7MhqQAACvUAIHZbTSmRl5Ote3kmlkiTyJtuBfgCiIKKwFjKSg
+Y5ZBfnJQM6nc/djNB9Hzg9TlrP4ZrA4IHQiGXl1RRcey4OAzcvUCCQG3T2vxYGjcBXk3HZ1s6zWQ
+IXGyzMAjcU31F7aB98NBaXfZRpEJzpJElQwmnEhfa+NGC4ni5czYxRCG30x8dtcK4M0sTmd1eWVu
+IFZhbiBOZ3V5ZW4gPG5ndXllbm52QGl3YXl2aWV0bmFtLmNvbT7CwDUEEBMKAGQFAmbzdF8WIQQI
+g+QtsR1YoYixAg+Jc/V+Mj9P/gkQiXP1fjI/T/48FAAAAAAAEwAgc2FsdEB3ZWJvZnRydXN0Lm9y
+Z7cPTgqqVPJkO946vXWp24uW611vTITnhjQ60iUEX/F2AADSyQIGNEhN98HoThectI6q3J7Oufv4
+ZvXeEMCVOK0akpn1HZwbdZ9XsN2DWWX4oh9GdE+7BUtr1j8DIxy9TVeyjYNZmWQCCQEipYjXedS8
+NvSOJs2W5TBAuBZKx2LRkx6jLOCGzLGJVLxEF8c0A9FZfxuxNVunJtIlqP1mcikZXdAyMGxqIRCo
+ocfATARm83RfEgUrgQQAIwQjBAEv+0kM96zeC0bYkw7mXvflrniOLDtXsmqjjUQ1D4MMBFUmVpb6
+pOl/pzZeViV5B++VMGKtPmtA3QgX3rbHfvmPSAE5WshQmB1+spX934HbQHYjh1eL/z1E5mAKqBZu
+96WGcD8FDpwYf2WM8MFMHwPFdjtepe9Fl5dktFg/EByaqgb8yQMACgn+BwMICMbaOHAU3Yvg6Hrg
++5GG/UhVOnFVbZ0FePZ/jvm7bSprf3TbnxMBJr1uYdTZnzOw6UYi2Iq48Fc9UCOMMcPH9GaIEZ5M
+WFCIYE0izHeSMvGlMVudDRDEkdiMdktQtNHxWTVdC0cNBIHjsIf0vDpVabDCwDgEGBMKAGcFAmbz
+dF8WIQQIg+QtsR1YoYixAg+Jc/V+Mj9P/gkQiXP1fjI/T/4CGww8FAAAAAAAEwAgc2FsdEB3ZWJv
+ZnRydXN0Lm9yZ5JjYLFxjL+jyRAoYIqospp2H3FiBGnoFFoKh7wRkMHIAAArSwIHTi0a7VYBFpEt
+D3SLGUaoTDR4Rv12TM/+A+i0P/GdgbSc8JzTTkpFOg0PFblkg51e0j1AMzzVge8RZZUz3EGOlRIC
+CQGiq1gumpD4tbB09KBn3D15mRkR765cYU8+X4UVskZDJXPXOuKivY9L3Pl3nMi2mh4c+Bj2/DYE
+eopUxEIhA6NOyw==
+=gvTb
+-----END PGP PRIVATE KEY BLOCK-----
+EOT;
+echo 'Decrypt Ecc private key' . PHP_EOL;
+$privateKey = OpenPGP::decryptPrivateKey(
+    $keyData,
+    $passphase,
+);
+echo "Key algorithm: {$privateKey->getKeyAlgorithm()->name}" . PHP_EOL;
+echo "Key version: {$privateKey->getVersion()}" . PHP_EOL;
+echo "Key fingerprint: {$privateKey->getFingerprint(true)}" . PHP_EOL;
+echo "Key is decrypted: {$privateKey->isDecrypted()}" . PHP_EOL;
+echo "User ID: {$privateKey->getPrimaryUser()->getUserID()}" . PHP_EOL . PHP_EOL;
+
+$keyData = <<<EOT
+-----BEGIN PGP PRIVATE KEY BLOCK-----
+Version: PHP Privacy v2
+Comment: https://github.com/web-of-trust/php-privacy
+
+xX0GZvN0XxsAAAAguZIOKaq+iKLgYkkrCADGSIcYg5agqAfHtNAEJqSxdvr+HQcLAwhQs9XrZ2Gw
+veCKQN4W0QoL5H84yIoZ0nNW7PrdvR9GVXDyjKzUU7JguqZW1OzZYw80UK5BEBSHEGTw0CKB7PIv
+HmtBy8iR01/1aTCRecK7Bh8bCAAAAFwFAmbzdF8iIQb9fZ7fwNAy9C9KKTDNqP+aaaMHdPX5Uh5k
+wJuOROdreQkQ/X2e38DQMvQCGwMDCwcJBCIBAgMFFQgMCg4FFgABAgMCHgsNJwcBCQEHAgkCBwMJ
+AwAAAAAUcRCdPUC9J8YyRK3+p3Ee36dKxrKmWbKBcLLy9s/sSDR3xafdxqu1ENhr0Vcl2tLs0eyD
+C1bcHki4gUXuc3lGoIDBMSSmMz/AU/Upy2BS418UD80qTmd1eWVuIFZhbiBOZ3V5ZW4gPG5ndXll
+bm52MTk4MUBnbWFpbC5jb20+wr4GEBsIAAAAXwUCZvN0XyIhBv19nt/A0DL0L0opMM2o/5ppowd0
+9flSHmTAm45E52t5CRD9fZ7fwNAy9AIbAwMLBwkEIgECAwUVCAwKDgUWAAECAwIeCw0nBwEJAQcC
+CQIHAwkDAhkBAAAAAFV/EOiqQlyou1/f5iUhY+FSDt1Dle99AlJZzGU1BFAAui2f2mKyvYI+FWLA
+/1fLe1nFpi94+rOwziPWWifzfucA/Kbf5n0yrMTpMvWZBO69XBwLzSxOZ3V5ZW4gVmFuIE5ndXll
+biA8bmd1eWVubnZAaXdheXZpZXRuYW0uY29tPsK7BhAbCAAAAFwFAmbzdF8iIQb9fZ7fwNAy9C9K
+KTDNqP+aaaMHdPX5Uh5kwJuOROdreQkQ/X2e38DQMvQCGwMDCwcJBCIBAgMFFQgMCg4FFgABAgMC
+HgsNJwcBCQEHAgkCBwMJAwAAAABjrBD8BFNyCZCib9WG2AudRg2FfVjrITfF4qgYL9R52jFemWjR
+6zVRApoyuqjDKIx5r3/Ix0+TIdIFUmNXxTuedBVNyMToXN5oKnqvEj4y/8h8Dcd9BmbzdF8ZAAAA
+IMsfoIIqrBdrlfhLBlZ0eDBVBFaCZU1ewbJg4obrHQo5/h0HCwMIrIzjCtSZdG3g6z3u2i3tYcbG
+uWZcqMGCKTHeURIId7JLBjOO8f4m4LM1OX0ZS8dMneBc1c0FlCUMhhrOZ7CvEXHq6KKHBr6Zs1fE
+SjPClQYYGwgAAAA2BQJm83RfIiEG/X2e38DQMvQvSikwzaj/mmmjB3T1+VIeZMCbjkTna3kJEP19
+nt/A0DL0AhsMAAAAAHSgEGPYo3PxVglzeiIGIhasF7x5d88PoUYpMW6qpViFkvKzR3zTgS9k/PbG
+fxvbr0bOCvlMc0I6SEIkAQNQzrmqzryflnwJ9rF+SlaAqEOYWAsA1R9qfQI5gaCaPrMyyyt/n0iA
+dDr6uuhek8xEyQTozlh8
+=7VOh
+-----END PGP PRIVATE KEY BLOCK-----
+EOT;
+echo 'Decrypt Curve25519 private key' . PHP_EOL;
+$privateKey = OpenPGP::decryptPrivateKey(
+    $keyData,
+    $passphase,
+);
+echo "Key algorithm: {$privateKey->getKeyAlgorithm()->name}" . PHP_EOL;
+echo "Key version: {$privateKey->getVersion()}" . PHP_EOL;
+echo "Key fingerprint: {$privateKey->getFingerprint(true)}" . PHP_EOL;
+echo "Key is decrypted: {$privateKey->isDecrypted()}" . PHP_EOL;
+echo "User ID: {$privateKey->getPrimaryUser()->getUserID()}" . PHP_EOL . PHP_EOL;
+
+$keyData = <<<EOT
+-----BEGIN PGP PRIVATE KEY BLOCK-----
+Version: PHP Privacy v2
+Comment: https://github.com/web-of-trust/php-privacy
+
+xa8GZvN0YBwAAAA534/3zVc63Sa9eHXzlaC/ncdqDD3sERDopoOFnBMenmPPuTZtTZT38/xeCdIk
+IASKr143GjmU1n6A/h0HCwMIUspY5LdtZ0vgRGMLBfRpTCYK8lz0JPyLCs+iJTv2EG7fY/op/Dyj
+8aB7TlqG23ZFuPtyGQx/4sT6ag+1AYsLqFKWmEiCCH9Rlb07RMDrPpBLDg5CSypBHCbuo0OYSSpv
+sovt+QEQwsA9Bh8cCgAAAFwFAmbzdGAiIQazjtWaxOZ+X6HXYNkumyI5TDt6OxVaaqm3xmcZPJR+
+GgkQs47VmsTmfl8CGwMDCwcJBCIBAgMFFQgMCg4FFgABAgMCHgsNJwcBCQEHAgkCBwMJAwAAAADQ
+diDi6XJvWFdH0RuwNYKjfK2jx0mB9gsz/ZJ/GkTEnNl7OMQEjwuwRG7nJdWOWCJ5fhVYsUAtc0kz
+zo2g6Km88liWSDkX5ZJ94XtkCtgNVrVbDfxFEeMEF5FaAKToOotzEDaXHxsbi/83RPJWpGe7IabU
+VXzZEFeUfsRO3QltkxgknYEFCfpEKlC/yZHOV22foS89AM0qTmd1eWVuIFZhbiBOZ3V5ZW4gPG5n
+dXllbm52MTk4MUBnbWFpbC5jb20+wsBABhAcCgAAAF8FAmbzdGAiIQazjtWaxOZ+X6HXYNkumyI5
+TDt6OxVaaqm3xmcZPJR+GgkQs47VmsTmfl8CGwMDCwcJBCIBAgMFFQgMCg4FFgABAgMCHgsNJwcB
+CQEHAgkCBwMJAwIZAQAAAABihCBfWkWwXJbc++yBhzjk8Ks39znCXNVSfiZ7BuPXGr8+Q9WMDpe6
+NgC4x/Ar6HiQp6nCl7LjIjqriYHijiOa3J4EJIog7D+llhxZhCBKqv3aSPgWARbLn+fngOgGW4hx
+yVpdPRx7ry1oLjW09AbxBE6zEAJnV/oIA3azgWIMeGeksXIfOQIPObYse+40dYcLLHY1AM0sTmd1
+eWVuIFZhbiBOZ3V5ZW4gPG5ndXllbm52QGl3YXl2aWV0bmFtLmNvbT7CwD0GEBwKAAAAXAUCZvN0
+YCIhBrOO1ZrE5n5foddg2S6bIjlMO3o7FVpqqbfGZxk8lH4aCRCzjtWaxOZ+XwIbAwMLBwkEIgEC
+AwUVCAwKDgUWAAECAwIeCw0nBwEJAQcCCQIHAwkDAAAAADWqIBcbAfmzKLaCuqDjpKPvKSGcnK+b
+QN4PvEc2zG9zhxxfaal7kjZD+CFeW/J6LWwlcHjdVk/tCEbM1vraIWzcjIY3GlYjgSHEGTHEFxH6
+uFFcfJgvm4eEXV+AMtNLhPzWuLkzIhxGeVk/zyyo+C/LdZJ2DAI0X0tSNqGH5FWdBtek9xC4RsLt
+qQYHNhDpxThfWhoAx60GZvN0YBoAAAA4fnBY8GnvYgK+f0RZ8MuhckMoC9dAiV8qAIU9QZpFSeo3
+32gJX8GQ8y13yx97x+lPcSTqc1YB5pH+HQcLAwizwUoLew/toeAiWZoz5BYDmdvXMV13Z7NlfaK4
+rhuPauzqzlh8U0UUCmWjMEyTRNnkl9atyK9bv5ve2VEXVu6cgn0S0W1SOCYyn9Q5qVPBUVaQauA1
+ZaoEu3XUSbjcI1ToofWaxcLAFwYYHAoAAAA2BQJm83RhIiEGs47VmsTmfl+h12DZLpsiOUw7ejsV
+Wmqpt8ZnGTyUfhoJELOO1ZrE5n5fAhsMAAAAAN/bIGgVnCSbUg4FXMR2cuNF208Ri1USdCuEzHxK
+wAC6yEgiaT7o1VLOw2RAR2yIPfgdR+/+0UNz2UImKo42eWMKe0/kmc08lrgphHVRsdOnYynmyFrA
+gX6WhYyAi3Vv8zLV/y4ajBghgHaaQVr/M7osc6SPqtbFOdcY+hkBStLbKuokKxSdLhWRBvkxWx+g
+MxX1fCYA1RD0kXg/FX+wOo4jw6fvZTHW
+=XEBL
+-----END PGP PRIVATE KEY BLOCK-----
+EOT;
+echo 'Decrypt Curve448 private key' . PHP_EOL;
+$privateKey = OpenPGP::decryptPrivateKey(
+    $keyData,
+    $passphase,
+);
+echo "Key algorithm: {$privateKey->getKeyAlgorithm()->name}" . PHP_EOL;
+echo "Key version: {$privateKey->getVersion()}" . PHP_EOL;
+echo "Key fingerprint: {$privateKey->getFingerprint(true)}" . PHP_EOL;
+echo "Key is decrypted: {$privateKey->isDecrypted()}" . PHP_EOL;
+echo "User ID: {$privateKey->getPrimaryUser()->getUserID()}" . PHP_EOL . PHP_EOL;
