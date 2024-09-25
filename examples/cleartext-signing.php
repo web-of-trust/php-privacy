@@ -179,7 +179,7 @@ df0zvgUA1R2LL5cFCeqL+v/SEmEuQm3skaPHAPtOusu/60UhyA==
 =aLGb
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-$curve4489PrivateKey = OpenPGP::decryptPrivateKey(
+$curve448PrivateKey = OpenPGP::decryptPrivateKey(
     $keyData,
     $passphase,
 );
@@ -203,7 +203,7 @@ $signedMessage = OpenPGP::signCleartext(
         $rsaPrivateKey,
         $eccPrivateKey,
         $curve25519PrivateKey,
-        $curve4489PrivateKey,
+        $curve448PrivateKey,
     ],
 );
 echo $armored = $signedMessage->armor() . PHP_EOL;
@@ -213,7 +213,7 @@ $verifications = OpenPGP::verify($armored, [
     $rsaPrivateKey->toPublic(),
     $eccPrivateKey->toPublic(),
     $curve25519PrivateKey->toPublic(),
-    $curve4489PrivateKey->toPublic(),
+    $curve448PrivateKey->toPublic(),
 ]);
 foreach ($verifications as $verification) {
     echo "Key ID: {$verification->getKeyID(true)}" . PHP_EOL;
@@ -228,7 +228,7 @@ $signature = OpenPGP::signDetachedCleartext(
         $rsaPrivateKey,
         $eccPrivateKey,
         $curve25519PrivateKey,
-        $curve4489PrivateKey,
+        $curve448PrivateKey,
     ],
 );
 echo $armored = $signature->armor() . PHP_EOL;
@@ -241,7 +241,7 @@ $verifications = OpenPGP::verifyDetached(
         $rsaPrivateKey->toPublic(),
         $eccPrivateKey->toPublic(),
         $curve25519PrivateKey->toPublic(),
-        $curve4489PrivateKey->toPublic(),
+        $curve448PrivateKey->toPublic(),
     ],
 );
 foreach ($verifications as $verification) {

@@ -88,7 +88,8 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
         MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
     ): self
     {
-        if ($sessionKey->getSymmetric() !== $curve->symmetricAlgorithm()) {
+        $pkeskV6 = $pkeskVersion === self::PKESK_VERSION_6;
+        if ($pkeskV6 && $sessionKey->getSymmetric() !== $curve->symmetricAlgorithm()) {
             throw new \InvalidArgumentException(
                 'Symmetric algorithm of the session key mismatch!'
             );
@@ -120,9 +121,9 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
             $ephemeralKey,
             $keyWrapper->wrap(
                 $kek,
-                $pkeskVersion === self::PKESK_VERSION_3 ?
-                    $sessionKey->toBytes() :
-                    $sessionKey->getEncryptionKey(),
+                $pkeskV6 ?
+                    $sessionKey->getEncryptionKey() :
+                    $sessionKey->toBytes(),
             ),
             $pkeskVersion,
             $curve,
