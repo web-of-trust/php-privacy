@@ -122,13 +122,9 @@ class PublicKey extends AbstractKey implements PublicKeyInterface
      */
     public static function fromArmored(string $armored): self
     {
-        $armor = Armor::decode($armored);
-        if ($armor->getType() !== ArmorType::PublicKey) {
-            throw new \UnexpectedValueException(
-                'Armored text not of public key type.'
-            );
-        }
-        return self::fromBytes($armor->getData());
+        return self::fromBytes(
+            Armor::decode($armored)->assert(ArmorType::PublicKey)->getData()
+        );
     }
 
     /**
