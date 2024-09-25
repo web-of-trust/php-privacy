@@ -3,13 +3,15 @@
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 use OpenPGP\OpenPGP;
+use OpenPGP\Common\Helper;
 use OpenPGP\Enum\KeyType;
 
 $userIDs = [
     'Nguyen Van Nguyen <nguyennv1981@gmail.com>',
     'Nguyen Van Nguyen <nguyennv@iwayvietnam.com>',
 ];
-$passphase = 'password';
+$passphase = Helper::generatePassword();
+echo "Generate passphase: {$passphase}" . PHP_EOL;
 
 echo 'Generate RSA private key' . PHP_EOL;
 $privateKey = OpenPGP::generateKey(
