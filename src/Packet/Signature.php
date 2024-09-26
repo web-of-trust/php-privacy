@@ -766,10 +766,12 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      */
     public function getCreationTime(): ?DateTimeInterface
     {
-        return self::getSubpacket(
+        $subpacket = self::getSubpacket(
             $this->hashedSubpackets,
             SignatureSubpacketType::SignatureCreationTime,
-        )?->getCreationTime();
+        );
+        return $subpacket instanceof Signature\SignatureCreationTime ?
+            $subpacket->getCreationTime() : null;
     }
 
     /**
@@ -777,10 +779,12 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      */
     public function getExpirationTime(): ?DateTimeInterface
     {
-        return self::getSubpacket(
+        $subpacket = self::getSubpacket(
             $this->hashedSubpackets,
             SignatureSubpacketType::SignatureExpirationTime,
-        )?->getExpirationTime();
+        );
+        return $subpacket instanceof Signature\SignatureExpirationTime ?
+            $subpacket->getExpirationTime() : null;
     }
 
     /**
@@ -951,10 +955,12 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      */
     public function isPrimaryUserID(): bool
     {
-        return (bool) self::getSubpacket(
+        $subpacket = self::getSubpacket(
             $this->hashedSubpackets,
             SignatureSubpacketType::PrimaryUserID,
-        )?->isPrimaryUserID();
+        );
+        return $subpacket instanceof Signature\PrimaryUserID ?
+            $subpacket->isPrimaryUserID() : false;
     }
 
     /**

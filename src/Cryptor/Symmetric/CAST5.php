@@ -635,6 +635,7 @@ class CAST5 extends BlockCipher
                     => $lp ^ self::f2($rp, $this->masking[$i], $this->rotating[$i]),
                 3, 6, 9, 12, 15
                     => $lp ^ self::f3($rp, $this->masking[$i], $this->rotating[$i]),
+                default => $ri,
             };
         }
         return [$ri, $li];
@@ -667,6 +668,7 @@ class CAST5 extends BlockCipher
                     => $lp ^ self::f2($rp, $this->masking[$i], $this->rotating[$i]),
                 3, 6, 9, 12, 15
                     => $lp ^ self::f3($rp, $this->masking[$i], $this->rotating[$i]),
+                default => $ri,
             };
         }
         return [$ri, $li];
