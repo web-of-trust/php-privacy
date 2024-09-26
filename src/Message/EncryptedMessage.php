@@ -66,9 +66,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
      */
     public function getEncryptedPacket(): EncryptedDataPacketInterface
     {
-        return self::assertEncryptedPacket(
-            $this->getPacketList()
-        );
+        return self::assertEncryptedPacket($this->getPacketList());
     }
 
     /**
@@ -163,9 +161,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
         }
 
         if (empty($sessionKeys)) {
-            throw new \RuntimeException(
-                'Session key decryption failed.'
-            );
+            throw new \RuntimeException('Session key decryption failed.');
         }
 
         return array_pop($sessionKeys);
@@ -185,9 +181,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
             EncryptedDataPacketInterface::class
         )->getPackets();
         if (empty($encryptedPackets)) {
-            throw new \RuntimeException(
-                'No encrypted data packets found.'
-            );
+            throw new \RuntimeException('No encrypted data packets found.');
         }
         return array_pop($encryptedPackets);
     }

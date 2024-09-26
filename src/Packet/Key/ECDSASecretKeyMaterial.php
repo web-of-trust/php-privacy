@@ -41,10 +41,7 @@ class ECDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMat
         string $bytes, KeyMaterialInterface $publicMaterial
     ): self
     {
-        return new self(
-            Helper::readMPI($bytes),
-            $publicMaterial,
-        );
+        return new self(Helper::readMPI($bytes), $publicMaterial);
     }
 
     /**
@@ -59,7 +56,7 @@ class ECDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMat
             case CurveOid::Ed25519:
             case CurveOid::Curve25519:
                 throw new \InvalidArgumentException(
-                    "{$curveOid->name} is not supported for ECDSA key generation."
+                    "Curve {$curveOid->name} is not supported for ECDSA key generation."
                 );
             default:
                 $privateKey = EC::createKey($curveOid->name);

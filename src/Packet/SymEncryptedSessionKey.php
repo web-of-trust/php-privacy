@@ -161,9 +161,7 @@ class SymEncryptedSessionKey extends AbstractPacket
             Helper::stringToKey(S2kType::Iterated);
 
         $keySize = $symmetric->keySizeInByte();
-        $key = $s2k->produceKey(
-            $password, $keySize
-        );
+        $key = $s2k->produceKey($password, $keySize);
 
         $iv = '';
         $encrypted = '';

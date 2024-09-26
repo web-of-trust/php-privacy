@@ -66,10 +66,12 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
     public static function fromBytes(string $bytes): self
     {
         $modulus = Helper::readMPI($bytes);
-        $exponent = Helper::readMPI(
-            substr($bytes, $modulus->getLengthInBytes() + 2)
+        return new self(
+            $modulus,
+            Helper::readMPI(
+                substr($bytes, $modulus->getLengthInBytes() + 2)
+            ),
         );
-        return new self($modulus, $exponent);
     }
 
     /**
@@ -162,15 +164,16 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
         string $signature
     ): bool
     {
-        $publicKey = $this->publicKey
+        return $this->publicKey
             ->withHash(strtolower($hash->name))
-            ->withPadding(RSA::SIGNATURE_PKCS1);
-        $bitLength = Helper::bytesToShort($signature);
-        $signatureBytes = substr(
-            $signature, 2, Helper::bit2ByteLength($bitLength)
-        );
-        return $publicKey->verify(
-            $message, $signatureBytes
-        );
+            ->withPadding(RSA::SIGNATURE_PKCS1)
+            ->verify(
+                $message,
+                substr( $signature, 2,
+                    Helper::bit2ByteLength(
+                        Helper::bytesToShort($signature)
+                    ),
+                )
+            );
     }
 }

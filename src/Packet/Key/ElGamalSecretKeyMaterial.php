@@ -65,9 +65,7 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
         string $bytes, KeyMaterialInterface $publicMaterial
     ): self
     {
-        return new self(
-            Helper::readMPI($bytes), $publicMaterial
-        );
+        return new self(Helper::readMPI($bytes), $publicMaterial);
     }
 
     /**
@@ -81,9 +79,7 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
         int $lSize = 2048, int $nSize = 224
     ): self
     {
-        $privateKey = ElGamal::createKey(
-            $lSize, $nSize
-        );
+        $privateKey = ElGamal::createKey($lSize, $nSize);
         return new self(
             $privateKey->getX(),
             new ElGamalPublicKeyMaterial(

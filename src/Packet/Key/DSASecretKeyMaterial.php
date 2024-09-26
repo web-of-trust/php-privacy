@@ -69,9 +69,7 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
         string $bytes, KeyMaterialInterface $publicMaterial
     ): self
     {
-        return new self(
-            Helper::readMPI($bytes), $publicMaterial
-        );
+        return new self(Helper::readMPI($bytes), $publicMaterial);
     }
 
     /**
@@ -85,9 +83,7 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
         int $lSize = 2048, int $nSize = 224
     ): self
     {
-        $privateKey = DSA::createKey(
-            $lSize, $nSize
-        );
+        $privateKey = DSA::createKey($lSize, $nSize);
         $params = PKCS8::load($privateKey->toString('PKCS8'));
         return new self(
             $params['x'],

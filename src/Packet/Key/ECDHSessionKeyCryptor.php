@@ -127,9 +127,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
             );
         }
         else {
-            throw new \InvalidArgumentException(
-                'Key material is not instance of ECDH key material.'
-            );
+            throw new \RuntimeException('Key material is not ECDH key.');
         }
     }
 
@@ -223,9 +221,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
             );
         }
         else {
-            throw new \InvalidArgumentException(
-                'Key material is not instance of ECDH key material.'
-            );
+            throw new \RuntimeException('Key material is not ECDH key.');
         }
     }
 
@@ -295,15 +291,11 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
         $len = strlen($message);
         $n = ord($message[$len - 1]);
         if ($len < $n || $n > self::PKCS5_BLOCK_SIZE) {
-            throw new \LengthException(
-                'Invalid padding length.'
-            );
+            throw new \LengthException('Invalid padding length.');
         }
         $ps = substr($message, -$n);
         if (strcmp($ps, str_repeat(chr($n), $n)) !== 0) {
-            throw new \RuntimeException(
-                'Invalid padding string.'
-            );
+            throw new \RuntimeException('Invalid padding string.');
         }
         return substr($message, 0, -$n);
     }

@@ -520,9 +520,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $hashText = substr($decrypted, $length);
                 $hashed = hash(self::HASH_ALGO, $clearText, true);
                 if (strcmp($hashed, $hashText) !== 0) {
-                    throw new \RuntimeException(
-                        'Incorrect key passphrase.'
-                    );
+                    throw new \RuntimeException('Incorrect key passphrase.');
                 }
             }
 
@@ -690,9 +688,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             ),
         };
         if (!$keyMaterial->isValid()) {
-            throw new \RuntimeException(
-                'The key material is not consistent.'
-            );
+            throw new \RuntimeException('Key material is not consistent.');
         }
         return $keyMaterial;
     }

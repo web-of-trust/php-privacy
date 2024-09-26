@@ -121,9 +121,7 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
     ): self
     {
         if (!Config::allowUnauthenticated()) {
-            throw new \RuntimeException(
-                'Message is not authenticated.'
-            );
+            throw new \RuntimeException('Message is not authenticated.');
         }
         if ($this->packetList instanceof PacketListInterface) {
             return $this;

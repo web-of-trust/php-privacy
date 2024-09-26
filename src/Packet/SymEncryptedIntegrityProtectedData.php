@@ -100,13 +100,14 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
 
         if ($version === self::VERSION_2) {
             // - A one-octet cipher algorithm.
-            $symmetric = SymmetricAlgorithm::from(
-                ord($bytes[$offset++])
-            );
+            $symmetric = SymmetricAlgorithm::from(ord($bytes[$offset++]));
+
             // - A one-octet AEAD algorithm.
             $aead = AeadAlgorithm::from(ord($bytes[$offset++]));
+
             // - A one-octet chunk size.
             $chunkSize = ord($bytes[$offset++]);
+
             // Thirty-two octets of salt.
             // The salt is used to derive the message key and must be unique.
             $salt = substr($bytes, $offset, self::SALT_SIZE);
@@ -144,9 +145,9 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
         ?AeadAlgorithm $aead = null,
     ): self
     {
+        Helper::assertSymmetric($symmetric);
         $aeadProtect = $aead instanceof AeadAlgorithm;
         $version = $aeadProtect ? self::VERSION_2 : self::VERSION_1;
-        Helper::assertSymmetric($symmetric);
 
         $salt = '';
         $chunkSize = 0;
@@ -219,22 +220,19 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
      */
     public function toBytes(): string
     {
-        if ($this->version === self::VERSION_2) {
-            return implode([
+        return $this->version === self::VERSION_2 ?
+            implode([
                 chr($this->version),
                 chr($this->symmetric->value),
                 chr($this->aead->value),
                 chr($this->chunkSize),
                 $this->salt,
                 $this->encrypted,
-            ]);
-        }
-        else {
-            return implode([
+            ]) :
+            implode([
                 chr($this->version),
                 $this->encrypted,
             ]);
-        }
     }
 
     /**
@@ -287,9 +285,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
                 $realHash = substr($decrypted, $digestSize);
                 $toHash = substr($decrypted, 0, $digestSize);
                 if (strcmp($realHash, hash(self::HASH_ALGO, $toHash, true)) !== 0) {
-                    throw new \RuntimeException(
-                        'Modification detected.'
-                    );
+                    throw new \RuntimeException('Modification detected.');
                 }
                 // Remove random prefix & MDC packet
                 $packetBytes = substr(

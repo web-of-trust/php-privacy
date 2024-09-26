@@ -122,7 +122,7 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
             $chunkSize = 1 << $powerOf2;
 
             $partialData[] = implode([
-                self::partialLength($powerOf2),
+                chr(224 + $powerOf2),
                 Strings::shift($data, $chunkSize),
             ]);
         }
@@ -135,21 +135,5 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
             chr(0xc0 | $this->tag->value),
             ...$partialData,
         ]);
-    }
-
-    /**
-     * Encode a given integer of length power to the openpgp partial body length specifier
-     *
-     * @param int $power
-     * @return string
-     */
-    private static function partialLength(int $power): string
-    {
-        if ($power < 0 || $power > 30) {
-            throw new \UnexpectedValueException(
-                'Partial length power must be between 1 and 30'
-            );
-        }
-        return chr(224 + $power);
     }
 }

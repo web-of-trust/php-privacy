@@ -92,7 +92,7 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
         }
         else {
             throw new \InvalidArgumentException(
-                "{$curveOid->name} is not supported for ECDH key generation."
+                "Curve {$curveOid->name} is not supported for ECDH key generation."
             );
         }
     }

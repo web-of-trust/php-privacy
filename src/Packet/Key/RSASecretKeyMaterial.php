@@ -280,10 +280,10 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
      */
     public function sign(HashAlgorithm $hash, string $message): string
     {
-        $privateKey = $this->privateKey
+        $signature = $this->privateKey
             ->withHash(strtolower($hash->name))
-            ->withPadding(RSA::SIGNATURE_PKCS1);
-        $signature = $privateKey->sign($message);
+            ->withPadding(RSA::SIGNATURE_PKCS1)
+            ->sign($message);
         return implode([
             pack('n', strlen($signature) * 8),
             $signature,

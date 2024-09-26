@@ -67,7 +67,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
             $keyAlgorithm === KeyAlgorithm::ElGamal
         ) {
             throw new \InvalidArgumentException(
-                "Public key {$keyAlgorithm->name} cannot be used with v{$version} PKESK packet.",
+                "Key algorithm {$keyAlgorithm->name} cannot be used with v{$version} PKESK packet.",
             );
         }
     }
@@ -175,9 +175,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
      */
     public function getKeyID(bool $toHex = false): string
     {
-        return $toHex ?
-            Strings::bin2hex($this->keyID) :
-            $this->keyID;
+        return $toHex ? Strings::bin2hex($this->keyID) : $this->keyID;
     }
 
     /**
@@ -274,7 +272,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
                 $secretKey
             ),
             default => throw new \RuntimeException(
-                "Public key algorithm {$this->keyAlgorithm->name} is unsupported."
+                "Key algorithm {$this->keyAlgorithm->name} is unsupported."
             ),
         };
     }
@@ -304,7 +302,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
                 MontgomeryCurve::Curve448,
             ),
             default => throw new \RuntimeException(
-                "Public key algorithm {$keyPacket->getKeyAlgorithm()->name} of the PKESK packet is unsupported."
+                "Key algorithm {$keyPacket->getKeyAlgorithm()->name} is unsupported."
             ),
         };
     }
@@ -325,7 +323,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
                 $bytes, MontgomeryCurve::Curve448
             ),
             default => throw new \RuntimeException(
-                "Public key algorithm {$keyAlgorithm->name} of the PKESK packet is unsupported."
+                "Key algorithm {$keyAlgorithm->name} is unsupported."
             ),
         };
     }

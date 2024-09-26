@@ -61,10 +61,12 @@ class EdDSASecretKeyMaterial implements ECKeyMaterialInterface, SecretKeyMateria
             $params = $publicMaterial->getParameters();
             $curve = $params['curve'];
             $arr = $curve->extractSecret($secret);
-            $key = PKCS8::savePrivateKey(
-                $arr['dA'], $curve, $params['QA'], $arr['secret']
+            $this->privateKey = EC::loadPrivateKeyFormat(
+                'PKCS8',
+                PKCS8::savePrivateKey(
+                    $arr['dA'], $curve, $params['QA'], $arr['secret']
+                ),
             );
-            $this->privateKey = EC::loadPrivateKeyFormat('PKCS8', $key);
         }
     }
 
@@ -198,8 +200,6 @@ class EdDSASecretKeyMaterial implements ECKeyMaterialInterface, SecretKeyMateria
      */
     public function sign(HashAlgorithm $hash, string $message): string
     {
-        return $this->privateKey->sign(
-            $hash->hash($message)
-        );
+        return $this->privateKey->sign($hash->hash($message));
     }
 }

@@ -125,10 +125,8 @@ class UserID extends AbstractPacket implements UserIDPacketInterface
 
     private function extractEmail(): string
     {
-        if (preg_match('/[\w\.-]+@[\w\.-]+\.\w{2,4}/', $this->userID, $matches)) {
-            return $matches[0];
-        };
-        return '';
+        preg_match('/[\w\.-]+@[\w\.-]+\.\w{2,4}/', $this->userID, $matches);
+        return $matches[0] ?? '';
     }
 
     private function extractComment(): string

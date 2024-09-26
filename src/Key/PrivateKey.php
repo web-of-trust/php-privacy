@@ -93,9 +93,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
      */
     public static function fromBytes(string $bytes): self
     {
-        return self::fromPacketList(
-            PacketList::decode($bytes)
-        );
+        return self::fromPacketList(PacketList::decode($bytes));
     }
 
     /**

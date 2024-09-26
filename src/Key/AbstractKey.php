@@ -398,10 +398,7 @@ abstract class AbstractKey implements KeyInterface
             $user = $this->getPrimaryUser();
             $features = $user?->getLatestSelfCertification()?->getFeatures();
         }
-        if (($features instanceof Features) && $features->supportV2SEIPD()) {
-            return true;
-        }
-        return false;
+        return ($features instanceof Features) && $features->supportV2SEIPD();
     }
 
     /**

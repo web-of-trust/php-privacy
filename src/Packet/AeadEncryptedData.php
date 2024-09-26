@@ -205,9 +205,9 @@ class AeadEncryptedData extends AbstractPacket implements AeadEncryptedDataPacke
                 $this->chunkSize,
                 $this->iv,
                 $this->encrypted,
-                PacketList::decode(
-                    $this->crypt(self::AEAD_DECRYPT, $key, $data, $authTag)
-                ),
+                PacketList::decode($this->crypt(
+                    self::AEAD_DECRYPT, $key, $data, $authTag
+                )),
             );
         }
     }
@@ -238,7 +238,8 @@ class AeadEncryptedData extends AbstractPacket implements AeadEncryptedDataPacke
         );
         $ciBytes = substr($aDataBytes, 5, 8);
         for ($chunkIndex = 0; $chunkIndex === 0 || strlen($data) > 0;) {
-            // Take a chunk of `data`, en/decrypt it, and shift `data` to the next chunk.
+            // Take a chunk of `data`, en/decrypt it,
+            // and shift `data` to the next chunk.
             $crypted[] = $cipher->$fn(
                 Strings::shift($data, $chunkSize),
                 $cipher->getNonce($this->iv, $ciBytes),

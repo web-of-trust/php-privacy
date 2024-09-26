@@ -460,8 +460,11 @@ final class OpenPGP
         ?\DateTimeInterface $time = null,
     ): Type\EncryptedMessageInterface
     {
-        if (!empty($signingKeys)) {
-            return $message->sign(
+        return empty($signingKeys) ?
+            $message->compress($compression)->encrypt(
+                $encryptionKeys, $passwords, $symmetric
+            ) :
+            $message->sign(
                 $signingKeys,
                 array_map(
                     static fn ($key) => $key->getKeyPacket(),
@@ -475,12 +478,6 @@ final class OpenPGP
             )->compress($compression)->encrypt(
                 $encryptionKeys, $passwords, $symmetric
             );
-        }
-        else {
-            return $message->compress($compression)->encrypt(
-                $encryptionKeys, $passwords, $symmetric
-            );
-        }
     }
 
     /**

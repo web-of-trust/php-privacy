@@ -65,7 +65,7 @@ class SessionKey implements SessionKeyInterface
     {
         return new self(
             Random::string($symmetric->keySizeInByte()),
-            $symmetric
+            $symmetric,
         );
     }
 
@@ -91,9 +91,7 @@ class SessionKey implements SessionKeyInterface
     public function checksum(string $checksum): self
     {
         if (strcmp($this->computeChecksum(), $checksum) !== 0) {
-            throw new \RuntimeException(
-                'Session key checksum mismatch!'
-            );
+            throw new \RuntimeException('Session key checksum mismatch!');
         }
         return $this;
     }

@@ -186,9 +186,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
             $this->curve->kekSize()->value,
             $this->curve->hkdfInfo(),
         );
-        $keyWrapper = new AesKeyWrapper(
-            $this->curve->kekSize()
-        );
+        $keyWrapper = new AesKeyWrapper($this->curve->kekSize());
         return $keyWrapper->unwrap($kek, $this->wrappedKey);
     }
 }

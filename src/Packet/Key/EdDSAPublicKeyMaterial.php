@@ -155,7 +155,7 @@ class EdDSAPublicKeyMaterial implements ECKeyMaterialInterface, PublicKeyMateria
     public function verify(
         HashAlgorithm $hash,
         string $message,
-        string $signature
+        string $signature,
     ): bool
     {
         return $this->publicKey->verify(

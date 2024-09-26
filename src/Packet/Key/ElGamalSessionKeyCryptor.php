@@ -82,9 +82,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
             );
         }
         else {
-            throw new \InvalidArgumentException(
-                'Public key is not instance of ElGamal key.'
-            );
+            throw new \RuntimeException('Public key is not ElGamal key.');
         }
     }
 
@@ -135,9 +133,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
             );
         }
         else {
-            throw new \InvalidArgumentException(
-                'Private key is not instance of ElGamal key.'
-            );
+            throw new \RuntimeException('Private key is not ElGamal key.');
         }
     }
 
@@ -154,9 +150,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
 
         // length checking
         if ($mLength > $keyLength - 11) {
-            throw new \RuntimeException(
-                'Message too long.'
-            );
+            throw new \RuntimeException('Message too long.');
         }
         $ps = self::pkcs1Padding($keyLength - $mLength - 3);
         $encoded = str_repeat(self::ZERO_CHAR, $keyLength);

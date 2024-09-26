@@ -69,9 +69,7 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
             );
         }
         else {
-            throw new \RuntimeException(
-                'Public key is not instance of RSA key.'
-            );
+            throw new \RuntimeException('Public key is not RSA key.');
         }
     }
 
@@ -103,14 +101,10 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
     {
         if ($privateKey instanceof PrivateKey) {
             $privateKey = $privateKey->withPadding(RSA::ENCRYPTION_PKCS1);
-            return $privateKey->decrypt(
-                $this->encrypted->toBytes()
-            );
+            return $privateKey->decrypt($this->encrypted->toBytes());
         }
         else {
-            throw new \RuntimeException(
-                'Private key is not instance of RSA key.'
-            );
+            throw new \RuntimeException('Private key is not RSA key.');
         }
     }
 }

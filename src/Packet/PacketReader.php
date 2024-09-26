@@ -77,7 +77,7 @@ class PacketReader
         $offset = 0;
         if (strlen(substr($bytes, $offset)) < 2 || (ord($bytes[$offset]) & 0x80) === 0) {
             throw new \RuntimeException(
-                'Error during parsing. This data probably does not conform to a valid OpenPGP format.',
+                'Data probably does not conform to a valid OpenPGP format.',
             );
         }
 

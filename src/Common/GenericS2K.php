@@ -170,7 +170,7 @@ class GenericS2K implements S2KInterface
 
     private function iterate(string $data): string
     {
-        if(strlen($data) >= $this->count) return $data;
+        if (strlen($data) >= $this->count) return $data;
         $data = str_repeat(
             $data, (int) ceil($this->count / strlen($data))
         );
@@ -180,7 +180,7 @@ class GenericS2K implements S2KInterface
     private function hash(string $data, int $size): string
     {
         $hash = $this->hash->hash($data);
-        while(strlen($hash) < $size) {
+        while (strlen($hash) < $size) {
             $data = "\x00" . $data;
             $hash .= $this->hash->hash($data);
         }

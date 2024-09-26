@@ -68,7 +68,7 @@ class CompressedData extends AbstractPacket
      */
     public static function fromPacketList(
         PacketListInterface $packetList,
-        Algorithm $algorithm = Algorithm::Uncompressed
+        Algorithm $algorithm = Algorithm::Uncompressed,
     ): self
     {
         return new self(

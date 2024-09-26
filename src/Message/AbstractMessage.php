@@ -55,7 +55,7 @@ abstract class AbstractMessage implements ArmorableInterface, LoggerAwareInterfa
     {
         return Armor::encode(
             ArmorType::Message,
-            $this->getPacketList()->encode()
+            $this->getPacketList()->encode(),
         );
     }
 

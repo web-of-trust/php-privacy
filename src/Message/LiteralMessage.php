@@ -73,9 +73,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
      */
     public static function fromBytes(string $bytes): self
     {
-        return new self(
-            PacketList::decode($bytes)
-        );
+        return new self(PacketList::decode($bytes));
     }
 
     /**
@@ -107,9 +105,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
             static fn ($packet) => $packet instanceof LiteralDataInterface,
         );
         if (empty($packets)) {
-            throw new \RuntimeException(
-                'No literal data in packet list.'
-            );
+            throw new \RuntimeException('No literal data in packet list.');
         }
         return array_pop($packets);
     }
@@ -191,7 +187,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
         return $this->getSignature()->verify(
             $verificationKeys,
             $this->getLiteralData(),
-            $time
+            $time,
         );
     }
 
@@ -220,7 +216,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
     {
         $encryptionKeys = array_filter(
             $encryptionKeys,
-            static fn ($key) => $key instanceof KeyInterface
+            static fn ($key) => $key instanceof KeyInterface,
         );
         if (empty($encryptionKeys) && empty($passwords)) {
             throw new \InvalidArgumentException(
@@ -268,7 +264,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
                 $passwords,
             ), // skesk packets
             SymEncryptedIntegrityProtectedData::encryptPacketsWithSessionKey(
-                $sessionKey, $packetList, $aead,
+                $sessionKey, $packetList, $aead
             ), // seipd packet
         ]));
     }
@@ -310,9 +306,7 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
             static fn ($key) => $key instanceof PrivateKeyInterface,
         );
         if (empty($signingKeys)) {
-            throw new \InvalidArgumentException(
-                'No signing keys provided.'
-            );
+            throw new \InvalidArgumentException('No signing keys provided.');
         }
         return new Signature(new PacketList(array_map(
             fn ($key) => SignaturePacket::createLiteralData(

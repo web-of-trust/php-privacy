@@ -44,9 +44,7 @@ class UserAttribute extends AbstractPacket implements UserIDPacketInterface
      */
     public static function fromBytes(string $bytes): self
     {
-        return new self(
-            SubpacketReader::readUserAttributes($bytes)
-        );
+        return new self(SubpacketReader::readUserAttributes($bytes));
     }
 
     /**
@@ -56,7 +54,7 @@ class UserAttribute extends AbstractPacket implements UserIDPacketInterface
     {
         return implode(array_map(
             static fn ($attr): string => $attr->toBytes(),
-            $this->attributes
+            $this->attributes,
         ));
     }
 

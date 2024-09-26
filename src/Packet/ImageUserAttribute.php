@@ -67,8 +67,7 @@ class ImageUserAttribute extends UserAttributeSubpacket
      */
     public function getVersion(): int
     {
-        $data = $this->getData();
-        return ord($data[2]);
+        return ord($this->getData()[2]);
     }
 
     /**
@@ -78,8 +77,7 @@ class ImageUserAttribute extends UserAttributeSubpacket
      */
     public function getEncoding(): int
     {
-        $data = $this->getData();
-        return ord($data[3]);
+        return ord($this->getData()[3]);
     }
 
     /**
@@ -89,7 +87,6 @@ class ImageUserAttribute extends UserAttributeSubpacket
      */
     public function getImageData(): string
     {
-        $length = $this->getHeaderLength();
-        return substr($this->getData(), $length);
+        return substr($this->getData(), $this->getHeaderLength());
     }
 }

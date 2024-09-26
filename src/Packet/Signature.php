@@ -318,10 +318,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         ?DateTimeInterface $time = null,
     ): self
     {
-        $props = [];
-        if ($signKey->getVersion() === self::VERSION_6) {
-            $props = self::keySignatureProperties($signKey->getVersion());
-        }
+        $props = $signKey->getVersion() === self::VERSION_4 ?
+            self::keySignatureProperties($signKey->getVersion()) : [];
         if ($isPrimaryUser) {
             $props[] = new Signature\PrimaryUserID("\x01");
         }
@@ -627,12 +625,12 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     {
         if (strcmp($this->getIssuerKeyID(), $verifyKey->getKeyID()) !== 0) {
             throw new \RuntimeException(
-                'Signature was not issued by the given public key.',
+                'Signature was not issued by the given public key.'
             );
         }
         if ($this->keyAlgorithm !== $verifyKey->getKeyAlgorithm()) {
             throw new \RuntimeException(
-                'Public key algorithm used to sign signature does not match issuer key algorithm.',
+                'Public key algorithm used to sign signature does not match issuer key algorithm.'
             );
         }
 
@@ -641,7 +639,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             $time = $time ?? new \DateTime();
             if ($expirationTime < $time) {
                 throw new \RuntimeException(
-                    "Signature is expired at {$expirationTime->format(DateTimeInterface::RFC3339_EXTENDED)}.",
+                    "Signature is expired at {$expirationTime->format(DateTimeInterface::RFC3339_EXTENDED)}."
                 );
             }
         }
@@ -658,9 +656,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 
         $hash = $this->hashAlgorithm->hash($message);
         if (strcmp($this->signedHashValue, substr($hash, 0, 2)) !== 0) {
-            throw new \RuntimeException(
-                'Signed digest mismatch!',
-            );
+            throw new \RuntimeException('Signed digest mismatch!');
         }
 
         $keyMaterial = $verifyKey->getKeyMaterial();
@@ -670,9 +666,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             );
         }
         else {
-            throw new \RuntimeException(
-                'Verify key material is not verifiable.',
-            );
+            throw new \RuntimeException('Key material is not verifiable.');
         }
     }
 
@@ -772,14 +766,10 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      */
     public function getCreationTime(): ?DateTimeInterface
     {
-        $subpacket = self::getSubpacket(
+        return self::getSubpacket(
             $this->hashedSubpackets,
             SignatureSubpacketType::SignatureCreationTime,
-        );
-        if ($subpacket instanceof Signature\SignatureCreationTime) {
-            return $subpacket->getCreationTime();
-        }
-        return null;
+        )?->getCreationTime();
     }
 
     /**
@@ -787,14 +777,10 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      */
     public function getExpirationTime(): ?DateTimeInterface
     {
-        $subpacket = self::getSubpacket(
+        return self::getSubpacket(
             $this->hashedSubpackets,
             SignatureSubpacketType::SignatureExpirationTime,
-        );
-        if ($subpacket instanceof Signature\SignatureExpirationTime) {
-            return $subpacket->getExpirationTime();
-        }
-        return null;
+        )?->getExpirationTime();
     }
 
     /**
@@ -965,14 +951,10 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      */
     public function isPrimaryUserID(): bool
     {
-        $subpacket = self::getSubpacket(
+        return (bool) self::getSubpacket(
             $this->hashedSubpackets,
             SignatureSubpacketType::PrimaryUserID,
-        );
-        if ($subpacket instanceof Signature\PrimaryUserID) {
-            return $subpacket->isPrimaryUserID();
-        }
-        return false;
+        )?->isPrimaryUserID();
     }
 
     /**

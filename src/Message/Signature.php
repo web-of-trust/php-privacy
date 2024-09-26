@@ -77,9 +77,7 @@ class Signature implements SignatureInterface
      */
     public static function fromBytes(string $bytes): self
     {
-        return new self(
-            PacketList::decode($bytes)
-        );
+        return new self(PacketList::decode($bytes));
     }
 
     /**
@@ -89,7 +87,7 @@ class Signature implements SignatureInterface
     {
         return array_map(
             static fn ($packet): string => $packet->getIssuerKeyID($toHex),
-            $this->getPackets()
+            $this->getPackets(),
         );
     }
 
@@ -104,12 +102,10 @@ class Signature implements SignatureInterface
     {
         $verificationKeys = array_filter(
             $verificationKeys,
-            static fn ($key): bool => $key instanceof KeyInterface
+            static fn ($key): bool => $key instanceof KeyInterface,
         );
         if (empty($verificationKeys)) {
-            Config::getLogger()->warning(
-                'No verification keys provided.'
-            );
+            Config::getLogger()->warning('No verification keys provided.');
         }
         $verifications = [];
         foreach ($this->packetList as $packet) {
@@ -173,7 +169,7 @@ class Signature implements SignatureInterface
     {
         return Armor::encode(
             ArmorType::Signature,
-            $this->getPacketList()->encode()
+            $this->getPacketList()->encode(),
         );
     }
 

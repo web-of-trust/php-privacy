@@ -55,9 +55,7 @@ class SignedMessage extends CleartextMessage implements SignedMessageInterface
         $armor = Armor::decode($armored)->assert(ArmorType::SignedMessage);
         return new self(
             $armor->getText(),
-            new Signature(
-                PacketList::decode($armor->getData())
-            ),
+            new Signature(PacketList::decode($armor->getData())),
         );
     }
 
@@ -82,7 +80,7 @@ class SignedMessage extends CleartextMessage implements SignedMessageInterface
                 static fn ($packet) => strtoupper(
                     str_replace('_', '-', $packet->getHashAlgorithm()->name)
                 ),
-                $this->signature->getPackets()
+                $this->signature->getPackets(),
             ),
         );
     }
