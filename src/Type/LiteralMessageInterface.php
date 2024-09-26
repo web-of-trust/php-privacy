@@ -62,6 +62,19 @@ interface LiteralMessageInterface extends
     ): SignatureInterface;
 
     /**
+     * Verify signature
+     * Return verification array
+     *
+     * @param array $verificationKeys
+     * @param DateTimeInterface $time
+     * @return array
+     */
+    function verify(
+        array $verificationKeys,
+        ?DateTimeInterface $time = null
+    ): array;
+
+    /**
      * Verify detached signature
      * Return verification array
      *

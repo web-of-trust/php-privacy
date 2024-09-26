@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-require_once dirname(__DIR__) . '/vendor/autoload.php';
+require_once dirname(__DIR__) . "/vendor/autoload.php";
 
 use OpenPGP\OpenPGP;
 
@@ -69,16 +69,15 @@ qy6toPKEKnsoCZVMlS/fSSTONakq
 =fImQ
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-echo 'Decrypt RSA private key' . PHP_EOL;
-$privateKey = OpenPGP::decryptPrivateKey(
-    $keyData,
-    $passphase,
-);
+echo "Decrypt RSA private key" . PHP_EOL;
+$privateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
 echo "Key algorithm: {$privateKey->getKeyAlgorithm()->name}" . PHP_EOL;
 echo "Key version: {$privateKey->getVersion()}" . PHP_EOL;
 echo "Key fingerprint: {$privateKey->getFingerprint(true)}" . PHP_EOL;
 echo "Key is decrypted: {$privateKey->isDecrypted()}" . PHP_EOL;
-echo "User ID: {$privateKey->getPrimaryUser()->getUserID()}" . PHP_EOL . PHP_EOL;
+echo "User ID: {$privateKey->getPrimaryUser()->getUserID()}" .
+    PHP_EOL .
+    PHP_EOL;
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -113,16 +112,15 @@ h2en6HvwU70R0BQ=
 =15wT
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-echo 'Decrypt Ecc private key' . PHP_EOL;
-$privateKey = OpenPGP::decryptPrivateKey(
-    $keyData,
-    $passphase,
-);
+echo "Decrypt Ecc private key" . PHP_EOL;
+$privateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
 echo "Key algorithm: {$privateKey->getKeyAlgorithm()->name}" . PHP_EOL;
 echo "Key version: {$privateKey->getVersion()}" . PHP_EOL;
 echo "Key fingerprint: {$privateKey->getFingerprint(true)}" . PHP_EOL;
 echo "Key is decrypted: {$privateKey->isDecrypted()}" . PHP_EOL;
-echo "User ID: {$privateKey->getPrimaryUser()->getUserID()}" . PHP_EOL . PHP_EOL;
+echo "User ID: {$privateKey->getPrimaryUser()->getUserID()}" .
+    PHP_EOL .
+    PHP_EOL;
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -152,16 +150,15 @@ iifJtGDxIsDjLBx8u9lEBTPFPKQbMrh4Gx7OL87S2a3yKJlkdsoJ1RexF+OhHlcTHORBJRF1UMiY
 =kJoZ
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-echo 'Decrypt Curve25519 private key' . PHP_EOL;
-$privateKey = OpenPGP::decryptPrivateKey(
-    $keyData,
-    $passphase,
-);
+echo "Decrypt Curve25519 private key" . PHP_EOL;
+$privateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
 echo "Key algorithm: {$privateKey->getKeyAlgorithm()->name}" . PHP_EOL;
 echo "Key version: {$privateKey->getVersion()}" . PHP_EOL;
 echo "Key fingerprint: {$privateKey->getFingerprint(true)}" . PHP_EOL;
 echo "Key is decrypted: {$privateKey->isDecrypted()}" . PHP_EOL;
-echo "User ID: {$privateKey->getPrimaryUser()->getUserID()}" . PHP_EOL . PHP_EOL;
+echo "User ID: {$privateKey->getPrimaryUser()->getUserID()}" .
+    PHP_EOL .
+    PHP_EOL;
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -197,13 +194,12 @@ nWWFLDsA1Ri3Rbu551qo3Xk4o5gVhSC0J+7ZMZyQq2g=
 =YGCQ
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-echo 'Decrypt Curve448 private key' . PHP_EOL;
-$privateKey = OpenPGP::decryptPrivateKey(
-    $keyData,
-    $passphase,
-);
+echo "Decrypt Curve448 private key" . PHP_EOL;
+$privateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
 echo "Key algorithm: {$privateKey->getKeyAlgorithm()->name}" . PHP_EOL;
 echo "Key version: {$privateKey->getVersion()}" . PHP_EOL;
 echo "Key fingerprint: {$privateKey->getFingerprint(true)}" . PHP_EOL;
 echo "Key is decrypted: {$privateKey->isDecrypted()}" . PHP_EOL;
-echo "User ID: {$privateKey->getPrimaryUser()->getUserID()}" . PHP_EOL . PHP_EOL;
+echo "User ID: {$privateKey->getPrimaryUser()->getUserID()}" .
+    PHP_EOL .
+    PHP_EOL;

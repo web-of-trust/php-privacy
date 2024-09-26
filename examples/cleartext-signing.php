@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-require_once dirname(__DIR__) . '/vendor/autoload.php';
+require_once dirname(__DIR__) . "/vendor/autoload.php";
 
 use OpenPGP\OpenPGP;
 
-$passphase = '8pM1b;)|5;lD7/SM51o>p1Vp%F}u=AO7';
+$passphase = "8pM1b;)|5;lD7/SM51o>p1Vp%F}u=AO7";
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -69,10 +69,7 @@ JufkRd7zuLxBKQIPpDhrZEeGvClv
 =B8qK
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-$rsaPrivateKey = OpenPGP::decryptPrivateKey(
-    $keyData,
-    $passphase,
-);
+$rsaPrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -107,10 +104,7 @@ ZgPDYnRLXCjPFA==
 =42yk
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-$eccPrivateKey = OpenPGP::decryptPrivateKey(
-    $keyData,
-    $passphase,
-);
+$eccPrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -140,10 +134,7 @@ OWcHlS3cfS2V0+EdtxA=
 =xBiu
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-$curve25519PrivateKey = OpenPGP::decryptPrivateKey(
-    $keyData,
-    $passphase,
-);
+$curve25519PrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -179,12 +170,9 @@ df0zvgUA1R2LL5cFCeqL+v/SEmEuQm3skaPHAPtOusu/60UhyA==
 =aLGb
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-$curve448PrivateKey = OpenPGP::decryptPrivateKey(
-    $keyData,
-    $passphase,
-);
+$curve448PrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
 
-echo 'Sign cleartext message:' . PHP_EOL . PHP_EOL;
+echo "Sign cleartext message:" . PHP_EOL . PHP_EOL;
 $text = <<<EOT
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc felis neque, interdum id iaculis ut, faucibus a ex.
 Nam quam tortor, pharetra at dignissim ut, semper nec arcu. Vivamus mollis tortor vitae urna fringilla lacinia id
@@ -197,18 +185,15 @@ What we need from the grocery store:
 - vegetables
 - noodles
 EOT;
-$signedMessage = OpenPGP::signCleartext(
-    $text,
-    [
-        $rsaPrivateKey,
-        $eccPrivateKey,
-        $curve25519PrivateKey,
-        $curve448PrivateKey,
-    ],
-);
+$signedMessage = OpenPGP::signCleartext($text, [
+    $rsaPrivateKey,
+    $eccPrivateKey,
+    $curve25519PrivateKey,
+    $curve448PrivateKey,
+]);
 echo $armored = $signedMessage->armor() . PHP_EOL;
 
-echo 'Verify signed message:' . PHP_EOL . PHP_EOL;
+echo "Verify signed message:" . PHP_EOL . PHP_EOL;
 $verifications = OpenPGP::verify($armored, [
     $rsaPrivateKey->toPublic(),
     $eccPrivateKey->toPublic(),
@@ -218,34 +203,31 @@ $verifications = OpenPGP::verify($armored, [
 foreach ($verifications as $verification) {
     echo "Key ID: {$verification->getKeyID(true)}" . PHP_EOL;
     echo "Signature is verified: {$verification->isVerified()}" . PHP_EOL;
-    echo "Verification error: {$verification->getVerificationError()}" . PHP_EOL . PHP_EOL;
+    echo "Verification error: {$verification->getVerificationError()}" .
+        PHP_EOL .
+        PHP_EOL;
 }
 
-echo 'Sign detached cleartext message:' . PHP_EOL . PHP_EOL;
-$signature = OpenPGP::signDetachedCleartext(
-    $text,
-    [
-        $rsaPrivateKey,
-        $eccPrivateKey,
-        $curve25519PrivateKey,
-        $curve448PrivateKey,
-    ],
-);
+echo "Sign detached cleartext message:" . PHP_EOL . PHP_EOL;
+$signature = OpenPGP::signDetachedCleartext($text, [
+    $rsaPrivateKey,
+    $eccPrivateKey,
+    $curve25519PrivateKey,
+    $curve448PrivateKey,
+]);
 echo $armored = $signature->armor() . PHP_EOL;
 
-echo 'Verify detached signature:' . PHP_EOL . PHP_EOL;
-$verifications = OpenPGP::verifyDetached(
-    $text,
-    $armored,
-    [
-        $rsaPrivateKey->toPublic(),
-        $eccPrivateKey->toPublic(),
-        $curve25519PrivateKey->toPublic(),
-        $curve448PrivateKey->toPublic(),
-    ],
-);
+echo "Verify detached signature:" . PHP_EOL . PHP_EOL;
+$verifications = OpenPGP::verifyDetached($text, $armored, [
+    $rsaPrivateKey->toPublic(),
+    $eccPrivateKey->toPublic(),
+    $curve25519PrivateKey->toPublic(),
+    $curve448PrivateKey->toPublic(),
+]);
 foreach ($verifications as $verification) {
     echo "Key ID: {$verification->getKeyID(true)}" . PHP_EOL;
     echo "Signature is verified: {$verification->isVerified()}" . PHP_EOL;
-    echo "Verification error: {$verification->getVerificationError()}" . PHP_EOL . PHP_EOL;
+    echo "Verification error: {$verification->getVerificationError()}" .
+        PHP_EOL .
+        PHP_EOL;
 }

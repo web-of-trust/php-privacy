@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-require_once dirname(__DIR__) . '/vendor/autoload.php';
+require_once dirname(__DIR__) . "/vendor/autoload.php";
 
 use OpenPGP\OpenPGP;
 
@@ -44,7 +44,7 @@ aPo8oCsxyNSRdEGi90un2iqXl/msxKRUVw2R0MFwNA+iW+P+ODR3Lv45bJ4QcOIlGeDnuQ==
 =6yWV
 -----END PGP PUBLIC KEY BLOCK-----
 EOT;
-echo 'Read RSA public key' . PHP_EOL;
+echo "Read RSA public key" . PHP_EOL;
 $publicKeys[] = $publicKey = OpenPGP::readPublicKey($keyData);
 echo "Key algorithm: {$publicKey->getKeyAlgorithm()->name}" . PHP_EOL;
 echo "Key version: {$publicKey->getVersion()}" . PHP_EOL;
@@ -80,7 +80,7 @@ Xg==
 =QRfd
 -----END PGP PUBLIC KEY BLOCK-----
 EOT;
-echo 'Read Ecc public key' . PHP_EOL;
+echo "Read Ecc public key" . PHP_EOL;
 $publicKeys[] = $publicKey = OpenPGP::readPublicKey($keyData);
 echo "Key algorithm: {$publicKey->getKeyAlgorithm()->name}" . PHP_EOL;
 echo "Key version: {$publicKey->getVersion()}" . PHP_EOL;
@@ -112,7 +112,7 @@ u+rSk/m1dc6B7Xh3iCcDCrAsJeeRzZYmxTyX92iRGG5LN9K2SUZKZixQ8QzVGBs2zEdgqf76xwvE
 =A0yl
 -----END PGP PUBLIC KEY BLOCK-----
 EOT;
-echo 'Read Curve25519 public key' . PHP_EOL;
+echo "Read Curve25519 public key" . PHP_EOL;
 $publicKeys[] = $publicKey = OpenPGP::readPublicKey($keyData);
 echo "Key algorithm: {$publicKey->getKeyAlgorithm()->name}" . PHP_EOL;
 echo "Key version: {$publicKey->getVersion()}" . PHP_EOL;
@@ -149,18 +149,20 @@ Cd9nlIA9bNiev1mPWeDKPpwaANUbud6PmWraXDt68RWZCEG9fzhJU0P61f/zRjXK
 =/xA2
 -----END PGP PUBLIC KEY BLOCK-----
 EOT;
-echo 'Read Curve448 public key' . PHP_EOL;
+echo "Read Curve448 public key" . PHP_EOL;
 $publicKeys[] = $publicKey = OpenPGP::readPublicKey($keyData);
 echo "Key algorithm: {$publicKey->getKeyAlgorithm()->name}" . PHP_EOL;
 echo "Key version: {$publicKey->getVersion()}" . PHP_EOL;
 echo "Key fingerprint: {$publicKey->getFingerprint(true)}" . PHP_EOL;
 echo "User ID: {$publicKey->getPrimaryUser()->getUserID()}" . PHP_EOL . PHP_EOL;
 
-echo 'Merge and armor public keys' . PHP_EOL;
+echo "Merge and armor public keys" . PHP_EOL;
 $publicKeys = OpenPGP::readPublicKeys(OpenPGP::armorPublicKeys($publicKeys));
 foreach ($publicKeys as $publicKey) {
     echo "Key algorithm: {$publicKey->getKeyAlgorithm()->name}" . PHP_EOL;
     echo "Key version: {$publicKey->getVersion()}" . PHP_EOL;
     echo "Key fingerprint: {$publicKey->getFingerprint(true)}" . PHP_EOL;
-    echo "User ID: {$publicKey->getPrimaryUser()->getUserID()}" . PHP_EOL . PHP_EOL;
+    echo "User ID: {$publicKey->getPrimaryUser()->getUserID()}" .
+        PHP_EOL .
+        PHP_EOL;
 }

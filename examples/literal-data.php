@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-require_once dirname(__DIR__) . '/vendor/autoload.php';
+require_once dirname(__DIR__) . "/vendor/autoload.php";
 
 use OpenPGP\OpenPGP;
 use OpenPGP\Common\Config;
 use OpenPGP\Enum\SymmetricAlgorithm;
 
-$passphase = 'NU=WM<;ev3(^^M@)dIt,O|9k*<xLpv7v';
+$passphase = "NU=WM<;ev3(^^M@)dIt,O|9k*<xLpv7v";
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -71,10 +71,7 @@ mNqrM25q1P8rBo69xZErGjQ/nFY=
 =HDCL
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-$rsaPrivateKey = OpenPGP::decryptPrivateKey(
-    $keyData,
-    $passphase,
-);
+$rsaPrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -109,10 +106,7 @@ xkqGItNj3gs=
 =pP8r
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-$eccPrivateKey = OpenPGP::decryptPrivateKey(
-    $keyData,
-    $passphase,
-);
+$eccPrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -142,10 +136,7 @@ VS4W
 =oH6u
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-$curve25519PrivateKey = OpenPGP::decryptPrivateKey(
-    $keyData,
-    $passphase,
-);
+$curve25519PrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -181,12 +172,11 @@ dYZIvg0A1SCEq4w8mfkSbFRJrixxFabTL7COFHgvL25joDV8UIvxYg==
 =aUu5
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-$curve448PrivateKey = OpenPGP::decryptPrivateKey(
-    $keyData,
-    $passphase,
-);
+$curve448PrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
 
-echo 'Sign & encrypt literal data message with AES128 cipher:' . PHP_EOL . PHP_EOL;
+echo "Sign & encrypt literal data message with AES128 cipher:" .
+    PHP_EOL .
+    PHP_EOL;
 $literalMessage = OpenPGP::createLiteralMessage(random_bytes(10000));
 $encryptedMessage = OpenPGP::encrypt(
     $literalMessage,
@@ -196,16 +186,11 @@ $encryptedMessage = OpenPGP::encrypt(
         $curve25519PrivateKey->toPublic(),
     ],
     [$passphase],
-    [
-        $rsaPrivateKey,
-        $eccPrivateKey,
-        $curve25519PrivateKey,
-        $curve448PrivateKey,
-    ],
+    [$rsaPrivateKey, $eccPrivateKey, $curve25519PrivateKey, $curve448PrivateKey]
 );
 echo $armored = $encryptedMessage->armor() . PHP_EOL;
 
-echo 'Decrypt with passphase & verify signatures:' . PHP_EOL . PHP_EOL;
+echo "Decrypt with passphase & verify signatures:" . PHP_EOL . PHP_EOL;
 $literalMessage = OpenPGP::decryptMessage($armored, passwords: [$passphase]);
 $verifications = $literalMessage->verify([
     $rsaPrivateKey->toPublic(),
@@ -216,10 +201,12 @@ $verifications = $literalMessage->verify([
 foreach ($verifications as $verification) {
     echo "Key ID: {$verification->getKeyID(true)}" . PHP_EOL;
     echo "Signature is verified: {$verification->isVerified()}" . PHP_EOL;
-    echo "Verification error: {$verification->getVerificationError()}" . PHP_EOL . PHP_EOL;
+    echo "Verification error: {$verification->getVerificationError()}" .
+        PHP_EOL .
+        PHP_EOL;
 }
 
-echo 'Decrypt with rsa key & verify signatures:' . PHP_EOL . PHP_EOL;
+echo "Decrypt with rsa key & verify signatures:" . PHP_EOL . PHP_EOL;
 $literalMessage = OpenPGP::decryptMessage($armored, [$rsaPrivateKey]);
 $verifications = $literalMessage->verify([
     $rsaPrivateKey->toPublic(),
@@ -230,10 +217,12 @@ $verifications = $literalMessage->verify([
 foreach ($verifications as $verification) {
     echo "Key ID: {$verification->getKeyID(true)}" . PHP_EOL;
     echo "Signature is verified: {$verification->isVerified()}" . PHP_EOL;
-    echo "Verification error: {$verification->getVerificationError()}" . PHP_EOL . PHP_EOL;
+    echo "Verification error: {$verification->getVerificationError()}" .
+        PHP_EOL .
+        PHP_EOL;
 }
 
-echo 'Decrypt with ecc key & verify signatures:' . PHP_EOL . PHP_EOL;
+echo "Decrypt with ecc key & verify signatures:" . PHP_EOL . PHP_EOL;
 $literalMessage = OpenPGP::decryptMessage($armored, [$eccPrivateKey]);
 $verifications = $literalMessage->verify([
     $rsaPrivateKey->toPublic(),
@@ -244,10 +233,12 @@ $verifications = $literalMessage->verify([
 foreach ($verifications as $verification) {
     echo "Key ID: {$verification->getKeyID(true)}" . PHP_EOL;
     echo "Signature is verified: {$verification->isVerified()}" . PHP_EOL;
-    echo "Verification error: {$verification->getVerificationError()}" . PHP_EOL . PHP_EOL;
+    echo "Verification error: {$verification->getVerificationError()}" .
+        PHP_EOL .
+        PHP_EOL;
 }
 
-echo 'Decrypt with curve25519 key & verify signatures:' . PHP_EOL . PHP_EOL;
+echo "Decrypt with curve25519 key & verify signatures:" . PHP_EOL . PHP_EOL;
 $literalMessage = OpenPGP::decryptMessage($armored, [$curve25519PrivateKey]);
 $verifications = $literalMessage->verify([
     $rsaPrivateKey->toPublic(),
@@ -258,28 +249,25 @@ $verifications = $literalMessage->verify([
 foreach ($verifications as $verification) {
     echo "Key ID: {$verification->getKeyID(true)}" . PHP_EOL;
     echo "Signature is verified: {$verification->isVerified()}" . PHP_EOL;
-    echo "Verification error: {$verification->getVerificationError()}" . PHP_EOL . PHP_EOL;
+    echo "Verification error: {$verification->getVerificationError()}" .
+        PHP_EOL .
+        PHP_EOL;
 }
 
-echo 'Sign & encrypt literal data message with AEAD AES256 cipher:' . PHP_EOL . PHP_EOL;
+echo "Sign & encrypt literal data message with AEAD AES256 cipher:" .
+    PHP_EOL .
+    PHP_EOL;
 Config::setPreferredSymmetric(SymmetricAlgorithm::Aes256);
 Config::setAeadProtect(true);
 $literalMessage = OpenPGP::createLiteralMessage(random_bytes(10000));
 $encryptedMessage = OpenPGP::encrypt(
     $literalMessage,
-    [
-        $curve448PrivateKey->toPublic(),
-    ],
+    [$curve448PrivateKey->toPublic()],
     [$passphase],
-    [
-        $rsaPrivateKey,
-        $eccPrivateKey,
-        $curve25519PrivateKey,
-        $curve448PrivateKey,
-    ],
+    [$rsaPrivateKey, $eccPrivateKey, $curve25519PrivateKey, $curve448PrivateKey]
 );
 echo $armored = $encryptedMessage->armor() . PHP_EOL;
-echo 'Decrypt with curve448 & verify signatures:' . PHP_EOL . PHP_EOL;
+echo "Decrypt with curve448 & verify signatures:" . PHP_EOL . PHP_EOL;
 $literalMessage = OpenPGP::decryptMessage($armored, [$curve448PrivateKey]);
 $verifications = $literalMessage->verify([
     $rsaPrivateKey->toPublic(),
@@ -290,5 +278,7 @@ $verifications = $literalMessage->verify([
 foreach ($verifications as $verification) {
     echo "Key ID: {$verification->getKeyID(true)}" . PHP_EOL;
     echo "Signature is verified: {$verification->isVerified()}" . PHP_EOL;
-    echo "Verification error: {$verification->getVerificationError()}" . PHP_EOL . PHP_EOL;
+    echo "Verification error: {$verification->getVerificationError()}" .
+        PHP_EOL .
+        PHP_EOL;
 }

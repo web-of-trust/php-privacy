@@ -8,8 +8,6 @@
 
 namespace OpenPGP\Type;
 
-use OpenPGP\Enum\SymmetricAlgorithm;
-
 /**
  * Encrypted message interface
  *
@@ -17,7 +15,7 @@ use OpenPGP\Enum\SymmetricAlgorithm;
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-interface EncryptedMessageInterface
+interface EncryptedMessageInterface extends ArmorableInterface
 {
     /**
      * Return encrypted packet.
