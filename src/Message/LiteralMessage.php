@@ -366,7 +366,7 @@ class LiteralMessage extends AbstractMessage implements
             $packets,
             static fn($packet) => $packet instanceof CompressedData
         );
-        return array_pop($compressedPackets)?->getPacketList()->getPackets() ??
+        return array_pop($compressedPackets)?->getPacketList()?->getPackets() ??
             $packets;
     }
 }
