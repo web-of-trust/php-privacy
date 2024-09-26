@@ -8,6 +8,8 @@
 
 namespace OpenPGP;
 
+use DateTimeInterface;
+
 /**
  * OpenPGP class
  * Export high level API for developers.
@@ -29,7 +31,7 @@ final class OpenPGP
      * @param Enum\CurveOid $curve
      * @param int $keyExpiry
      * @param bool $signOnly
-     * @param \DateTimeInterface $time
+     * @param DateTimeInterface $time
      * @return Type\PrivateKeyInterface
      */
      public static function generateKey(
@@ -40,7 +42,7 @@ final class OpenPGP
         Enum\CurveOid $curve = Enum\CurveOid::Secp521r1,
         int $keyExpiry = 0,
         bool $signOnly = false,
-        ?\DateTimeInterface $time = null
+        ?DateTimeInterface $time = null
     ): Type\PrivateKeyInterface
     {
         return Key\PrivateKey::generate(
@@ -160,13 +162,13 @@ final class OpenPGP
      *
      * @param Type\PrivateKeyInterface $privateKey
      * @param Type\KeyInterface $key
-     * @param \DateTimeInterface $time
+     * @param DateTimeInterface $time
      * @return Type\KeyInterface
      */
     public static function certifyKey(
         Type\PrivateKeyInterface $privateKey,
         Type\KeyInterface $key,
-        ?\DateTimeInterface $time = null
+        ?DateTimeInterface $time = null
     ): Type\KeyInterface
     {
         return $privateKey->certifyKey($key, $time);
@@ -180,7 +182,7 @@ final class OpenPGP
      * @param Type\KeyInterface $key
      * @param string $revocationReason
      * @param Enum\RevocationReasonTag $reasonTag
-     * @param \DateTimeInterface $time
+     * @param DateTimeInterface $time
      * @return Type\KeyInterface
      */
     public static function revokeKey(
@@ -188,7 +190,7 @@ final class OpenPGP
         Type\KeyInterface $key,
         string $revocationReason = "",
         ?Enum\RevocationReasonTag $reasonTag = null,
-        ?\DateTimeInterface $time = null
+        ?DateTimeInterface $time = null
     ): Type\KeyInterface
     {
         return $privateKey->revokeKey(
@@ -279,13 +281,13 @@ final class OpenPGP
      *
      * @param string $literalData
      * @param string $filename
-     * @param \DateTimeInterface $time
+     * @param DateTimeInterface $time
      * @return Type\LiteralMessageInterface
      */
     public static function createLiteralMessage(
         string $literalData,
         string $filename = "",
-        ?\DateTimeInterface $time = null
+        ?DateTimeInterface $time = null
     ): Type\LiteralMessageInterface
     {
         return Message\LiteralMessage::fromLiteralData(
@@ -301,7 +303,7 @@ final class OpenPGP
      * @param array $signingKeys
      * @param array $recipients
      * @param Type\NotationDataInterface $notationData
-     * @param \DateTimeInterface $time
+     * @param DateTimeInterface $time
      * @return Type\SignedMessageInterface
      */
     public static function signCleartext(
@@ -309,7 +311,7 @@ final class OpenPGP
         array $signingKeys,
         array $recipients = [],
         ?Type\NotationDataInterface $notationData = null,
-        ?\DateTimeInterface $time = null
+        ?DateTimeInterface $time = null
     ): Type\SignedMessageInterface
     {
         return self::createCleartextMessage($text)->sign(
@@ -324,7 +326,7 @@ final class OpenPGP
      * @param array $signingKeys
      * @param array $recipients
      * @param Type\NotationDataInterface $notationData
-     * @param \DateTimeInterface $time
+     * @param DateTimeInterface $time
      * @return Type\SignatureInterface
      */
     public static function signDetachedCleartext(
@@ -332,7 +334,7 @@ final class OpenPGP
         array $signingKeys,
         array $recipients = [],
         ?Type\NotationDataInterface $notationData = null,
-        ?\DateTimeInterface $time = null
+        ?DateTimeInterface $time = null
     ): Type\SignatureInterface
     {
         return self::createCleartextMessage($text)->signDetached(
@@ -347,7 +349,7 @@ final class OpenPGP
      * @param array $signingKeys
      * @param array $recipients
      * @param Type\NotationDataInterface $notationData
-     * @param \DateTimeInterface $time
+     * @param DateTimeInterface $time
      * @return Type\LiteralMessageInterface
      */
     public static function sign(
@@ -355,7 +357,7 @@ final class OpenPGP
         array $signingKeys,
         array $recipients = [],
         ?Type\NotationDataInterface $notationData = null,
-        ?\DateTimeInterface $time = null
+        ?DateTimeInterface $time = null
     ): Type\LiteralMessageInterface
     {
         return $message->sign(
@@ -370,7 +372,7 @@ final class OpenPGP
      * @param array $signingKeys
      * @param array $recipients
      * @param Type\NotationDataInterface $notationData
-     * @param \DateTimeInterface $time
+     * @param DateTimeInterface $time
      * @return Type\SignatureInterface
      */
     public static function signDetached(
@@ -378,7 +380,7 @@ final class OpenPGP
         array $signingKeys,
         array $recipients = [],
         ?Type\NotationDataInterface $notationData = null,
-        ?\DateTimeInterface $time = null
+        ?DateTimeInterface $time = null
     ): Type\SignatureInterface
     {
         return $message->signDetached(
@@ -392,13 +394,13 @@ final class OpenPGP
      *
      * @param string $messageData
      * @param array $verificationKeys
-     * @param \DateTimeInterface $time
+     * @param DateTimeInterface $time
      * @return array
      */
     public static function verify(
         string $messageData,
         array $verificationKeys,
-        ?\DateTimeInterface $time = null
+        ?DateTimeInterface $time = null
     ): array
     {
         return self::readSignedMessage(
@@ -414,7 +416,7 @@ final class OpenPGP
      * @param string $signature
      * @param array $verificationKeys
      * @param bool $armored
-     * @param \DateTimeInterface $time
+     * @param DateTimeInterface $time
      * @return array
      */
     public static function verifyDetached(
@@ -422,7 +424,7 @@ final class OpenPGP
         string $signature,
         array $verificationKeys,
         bool $armored = true,
-        ?\DateTimeInterface $time = null
+        ?DateTimeInterface $time = null
     ): array
     {
         return self::createCleartextMessage($text)->verifyDetached(
@@ -444,7 +446,7 @@ final class OpenPGP
      * @param Enum\SymmetricAlgorithm $symmetric
      * @param Enum\CompressionAlgorithm $compression
      * @param Type\NotationDataInterface $notationData
-     * @param \DateTimeInterface $time
+     * @param DateTimeInterface $time
      * @return Type\EncryptedMessageInterface
      */
     public static function encrypt(
@@ -455,7 +457,7 @@ final class OpenPGP
         ?Enum\SymmetricAlgorithm $symmetric = null,
         ?Enum\CompressionAlgorithm $compression = null,
         ?Type\NotationDataInterface $notationData = null,
-        ?\DateTimeInterface $time = null
+        ?DateTimeInterface $time = null
     ): Type\EncryptedMessageInterface
     {
         return empty($signingKeys) ?
