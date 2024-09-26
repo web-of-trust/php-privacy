@@ -37,8 +37,8 @@ class UserID extends AbstractPacket implements UserIDPacketInterface
     public function __construct(private readonly string $userID)
     {
         parent::__construct(PacketTag::UserID);
-        $this->name    = $this->extractName();
-        $this->email   = $this->extractEmail();
+        $this->name = $this->extractName();
+        $this->email = $this->extractEmail();
         $this->comment = $this->extractComment();
     }
 
@@ -65,7 +65,7 @@ class UserID extends AbstractPacket implements UserIDPacketInterface
     {
         return implode([
             "\xb4",
-            pack('N', strlen($this->userID)),
+            pack("N", strlen($this->userID)),
             $this->userID,
         ]);
     }
@@ -115,7 +115,7 @@ class UserID extends AbstractPacket implements UserIDPacketInterface
         $nameChars = [];
         $chars = str_split($this->userID);
         foreach ($chars as $char) {
-            if ($char === '(' || $char === '<') {
+            if ($char === "(" || $char === "<") {
                 break;
             }
             $nameChars[] = $char;
@@ -125,21 +125,20 @@ class UserID extends AbstractPacket implements UserIDPacketInterface
 
     private function extractEmail(): string
     {
-        preg_match('/[\w\.-]+@[\w\.-]+\.\w{2,4}/', $this->userID, $matches);
-        return $matches[0] ?? '';
+        preg_match("/[\w\.-]+@[\w\.-]+\.\w{2,4}/", $this->userID, $matches);
+        return $matches[0] ?? "";
     }
 
     private function extractComment(): string
     {
-        if (str_contains($this->userID, '(') && str_contains($this->userID, ')')) {
-            $start = (int) strpos($this->userID, '(') + 1;
-            $end = (int) strpos($this->userID, ')');
-            return substr(
-                $this->userID,
-                $start,
-                $end - $start,
-            );
+        if (
+            str_contains($this->userID, "(") &&
+            str_contains($this->userID, ")")
+        ) {
+            $start = (int) strpos($this->userID, "(") + 1;
+            $end = (int) strpos($this->userID, ")");
+            return substr($this->userID, $start, $end - $start);
         }
-        return '';
+        return "";
     }
 }

@@ -8,12 +8,7 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Enum\{
-    HashAlgorithm,
-    KeyAlgorithm,
-    PacketTag,
-    SignatureType,
-};
+use OpenPGP\Enum\{HashAlgorithm, KeyAlgorithm, PacketTag, SignatureType};
 
 /**
  * Implementation an OpenPGP One-Pass Signature packet (Tag 4).
@@ -50,13 +45,12 @@ class OnePassSignature extends AbstractPacket
         private readonly string $salt,
         private readonly string $issuerFingerprint,
         private readonly string $issuerKeyID,
-        private readonly int $nested = 0,
-    )
-    {
+        private readonly int $nested = 0
+    ) {
         parent::__construct(PacketTag::OnePassSignature);
         if ($version != self::VERSION_3 && $version != self::VERSION_6) {
             throw new \InvalidArgumentException(
-                "Version $version of the one-pass signature packet is unsupported.",
+                "Version $version of the one-pass signature packet is unsupported."
             );
         }
     }
@@ -79,8 +73,8 @@ class OnePassSignature extends AbstractPacket
         // A one-octet number describing the public-key algorithm used.
         $keyAlgorithm = KeyAlgorithm::from(ord($bytes[$offset++]));
 
-        $salt = '';
-        $issuerFingerprint = '';
+        $salt = "";
+        $issuerFingerprint = "";
         if ($version === self::VERSION_6) {
             $saltLength = ord($bytes[$offset++]);
             $salt = substr($bytes, $offset, $saltLength);
@@ -89,8 +83,7 @@ class OnePassSignature extends AbstractPacket
             $issuerFingerprint = substr($bytes, $offset, 32);
             $offset += 32;
             $issuerKeyID = substr($issuerFingerprint, 0, 8);
-        }
-        else {
+        } else {
             // An eight-octet number holding the Key ID of the signing key.
             $issuerKeyID = substr($bytes, $offset, 8);
             $offset += 8;
@@ -111,7 +104,7 @@ class OnePassSignature extends AbstractPacket
             $salt,
             $issuerFingerprint,
             $issuerKeyID,
-            $nested,
+            $nested
         );
     }
 
@@ -122,18 +115,21 @@ class OnePassSignature extends AbstractPacket
      * @param int $nested
      * @return self
      */
-    public static function fromSignature(Signature $signature, int $nested = 0): self
-    {
+    public static function fromSignature(
+        Signature $signature,
+        int $nested = 0
+    ): self {
         return new self(
-            $signature->getVersion() === self::VERSION_6 ?
-                    self::VERSION_6 : self::VERSION_3,
+            $signature->getVersion() === self::VERSION_6
+                ? self::VERSION_6
+                : self::VERSION_3,
             $signature->getSignatureType(),
             $signature->getHashAlgorithm(),
             $signature->getKeyAlgorithm(),
             $signature->getSalt(),
             $signature->getIssuerFingerprint(),
             $signature->getIssuerKeyID(),
-            $nested,
+            $nested
         );
     }
 
@@ -232,8 +228,7 @@ class OnePassSignature extends AbstractPacket
             $data[] = chr(strlen($this->salt));
             $data[] = $this->salt;
             $data[] = $this->issuerFingerprint;
-        }
-        else {
+        } else {
             $data[] = $this->issuerKeyID;
         }
         $data[] = chr($this->nested);

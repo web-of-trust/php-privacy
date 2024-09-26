@@ -30,10 +30,9 @@ class UserAttributeSubpacket implements SubpacketInterface
      */
     public function __construct(
         private readonly int $type = 0,
-        private readonly string $data = '',
-        private readonly bool $isLong = false,
-    )
-    {
+        private readonly string $data = "",
+        private readonly bool $isLong = false
+    ) {
     }
 
     /**

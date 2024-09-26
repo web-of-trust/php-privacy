@@ -8,8 +8,8 @@
 
 namespace OpenPGP\Type;
 
-use phpseclib3\Crypt\Common\PublicKey;
 use OpenPGP\Enum\HashAlgorithm;
+use phpseclib3\Crypt\Common\PublicKey;
 
 /**
  * Public key material interface
@@ -38,6 +38,6 @@ interface PublicKeyMaterialInterface extends KeyMaterialInterface
     function verify(
         HashAlgorithm $hash,
         string $message,
-        string $signature,
+        string $signature
     ): bool;
 }

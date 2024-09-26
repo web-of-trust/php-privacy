@@ -9,15 +9,8 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Enum\MontgomeryCurve;
-use OpenPGP\Type\{
-    ECKeyMaterialInterface,
-    KeyMaterialInterface,
-};
-use phpseclib3\Crypt\Common\{
-    AsymmetricKey,
-    PrivateKey,
-    PublicKey,
-};
+use OpenPGP\Type\{ECKeyMaterialInterface, KeyMaterialInterface};
+use phpseclib3\Crypt\Common\{AsymmetricKey, PrivateKey, PublicKey};
 use phpseclib3\Crypt\EC;
 use phpseclib3\Crypt\EC\PrivateKey as ECPrivateKey;
 use phpseclib3\Crypt\EC\Formats\Keys\MontgomeryPrivate;
@@ -29,7 +22,9 @@ use phpseclib3\Crypt\EC\Formats\Keys\MontgomeryPrivate;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class MontgomerySecretKeyMaterial implements ECKeyMaterialInterface, KeyMaterialInterface
+class MontgomerySecretKeyMaterial implements
+    ECKeyMaterialInterface,
+    KeyMaterialInterface
 {
     /**
      * phpseclib3 EC private key
@@ -47,15 +42,14 @@ class MontgomerySecretKeyMaterial implements ECKeyMaterialInterface, KeyMaterial
     public function __construct(
         private readonly string $secret,
         private readonly KeyMaterialInterface $publicMaterial,
-        ?ECPrivateKey $privateKey = null,
-    )
-    {
+        ?ECPrivateKey $privateKey = null
+    ) {
         if ($privateKey instanceof ECPrivateKey) {
             $this->privateKey = $privateKey;
-        }
-        else {
+        } else {
             $this->privateKey = EC::loadPrivateKeyFormat(
-                'MontgomeryPrivate', $secret
+                "MontgomeryPrivate",
+                $secret
             );
         }
     }
@@ -70,12 +64,11 @@ class MontgomerySecretKeyMaterial implements ECKeyMaterialInterface, KeyMaterial
     public static function fromBytes(
         string $bytes,
         KeyMaterialInterface $publicMaterial,
-        MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
-    ): self
-    {
+        MontgomeryCurve $curve = MontgomeryCurve::Curve25519
+    ): self {
         return new self(
             substr($bytes, 0, $curve->payloadSize()),
-            $publicMaterial,
+            $publicMaterial
         );
     }
 
@@ -87,20 +80,19 @@ class MontgomerySecretKeyMaterial implements ECKeyMaterialInterface, KeyMaterial
      */
     public static function generate(
         MontgomeryCurve $curve = MontgomeryCurve::Curve25519
-    ): self
-    {
+    ): self {
         $size = $curve->payloadSize();
         do {
             $privateKey = EC::createKey($curve->name);
-            $secret = $privateKey->toString('MontgomeryPrivate');
+            $secret = $privateKey->toString("MontgomeryPrivate");
         } while (strlen($secret) !== $size);
         return new self(
             $secret,
             new MontgomeryPublicKeyMaterial(
                 $privateKey->getEncodedCoordinates(),
-                $privateKey->getPublicKey(),
+                $privateKey->getPublicKey()
             ),
-            $privateKey,
+            $privateKey
         );
     }
 
@@ -158,7 +150,7 @@ class MontgomerySecretKeyMaterial implements ECKeyMaterialInterface, KeyMaterial
     public function getParameters(): array
     {
         return MontgomeryPrivate::load(
-            $this->privateKey->toString('MontgomeryPrivate')
+            $this->privateKey->toString("MontgomeryPrivate")
         );
     }
 
@@ -170,7 +162,7 @@ class MontgomerySecretKeyMaterial implements ECKeyMaterialInterface, KeyMaterial
         if ($this->publicMaterial instanceof MontgomeryPublicKeyMaterial) {
             return strcmp(
                 $this->privateKey->getEncodedCoordinates(),
-                $this->publicMaterial->toBytes(),
+                $this->publicMaterial->toBytes()
             ) === 0;
         }
         return false;

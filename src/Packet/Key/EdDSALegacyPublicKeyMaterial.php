@@ -20,7 +20,8 @@ use phpseclib3\Crypt\EC\Curves\Ed25519;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class EdDSALegacyPublicKeyMaterial extends ECPublicKeyMaterial implements PublicKeyMaterialInterface
+class EdDSALegacyPublicKeyMaterial extends ECPublicKeyMaterial implements
+    PublicKeyMaterialInterface
 {
     /**
      * Read key material from bytes
@@ -43,25 +44,21 @@ class EdDSALegacyPublicKeyMaterial extends ECPublicKeyMaterial implements Public
     public function verify(
         HashAlgorithm $hash,
         string $message,
-        string $signature,
-    ): bool
-    {
+        string $signature
+    ): bool {
         $bitLength = Helper::bytesToShort($signature);
-        $r = substr(
-            $signature, 2, Helper::bit2ByteLength($bitLength)
-        ); // MPI of an EC point R
+        $r = substr($signature, 2, Helper::bit2ByteLength($bitLength)); // MPI of an EC point R
 
-        $bitLength = Helper::bytesToShort(
-            substr($signature, strlen($r) + 2)
-        );
+        $bitLength = Helper::bytesToShort(substr($signature, strlen($r) + 2));
         $s = substr(
-            $signature, strlen($r) + 4,
-            Helper::bit2ByteLength($bitLength),
+            $signature,
+            strlen($r) + 4,
+            Helper::bit2ByteLength($bitLength)
         ); // MPI of EdDSA value S
 
         return $this->getPublicKey()->verify(
             $hash->hash($message),
-            implode([$r, $s]),
+            implode([$r, $s])
         );
     }
 }

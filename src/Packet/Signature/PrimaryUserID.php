@@ -32,8 +32,7 @@ class PrimaryUserID extends SignatureSubpacket
         string $data,
         bool $critical = false,
         bool $isLong = false
-    )
-    {
+    ) {
         parent::__construct(
             SignatureSubpacketType::PrimaryUserID->value,
             $data,

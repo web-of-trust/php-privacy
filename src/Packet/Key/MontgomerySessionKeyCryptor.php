@@ -12,12 +12,9 @@ use OpenPGP\Enum\MontgomeryCurve;
 use OpenPGP\Type\{
     SecretKeyPacketInterface,
     SessionKeyCryptorInterface,
-    SessionKeyInterface,
+    SessionKeyInterface
 };
-use phpseclib3\Crypt\{
-    DH,
-    EC,
-};
+use phpseclib3\Crypt\{DH, EC};
 
 /**
  * Montgomery session key cryptor class.
@@ -39,9 +36,8 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
     public function __construct(
         private readonly string $ephemeralKey,
         private readonly string $wrappedKey,
-        private readonly MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
-    )
-    {
+        private readonly MontgomeryCurve $curve = MontgomeryCurve::Curve25519
+    ) {
     }
 
     /**
@@ -53,17 +49,16 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
      */
     public static function fromBytes(
         string $bytes,
-        MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
-    ): self
-    {
+        MontgomeryCurve $curve = MontgomeryCurve::Curve25519
+    ): self {
         return new self(
             substr($bytes, 0, $curve->payloadSize()),
             substr(
                 $bytes,
                 $curve->payloadSize() + 1,
-                ord($bytes[$curve->payloadSize()]),
+                ord($bytes[$curve->payloadSize()])
             ),
-            $curve,
+            $curve
         );
     }
 
@@ -78,12 +73,11 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
     public static function encryptSessionKey(
         SessionKeyInterface $sessionKey,
         EC $publicKey,
-        MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
-    ): self
-    {
+        MontgomeryCurve $curve = MontgomeryCurve::Curve25519
+    ): self {
         if ($sessionKey->getSymmetric() !== $curve->symmetricAlgorithm()) {
             throw new \InvalidArgumentException(
-                'Symmetric algorithm of the session key mismatch!'
+                "Symmetric algorithm of the session key mismatch!"
             );
         }
         $privateKey = EC::createKey($publicKey->getCurve());
@@ -96,23 +90,18 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
                 $publicKey->getEncodedCoordinates(),
                 DH::computeSecret(
                     $privateKey,
-                    $publicKey->getEncodedCoordinates(),
+                    $publicKey->getEncodedCoordinates()
                 ),
             ]),
             $curve->kekSize()->value,
-            $curve->hkdfInfo(),
+            $curve->hkdfInfo()
         );
-        $keyWrapper = new AesKeyWrapper(
-            $curve->kekSize()
-        );
+        $keyWrapper = new AesKeyWrapper($curve->kekSize());
 
         return new self(
             $ephemeralKey,
-            $keyWrapper->wrap(
-                $kek,
-                $sessionKey->getEncryptionKey(),
-            ),
-            $curve,
+            $keyWrapper->wrap($kek, $sessionKey->getEncryptionKey()),
+            $curve
         );
     }
 
@@ -153,13 +142,10 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
      */
     public function decryptSessionKey(
         SecretKeyPacketInterface $secretKey
-    ): SessionKeyInterface
-    {
+    ): SessionKeyInterface {
         return new SessionKey(
-            $this->decrypt(
-                $secretKey->getECKeyMaterial()->getECKey(),
-            ),
-            $this->curve->symmetricAlgorithm(),
+            $this->decrypt($secretKey->getECKeyMaterial()->getECKey()),
+            $this->curve->symmetricAlgorithm()
         );
     }
 
@@ -179,12 +165,13 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
                 DH::computeSecret(
                     $privateKey,
                     EC::loadFormat(
-                        'MontgomeryPublic', $this->ephemeralKey
-                    )->getEncodedCoordinates(),
+                        "MontgomeryPublic",
+                        $this->ephemeralKey
+                    )->getEncodedCoordinates()
                 ),
             ]),
             $this->curve->kekSize()->value,
-            $this->curve->hkdfInfo(),
+            $this->curve->hkdfInfo()
         );
         $keyWrapper = new AesKeyWrapper($this->curve->kekSize());
         return $keyWrapper->unwrap($kek, $this->wrappedKey);

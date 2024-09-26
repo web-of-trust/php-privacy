@@ -42,7 +42,7 @@ interface EncryptedDataPacketInterface extends PacketInterface
      */
     function encrypt(
         string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self;
 
     /**
@@ -51,9 +51,7 @@ interface EncryptedDataPacketInterface extends PacketInterface
      * @param SessionKeyInterface $sessionKey
      * @return self
      */
-    function encryptWithSessionKey(
-        SessionKeyInterface $sessionKey
-    ): self;
+    function encryptWithSessionKey(SessionKeyInterface $sessionKey): self;
 
     /**
      * Decrypt the encrypted data contained in the packet.
@@ -64,7 +62,7 @@ interface EncryptedDataPacketInterface extends PacketInterface
      */
     function decrypt(
         string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self;
 
     /**
@@ -73,7 +71,5 @@ interface EncryptedDataPacketInterface extends PacketInterface
      * @param SessionKeyInterface $sessionKey
      * @return self
      */
-    function decryptWithSessionKey(
-        SessionKeyInterface $sessionKey
-    ): self;
+    function decryptWithSessionKey(SessionKeyInterface $sessionKey): self;
 }

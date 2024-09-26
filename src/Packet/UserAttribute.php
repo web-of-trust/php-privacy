@@ -35,7 +35,7 @@ class UserAttribute extends AbstractPacket implements UserIDPacketInterface
         parent::__construct(PacketTag::UserAttribute);
         $this->attributes = array_filter(
             $attributes,
-            static fn ($attr) => $attr instanceof UserAttributeSubpacket,
+            static fn($attr) => $attr instanceof UserAttributeSubpacket
         );
     }
 
@@ -52,10 +52,12 @@ class UserAttribute extends AbstractPacket implements UserIDPacketInterface
      */
     public function toBytes(): string
     {
-        return implode(array_map(
-            static fn ($attr): string => $attr->toBytes(),
-            $this->attributes,
-        ));
+        return implode(
+            array_map(
+                static fn($attr): string => $attr->toBytes(),
+                $this->attributes
+            )
+        );
     }
 
     /**
@@ -64,11 +66,7 @@ class UserAttribute extends AbstractPacket implements UserIDPacketInterface
     public function getSignBytes(): string
     {
         $bytes = $this->toBytes();
-        return implode([
-            "\xd1",
-            pack('N', strlen($bytes)),
-            $bytes,
-        ]);
+        return implode(["\xd1", pack("N", strlen($bytes)), $bytes]);
     }
 
     /**

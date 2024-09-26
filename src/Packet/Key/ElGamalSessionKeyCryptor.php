@@ -9,10 +9,7 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
-use OpenPGP\Cryptor\Asymmetric\ElGamal\{
-    PrivateKey,
-    PublicKey,
-};
+use OpenPGP\Cryptor\Asymmetric\ElGamal\{PrivateKey, PublicKey};
 use OpenPGP\Type\SessionKeyInterface;
 use phpseclib3\Crypt\Common\AsymmetricKey;
 use phpseclib3\Crypt\Random;
@@ -38,9 +35,8 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
      */
     public function __construct(
         private readonly BigInteger $gamma,
-        private readonly BigInteger $phi,
-    )
-    {
+        private readonly BigInteger $phi
+    ) {
     }
 
     /**
@@ -52,9 +48,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
     public static function fromBytes(string $bytes): self
     {
         $gamma = Helper::readMPI($bytes);
-        $phi = Helper::readMPI(
-            substr($bytes, $gamma->getLengthInBytes() + 2)
-        );
+        $phi = Helper::readMPI(substr($bytes, $gamma->getLengthInBytes() + 2));
         return new self($gamma, $phi);
     }
 
@@ -66,23 +60,25 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
      * @return self
      */
     public static function encryptSessionKey(
-        SessionKeyInterface $sessionKey, AsymmetricKey $publicKey
-    ): self
-    {
+        SessionKeyInterface $sessionKey,
+        AsymmetricKey $publicKey
+    ): self {
         if ($publicKey instanceof PublicKey) {
             $size = $publicKey->getPrime()->getLengthInBytes();
-            $padded = self::pkcs1Encode(implode([
-                $sessionKey->toBytes(),
-                $sessionKey->computeChecksum(),
-            ]), $size);
+            $padded = self::pkcs1Encode(
+                implode([
+                    $sessionKey->toBytes(),
+                    $sessionKey->computeChecksum(),
+                ]),
+                $size
+            );
             $encrypted = $publicKey->encrypt($padded);
             return new self(
                 Helper::bin2BigInt(substr($encrypted, 0, $size)),
-                Helper::bin2BigInt(substr($encrypted, $size, $size)),
+                Helper::bin2BigInt(substr($encrypted, $size, $size))
             );
-        }
-        else {
-            throw new \RuntimeException('Public key is not ElGamal key.');
+        } else {
+            throw new \RuntimeException("Public key is not ElGamal key.");
         }
     }
 
@@ -92,9 +88,9 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
     public function toBytes(): string
     {
         return implode([
-            pack('n', $this->gamma->getLength()),
+            pack("n", $this->gamma->getLength()),
             $this->gamma->toBytes(),
-            pack('n', $this->phi->getLength()),
+            pack("n", $this->phi->getLength()),
             $this->phi->toBytes(),
         ]);
     }
@@ -126,14 +122,12 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
     {
         if ($privateKey instanceof PrivateKey) {
             return self::pkcs1Decode(
-                $privateKey->decrypt(implode([
-                    $this->gamma->toBytes(),
-                    $this->phi->toBytes(),
-                ]))
+                $privateKey->decrypt(
+                    implode([$this->gamma->toBytes(), $this->phi->toBytes()])
+                )
             );
-        }
-        else {
-            throw new \RuntimeException('Private key is not ElGamal key.');
+        } else {
+            throw new \RuntimeException("Private key is not ElGamal key.");
         }
     }
 
@@ -142,22 +136,23 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
      *
      * @return string
      */
-    private static function pkcs1Encode(
-        string $message, int $keyLength
-    ): string
+    private static function pkcs1Encode(string $message, int $keyLength): string
     {
         $mLength = strlen($message);
 
         // length checking
         if ($mLength > $keyLength - 11) {
-            throw new \RuntimeException('Message too long.');
+            throw new \RuntimeException("Message too long.");
         }
         $ps = self::pkcs1Padding($keyLength - $mLength - 3);
         $encoded = str_repeat(self::ZERO_CHAR, $keyLength);
         $encoded[1] = "\x02";
         $encoded = substr_replace($encoded, $ps, 2, strlen($ps));
         $encoded = substr_replace(
-            $encoded, $message, $keyLength - $mLength, strlen($message)
+            $encoded,
+            $message,
+            $keyLength - $mLength,
+            strlen($message)
         );
         return $encoded;
     }
@@ -172,7 +167,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
         $offset = 2;
         $separatorNotFound = 1;
         for ($i = $offset, $len = strlen($message); $i < $len; $i++) {
-            $separatorNotFound &= (ord($message[$i]) != 0) ? 1 : 0;
+            $separatorNotFound &= ord($message[$i]) != 0 ? 1 : 0;
             $offset += $separatorNotFound;
         }
         return substr($message, $offset + 1);
@@ -189,7 +184,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
                     $result[$count++] = $bytes[$i];
                 }
             }
-        };
+        }
         return $result;
     }
 }

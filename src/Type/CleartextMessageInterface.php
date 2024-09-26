@@ -46,7 +46,7 @@ interface CleartextMessageInterface
         array $signingKeys,
         array $recipients = [],
         ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null,
+        ?DateTimeInterface $time = null
     ): SignedMessageInterface;
 
     /**
@@ -62,7 +62,7 @@ interface CleartextMessageInterface
         array $signingKeys,
         array $recipients = [],
         ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null,
+        ?DateTimeInterface $time = null
     ): SignatureInterface;
 
     /**
@@ -76,6 +76,6 @@ interface CleartextMessageInterface
     function verifyDetached(
         array $verificationKeys,
         SignatureInterface $signature,
-        ?DateTimeInterface $time = null,
+        ?DateTimeInterface $time = null
     ): array;
 }

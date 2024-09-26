@@ -8,10 +8,7 @@
 
 namespace OpenPGP\Common;
 
-use OpenPGP\Enum\{
-    HashAlgorithm,
-    S2kType,
-};
+use OpenPGP\Enum\{HashAlgorithm, S2kType};
 use OpenPGP\Type\S2KInterface;
 
 /**
@@ -65,15 +62,14 @@ class GenericS2K implements S2KInterface
         private readonly string $salt,
         private readonly S2kType $type = S2kType::Iterated,
         private readonly HashAlgorithm $hash = HashAlgorithm::Sha256,
-        private readonly int $itCount = self::DEFAULT_IT_COUNT,
-    )
-    {
+        private readonly int $itCount = self::DEFAULT_IT_COUNT
+    ) {
         if ($type === S2kType::Argon2) {
             throw new \InvalidArgumentException(
-                "S2k type {$type->name} is invalid argument.",
+                "S2k type {$type->name} is invalid argument."
             );
         }
-        $this->count = (16 + ($itCount & 15)) << (($itCount >> 4) + self::EXPBIAS);
+        $this->count = 16 + ($itCount & 15) << ($itCount >> 4) + self::EXPBIAS;
     }
 
     /**
@@ -81,11 +77,11 @@ class GenericS2K implements S2KInterface
      */
     public function toBytes(): string
     {
-        return match($this->type) {
+        return match ($this->type) {
             S2kType::Simple => implode([
                 chr($this->type->value),
-                chr($this->hash->value)],
-            ),
+                chr($this->hash->value),
+            ]),
             S2kType::Salted => implode([
                 chr($this->type->value),
                 chr($this->hash->value),
@@ -97,32 +93,25 @@ class GenericS2K implements S2KInterface
                 $this->salt,
                 chr($this->itCount),
             ]),
-            S2kType::GNU => implode([
-                chr($this->type->value),
-                'GNU',
-                "\x01",
-            ]),
-            default => '',
+            S2kType::GNU => implode([chr($this->type->value), "GNU", "\x01"]),
+            default => "",
         };
     }
 
     /**
      * {@inheritdoc}
      */
-    public function produceKey(
-        string $passphrase, int $length
-    ): string
+    public function produceKey(string $passphrase, int $length): string
     {
-        return match($this->type) {
+        return match ($this->type) {
             S2kType::Simple => $this->hash($passphrase, $length),
-            S2kType::Salted => $this->hash(
-                $this->salt . $passphrase, $length
-            ),
+            S2kType::Salted => $this->hash($this->salt . $passphrase, $length),
             S2kType::Iterated => $this->hash(
-                $this->iterate($this->salt . $passphrase), $length
+                $this->iterate($this->salt . $passphrase),
+                $length
             ),
             S2kType::GNU => $this->hash($passphrase, $length),
-            default => '',
+            default => "",
         };
     }
 
@@ -159,21 +148,25 @@ class GenericS2K implements S2KInterface
 
         $salt = match ($type) {
             S2kType::Salted, S2kType::Iterated => substr(
-                $bytes, 2, self::SALT_LENGTH
+                $bytes,
+                2,
+                self::SALT_LENGTH
             ),
-            default => '',
+            default => "",
         };
-        $itCount = $type === S2kType::Iterated ?
-            ord($bytes[self::SALT_LENGTH + 2]) : 0;
+        $itCount =
+            $type === S2kType::Iterated
+                ? ord($bytes[self::SALT_LENGTH + 2])
+                : 0;
         return new self($salt, $type, $hash, $itCount);
     }
 
     private function iterate(string $data): string
     {
-        if (strlen($data) >= $this->count) return $data;
-        $data = str_repeat(
-            $data, (int) ceil($this->count / strlen($data))
-        );
+        if (strlen($data) >= $this->count) {
+            return $data;
+        }
+        $data = str_repeat($data, (int) ceil($this->count / strlen($data)));
         return substr($data, 0, $this->count);
     }
 

@@ -8,10 +8,7 @@
 
 namespace OpenPGP\Type;
 
-use OpenPGP\Enum\{
-    AeadAlgorithm,
-    SymmetricAlgorithm,
-};
+use OpenPGP\Enum\{AeadAlgorithm, SymmetricAlgorithm};
 
 /**
  * Aead encrypted data packet packet interface
@@ -24,8 +21,8 @@ interface AeadEncryptedDataPacketInterface extends EncryptedDataPacketInterface
 {
     const ZERO_CHAR = "\x00";
 
-    const AEAD_ENCRYPT = 'encrypt';
-    const AEAD_DECRYPT = 'decrypt';
+    const AEAD_ENCRYPT = "encrypt";
+    const AEAD_DECRYPT = "decrypt";
 
     /**
      * Get version

@@ -8,10 +8,7 @@
 
 namespace OpenPGP\Message;
 
-use OpenPGP\Type\{
-    SignaturePacketInterface,
-    VerificationInterface,
-};
+use OpenPGP\Type\{SignaturePacketInterface, VerificationInterface};
 use phpseclib3\Common\Functions\Strings;
 
 /**
@@ -36,9 +33,8 @@ class Verification implements VerificationInterface
         private readonly string $keyID,
         private readonly SignaturePacketInterface $signaturePacket,
         private readonly bool $isVerified = false,
-        private readonly string $verificationError = '',
-    )
-    {
+        private readonly string $verificationError = ""
+    ) {
     }
 
     /**

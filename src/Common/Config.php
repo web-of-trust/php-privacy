@@ -12,12 +12,9 @@ use OpenPGP\Enum\{
     AeadAlgorithm,
     CompressionAlgorithm,
     HashAlgorithm,
-    SymmetricAlgorithm,
+    SymmetricAlgorithm
 };
-use Psr\Log\{
-    LoggerInterface,
-    NullLogger,
-};
+use Psr\Log\{LoggerInterface, NullLogger};
 
 /**
  * Config class
@@ -28,18 +25,18 @@ use Psr\Log\{
  */
 final class Config
 {
-    const VERSION = 'PHP Privacy v2';
-    const COMMENT = 'https://github.com/web-of-trust/php-privacy';
+    const VERSION = "PHP Privacy v2";
+    const COMMENT = "https://github.com/web-of-trust/php-privacy";
 
-    const CIPHER_MODE = 'cfb';
-    const HKDF_ALGO   = 'sha256';
+    const CIPHER_MODE = "cfb";
+    const HKDF_ALGO = "sha256";
 
     const PADDING_MIN = 16;
     const PADDING_MAX = 32;
 
-    const SALT_NOTATION = 'salt@openpgp.org';
+    const SALT_NOTATION = "salt@openpgp.org";
 
-    const AEAD_SUPPORTED      = true;
+    const AEAD_SUPPORTED = true;
     const AEAD_CHUNK_SIZE_MIN = 10;
     const AEAD_CHUNK_SIZE_MAX = 16;
 
@@ -107,8 +104,7 @@ final class Config
      */
     public static function setPreferredSymmetric(
         SymmetricAlgorithm $symmetric
-    ): void
-    {
+    ): void {
         Helper::assertSymmetric($symmetric);
         self::$preferredSymmetric = $symmetric;
     }
@@ -130,8 +126,7 @@ final class Config
      */
     public static function setPreferredCompression(
         CompressionAlgorithm $compression
-    ): void
-    {
+    ): void {
         self::$preferredCompression = $compression;
     }
 
@@ -150,9 +145,7 @@ final class Config
      *
      * @param AeadAlgorithm $algo
      */
-    public static function setPreferredAead(
-        AeadAlgorithm $algo
-    ): void
+    public static function setPreferredAead(AeadAlgorithm $algo): void
     {
         self::$preferredAead = $algo;
     }
@@ -255,8 +248,9 @@ final class Config
      *
      * @param int $argon2MemoryExponent
      */
-    public static function setArgon2MemoryExponent(int $argon2MemoryExponent): void
-    {
+    public static function setArgon2MemoryExponent(
+        int $argon2MemoryExponent
+    ): void {
         self::$argon2MemoryExponent = $argon2MemoryExponent;
     }
 

@@ -8,10 +8,7 @@
 
 namespace OpenPGP\Packet\Signature;
 
-use OpenPGP\Enum\{
-    SignatureSubpacketType,
-    SupportFeature,
-};
+use OpenPGP\Enum\{SignatureSubpacketType, SupportFeature};
 use OpenPGP\Packet\SignatureSubpacket;
 
 /**
@@ -35,8 +32,7 @@ class Features extends SignatureSubpacket
         string $data,
         bool $critical = false,
         bool $isLong = false
-    )
-    {
+    ) {
         parent::__construct(
             SignatureSubpacketType::Features->value,
             $data,
@@ -53,9 +49,9 @@ class Features extends SignatureSubpacket
      * @return self
      */
     public static function fromFeatures(
-        int $features = 0, bool $critical = false
-    ): self
-    {
+        int $features = 0,
+        bool $critical = false
+    ): self {
         return new self(chr($features), $critical);
     }
 
@@ -66,21 +62,23 @@ class Features extends SignatureSubpacket
      */
     public function supportV1SEIPD(): bool
     {
-        return (ord($this->getData()[0]) & SupportFeature::Version1SEIPD->value)
-            === SupportFeature::Version1SEIPD->value;
+        return (ord($this->getData()[0]) &
+            SupportFeature::Version1SEIPD->value) ===
+            SupportFeature::Version1SEIPD->value;
     }
 
     /**
      * Support:
-     * AEAD Encrypted Data packet (packet 20). 
+     * AEAD Encrypted Data packet (packet 20).
      * Version 5 Symmetric Encrypted Session Key packet.
      *
      * @return bool
      */
     public function supportAead(): bool
     {
-        return (ord($this->getData()[0]) & SupportFeature::AeadEncrypted->value)
-            === SupportFeature::AeadEncrypted->value;
+        return (ord($this->getData()[0]) &
+            SupportFeature::AeadEncrypted->value) ===
+            SupportFeature::AeadEncrypted->value;
     }
 
     /**
@@ -90,8 +88,9 @@ class Features extends SignatureSubpacket
      */
     public function supportV5PublicKey(): bool
     {
-        return (ord($this->getData()[0]) & SupportFeature::Version5PublicKey->value)
-            === SupportFeature::Version5PublicKey->value;
+        return (ord($this->getData()[0]) &
+            SupportFeature::Version5PublicKey->value) ===
+            SupportFeature::Version5PublicKey->value;
     }
 
     /**
@@ -101,7 +100,8 @@ class Features extends SignatureSubpacket
      */
     public function supportV2SEIPD(): bool
     {
-        return (ord($this->getData()[0]) & SupportFeature::Version2SEIPD->value)
-            === SupportFeature::Version2SEIPD->value;
+        return (ord($this->getData()[0]) &
+            SupportFeature::Version2SEIPD->value) ===
+            SupportFeature::Version2SEIPD->value;
     }
 }

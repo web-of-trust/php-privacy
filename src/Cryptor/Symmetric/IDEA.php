@@ -8,9 +8,9 @@
 
 namespace OpenPGP\Cryptor\Symmetric;
 
+use OpenPGP\Common\Helper;
 use phpseclib3\Crypt\Common\BlockCipher;
 use phpseclib3\Exception\BadModeException;
-use OpenPGP\Common\Helper;
 
 /**
  * IDEA cipher engine class. Ported from Bouncy Castle project.
@@ -34,7 +34,7 @@ class IDEA extends BlockCipher
     const BASE = 0x10001;
 
     const BLOCK_SIZE = 8;
-    const KEY_SIZE   = 52;
+    const KEY_SIZE = 52;
 
     /**
      * Constructor
@@ -47,7 +47,7 @@ class IDEA extends BlockCipher
         parent::__construct($mode);
         if ($this->mode == self::MODE_STREAM) {
             throw new BadModeException(
-                'Block ciphers cannot be ran in stream mode.'
+                "Block ciphers cannot be ran in stream mode."
             );
         }
         $this->block_size = self::BLOCK_SIZE;
@@ -59,7 +59,8 @@ class IDEA extends BlockCipher
     protected function encryptBlock($input): string
     {
         return self::ideaFunc(
-            self::generateWorkingKey(true, $this->key), $input
+            self::generateWorkingKey(true, $this->key),
+            $input
         );
     }
 
@@ -69,7 +70,8 @@ class IDEA extends BlockCipher
     protected function decryptBlock($input): string
     {
         return self::ideaFunc(
-            self::generateWorkingKey(false, $this->key), $input
+            self::generateWorkingKey(false, $this->key),
+            $input
         );
     }
 
@@ -81,28 +83,25 @@ class IDEA extends BlockCipher
     }
 
     private static function wordToBytes(
-        int $word, string $bytes, int $offset = 0
-    ): string
-    {
-        $replace = pack('n', $word);
-        return substr_replace(
-            $bytes, $replace, $offset, strlen($replace)
-        );
+        int $word,
+        string $bytes,
+        int $offset = 0
+    ): string {
+        $replace = pack("n", $word);
+        return substr_replace($bytes, $replace, $offset, strlen($replace));
     }
 
     private static function mul(int $x, int $y): int
     {
         if ($x == 0) {
-            $x = (self::BASE - $y);
-        }
-        elseif ($y == 0) {
-            $x = (self::BASE - $x);
-        }
-        else {
+            $x = self::BASE - $y;
+        } elseif ($y == 0) {
+            $x = self::BASE - $x;
+        } else {
             $p = $x * $y;
             $y = $p & self::MASK;
             $x = $p >> 16;
-            $x = $y - $x + (($y < $x) ? 1 : 0);
+            $x = $y - $x + ($y < $x ? 1 : 0);
         }
         return $x & self::MASK;
     }
@@ -112,9 +111,7 @@ class IDEA extends BlockCipher
      * @param string $input
      * @return string
      */
-    private static function ideaFunc(
-        array $workingKey, string $input
-    ): string
+    private static function ideaFunc(array $workingKey, string $input): string
     {
         $keyOff = 0;
         $x0 = Helper::bytesToShort($input, 0);
@@ -147,16 +144,16 @@ class IDEA extends BlockCipher
 
         $output = str_repeat("\x00", self::BLOCK_SIZE);
         $output = self::wordToBytes(
-            self::mul($x0, $workingKey[$keyOff++]), $output, 0
+            self::mul($x0, $workingKey[$keyOff++]),
+            $output,
+            0
         );
+        $output = self::wordToBytes($x2 + $workingKey[$keyOff++], $output, 2);
+        $output = self::wordToBytes($x1 + $workingKey[$keyOff++], $output, 4);
         $output = self::wordToBytes(
-            $x2 + $workingKey[$keyOff++], $output, 2
-        );
-        $output = self::wordToBytes(
-            $x1 + $workingKey[$keyOff++], $output, 4
-        );
-        $output = self::wordToBytes(
-            self::mul($x3, $workingKey[$keyOff]), $output, 6
+            self::mul($x3, $workingKey[$keyOff]),
+            $output,
+            6
         );
 
         return $output;
@@ -185,13 +182,17 @@ class IDEA extends BlockCipher
 
         for ($i = 8; $i < self::KEY_SIZE; $i++) {
             if (($i & 7) < 6) {
-                $key[$i] = (($key[$i - 7] & 127) << 9 | $key[$i - 6] >> 7) & self::MASK;
-            }
-            elseif (($i & 7) == 6) {
-                $key[$i] = (($key[$i - 7] & 127) << 9 | $key[$i - 14] >> 7) & self::MASK;
-            }
-            else {
-                $key[$i] = (($key[$i - 15] & 127) << 9 | $key[$i - 14] >> 7) & self::MASK;
+                $key[$i] =
+                    ((($key[$i - 7] & 127) << 9) | ($key[$i - 6] >> 7)) &
+                    self::MASK;
+            } elseif (($i & 7) == 6) {
+                $key[$i] =
+                    ((($key[$i - 7] & 127) << 9) | ($key[$i - 14] >> 7)) &
+                    self::MASK;
+            } else {
+                $key[$i] =
+                    ((($key[$i - 15] & 127) << 9) | ($key[$i - 14] >> 7)) &
+                    self::MASK;
             }
         }
         return $key;
@@ -212,17 +213,17 @@ class IDEA extends BlockCipher
         }
         $t0 = 1;
         $t1 = intval(self::BASE / $x);
-        $y  = intval(self::BASE % $x);
+        $y = intval(self::BASE % $x);
         while ($y != 1) {
             $q = intval($x / $y);
             $x = intval($x % $y);
-            $t0 = ($t0 + ($t1 * $q)) & self::MASK;
+            $t0 = ($t0 + $t1 * $q) & self::MASK;
             if ($x === 1) {
                 return $t0;
             }
             $q = intval($y / $x);
             $y = intval($y % $x);
-            $t1 = ($t1 + ($t0 * $q)) & self::MASK;
+            $t1 = ($t1 + $t0 * $q) & self::MASK;
         }
         return (1 - $t1) & self::MASK;
     }
@@ -301,13 +302,12 @@ class IDEA extends BlockCipher
      * @return array<int>
      */
     private static function generateWorkingKey(
-        bool $forEncryption, string $key
-    ): array
-    {
+        bool $forEncryption,
+        string $key
+    ): array {
         if ($forEncryption) {
             return self::expandKey($key);
-        }
-        else {
+        } else {
             return self::invertKey(self::expandKey($key));
         }
     }

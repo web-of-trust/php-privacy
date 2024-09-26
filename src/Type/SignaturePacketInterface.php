@@ -9,11 +9,7 @@
 namespace OpenPGP\Type;
 
 use DateTimeInterface;
-use OpenPGP\Enum\{
-    HashAlgorithm,
-    KeyAlgorithm,
-    SignatureType,
-};
+use OpenPGP\Enum\{HashAlgorithm, KeyAlgorithm, SignatureType};
 
 /**
  * Signature packet interface
@@ -116,7 +112,7 @@ interface SignaturePacketInterface extends PacketInterface
     function verify(
         KeyPacketInterface $verifyKey,
         string $dataToVerify,
-        ?DateTimeInterface $time = null,
+        ?DateTimeInterface $time = null
     ): bool;
 
     /**

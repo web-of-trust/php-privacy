@@ -33,9 +33,8 @@ class SignatureSubpacket implements SubpacketInterface
         private readonly int $type,
         private readonly string $data,
         private readonly bool $critical = false,
-        private readonly bool $isLong = false,
-    )
-    {
+        private readonly bool $isLong = false
+    ) {
     }
 
     /**

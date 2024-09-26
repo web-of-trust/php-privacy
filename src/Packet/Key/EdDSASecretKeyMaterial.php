@@ -8,20 +8,13 @@
 
 namespace OpenPGP\Packet\Key;
 
-use OpenPGP\Enum\{
-    EdDSACurve,
-    HashAlgorithm,
-};
+use OpenPGP\Enum\{EdDSACurve, HashAlgorithm};
 use OpenPGP\Type\{
     ECKeyMaterialInterface,
     KeyMaterialInterface,
-    SecretKeyMaterialInterface,
+    SecretKeyMaterialInterface
 };
-use phpseclib3\Crypt\Common\{
-    AsymmetricKey,
-    PrivateKey,
-    PublicKey,
-};
+use phpseclib3\Crypt\Common\{AsymmetricKey, PrivateKey, PublicKey};
 use phpseclib3\Crypt\EC;
 use phpseclib3\Crypt\EC\PrivateKey as ECPrivateKey;
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
@@ -33,7 +26,9 @@ use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class EdDSASecretKeyMaterial implements ECKeyMaterialInterface, SecretKeyMaterialInterface
+class EdDSASecretKeyMaterial implements
+    ECKeyMaterialInterface,
+    SecretKeyMaterialInterface
 {
     /**
      * phpseclib3 EC private key
@@ -51,21 +46,22 @@ class EdDSASecretKeyMaterial implements ECKeyMaterialInterface, SecretKeyMateria
     public function __construct(
         private readonly string $secret,
         private readonly KeyMaterialInterface $publicMaterial,
-        ?ECPrivateKey $privateKey = null,
-    )
-    {
+        ?ECPrivateKey $privateKey = null
+    ) {
         if ($privateKey instanceof ECPrivateKey) {
             $this->privateKey = $privateKey;
-        }
-        else {
+        } else {
             $params = $publicMaterial->getParameters();
-            $curve = $params['curve'];
+            $curve = $params["curve"];
             $arr = $curve->extractSecret($secret);
             $this->privateKey = EC::loadPrivateKeyFormat(
-                'PKCS8',
+                "PKCS8",
                 PKCS8::savePrivateKey(
-                    $arr['dA'], $curve, $params['QA'], $arr['secret']
-                ),
+                    $arr["dA"],
+                    $curve,
+                    $params["QA"],
+                    $arr["secret"]
+                )
             );
         }
     }
@@ -81,12 +77,11 @@ class EdDSASecretKeyMaterial implements ECKeyMaterialInterface, SecretKeyMateria
     public static function fromBytes(
         string $bytes,
         KeyMaterialInterface $publicMaterial,
-        EdDSACurve $curve = EdDSACurve::Ed25519,
-    ): self
-    {
+        EdDSACurve $curve = EdDSACurve::Ed25519
+    ): self {
         return new self(
             substr($bytes, 0, $curve->payloadSize()),
-            $publicMaterial,
+            $publicMaterial
         );
     }
 
@@ -98,22 +93,21 @@ class EdDSASecretKeyMaterial implements ECKeyMaterialInterface, SecretKeyMateria
      */
     public static function generate(
         EdDSACurve $curve = EdDSACurve::Ed25519
-    ): self
-    {
+    ): self {
         $size = $curve->payloadSize();
         do {
             $privateKey = EC::createKey($curve->name);
-            $params = PKCS8::load($privateKey->toString('PKCS8'));
-            $secret = $params['secret'];
+            $params = PKCS8::load($privateKey->toString("PKCS8"));
+            $secret = $params["secret"];
         } while (strlen($secret) !== $size);
         return new self(
             $secret,
             new EdDSAPublicKeyMaterial(
                 $privateKey->getEncodedCoordinates(),
-                $params['curve'],
-                $privateKey->getPublicKey(),
+                $params["curve"],
+                $privateKey->getPublicKey()
             ),
-            $privateKey,
+            $privateKey
         );
     }
 
@@ -170,7 +164,7 @@ class EdDSASecretKeyMaterial implements ECKeyMaterialInterface, SecretKeyMateria
      */
     public function getParameters(): array
     {
-        return PKCS8::load($this->privateKey->toString('PKCS8'));
+        return PKCS8::load($this->privateKey->toString("PKCS8"));
     }
 
     /**
@@ -181,7 +175,7 @@ class EdDSASecretKeyMaterial implements ECKeyMaterialInterface, SecretKeyMateria
         if ($this->publicMaterial instanceof EdDSAPublicKeyMaterial) {
             return strcmp(
                 $this->privateKey->getEncodedCoordinates(),
-                $this->publicMaterial->toBytes(),
+                $this->publicMaterial->toBytes()
             ) === 0;
         }
         return false;

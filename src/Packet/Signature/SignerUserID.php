@@ -32,8 +32,7 @@ class SignerUserID extends SignatureSubpacket
         string $data,
         bool $critical = false,
         bool $isLong = false
-    )
-    {
+    ) {
         parent::__construct(
             SignatureSubpacketType::SignerUserID->value,
             $data,

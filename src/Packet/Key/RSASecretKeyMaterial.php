@@ -9,19 +9,9 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
-use OpenPGP\Enum\{
-    HashAlgorithm,
-    RSAKeySize,
-};
-use OpenPGP\Type\{
-    KeyMaterialInterface,
-    SecretKeyMaterialInterface,
-};
-use phpseclib3\Crypt\Common\{
-    AsymmetricKey,
-    PrivateKey,
-    PublicKey,
-};
+use OpenPGP\Enum\{HashAlgorithm, RSAKeySize};
+use OpenPGP\Type\{KeyMaterialInterface, SecretKeyMaterialInterface};
+use phpseclib3\Crypt\Common\{AsymmetricKey, PrivateKey, PublicKey};
 use phpseclib3\Crypt\RSA;
 use phpseclib3\Crypt\RSA\PrivateKey as RSAPrivateKey;
 use phpseclib3\Crypt\RSA\Formats\Keys\PKCS8;
@@ -58,16 +48,17 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
         private readonly BigInteger $primeQ,
         private readonly BigInteger $coefficient,
         private readonly KeyMaterialInterface $publicMaterial,
-        ?RSAPrivateKey $privateKey = null,
-    )
-    {
-        $this->privateKey = $privateKey ?? RSA::loadPrivateKey([
-            'privateExponent' => $exponent,
-            'p' => $primeP,
-            'q' => $primeQ,
-            'u' => $coefficient,
-            ...$publicMaterial->getParameters(),
-        ]);
+        ?RSAPrivateKey $privateKey = null
+    ) {
+        $this->privateKey =
+            $privateKey ??
+            RSA::loadPrivateKey([
+                "privateExponent" => $exponent,
+                "p" => $primeP,
+                "q" => $primeQ,
+                "u" => $coefficient,
+                ...$publicMaterial->getParameters(),
+            ]);
     }
 
     /**
@@ -78,9 +69,9 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
      * @return self
      */
     public static function fromBytes(
-        string $bytes, KeyMaterialInterface $publicMaterial
-    ): self
-    {
+        string $bytes,
+        KeyMaterialInterface $publicMaterial
+    ): self {
         $exponent = Helper::readMPI($bytes);
 
         $offset = $exponent->getLengthInBytes() + 2;
@@ -109,20 +100,19 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
      */
     public static function generate(
         RSAKeySize $keySize = RSAKeySize::Normal
-    ): self
-    {
+    ): self {
         $privateKey = RSA::createKey($keySize->value);
-        $params = PKCS8::load($privateKey->toString('PKCS8'));
-        $primeP = $params['primes'][1];
-        $primeQ = $params['primes'][2];
+        $params = PKCS8::load($privateKey->toString("PKCS8"));
+        $primeP = $params["primes"][1];
+        $primeQ = $params["primes"][2];
         return new self(
-            $params['privateExponent'],
+            $params["privateExponent"],
             $primeP,
             $primeQ,
             $primeP->modInverse($primeQ),
             new RSAPublicKeyMaterial(
-                $params['modulus'],
-                $params['publicExponent'],
+                $params["modulus"],
+                $params["publicExponent"],
                 $privateKey->getPublicKey()
             ),
             $privateKey
@@ -214,7 +204,7 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
      */
     public function getParameters(): array
     {
-        return PKCS8::load($this->privateKey->toString('PKCS8'));
+        return PKCS8::load($this->privateKey->toString("PKCS8"));
     }
 
     /**
@@ -227,9 +217,11 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
             $two = new BigInteger(2);
 
             // expect pq = n
-            if (!$this->primeP->multiply($this->primeQ)->equals(
-                $this->publicMaterial->getModulus()
-            )) {
+            if (
+                !$this->primeP
+                    ->multiply($this->primeQ)
+                    ->equals($this->publicMaterial->getModulus())
+            ) {
                 return false;
             }
 
@@ -245,11 +237,12 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
                 $this->publicMaterial->getModulus()->getLength() / 3
             );
             $r = BigInteger::randomRange(
-                $one, $two->bitwise_leftShift($nSizeOver3)
+                $one,
+                $two->bitwise_leftShift($nSizeOver3)
             );
-            $rde = $r->multiply($this->exponent)->multiply(
-                $this->publicMaterial->getExponent()
-            );
+            $rde = $r
+                ->multiply($this->exponent)
+                ->multiply($this->publicMaterial->getExponent());
 
             list(, $p) = $rde->divide($this->primeP->subtract($one));
             list(, $q) = $rde->divide($this->primeQ->subtract($one));
@@ -264,13 +257,13 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
     public function toBytes(): string
     {
         return implode([
-            pack('n', $this->exponent->getLength()),
+            pack("n", $this->exponent->getLength()),
             $this->exponent->toBytes(),
-            pack('n', $this->primeP->getLength()),
+            pack("n", $this->primeP->getLength()),
             $this->primeP->toBytes(),
-            pack('n', $this->primeQ->getLength()),
+            pack("n", $this->primeQ->getLength()),
             $this->primeQ->toBytes(),
-            pack('n', $this->coefficient->getLength()),
+            pack("n", $this->coefficient->getLength()),
             $this->coefficient->toBytes(),
         ]);
     }
@@ -284,9 +277,6 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
             ->withHash(strtolower($hash->name))
             ->withPadding(RSA::SIGNATURE_PKCS1)
             ->sign($message);
-        return implode([
-            pack('n', strlen($signature) * 8),
-            $signature,
-        ]);
+        return implode([pack("n", strlen($signature) * 8), $signature]);
     }
 }

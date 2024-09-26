@@ -10,10 +10,7 @@ namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
 use OpenPGP\Cryptor\Asymmetric\ElGamal;
-use OpenPGP\Cryptor\Asymmetric\ElGamal\{
-    PrivateKey,
-    PublicKey,
-};
+use OpenPGP\Cryptor\Asymmetric\ElGamal\{PrivateKey, PublicKey};
 use OpenPGP\Type\KeyMaterialInterface;
 use phpseclib3\Crypt\Common\AsymmetricKey;
 use phpseclib3\Math\BigInteger;
@@ -42,16 +39,17 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
     public function __construct(
         private readonly BigInteger $exponent,
         private readonly KeyMaterialInterface $publicMaterial,
-        ?PrivateKey $privateKey = null,
-    )
-    {
+        ?PrivateKey $privateKey = null
+    ) {
         $parameters = $publicMaterial->getParameters();
-        $this->privateKey = $privateKey ?? new PrivateKey(
-            $exponent,
-            $parameters['y'],
-            $parameters['p'],
-            $parameters['g'],
-        );
+        $this->privateKey =
+            $privateKey ??
+            new PrivateKey(
+                $exponent,
+                $parameters["y"],
+                $parameters["p"],
+                $parameters["g"]
+            );
     }
 
     /**
@@ -62,9 +60,9 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
      * @return self
      */
     public static function fromBytes(
-        string $bytes, KeyMaterialInterface $publicMaterial
-    ): self
-    {
+        string $bytes,
+        KeyMaterialInterface $publicMaterial
+    ): self {
         return new self(Helper::readMPI($bytes), $publicMaterial);
     }
 
@@ -75,9 +73,7 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
      * @param int $nSize
      * @return self
      */
-    public static function generate(
-        int $lSize = 2048, int $nSize = 224
-    ): self
+    public static function generate(int $lSize = 2048, int $nSize = 224): self
     {
         $privateKey = ElGamal::createKey($lSize, $nSize);
         return new self(
@@ -86,9 +82,9 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
                 $privateKey->getPrime(),
                 $privateKey->getGenerator(),
                 $privateKey->getY(),
-                $privateKey->getPublicKey(),
+                $privateKey->getPublicKey()
             ),
-            $privateKey,
+            $privateKey
         );
     }
 
@@ -152,7 +148,7 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
     public function getParameters(): array
     {
         return [
-            'x' => $this->exponent,
+            "x" => $this->exponent,
         ];
     }
 
@@ -170,7 +166,10 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
             $exponent = $this->publicMaterial->getExponent();
 
             // Check that 1 < g < p
-            if ($generator->compare($one) <= 0 || $generator->compare($prime) >= 0) {
+            if (
+                $generator->compare($one) <= 0 ||
+                $generator->compare($prime) >= 0
+            ) {
                 return false;
             }
 
@@ -182,9 +181,11 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
 
             // g should have order p-1
             // Check that g ** (p-1) = 1 mod p
-            if (!$generator->modPow(
-                $prime->subtract($one), $prime
-            )->equals($one)) {
+            if (
+                !$generator
+                    ->modPow($prime->subtract($one), $prime)
+                    ->equals($one)
+            ) {
                 return false;
             }
 
@@ -195,13 +196,12 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
                 $two->bitwise_leftShift($pSize - 1),
                 $two->bitwise_leftShift($pSize)
             );
-            $rqx = $prime->subtract($one)
+            $rqx = $prime
+                ->subtract($one)
                 ->multiply($r)
                 ->add($this->exponent);
 
-            return $exponent->equals(
-                $generator->modPow($rqx, $prime)
-            );
+            return $exponent->equals($generator->modPow($rqx, $prime));
         }
         return false;
     }
@@ -212,7 +212,7 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
     public function toBytes(): string
     {
         return implode([
-            pack('n', $this->exponent->getLength()),
+            pack("n", $this->exponent->getLength()),
             $this->exponent->toBytes(),
         ]);
     }

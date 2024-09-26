@@ -10,14 +10,8 @@ namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\HashAlgorithm;
-use OpenPGP\Type\{
-    KeyMaterialInterface,
-    PublicKeyMaterialInterface,
-};
-use phpseclib3\Crypt\Common\{
-    AsymmetricKey,
-    PublicKey,
-};
+use OpenPGP\Type\{KeyMaterialInterface, PublicKeyMaterialInterface};
+use phpseclib3\Crypt\Common\{AsymmetricKey, PublicKey};
 use phpseclib3\Crypt\RSA;
 use phpseclib3\Crypt\RSA\PublicKey as RSAPublicKey;
 use phpseclib3\Crypt\RSA\Formats\Keys\PKCS8;
@@ -48,13 +42,14 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
     public function __construct(
         private readonly BigInteger $modulus,
         private readonly BigInteger $exponent,
-        ?RSAPublicKey $publicKey = null,
-    )
-    {
-        $this->publicKey = $publicKey ?? RSA::loadPublicKey([
-            'modulus' => $modulus,
-            'publicExponent' => $exponent,
-        ]);
+        ?RSAPublicKey $publicKey = null
+    ) {
+        $this->publicKey =
+            $publicKey ??
+            RSA::loadPublicKey([
+                "modulus" => $modulus,
+                "publicExponent" => $exponent,
+            ]);
     }
 
     /**
@@ -68,9 +63,7 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
         $modulus = Helper::readMPI($bytes);
         return new self(
             $modulus,
-            Helper::readMPI(
-                substr($bytes, $modulus->getLengthInBytes() + 2)
-            ),
+            Helper::readMPI(substr($bytes, $modulus->getLengthInBytes() + 2))
         );
     }
 
@@ -131,7 +124,7 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
      */
     public function getParameters(): array
     {
-        return PKCS8::load($this->publicKey->toString('PKCS8'));
+        return PKCS8::load($this->publicKey->toString("PKCS8"));
     }
 
     /**
@@ -148,9 +141,9 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
     public function toBytes(): string
     {
         return implode([
-            pack('n', $this->modulus->getLength()),
+            pack("n", $this->modulus->getLength()),
             $this->modulus->toBytes(),
-            pack('n', $this->exponent->getLength()),
+            pack("n", $this->exponent->getLength()),
             $this->exponent->toBytes(),
         ]);
     }
@@ -162,17 +155,16 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
         HashAlgorithm $hash,
         string $message,
         string $signature
-    ): bool
-    {
+    ): bool {
         return $this->publicKey
             ->withHash(strtolower($hash->name))
             ->withPadding(RSA::SIGNATURE_PKCS1)
             ->verify(
                 $message,
-                substr( $signature, 2,
-                    Helper::bit2ByteLength(
-                        Helper::bytesToShort($signature)
-                    ),
+                substr(
+                    $signature,
+                    2,
+                    Helper::bit2ByteLength(Helper::bytesToShort($signature))
                 )
             );
     }

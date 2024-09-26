@@ -8,10 +8,10 @@
 
 namespace OpenPGP\Cryptor\Symmetric;
 
-use phpseclib3\Crypt\Common\BlockCipher;
-use phpseclib3\Exception\BadModeException;
 use OpenPGP\Common\Helper;
 use OpenPGP\Cryptor\Math\Bitwise;
+use phpseclib3\Crypt\Common\BlockCipher;
+use phpseclib3\Exception\BadModeException;
 
 /**
  * CAST5 cipher engine class. Ported from Bouncy Castle project.

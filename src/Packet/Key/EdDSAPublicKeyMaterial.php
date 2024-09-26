@@ -8,19 +8,13 @@
 
 namespace OpenPGP\Packet\Key;
 
-use OpenPGP\Enum\{
-    EdDSACurve,
-    HashAlgorithm,
-};
+use OpenPGP\Enum\{EdDSACurve, HashAlgorithm};
 use OpenPGP\Type\{
     ECKeyMaterialInterface,
     KeyMaterialInterface,
-    PublicKeyMaterialInterface,
+    PublicKeyMaterialInterface
 };
-use phpseclib3\Crypt\Common\{
-    AsymmetricKey,
-    PublicKey,
-};
+use phpseclib3\Crypt\Common\{AsymmetricKey, PublicKey};
 use phpseclib3\Crypt\EC;
 use phpseclib3\Crypt\EC\PublicKey as ECPublicKey;
 use phpseclib3\Crypt\EC\BaseCurves\TwistedEdwards;
@@ -33,7 +27,9 @@ use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class EdDSAPublicKeyMaterial implements ECKeyMaterialInterface, PublicKeyMaterialInterface
+class EdDSAPublicKeyMaterial implements
+    ECKeyMaterialInterface,
+    PublicKeyMaterialInterface
 {
     /**
      * phpseclib3 EC public key
@@ -51,19 +47,17 @@ class EdDSAPublicKeyMaterial implements ECKeyMaterialInterface, PublicKeyMateria
     public function __construct(
         private readonly string $public,
         TwistedEdwards $curve,
-        ?ECPublicKey $publicKey = null,
-    )
-    {
+        ?ECPublicKey $publicKey = null
+    ) {
         if ($publicKey instanceof ECPublicKey) {
             $this->publicKey = $publicKey;
-        }
-        else {
+        } else {
             $this->publicKey = EC::loadPublicKeyFormat(
-                'PKCS8',
+                "PKCS8",
                 PKCS8::savePublicKey(
                     $curve,
-                    PKCS8::extractPoint($public, $curve),
-                ),
+                    PKCS8::extractPoint($public, $curve)
+                )
             );
         }
     }
@@ -76,12 +70,12 @@ class EdDSAPublicKeyMaterial implements ECKeyMaterialInterface, PublicKeyMateria
      * @return self
      */
     public static function fromBytes(
-        string $bytes, EdDSACurve $curve = EdDSACurve::Ed25519
-    ): self
-    {
+        string $bytes,
+        EdDSACurve $curve = EdDSACurve::Ed25519
+    ): self {
         return new self(
             substr($bytes, 0, $curve->payloadSize()),
-            $curve->getCurve(),
+            $curve->getCurve()
         );
     }
 
@@ -130,7 +124,7 @@ class EdDSAPublicKeyMaterial implements ECKeyMaterialInterface, PublicKeyMateria
      */
     public function getParameters(): array
     {
-        return PKCS8::load($this->publicKey->toString('PKCS8'));
+        return PKCS8::load($this->publicKey->toString("PKCS8"));
     }
 
     /**
@@ -155,12 +149,8 @@ class EdDSAPublicKeyMaterial implements ECKeyMaterialInterface, PublicKeyMateria
     public function verify(
         HashAlgorithm $hash,
         string $message,
-        string $signature,
-    ): bool
-    {
-        return $this->publicKey->verify(
-            $hash->hash($message),
-            $signature,
-        );
+        string $signature
+    ): bool {
+        return $this->publicKey->verify($hash->hash($message), $signature);
     }
 }

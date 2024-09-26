@@ -17,7 +17,10 @@ use OpenPGP\Enum\PacketTag;
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-interface PacketListInterface extends \ArrayAccess, \IteratorAggregate, \Countable
+interface PacketListInterface extends
+    \ArrayAccess,
+    \IteratorAggregate,
+    \Countable
 {
     /**
      * Get array packets

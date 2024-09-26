@@ -9,16 +9,13 @@
 namespace OpenPGP\Key;
 
 use OpenPGP\Common\Armor;
-use OpenPGP\Enum\{
-    ArmorType,
-    PacketTag,
-};
+use OpenPGP\Enum\{ArmorType, PacketTag};
 use OpenPGP\Packet\PacketList;
 use OpenPGP\Type\{
     KeyInterface,
     PacketListInterface,
     PublicKeyInterface,
-    PublicKeyPacketInterface,
+    PublicKeyPacketInterface
 };
 
 /**
@@ -45,15 +42,14 @@ class PublicKey extends AbstractKey implements PublicKeyInterface
         array $revocationSignatures = [],
         array $directSignatures = [],
         array $users = [],
-        array $subkeys = [],
-    )
-    {
+        array $subkeys = []
+    ) {
         parent::__construct(
             $publicKeyPacket,
             $revocationSignatures,
             $directSignatures,
             $users,
-            $subkeys,
+            $subkeys
         );
     }
 
@@ -66,9 +62,9 @@ class PublicKey extends AbstractKey implements PublicKeyInterface
      * @return array
      */
     public static function readPublicKeys(
-        string $data, bool $armored = true
-    ): array
-    {
+        string $data,
+        bool $armored = true
+    ): array {
         if ($armored) {
             $armor = Armor::decode($data)->assert(ArmorType::PublicKey);
             $data = $armor->getData();
@@ -83,8 +79,7 @@ class PublicKey extends AbstractKey implements PublicKeyInterface
                 $publicKeys[] = self::fromPacketList(
                     $packetList->slice($indexes[$i], $length)
                 );
-            }
-            else {
+            } else {
                 $publicKeys[] = self::fromPacketList(
                     $packetList->slice($indexes[$i])
                 );
@@ -101,17 +96,18 @@ class PublicKey extends AbstractKey implements PublicKeyInterface
      */
     public static function armorPublicKeys(array $keys): string
     {
-        $keyData = implode(array_map(
-            static fn ($key) => $key->toPublic()->getPacketList()->encode(),
-            array_filter(
-                $keys,
-                static fn ($key) => $key instanceof KeyInterface,
+        $keyData = implode(
+            array_map(
+                static fn($key) => $key->toPublic()->getPacketList()->encode(),
+                array_filter(
+                    $keys,
+                    static fn($key) => $key instanceof KeyInterface
+                )
             )
-        ));
-        return empty($keyData) ? '' : Armor::encode(
-            ArmorType::PublicKey,
-            $keyData,
         );
+        return empty($keyData)
+            ? ""
+            : Armor::encode(ArmorType::PublicKey, $keyData);
     }
 
     /**
@@ -123,7 +119,9 @@ class PublicKey extends AbstractKey implements PublicKeyInterface
     public static function fromArmored(string $armored): self
     {
         return self::fromBytes(
-            Armor::decode($armored)->assert(ArmorType::PublicKey)->getData()
+            Armor::decode($armored)
+                ->assert(ArmorType::PublicKey)
+                ->getData()
         );
     }
 
@@ -144,22 +142,18 @@ class PublicKey extends AbstractKey implements PublicKeyInterface
      * @param PacketListInterface $packetList
      * @return self
      */
-    public static function fromPacketList(
-        PacketListInterface $packetList
-    ): self
+    public static function fromPacketList(PacketListInterface $packetList): self
     {
         $keyMap = self::packetListToKeyMap($packetList);
-        if (!($keyMap['keyPacket'] instanceof PublicKeyPacketInterface)) {
-            throw new \RuntimeException(
-                'Key packet is not public key type.'
-            );
+        if (!($keyMap["keyPacket"] instanceof PublicKeyPacketInterface)) {
+            throw new \RuntimeException("Key packet is not public key type.");
         }
         return new self(
-            $keyMap['keyPacket'],
-            $keyMap['revocationSignatures'],
-            $keyMap['directSignatures'],
-            $keyMap['users'],
-            $keyMap['subkeys'],
+            $keyMap["keyPacket"],
+            $keyMap["revocationSignatures"],
+            $keyMap["directSignatures"],
+            $keyMap["users"],
+            $keyMap["subkeys"]
         );
     }
 
@@ -178,7 +172,7 @@ class PublicKey extends AbstractKey implements PublicKeyInterface
     {
         return Armor::encode(
             ArmorType::PublicKey,
-            $this->getPacketList()->encode(),
+            $this->getPacketList()->encode()
         );
     }
 

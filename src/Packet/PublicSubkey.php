@@ -10,10 +10,7 @@ namespace OpenPGP\Packet;
 
 use DateTimeInterface;
 use OpenPGP\Enum\KeyAlgorithm;
-use OpenPGP\Type\{
-    KeyMaterialInterface,
-    SubkeyPacketInterface,
-};
+use OpenPGP\Type\{KeyMaterialInterface, SubkeyPacketInterface};
 
 /**
  * Implementation an OpenPGP sub public key packet (Tag 14).
@@ -39,15 +36,9 @@ class PublicSubkey extends PublicKey implements SubkeyPacketInterface
         int $version,
         DateTimeInterface $creationTime,
         KeyAlgorithm $algorithm,
-        KeyMaterialInterface $keyMaterial,
-    )
-    {
-        parent::__construct(
-            $version,
-            $creationTime,
-            $algorithm,
-            $keyMaterial,
-        );
+        KeyMaterialInterface $keyMaterial
+    ) {
+        parent::__construct($version, $creationTime, $algorithm, $keyMaterial);
     }
 
     /**
@@ -60,7 +51,7 @@ class PublicSubkey extends PublicKey implements SubkeyPacketInterface
             $publicKey->getVersion(),
             $publicKey->getCreationTime(),
             $publicKey->getKeyAlgorithm(),
-            $publicKey->getKeyMaterial(),
+            $publicKey->getKeyMaterial()
         );
     }
 }

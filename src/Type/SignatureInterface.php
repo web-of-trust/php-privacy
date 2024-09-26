@@ -17,7 +17,9 @@ use DateTimeInterface;
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-interface SignatureInterface extends ArmorableInterface, PacketContainerInterface
+interface SignatureInterface extends
+    ArmorableInterface,
+    PacketContainerInterface
 {
     /**
      * Get signing key IDs
@@ -39,7 +41,7 @@ interface SignatureInterface extends ArmorableInterface, PacketContainerInterfac
     function verify(
         array $verificationKeys,
         LiteralDataInterface $literalData,
-        ?DateTimeInterface $time = null,
+        ?DateTimeInterface $time = null
     ): array;
 
     /**
@@ -54,6 +56,6 @@ interface SignatureInterface extends ArmorableInterface, PacketContainerInterfac
     function verifyCleartext(
         array $verificationKeys,
         CleartextMessageInterface $cleartext,
-        ?DateTimeInterface $time = null,
+        ?DateTimeInterface $time = null
     ): array;
 }

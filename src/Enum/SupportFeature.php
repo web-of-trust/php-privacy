@@ -25,7 +25,7 @@ enum SupportFeature: int
     case Version1SEIPD = 1;
 
     /**
-     * AEAD Encrypted Data packet (packet 20). 
+     * AEAD Encrypted Data packet (packet 20).
      * Version 5 Symmetric Encrypted Session Key packet.
      */
     case AeadEncrypted = 2;

@@ -26,7 +26,9 @@ interface AeadCipher
      * @return string The cipher text output.
      */
     function encrypt(
-        string $plainText, string $nonce, string $aData = ''
+        string $plainText,
+        string $nonce,
+        string $aData = ""
     ): string;
 
     /**
@@ -38,7 +40,9 @@ interface AeadCipher
      * @return string The plain text output.
      */
     function decrypt(
-        string $cipherText, string $nonce, string $aData = ''
+        string $cipherText,
+        string $nonce,
+        string $aData = ""
     ): string;
 
     /**

@@ -9,10 +9,7 @@
 namespace OpenPGP\Type;
 
 use DateTimeInterface;
-use OpenPGP\Enum\{
-    KeyAlgorithm,
-    RevocationReasonTag,
-};
+use OpenPGP\Enum\{KeyAlgorithm, RevocationReasonTag};
 
 /**
  * Subkey interface
@@ -134,7 +131,7 @@ interface SubkeyInterface extends PacketContainerInterface
     function isRevoked(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTimeInterface $time = null,
+        ?DateTimeInterface $time = null
     ): bool;
 
     /**
@@ -157,8 +154,8 @@ interface SubkeyInterface extends PacketContainerInterface
      */
     function revokeBy(
         PrivateKeyInterface $signKey,
-        string $revocationReason = '',
+        string $revocationReason = "",
         ?RevocationReasonTag $reasonTag = null,
-        ?DateTimeInterface $time = null,
+        ?DateTimeInterface $time = null
     ): self;
 }

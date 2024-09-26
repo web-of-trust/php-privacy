@@ -9,14 +9,8 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
-use OpenPGP\Enum\{
-    CurveOid,
-    HashAlgorithm,
-};
-use OpenPGP\Type\{
-    KeyMaterialInterface,
-    SecretKeyMaterialInterface,
-};
+use OpenPGP\Enum\{CurveOid, HashAlgorithm};
+use OpenPGP\Type\{KeyMaterialInterface, SecretKeyMaterialInterface};
 use phpseclib3\Crypt\EC;
 use phpseclib3\Crypt\EC\Curves\Ed25519;
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
@@ -29,7 +23,8 @@ use phpseclib3\File\ASN1;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class EdDSALegacySecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMaterialInterface
+class EdDSALegacySecretKeyMaterial extends ECSecretKeyMaterial implements
+    SecretKeyMaterialInterface
 {
     /**
      * Read key material from bytes
@@ -39,13 +34,10 @@ class EdDSALegacySecretKeyMaterial extends ECSecretKeyMaterial implements Secret
      * @return self
      */
     public static function fromBytes(
-        string $bytes, KeyMaterialInterface $publicMaterial
-    ): self
-    {
-        return new self(
-            Helper::readMPI($bytes),
-            $publicMaterial,
-        );
+        string $bytes,
+        KeyMaterialInterface $publicMaterial
+    ): self {
+        return new self(Helper::readMPI($bytes), $publicMaterial);
     }
 
     /**
@@ -58,8 +50,8 @@ class EdDSALegacySecretKeyMaterial extends ECSecretKeyMaterial implements Secret
         $curve = CurveOid::Ed25519;
         do {
             $privateKey = EC::createKey($curve->name);
-            $params = PKCS8::load($privateKey->toString('PKCS8'));
-            $d = Helper::bin2BigInt($params['secret']);
+            $params = PKCS8::load($privateKey->toString("PKCS8"));
+            $d = Helper::bin2BigInt($params["secret"]);
         } while ($d->getLengthInBytes() !== Ed25519::SIZE);
         return new self(
             $d,
@@ -68,9 +60,9 @@ class EdDSALegacySecretKeyMaterial extends ECSecretKeyMaterial implements Secret
                 Helper::bin2BigInt(
                     "\x40" . $privateKey->getEncodedCoordinates()
                 ),
-                $privateKey->getPublicKey(),
+                $privateKey->getPublicKey()
             ),
-            $privateKey,
+            $privateKey
         );
     }
 
@@ -79,14 +71,12 @@ class EdDSALegacySecretKeyMaterial extends ECSecretKeyMaterial implements Secret
      */
     public function sign(HashAlgorithm $hash, string $message): string
     {
-        $signature = $this->getPrivateKey()->sign(
-            $hash->hash($message)
-        );
+        $signature = $this->getPrivateKey()->sign($hash->hash($message));
 
         return implode([
-            pack('n', Ed25519::SIZE * 8), // R bit length
+            pack("n", Ed25519::SIZE * 8), // R bit length
             substr($signature, 0, Ed25519::SIZE), // MPI of an EC point R
-            pack('n', Ed25519::SIZE * 8), // S bit length
+            pack("n", Ed25519::SIZE * 8), // S bit length
             substr($signature, Ed25519::SIZE), // MPI of EdDSA value S
         ]);
     }

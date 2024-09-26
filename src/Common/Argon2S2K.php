@@ -10,10 +10,7 @@ namespace OpenPGP\Common;
 
 use OpenPGP\Enum\S2kType;
 use OpenPGP\Type\S2KInterface;
-use Symfony\Component\Process\{
-    ExecutableFinder,
-    Process,
-};
+use Symfony\Component\Process\{ExecutableFinder, Process};
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
 /**
@@ -46,7 +43,7 @@ class Argon2S2K implements S2KInterface
     /**
      * argon2 command
      */
-    const ARGON2_COMMAND = 'argon2';
+    const ARGON2_COMMAND = "argon2";
 
     /**
      * Argon2 command path
@@ -71,25 +68,23 @@ class Argon2S2K implements S2KInterface
         private readonly string $salt,
         private readonly int $iteration = 3,
         private readonly int $parallelism = 1,
-        private readonly int $memoryExponent = 16,
-    )
-    {
+        private readonly int $memoryExponent = 16
+    ) {
         $finder = new ExecutableFinder();
-        if (empty($this->argon2Path = $finder->find(self::ARGON2_COMMAND))) {
-            if (!function_exists('sodium_crypto_pwhash')) {
+        if (empty(($this->argon2Path = $finder->find(self::ARGON2_COMMAND)))) {
+            if (!function_exists("sodium_crypto_pwhash")) {
                 throw new \RuntimeException(
-                    'Argon2 string to key is unsupported.',
+                    "Argon2 string to key is unsupported."
                 );
-            }
-            elseif ($parallelism > self::PHP_PARALLELISM) {
+            } elseif ($parallelism > self::PHP_PARALLELISM) {
                 throw new \InvalidArgumentException(
-                    'PHP Argon2 only support 1 parallelism.',
+                    "PHP Argon2 only support 1 parallelism."
                 );
             }
         }
         if (strlen($salt) !== self::SALT_LENGTH) {
             throw new \InvalidArgumentException(
-                'Salt size must be ' . self::SALT_LENGTH . ' bytes.',
+                "Salt size must be " . self::SALT_LENGTH . " bytes."
             );
         }
         $this->type = S2kType::Argon2;
@@ -112,9 +107,7 @@ class Argon2S2K implements S2KInterface
     /**
      * {@inheritdoc}
      */
-    public function produceKey(
-        string $passphrase, int $length
-    ): string
+    public function produceKey(string $passphrase, int $length): string
     {
         if (empty($this->argon2Path)) {
             return sodium_crypto_pwhash(
@@ -122,23 +115,28 @@ class Argon2S2K implements S2KInterface
                 $passphrase,
                 $this->salt,
                 $this->iteration,
-                1 << ($this->memoryExponent + 10),
+                1 << $this->memoryExponent + 10
             );
-        }
-        else {
+        } else {
             $process = new Process([
-                $this->argon2Path, $this->salt, '-id', '-r',
-                '-l', $length,
-                '-t', $this->iteration,
-                '-p', $this->parallelism,
-                '-m', $this->memoryExponent,
+                $this->argon2Path,
+                $this->salt,
+                "-id",
+                "-r",
+                "-l",
+                $length,
+                "-t",
+                $this->iteration,
+                "-p",
+                $this->parallelism,
+                "-m",
+                $this->memoryExponent,
             ]);
             $process->setInput($passphrase);
             try {
                 $process->mustRun();
                 return hex2bin(trim($process->getOutput()));
-            }
-            catch (ProcessFailedException $ex) {
+            } catch (ProcessFailedException $ex) {
                 throw $ex;
             }
         }
@@ -158,9 +156,7 @@ class Argon2S2K implements S2KInterface
         $iteration = ord($bytes[$offset++]);
         $parallelism = ord($bytes[$offset++]);
         $memoryExponent = ord($bytes[$offset++]);
-        return new self(
-            $salt, $iteration, $parallelism, $memoryExponent
-        );
+        return new self($salt, $iteration, $parallelism, $memoryExponent);
     }
 
     /**
@@ -172,6 +168,6 @@ class Argon2S2K implements S2KInterface
     {
         $finder = new ExecutableFinder();
         return !empty($finder->find(self::ARGON2_COMMAND)) ||
-            function_exists('sodium_crypto_pwhash');
+            function_exists("sodium_crypto_pwhash");
     }
 }

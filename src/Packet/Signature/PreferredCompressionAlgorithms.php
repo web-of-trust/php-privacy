@@ -8,10 +8,7 @@
 
 namespace OpenPGP\Packet\Signature;
 
-use OpenPGP\Enum\{
-    CompressionAlgorithm,
-    SignatureSubpacketType,
-};
+use OpenPGP\Enum\{CompressionAlgorithm, SignatureSubpacketType};
 use OpenPGP\Packet\SignatureSubpacket;
 
 /**
@@ -35,8 +32,7 @@ class PreferredCompressionAlgorithms extends SignatureSubpacket
         string $data,
         bool $critical = false,
         bool $isLong = false
-    )
-    {
+    ) {
         parent::__construct(
             SignatureSubpacketType::PreferredCompressionAlgorithms->value,
             $data,
@@ -53,7 +49,7 @@ class PreferredCompressionAlgorithms extends SignatureSubpacket
     public function getPreferences(): array
     {
         return array_map(
-            fn ($pref) => CompressionAlgorithm::from(ord($pref)),
+            fn($pref) => CompressionAlgorithm::from(ord($pref)),
             str_split($this->getData())
         );
     }

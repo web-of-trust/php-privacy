@@ -8,22 +8,9 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Common\{
-    Argon2S2K,
-    Config,
-    GenericS2K,
-    Helper,
-};
-use OpenPGP\Enum\{
-    AeadAlgorithm,
-    PacketTag,
-    S2kType,
-    SymmetricAlgorithm,
-};
-use OpenPGP\Type\{
-    S2KInterface,
-    SessionKeyInterface,
-};
+use OpenPGP\Common\{Argon2S2K, Config, GenericS2K, Helper};
+use OpenPGP\Enum\{AeadAlgorithm, PacketTag, S2kType, SymmetricAlgorithm};
+use OpenPGP\Type\{S2KInterface, SessionKeyInterface};
 use phpseclib3\Crypt\Random;
 
 /**
@@ -59,13 +46,13 @@ class SymEncryptedSessionKey extends AbstractPacket
         private readonly S2KInterface $s2k,
         private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         private readonly ?AeadAlgorithm $aead = null,
-        private readonly string $iv = '',
-        private readonly string $encrypted = '',
-        private readonly ?SessionKeyInterface $sessionKey = null,
-    )
-    {
+        private readonly string $iv = "",
+        private readonly string $encrypted = "",
+        private readonly ?SessionKeyInterface $sessionKey = null
+    ) {
         parent::__construct(PacketTag::SymEncryptedSessionKey);
-        if ($version != self::VERSION_4 &&
+        if (
+            $version != self::VERSION_4 &&
             $version != self::VERSION_5 &&
             $version != self::VERSION_6
         ) {
@@ -116,9 +103,10 @@ class SymEncryptedSessionKey extends AbstractPacket
 
         // A string-to-key (S2K) specifier, length as defined above.
         $s2kType = S2kType::from(ord($bytes[$offset]));
-        $s2k = ($s2kType === S2kType::Argon2) ?
-            Argon2S2K::fromBytes(substr($bytes, $offset)) : 
-            GenericS2K::fromBytes(substr($bytes, $offset));
+        $s2k =
+            $s2kType === S2kType::Argon2
+                ? Argon2S2K::fromBytes(substr($bytes, $offset))
+                : GenericS2K::fromBytes(substr($bytes, $offset));
         $offset += $s2kType->dataLength();
 
         // A starting initialization vector of size specified by the AEAD algorithm.
@@ -131,7 +119,7 @@ class SymEncryptedSessionKey extends AbstractPacket
             $symmetric,
             $aead,
             $iv,
-            substr($bytes, $offset),
+            substr($bytes, $offset)
         );
     }
 
@@ -148,23 +136,23 @@ class SymEncryptedSessionKey extends AbstractPacket
         string $password,
         ?SessionKeyInterface $sessionKey = null,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        ?AeadAlgorithm $aead = null,
-    ): self
-    {
+        ?AeadAlgorithm $aead = null
+    ): self {
         $aeadProtect = $aead instanceof AeadAlgorithm;
         $version = $aeadProtect ? self::VERSION_6 : self::VERSION_4;
         $symmetric = $sessionKey?->getSymmetric() ?? $symmetric;
         Helper::assertSymmetric($symmetric);
 
-        $s2k = $aeadProtect && Argon2S2K::argon2Supported() ?
-            Helper::stringToKey(S2kType::Argon2) :
-            Helper::stringToKey(S2kType::Iterated);
+        $s2k =
+            $aeadProtect && Argon2S2K::argon2Supported()
+                ? Helper::stringToKey(S2kType::Argon2)
+                : Helper::stringToKey(S2kType::Iterated);
 
         $keySize = $symmetric->keySizeInByte();
         $key = $s2k->produceKey($password, $keySize);
 
-        $iv = '';
-        $encrypted = '';
+        $iv = "";
+        $encrypted = "";
 
         if ($sessionKey instanceof SessionKeyInterface) {
             if ($aeadProtect) {
@@ -176,16 +164,15 @@ class SymEncryptedSessionKey extends AbstractPacket
                 ]);
                 $iv = Random::string($aead->ivLength());
                 $cipher = $aead->cipherEngine(
-                    hash_hkdf(
-                        Config::HKDF_ALGO, $key, $keySize, $aData
-                    ),
-                    $symmetric,
+                    hash_hkdf(Config::HKDF_ALGO, $key, $keySize, $aData),
+                    $symmetric
                 );
                 $encrypted = $cipher->encrypt(
-                    $sessionKey->getEncryptionKey(), $iv, $aData
+                    $sessionKey->getEncryptionKey(),
+                    $iv,
+                    $aData
                 );
-            }
-            else {
+            } else {
                 $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
                 $cipher->setKey($key);
                 $cipher->setIV(
@@ -193,8 +180,7 @@ class SymEncryptedSessionKey extends AbstractPacket
                 );
                 $encrypted = $cipher->encrypt($sessionKey->toBytes());
             }
-        }
-        else {
+        } else {
             $sessionKey = new Key\SessionKey($key, $symmetric);
         }
 
@@ -205,7 +191,7 @@ class SymEncryptedSessionKey extends AbstractPacket
             $aead,
             $iv,
             $encrypted,
-            $sessionKey,
+            $sessionKey
         );
     }
 
@@ -289,17 +275,15 @@ class SymEncryptedSessionKey extends AbstractPacket
     {
         if ($this->sessionKey instanceof SessionKeyInterface) {
             return $this;
-        }
-        else {
+        } else {
             $this->getLogger()->debug(
-                'Decrypt symmetric key encrypted session key.'
+                "Decrypt symmetric key encrypted session key."
             );
             $keySize = $this->symmetric->keySizeInByte();
             $key = $this->s2k->produceKey($password, $keySize);
             if (empty($this->encrypted)) {
                 $sessionKey = new Key\SessionKey($key, $this->symmetric);
-            }
-            else {
+            } else {
                 if ($this->aead instanceof AeadAlgorithm) {
                     $aData = implode([
                         chr(0xc0 | $this->getTag()->value),
@@ -307,33 +291,43 @@ class SymEncryptedSessionKey extends AbstractPacket
                         chr($this->symmetric->value),
                         chr($this->aead->value),
                     ]);
-                    $kek = $this->version === self::VERSION_6 ? hash_hkdf(
-                        Config::HKDF_ALGO, $key, $keySize, $aData
-                    ) : $key;
-                    $cipher = $this->aead->cipherEngine(
-                        $kek, $this->symmetric
-                    );
+                    $kek =
+                        $this->version === self::VERSION_6
+                            ? hash_hkdf(
+                                Config::HKDF_ALGO,
+                                $key,
+                                $keySize,
+                                $aData
+                            )
+                            : $key;
+                    $cipher = $this->aead->cipherEngine($kek, $this->symmetric);
                     $decrypted = $cipher->decrypt(
-                        $this->encrypted, $this->iv, $aData
+                        $this->encrypted,
+                        $this->iv,
+                        $aData
                     );
                     $sessionKey = new Key\SessionKey(
-                        $decrypted, $this->symmetric
+                        $decrypted,
+                        $this->symmetric
                     );
-                }
-                else {
+                } else {
                     $cipher = $this->symmetric->cipherEngine(
                         Config::CIPHER_MODE
                     );
                     $cipher->setKey($key);
-                    $cipher->setIV(str_repeat(
-                        self::ZERO_CHAR, $this->symmetric->blockSize()
-                    ));
+                    $cipher->setIV(
+                        str_repeat(
+                            self::ZERO_CHAR,
+                            $this->symmetric->blockSize()
+                        )
+                    );
                     $decrypted = $cipher->decrypt($this->encrypted);
                     $sessionKeySymmetric = SymmetricAlgorithm::from(
                         ord($decrypted[0])
                     );
                     $sessionKey = new Key\SessionKey(
-                        substr($decrypted, 1), $sessionKeySymmetric
+                        substr($decrypted, 1),
+                        $sessionKeySymmetric
                     );
                 }
             }
@@ -344,7 +338,7 @@ class SymEncryptedSessionKey extends AbstractPacket
                 $this->aead,
                 $this->iv,
                 $this->encrypted,
-                $sessionKey,
+                $sessionKey
             );
         }
     }

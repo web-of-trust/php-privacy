@@ -9,10 +9,7 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\PacketTag;
-use OpenPGP\Type\{
-    PacketInterface,
-    PacketListInterface,
-};
+use OpenPGP\Type\{PacketInterface, PacketListInterface};
 use phpseclib3\Common\Functions\Strings;
 
 /**
@@ -39,10 +36,12 @@ class PacketList implements PacketListInterface
      */
     public function __construct(array $packets = [])
     {
-        $this->packets = array_values(array_filter(
-            $packets,
-            static fn ($packet) => $packet instanceof PacketInterface,
-        ));
+        $this->packets = array_values(
+            array_filter(
+                $packets,
+                static fn($packet) => $packet instanceof PacketInterface
+            )
+        );
     }
 
     /**
@@ -60,15 +59,13 @@ class PacketList implements PacketListInterface
             $packets[] = match ($reader->getTag()) {
                 PacketTag::PublicKeyEncryptedSessionKey
                     => PublicKeyEncryptedSessionKey::fromBytes(
-                        $reader->getData()
-                    ),
+                    $reader->getData()
+                ),
                 PacketTag::Signature => Signature::fromBytes(
                     $reader->getData()
                 ),
                 PacketTag::SymEncryptedSessionKey
-                    => SymEncryptedSessionKey::fromBytes(
-                        $reader->getData()
-                    ),
+                    => SymEncryptedSessionKey::fromBytes($reader->getData()),
                 PacketTag::OnePassSignature => OnePassSignature::fromBytes(
                     $reader->getData()
                 ),
@@ -91,12 +88,8 @@ class PacketList implements PacketListInterface
                 PacketTag::LiteralData => LiteralData::fromBytes(
                     $reader->getData()
                 ),
-                PacketTag::Trust => Trust::fromBytes(
-                    $reader->getData()
-                ),
-                PacketTag::UserID => UserID::fromBytes(
-                    $reader->getData()
-                ),
+                PacketTag::Trust => Trust::fromBytes($reader->getData()),
+                PacketTag::UserID => UserID::fromBytes($reader->getData()),
                 PacketTag::PublicSubkey => PublicSubkey::fromBytes(
                     $reader->getData()
                 ),
@@ -105,14 +98,12 @@ class PacketList implements PacketListInterface
                 ),
                 PacketTag::SymEncryptedIntegrityProtectedData
                     => SymEncryptedIntegrityProtectedData::fromBytes(
-                        $reader->getData()
-                    ),
+                    $reader->getData()
+                ),
                 PacketTag::AeadEncryptedData => AeadEncryptedData::fromBytes(
                     $reader->getData()
                 ),
-                PacketTag::Padding => Padding::fromBytes(
-                    $reader->getData()
-                ),
+                PacketTag::Padding => Padding::fromBytes($reader->getData()),
                 default => null,
             };
         }
@@ -132,10 +123,12 @@ class PacketList implements PacketListInterface
      */
     public function encode(): string
     {
-        return implode(array_map(
-            static fn ($packet): string => $packet->encode(),
-            $this->packets
-        ));
+        return implode(
+            array_map(
+                static fn($packet): string => $packet->encode(),
+                $this->packets
+            )
+        );
     }
 
     /**
@@ -159,10 +152,12 @@ class PacketList implements PacketListInterface
      */
     public function whereTag(PacketTag $tag): self
     {
-        $packets = array_values(array_filter(
-            $this->packets,
-            static fn ($packet) => $packet->getTag() === $tag,
-        ));
+        $packets = array_values(
+            array_filter(
+                $this->packets,
+                static fn($packet) => $packet->getTag() === $tag
+            )
+        );
         return new self($packets);
     }
 
@@ -171,10 +166,12 @@ class PacketList implements PacketListInterface
      */
     public function whereType(string $type): self
     {
-        $packets = array_values(array_filter(
-            $this->packets,
-            static fn ($packet) => $packet instanceof $type,
-        ));
+        $packets = array_values(
+            array_filter(
+                $this->packets,
+                static fn($packet) => $packet instanceof $type
+            )
+        );
         return new self($packets);
     }
 

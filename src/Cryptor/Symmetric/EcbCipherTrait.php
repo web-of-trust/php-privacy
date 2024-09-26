@@ -22,9 +22,10 @@ trait EcbCipherTrait
      *
      * @return self
      */
-    public function __construct() {
-        parent::__construct('ecb');
-        $this->setPreferredEngine('PHP');
+    public function __construct()
+    {
+        parent::__construct("ecb");
+        $this->setPreferredEngine("PHP");
     }
 
     /**

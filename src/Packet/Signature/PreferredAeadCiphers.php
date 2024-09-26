@@ -8,10 +8,7 @@
 
 namespace OpenPGP\Packet\Signature;
 
-use OpenPGP\Enum\{
-    AeadAlgorithm,
-    SignatureSubpacketType,
-};
+use OpenPGP\Enum\{AeadAlgorithm, SignatureSubpacketType};
 use OpenPGP\Packet\SignatureSubpacket;
 
 /**
@@ -35,8 +32,7 @@ class PreferredAeadCiphers extends SignatureSubpacket
         string $data,
         bool $critical = false,
         bool $isLong = false
-    )
-    {
+    ) {
         parent::__construct(
             SignatureSubpacketType::PreferredAeadCiphers->value,
             $data,

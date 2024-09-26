@@ -114,7 +114,8 @@ enum KeyAlgorithm: int
             self::DiffieHellman,
             self::Aedh,
             self::X25519,
-            self::X448 => false,
+            self::X448
+                => false,
             default => true,
         };
     }
@@ -133,7 +134,8 @@ enum KeyAlgorithm: int
             self::EdDsaLegacy,
             self::AeDsa,
             self::Ed25519,
-            self::Ed448 => false,
+            self::Ed448
+                => false,
             default => true,
         };
     }

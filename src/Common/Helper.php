@@ -8,11 +8,7 @@
 
 namespace OpenPGP\Common;
 
-use OpenPGP\Enum\{
-    HashAlgorithm,
-    S2kType,
-    SymmetricAlgorithm,
-};
+use OpenPGP\Enum\{HashAlgorithm, S2kType, SymmetricAlgorithm};
 use OpenPGP\Type\S2KInterface;
 use phpseclib3\Crypt\Random;
 use phpseclib3\Math\BigInteger;
@@ -64,7 +60,7 @@ final class Helper
      */
     public static function bit2ByteLength(int $bitLength): int
     {
-        return ($bitLength + 7) >> 3;
+        return $bitLength + 7 >> 3;
     }
 
     /**
@@ -75,8 +71,7 @@ final class Helper
      */
     public static function generatePrefix(
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
-    ): string
-    {
+    ): string {
         $size = $symmetric->blockSize();
         $prefix = Random::string($size);
         $repeat = $prefix[$size - 2] . $prefix[$size - 1];
@@ -92,12 +87,11 @@ final class Helper
      * @return int
      */
     public static function bytesToLong(
-        string $bytes, int $offset = 0, bool $be = true
-    ): int
-    {
-        $unpacked = unpack(
-            $be ? 'N' : 'V', substr($bytes, $offset, 4)
-        );
+        string $bytes,
+        int $offset = 0,
+        bool $be = true
+    ): int {
+        $unpacked = unpack($be ? "N" : "V", substr($bytes, $offset, 4));
         return (int) array_pop($unpacked);
     }
 
@@ -110,12 +104,11 @@ final class Helper
      * @return int
      */
     public static function bytesToShort(
-        string $bytes, int $offset = 0, bool $be = true
-    ): int
-    {
-        $unpacked = unpack(
-            $be ? 'n' : 'v', substr($bytes, $offset, 2)
-        );
+        string $bytes,
+        int $offset = 0,
+        bool $be = true
+    ): int {
+        $unpacked = unpack($be ? "n" : "v", substr($bytes, $offset, 2));
         return (int) array_pop($unpacked);
     }
 
@@ -127,19 +120,19 @@ final class Helper
      */
     public static function stringToKey(
         S2kType $type = S2kType::Iterated
-    ): S2KInterface
-    {
-        return $type === S2kType::Argon2 ? 
-            new Argon2S2K(
+    ): S2KInterface {
+        return $type === S2kType::Argon2
+            ? new Argon2S2K(
                 self::generatePassword(Argon2S2K::SALT_LENGTH),
                 Config::getArgon2Iteration(),
                 Config::getArgon2Parallelism(),
-                Config::getArgon2MemoryExponent(),
-            ) : new GenericS2K(
+                Config::getArgon2MemoryExponent()
+            )
+            : new GenericS2K(
                 Random::string(GenericS2K::SALT_LENGTH),
                 $type,
                 Config::getPreferredHash(),
-                Config::getS2kItCount(),
+                Config::getS2kItCount()
             );
     }
 
@@ -151,11 +144,10 @@ final class Helper
      */
     public static function computeChecksum(string $text): string
     {
-        $sum = array_sum(array_map(
-            static fn ($char) => ord($char),
-            str_split($text),
-        ));
-        return pack('n', $sum & 0xffff);
+        $sum = array_sum(
+            array_map(static fn($char) => ord($char), str_split($text))
+        );
+        return pack("n", $sum & 0xffff);
     }
 
     /**
@@ -164,12 +156,12 @@ final class Helper
      * @param int $length
      * @return string
      */
-    public static function generatePassword(int $length = 32): string 
+    public static function generatePassword(int $length = 32): string
     {
         return preg_replace_callback(
-            '/\*/u',
-            static fn () => chr(random_int(40, 126)),
-            str_repeat('*', $length),
+            "/\*/u",
+            static fn() => chr(random_int(40, 126)),
+            str_repeat("*", $length)
         );
     }
 
@@ -183,8 +175,8 @@ final class Helper
     {
         $lines = explode(self::EOL, $text);
         $lines = array_map(
-            static fn ($line) => rtrim($line, self::SPACES),
-            $lines,
+            static fn($line) => rtrim($line, self::SPACES),
+            $lines
         );
         return implode(self::EOL, $lines);
     }
@@ -199,15 +191,13 @@ final class Helper
     {
         if ($length < 192) {
             return chr($length);
-        }
-        elseif ($length < 8384) {
+        } elseif ($length < 8384) {
             return implode([
-              chr(((($length - 192) >> 8) & 0xff) + 192),
-              chr(($length - 192) & 0xff),
+                chr((($length - 192 >> 8) & 0xff) + 192),
+                chr(($length - 192) & 0xff),
             ]);
-        }
-        else {
-            return implode(["\xff", pack('N', $length)]);
+        } else {
+            return implode(["\xff", pack("N", $length)]);
         }
     }
 
@@ -225,7 +215,7 @@ final class Helper
             case HashAlgorithm::Sha1:
             case HashAlgorithm::Ripemd160:
                 throw new \RuntimeException(
-                    "Hash {$hash->name} is unsupported.",
+                    "Hash {$hash->name} is unsupported."
                 );
         }
     }
@@ -244,7 +234,7 @@ final class Helper
             case SymmetricAlgorithm::TripleDes:
             case SymmetricAlgorithm::Cast5:
                 throw new \RuntimeException(
-                    "Symmetric {$symmetric->name} is unsupported.",
+                    "Symmetric {$symmetric->name} is unsupported."
                 );
         }
     }

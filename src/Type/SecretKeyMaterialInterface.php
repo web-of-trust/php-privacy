@@ -8,11 +8,8 @@
 
 namespace OpenPGP\Type;
 
-use phpseclib3\Crypt\Common\{
-    PrivateKey,
-    PublicKey,
-};
 use OpenPGP\Enum\HashAlgorithm;
+use phpseclib3\Crypt\Common\{PrivateKey, PublicKey};
 
 /**
  * Secret key material interface

@@ -9,23 +9,20 @@
 namespace OpenPGP\Packet;
 
 use DateTimeInterface;
-use OpenPGP\Common\{
-    Config,
-    Helper,
-};
+use OpenPGP\Common\{Config, Helper};
 use OpenPGP\Enum\{
     CurveOid,
     EdDSACurve,
     HashAlgorithm,
     KeyAlgorithm,
     MontgomeryCurve,
-    PacketTag,
+    PacketTag
 };
 use OpenPGP\Type\{
     ECKeyMaterialInterface,
     PublicKeyPacketInterface,
     KeyMaterialInterface,
-    SubkeyPacketInterface,
+    SubkeyPacketInterface
 };
 use phpseclib3\Common\Functions\Strings;
 
@@ -40,10 +37,10 @@ use phpseclib3\Common\Functions\Strings;
  */
 class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
 {
-    const VERSION_4   = 4;
-    const VERSION_6   = 6;
-    const V4_HASH     = 'sha1';
-    const V6_HASH     = 'sha256';
+    const VERSION_4 = 4;
+    const VERSION_6 = 6;
+    const V4_HASH = "sha1";
+    const V6_HASH = "sha256";
     const KEY_ID_SIZE = 8;
 
     /**
@@ -69,46 +66,48 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         private readonly int $version,
         private readonly DateTimeInterface $creationTime,
         private readonly KeyAlgorithm $keyAlgorithm,
-        private readonly KeyMaterialInterface $keyMaterial,
-    )
-    {
+        private readonly KeyMaterialInterface $keyMaterial
+    ) {
         parent::__construct(
-            $this instanceof SubkeyPacketInterface ?
-            PacketTag::PublicSubkey : PacketTag::PublicKey
+            $this instanceof SubkeyPacketInterface
+                ? PacketTag::PublicSubkey
+                : PacketTag::PublicKey
         );
         if ($version !== self::VERSION_4 && $version !== self::VERSION_6) {
             throw new \InvalidArgumentException(
-                "Version {$version} of the key packet is unsupported.",
+                "Version {$version} of the key packet is unsupported."
             );
         }
         $isV6 = $version === self::VERSION_6;
 
         if ($isV6) {
-            if (($keyMaterial instanceof Key\ECPublicKeyMaterial)) {
+            if ($keyMaterial instanceof Key\ECPublicKeyMaterial) {
                 $curveOid = $keyMaterial->getCurveOid();
-                if (($curveOid === CurveOid::Ed25519) ||
-                   ($curveOid === CurveOid::Curve25519)
+                if (
+                    $curveOid === CurveOid::Ed25519 ||
+                    $curveOid === CurveOid::Curve25519
                 ) {
                     throw new \InvalidArgumentException(
-                        "Legacy curve {$curveOid->name} cannot be used with v{$version} key packet.",
+                        "Legacy curve {$curveOid->name} cannot be used with v{$version} key packet."
                     );
                 }
             }
-            if (($keyAlgorithm === KeyAlgorithm::Dsa) ||
-               ($keyAlgorithm === KeyAlgorithm::ElGamal)
+            if (
+                $keyAlgorithm === KeyAlgorithm::Dsa ||
+                $keyAlgorithm === KeyAlgorithm::ElGamal
             ) {
                 throw new \InvalidArgumentException(
-                    "Key algorithm {$keyAlgorithm->name} cannot be used with v{$version} key packet.",
+                    "Key algorithm {$keyAlgorithm->name} cannot be used with v{$version} key packet."
                 );
             }
         }
 
-        $this->fingerprint = $isV6 ?
-            hash(self::V6_HASH, $this->getSignBytes(), true) :
-            hash(self::V4_HASH, $this->getSignBytes(), true);
-        $this->keyID = $isV6 ?
-            substr($this->fingerprint, 0, self::KEY_ID_SIZE) :
-            substr($this->fingerprint, 12, self::KEY_ID_SIZE);
+        $this->fingerprint = $isV6
+            ? hash(self::V6_HASH, $this->getSignBytes(), true)
+            : hash(self::V4_HASH, $this->getSignBytes(), true);
+        $this->keyID = $isV6
+            ? substr($this->fingerprint, 0, self::KEY_ID_SIZE)
+            : substr($this->fingerprint, 12, self::KEY_ID_SIZE);
     }
 
     /**
@@ -137,15 +136,11 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
 
         // A series of values comprising the key material.
         $keyMaterial = self::readKeyMaterial(
-            substr($bytes, $offset), $keyAlgorithm
+            substr($bytes, $offset),
+            $keyAlgorithm
         );
 
-        return new self(
-            $version,
-            $creationTime,
-            $keyAlgorithm,
-            $keyMaterial,
-        );
+        return new self($version, $creationTime, $keyAlgorithm, $keyMaterial);
     }
 
     /**
@@ -156,9 +151,11 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         $kmBytes = $this->keyMaterial->toBytes();
         return implode([
             chr($this->version),
-            pack('N', $this->creationTime->getTimestamp()),
+            pack("N", $this->creationTime->getTimestamp()),
             chr($this->keyAlgorithm->value),
-            ($this->version === self::VERSION_6) ? pack('N', strlen($kmBytes)) : '',
+            $this->version === self::VERSION_6
+                ? pack("N", strlen($kmBytes))
+                : "",
             $kmBytes,
         ]);
     }
@@ -200,8 +197,9 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
      */
     public function getECKeyMaterial(): ?ECKeyMaterialInterface
     {
-        return $this->keyMaterial instanceof ECKeyMaterialInterface ? 
-            $this->keyMaterial : null;
+        return $this->keyMaterial instanceof ECKeyMaterialInterface
+            ? $this->keyMaterial
+            : null;
     }
 
     /**
@@ -209,7 +207,9 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
      */
     public function getFingerprint(bool $toHex = false): string
     {
-        return $toHex ? Strings::bin2hex($this->fingerprint) : $this->fingerprint;
+        return $toHex
+            ? Strings::bin2hex($this->fingerprint)
+            : $this->fingerprint;
     }
 
     /**
@@ -257,8 +257,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
      */
     public function getPreferredHash(
         ?HashAlgorithm $preferredHash = null
-    ): HashAlgorithm
-    {
+    ): HashAlgorithm {
         return match (true) {
             $this->keyMaterial instanceof Key\ECPublicKeyMaterial
                 => $this->keyMaterial->getCurveOid()->hashAlgorithm(),
@@ -276,7 +275,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
     public function getSignBytes(): string
     {
         $bytes = $this->toBytes();
-        $format = ($this->version === self::VERSION_6) ? 'N' : 'n';
+        $format = $this->version === self::VERSION_6 ? "N" : "n";
         return implode([
             chr(0x95 + $this->version),
             pack($format, strlen($bytes)),
@@ -285,37 +284,40 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
     }
 
     private static function readKeyMaterial(
-        string $bytes, KeyAlgorithm $keyAlgorithm
-    ): KeyMaterialInterface
-    {
-        return match($keyAlgorithm) {
+        string $bytes,
+        KeyAlgorithm $keyAlgorithm
+    ): KeyMaterialInterface {
+        return match ($keyAlgorithm) {
             KeyAlgorithm::RsaEncryptSign,
             KeyAlgorithm::RsaEncrypt,
             KeyAlgorithm::RsaSign
                 => Key\RSAPublicKeyMaterial::fromBytes($bytes),
-            KeyAlgorithm::ElGamal => Key\ElGamalPublicKeyMaterial::fromBytes($bytes),
+            KeyAlgorithm::ElGamal => Key\ElGamalPublicKeyMaterial::fromBytes(
+                $bytes
+            ),
             KeyAlgorithm::Dsa => Key\DSAPublicKeyMaterial::fromBytes($bytes),
             KeyAlgorithm::Ecdh => Key\ECDHPublicKeyMaterial::fromBytes($bytes),
-            KeyAlgorithm::EcDsa => Key\ECDSAPublicKeyMaterial::fromBytes($bytes),
-            KeyAlgorithm::EdDsaLegacy => Key\EdDSALegacyPublicKeyMaterial::fromBytes($bytes),
-            KeyAlgorithm::X25519
-                => Key\MontgomeryPublicKeyMaterial::fromBytes(
-                    substr($bytes, 0, MontgomeryCurve::Curve25519->payloadSize())
-                ),
-            KeyAlgorithm::X448
-                => Key\MontgomeryPublicKeyMaterial::fromBytes(
-                    substr($bytes, 0, MontgomeryCurve::Curve448->payloadSize())
-                ),
-            KeyAlgorithm::Ed25519
-                => Key\EdDSAPublicKeyMaterial::fromBytes(
-                    $bytes, EdDSACurve::Ed25519
-                ),
-            KeyAlgorithm::Ed448
-                => Key\EdDSAPublicKeyMaterial::fromBytes(
-                    $bytes, EdDSACurve::Ed448
-                ),
+            KeyAlgorithm::EcDsa => Key\ECDSAPublicKeyMaterial::fromBytes(
+                $bytes
+            ),
+            KeyAlgorithm::EdDsaLegacy
+                => Key\EdDSALegacyPublicKeyMaterial::fromBytes($bytes),
+            KeyAlgorithm::X25519 => Key\MontgomeryPublicKeyMaterial::fromBytes(
+                substr($bytes, 0, MontgomeryCurve::Curve25519->payloadSize())
+            ),
+            KeyAlgorithm::X448 => Key\MontgomeryPublicKeyMaterial::fromBytes(
+                substr($bytes, 0, MontgomeryCurve::Curve448->payloadSize())
+            ),
+            KeyAlgorithm::Ed25519 => Key\EdDSAPublicKeyMaterial::fromBytes(
+                $bytes,
+                EdDSACurve::Ed25519
+            ),
+            KeyAlgorithm::Ed448 => Key\EdDSAPublicKeyMaterial::fromBytes(
+                $bytes,
+                EdDSACurve::Ed448
+            ),
             default => throw new \RuntimeException(
-                "Key algorithm {$keyAlgorithm->name} is unsupported.",
+                "Key algorithm {$keyAlgorithm->name} is unsupported."
             ),
         };
     }

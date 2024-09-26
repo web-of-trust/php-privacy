@@ -8,18 +8,11 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Common\{
-    Config,
-    Helper,
-};
+use OpenPGP\Common\{Config, Helper};
 use OpenPGP\Enum\PacketTag;
 use OpenPGP\Type\PacketInterface;
 use phpseclib3\Common\Functions\Strings;
-use Psr\Log\{
-    LoggerAwareInterface,
-    LoggerAwareTrait,
-    LoggerInterface,
-};
+use Psr\Log\{LoggerAwareInterface, LoggerAwareTrait, LoggerInterface};
 
 /**
  * Abstract packet class
@@ -72,8 +65,7 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
     {
         if (in_array($this->tag, self::PARTIAL_SUPPORTING, true)) {
             return $this->partialEncode();
-        }
-        else {
+        } else {
             $bytes = $this->toBytes();
             return implode([
                 chr(0xc0 | $this->tag->value),
@@ -115,10 +107,8 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
         $partialData = [];
 
         while (strlen($data) >= self::PARTIAL_MIN_SIZE) {
-            $maxSize = strlen(
-                substr($data, 0, self::PARTIAL_MAX_SIZE)
-            );
-            $powerOf2 = min(log($maxSize) / M_LN2 | 0, 30);
+            $maxSize = strlen(substr($data, 0, self::PARTIAL_MAX_SIZE));
+            $powerOf2 = min((log($maxSize) / M_LN2) | 0, 30);
             $chunkSize = 1 << $powerOf2;
 
             $partialData[] = implode([
@@ -126,14 +116,8 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
                 Strings::shift($data, $chunkSize),
             ]);
         }
-        $partialData[] = implode([
-            Helper::simpleLength(strlen($data)),
-            $data,
-        ]);
+        $partialData[] = implode([Helper::simpleLength(strlen($data)), $data]);
 
-        return implode([
-            chr(0xc0 | $this->tag->value),
-            ...$partialData,
-        ]);
+        return implode([chr(0xc0 | $this->tag->value), ...$partialData]);
     }
 }

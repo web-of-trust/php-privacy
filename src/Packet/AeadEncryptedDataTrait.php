@@ -8,10 +8,7 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Enum\{
-    AeadAlgorithm,
-    SymmetricAlgorithm,
-};
+use OpenPGP\Enum\{AeadAlgorithm, SymmetricAlgorithm};
 
 /**
  * Aead encrypted data packet trait

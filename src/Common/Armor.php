@@ -16,36 +16,36 @@ use OpenPGP\Enum\ArmorType;
  *
  * Class that represents an OpenPGP Base64 Conversions.
  * See RFC 9580, section 6.
- * 
+ *
  * @package  OpenPGP
  * @category Common
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 final class Armor
 {
-    const MESSAGE_BEGIN        = "-----BEGIN PGP MESSAGE-----\n";
+    const MESSAGE_BEGIN = "-----BEGIN PGP MESSAGE-----\n";
     const SIGNED_MESSAGE_BEGIN = "-----BEGIN PGP SIGNED MESSAGE-----\n";
-    const MESSAGE_END          = "-----END PGP MESSAGE-----\n";
+    const MESSAGE_END = "-----END PGP MESSAGE-----\n";
 
     const MULTIPART_SECTION_MESSAGE_BEGIN = "-----BEGIN PGP MESSAGE, PART %u/%u-----\n";
-    const MULTIPART_SECTION_MESSAGE_END   = "-----END PGP MESSAGE, PART %u/%u-----\n";
+    const MULTIPART_SECTION_MESSAGE_END = "-----END PGP MESSAGE, PART %u/%u-----\n";
 
     const MULTIPART_LAST_MESSAGE_BEGIN = "-----BEGIN PGP MESSAGE, PART %u-----\n";
-    const MULTIPART_LAST_MESSAGE_END   = "-----END PGP MESSAGE, PART %u-----\n";
+    const MULTIPART_LAST_MESSAGE_END = "-----END PGP MESSAGE, PART %u-----\n";
 
     const PUBLIC_KEY_BLOCK_BEGIN = "-----BEGIN PGP PUBLIC KEY BLOCK-----\n";
-    const PUBLIC_KEY_BLOCK_END   = "-----END PGP PUBLIC KEY BLOCK-----\n";
+    const PUBLIC_KEY_BLOCK_END = "-----END PGP PUBLIC KEY BLOCK-----\n";
 
     const PRIVATE_KEY_BLOCK_BEGIN = "-----BEGIN PGP PRIVATE KEY BLOCK-----\n";
-    const PRIVATE_KEY_BLOCK_END   = "-----END PGP PRIVATE KEY BLOCK-----\n";
+    const PRIVATE_KEY_BLOCK_END = "-----END PGP PRIVATE KEY BLOCK-----\n";
 
     const SIGNATURE_BEGIN = "-----BEGIN PGP SIGNATURE-----\n";
-    const SIGNATURE_END   = "-----END PGP SIGNATURE-----\n";
+    const SIGNATURE_END = "-----END PGP SIGNATURE-----\n";
 
-    const DASH_PATTERN   = '/^- /m';
-    const EMPTY_PATTERN  = '/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/';
+    const DASH_PATTERN = "/^- /m";
+    const EMPTY_PATTERN = '/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/';
     const HEADER_PATTERN = '/^([^\s:]|[^\s:][^:]*[^\s:]): .+$/';
-    const SPLIT_PATTERN  = '/^-----[^-]+-----$/';
+    const SPLIT_PATTERN = '/^-----[^-]+-----$/';
 
     const TRUNK_SIZE = 76;
 
@@ -61,10 +61,9 @@ final class Armor
     public function __construct(
         private ArmorType $type,
         private array $headers = [],
-        private string $data = '',
-        private string $text = '',
-    )
-    {
+        private string $data = "",
+        private string $text = ""
+    ) {
     }
 
     /**
@@ -132,11 +131,11 @@ final class Armor
      * @return self
      */
     public static function decode(
-        string $armoredText, bool $checksumRequired = false
-    ): self
-    {
+        string $armoredText,
+        bool $checksumRequired = false
+    ): self {
         $textDone = false;
-        $checksum = '';
+        $checksum = "";
         $type = null;
 
         $headers = [];
@@ -150,31 +149,29 @@ final class Armor
                 $line = rtrim($line, Helper::SPACES);
                 if ($type === null && preg_match(self::SPLIT_PATTERN, $line)) {
                     $type = ArmorType::fromBegin($line);
-                }
-                else {
+                } else {
                     if (preg_match(self::HEADER_PATTERN, $line)) {
                         $headers[] = $line;
-                    }
-                    elseif (!$textDone && $type === ArmorType::SignedMessage) {
+                    } elseif (
+                        !$textDone &&
+                        $type === ArmorType::SignedMessage
+                    ) {
                         if (!preg_match(self::SPLIT_PATTERN, $line)) {
                             $textLines[] = $line;
-                        }
-                        else {
+                        } else {
                             $textDone = true;
                             /// Remove first empty line (not included in the message digest)
                             if (isset($textLines[0]) && empty($textLines[0])) {
                                 unset($textLines[0]);
                             }
                         }
-                    }
-                    elseif (!preg_match(self::SPLIT_PATTERN, $line)) {
+                    } elseif (!preg_match(self::SPLIT_PATTERN, $line)) {
                         if (preg_match(self::EMPTY_PATTERN, $line)) {
                             continue;
                         }
-                        if (strpos($line, '=') === 0) {
+                        if (strpos($line, "=") === 0) {
                             $checksum = substr($line, 1);
-                        }
-                        else {
+                        } else {
                             $dataLines[] = $line;
                         }
                     }
@@ -183,12 +180,11 @@ final class Armor
         }
 
         $data = Strings::base64_decode(implode($dataLines));
-        if (strcmp($checksum, self::crc24Checksum($data)) !== 0 &&
-           (!empty($checksum) || $checksumRequired)
+        if (
+            strcmp($checksum, self::crc24Checksum($data)) !== 0 &&
+            (!empty($checksum) || $checksumRequired)
         ) {
-            throw new \RuntimeException(
-                'Ascii armor integrity check failed!'
-            );
+            throw new \RuntimeException("Ascii armor integrity check failed!");
         }
 
         return new self(
@@ -196,8 +192,10 @@ final class Armor
             $headers,
             $data,
             preg_replace(
-                self::DASH_PATTERN, '', implode(Helper::CRLF, $textLines)
-            ), // Reverse dash-escaped text
+                self::DASH_PATTERN,
+                "",
+                implode(Helper::CRLF, $textLines)
+            ) // Reverse dash-escaped text
         );
     }
 
@@ -216,67 +214,109 @@ final class Armor
     public static function encode(
         ArmorType $type,
         string $data,
-        string $text = '',
+        string $text = "",
         array $hashAlgos = [],
         int $partIndex = 0,
         int $partTotal = 0,
-        string $customComment = '',
-    ): string
-    {
-        $result = match($type) {
+        string $customComment = ""
+    ): string {
+        $result = match ($type) {
             ArmorType::MultipartSection => [
-                sprintf(self::MULTIPART_SECTION_MESSAGE_BEGIN, $partIndex, $partTotal),
+                sprintf(
+                    self::MULTIPART_SECTION_MESSAGE_BEGIN,
+                    $partIndex,
+                    $partTotal
+                ),
                 self::addHeader($customComment) . Helper::EOL,
-                chunk_split(Strings::base64_encode($data), self::TRUNK_SIZE, Helper::EOL),
-                '=' . self::crc24Checksum($data) . Helper::EOL,
-                sprintf(self::MULTIPART_SECTION_MESSAGE_END, $partIndex, $partTotal),
+                chunk_split(
+                    Strings::base64_encode($data),
+                    self::TRUNK_SIZE,
+                    Helper::EOL
+                ),
+                "=" . self::crc24Checksum($data) . Helper::EOL,
+                sprintf(
+                    self::MULTIPART_SECTION_MESSAGE_END,
+                    $partIndex,
+                    $partTotal
+                ),
             ],
             ArmorType::MultipartLast => [
                 sprintf(self::MULTIPART_LAST_MESSAGE_BEGIN, $partIndex),
                 self::addHeader($customComment) . Helper::EOL,
-                chunk_split(Strings::base64_encode($data), self::TRUNK_SIZE, Helper::EOL),
-                '=' . self::crc24Checksum($data) . Helper::EOL,
+                chunk_split(
+                    Strings::base64_encode($data),
+                    self::TRUNK_SIZE,
+                    Helper::EOL
+                ),
+                "=" . self::crc24Checksum($data) . Helper::EOL,
                 sprintf(self::MULTIPART_LAST_MESSAGE_END, $partIndex),
             ],
             ArmorType::SignedMessage => [
                 self::SIGNED_MESSAGE_BEGIN,
-                !empty($hashAlgos) ? implode(
-                    Helper::EOL,
-                    array_map(static fn ($hashAlgo) => "Hash: $hashAlgo", $hashAlgos)
-                ) . Helper::EOL . Helper::EOL : Helper::EOL,
-                preg_replace(self::DASH_PATTERN, '- - ', $text) . Helper::EOL, // Dash-escape text
+                !empty($hashAlgos)
+                    ? implode(
+                            Helper::EOL,
+                            array_map(
+                                static fn($hashAlgo) => "Hash: $hashAlgo",
+                                $hashAlgos
+                            )
+                        ) .
+                        Helper::EOL .
+                        Helper::EOL
+                    : Helper::EOL,
+                preg_replace(self::DASH_PATTERN, "- - ", $text) . Helper::EOL, // Dash-escape text
                 self::SIGNATURE_BEGIN,
                 self::addHeader($customComment) . Helper::EOL,
-                chunk_split(Strings::base64_encode($data), self::TRUNK_SIZE, Helper::EOL),
-                '=' . self::crc24Checksum($data) . Helper::EOL,
+                chunk_split(
+                    Strings::base64_encode($data),
+                    self::TRUNK_SIZE,
+                    Helper::EOL
+                ),
+                "=" . self::crc24Checksum($data) . Helper::EOL,
                 self::SIGNATURE_END,
             ],
             ArmorType::Message => [
                 self::MESSAGE_BEGIN,
                 self::addHeader($customComment) . Helper::EOL,
-                chunk_split(Strings::base64_encode($data), self::TRUNK_SIZE, Helper::EOL),
-                '=' . self::crc24Checksum($data) . Helper::EOL,
+                chunk_split(
+                    Strings::base64_encode($data),
+                    self::TRUNK_SIZE,
+                    Helper::EOL
+                ),
+                "=" . self::crc24Checksum($data) . Helper::EOL,
                 self::MESSAGE_END,
             ],
             ArmorType::PublicKey => [
                 self::PUBLIC_KEY_BLOCK_BEGIN,
                 self::addHeader($customComment) . Helper::EOL,
-                chunk_split(Strings::base64_encode($data), self::TRUNK_SIZE, Helper::EOL),
-                '=' . self::crc24Checksum($data) . Helper::EOL,
+                chunk_split(
+                    Strings::base64_encode($data),
+                    self::TRUNK_SIZE,
+                    Helper::EOL
+                ),
+                "=" . self::crc24Checksum($data) . Helper::EOL,
                 self::PUBLIC_KEY_BLOCK_END,
             ],
             ArmorType::PrivateKey => [
                 self::PRIVATE_KEY_BLOCK_BEGIN,
                 self::addHeader($customComment) . Helper::EOL,
-                chunk_split(Strings::base64_encode($data), self::TRUNK_SIZE, Helper::EOL),
-                '=' . self::crc24Checksum($data) . Helper::EOL,
+                chunk_split(
+                    Strings::base64_encode($data),
+                    self::TRUNK_SIZE,
+                    Helper::EOL
+                ),
+                "=" . self::crc24Checksum($data) . Helper::EOL,
                 self::PRIVATE_KEY_BLOCK_END,
             ],
             ArmorType::Signature => [
                 self::SIGNATURE_BEGIN,
                 self::addHeader($customComment) . Helper::EOL,
-                chunk_split(Strings::base64_encode($data), self::TRUNK_SIZE, Helper::EOL),
-                '=' . self::crc24Checksum($data) . Helper::EOL,
+                chunk_split(
+                    Strings::base64_encode($data),
+                    self::TRUNK_SIZE,
+                    Helper::EOL
+                ),
+                "=" . self::crc24Checksum($data) . Helper::EOL,
                 self::SIGNATURE_END,
             ],
         };
@@ -289,14 +329,14 @@ final class Armor
      * @param string $customComment
      * @return string
      */
-    private static function addHeader(string $customComment = ''): string
+    private static function addHeader(string $customComment = ""): string
     {
         $headers = [
-            'Version: ' . Config::VERSION . Helper::EOL,
-            'Comment: ' . Config::COMMENT . Helper::EOL,
+            "Version: " . Config::VERSION . Helper::EOL,
+            "Comment: " . Config::COMMENT . Helper::EOL,
         ];
         if (!empty($customComment)) {
-            $headers[] = 'Comment: ' . $customComment . Helper::EOL;
+            $headers[] = "Comment: " . $customComment . Helper::EOL;
         }
         return implode($headers);
     }
@@ -319,8 +359,6 @@ final class Armor
                 }
             }
         }
-        return Strings::base64_encode(
-            substr(pack('N', $crc & 0xffffff), 1)
-        );
+        return Strings::base64_encode(substr(pack("N", $crc & 0xffffff), 1));
     }
 }

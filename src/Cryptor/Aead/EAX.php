@@ -34,7 +34,7 @@ final class EAX implements AeadCipher
     const H_TAG = "\x01";
     const C_TAG = "\x02";
 
-    const CIPHER_MODE = 'ctr';
+    const CIPHER_MODE = "ctr";
 
     private readonly BlockCipher $cipher;
     private readonly CMac $mac;
@@ -52,26 +52,26 @@ final class EAX implements AeadCipher
      */
     public function __construct(
         private readonly string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-    )
-    {
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+    ) {
         $this->cipher = $symmetric->cipherEngine(self::CIPHER_MODE);
         $this->cipher->setKey($key);
         $this->mac = new CMac($symmetric);
 
         $size = $this->mac->getMacSize();
         $this->zeroBlock = str_repeat(self::N_TAG, $size);
-        $this->oneBlock  = str_repeat(self::N_TAG, $size - 1) . self::H_TAG;
-        $this->twoBlock  = str_repeat(self::N_TAG, $size - 1) . self::C_TAG;
+        $this->oneBlock = str_repeat(self::N_TAG, $size - 1) . self::H_TAG;
+        $this->twoBlock = str_repeat(self::N_TAG, $size - 1) . self::C_TAG;
     }
 
     /**
      * {@inheritdoc}
      */
     public function encrypt(
-        string $plainText, string $nonce, string $aData = ''
-    ): string
-    {
+        string $plainText,
+        string $nonce,
+        string $aData = ""
+    ): string {
         $omacNonce = $this->omac($this->zeroBlock, $nonce);
         $omacAdata = $this->omac($this->oneBlock, $aData);
 
@@ -86,14 +86,15 @@ final class EAX implements AeadCipher
      * {@inheritdoc}
      */
     public function decrypt(
-        string $cipherText, string $nonce, string $aData = ''
-    ): string
-    {
+        string $cipherText,
+        string $nonce,
+        string $aData = ""
+    ): string {
         $length = strlen($cipherText);
         $tagLength = $this->mac->getMacSize();
 
         if ($length < $tagLength) {
-            throw new \LengthException('Invalid EAX cipher text.');
+            throw new \LengthException("Invalid EAX cipher text.");
         }
         $ciphered = substr($cipherText, 0, $length - $tagLength);
         $ctTag = substr($cipherText, $length - $tagLength);
@@ -104,7 +105,7 @@ final class EAX implements AeadCipher
         $tag = $omacCiphered ^ $omacAdata ^ $omacNonce;
 
         if (strcmp($ctTag, $tag) !== 0) {
-            throw new \RuntimeException('Authentication tag mismatch!');
+            throw new \RuntimeException("Authentication tag mismatch!");
         }
 
         return $this->crypt($ciphered, $omacNonce);
@@ -120,9 +121,7 @@ final class EAX implements AeadCipher
 
     private function omac(string $tag, string $message): string
     {
-        return $this->mac->generate(
-            implode([$tag, $message]), $this->key
-        );
+        return $this->mac->generate(implode([$tag, $message]), $this->key);
     }
 
     private function crypt(string $text, string $iv): string

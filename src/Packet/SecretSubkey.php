@@ -15,13 +15,9 @@ use OpenPGP\Enum\{
     KeyAlgorithm,
     RSAKeySize,
     S2kUsage,
-    SymmetricAlgorithm,
+    SymmetricAlgorithm
 };
-use OpenPGP\Type\{
-    KeyMaterialInterface,
-    S2KInterface,
-    SubkeyPacketInterface,
-};
+use OpenPGP\Type\{KeyMaterialInterface, S2KInterface, SubkeyPacketInterface};
 
 /**
  * Implementation a possibly encrypted sub private key (Tag 7).
@@ -49,15 +45,14 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
      */
     public function __construct(
         PublicSubkey $publicKey,
-        string $keyData = '',
+        string $keyData = "",
         ?KeyMaterialInterface $keyMaterial = null,
         S2kUsage $s2kUsage = S2kUsage::None,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         ?S2KInterface $s2k = null,
         ?AeadAlgorithm $aead = null,
-        string $iv = '',
-    )
-    {
+        string $iv = ""
+    ) {
         parent::__construct(
             $publicKey,
             $keyData,
@@ -66,7 +61,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
             $symmetric,
             $s2k,
             $aead,
-            $iv,
+            $iv
         );
     }
 
@@ -91,15 +86,11 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
         CurveOid $curveOid = CurveOid::Ed25519,
-        ?DateTimeInterface $time = null,
-    ): self
-    {
-        return self::fromSecretKey(SecretKey::generate(
-            $keyAlgorithm,
-            $rsaKeySize,
-            $curveOid,
-            $time,
-        ));
+        ?DateTimeInterface $time = null
+    ): self {
+        return self::fromSecretKey(
+            SecretKey::generate($keyAlgorithm, $rsaKeySize, $curveOid, $time)
+        );
     }
 
     /**
@@ -108,16 +99,12 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
     public function encrypt(
         string $passphrase,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        ?AeadAlgorithm $aead = null,
-    ): self
-    {
+        ?AeadAlgorithm $aead = null
+    ): self {
         if ($this->getKeyMaterial() instanceof KeyMaterialInterface) {
-            $secretKey = parent::encrypt(
-                $passphrase, $symmetric, $aead
-            );
+            $secretKey = parent::encrypt($passphrase, $symmetric, $aead);
             return self::fromSecretKey($secretKey);
-        }
-        else {
+        } else {
             return $this;
         }
     }
@@ -129,8 +116,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
     {
         if ($this->getKeyMaterial() instanceof KeyMaterialInterface) {
             return $this;
-        }
-        else {
+        } else {
             return self::fromSecretKey(parent::decrypt($passphrase));
         }
     }
@@ -143,7 +129,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
                 $publicKey->getVersion(),
                 $publicKey->getCreationTime(),
                 $publicKey->getKeyAlgorithm(),
-                $publicKey->getKeyMaterial(),
+                $publicKey->getKeyMaterial()
             ),
             $secretKey->getKeyData(),
             $secretKey->getKeyMaterial(),
@@ -151,7 +137,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
             $secretKey->getSymmetric(),
             $secretKey->getS2K(),
             $secretKey->getAead(),
-            $secretKey->getIV(),
+            $secretKey->getIV()
         );
     }
 }

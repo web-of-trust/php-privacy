@@ -8,9 +8,9 @@
 
 namespace OpenPGP\Cryptor\Asymmetric\ElGamal;
 
-use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Cryptor\Asymmetric\ElGamal;
+use phpseclib3\Math\BigInteger;
 
 /**
  * ElGamal public key class
@@ -33,7 +33,7 @@ class PublicKey extends ElGamal
         $input = Helper::bin2BigInt($plainText);
         if ($input->compare($prime) > 0) {
             throw new \InvalidArgumentException(
-                'Plain text too large for ' . self::ALGORITHM . ' cipher.'
+                "Plain text too large for " . self::ALGORITHM . " cipher."
             );
         }
 
@@ -42,9 +42,9 @@ class PublicKey extends ElGamal
         do {
             $k = BigInteger::randomRange($one, $prime->subtract($one));
             $gamma = $this->getGenerator()->modPow($k, $prime);
-            list(, $phi) = $input->multiply(
-                $this->getY()->modPow($k, $prime)
-            )->divide($prime);
+            list(, $phi) = $input
+                ->multiply($this->getY()->modPow($k, $prime))
+                ->divide($prime);
         } while (
             $gamma->getLengthInBytes() < $byteLength ||
             $phi->getLengthInBytes() < $byteLength
@@ -66,11 +66,11 @@ class PublicKey extends ElGamal
     public function toString($type, array $options = []): string
     {
         return implode([
-            pack('n', $this->getPrime()->getLength()),
+            pack("n", $this->getPrime()->getLength()),
             $this->getPrime()->toBytes(),
-            pack('n', $this->getGenerator()->getLength()),
+            pack("n", $this->getGenerator()->getLength()),
             $this->getGenerator()->toBytes(),
-            pack('n', $this->getY()->getLength()),
+            pack("n", $this->getY()->getLength()),
             $this->getY()->toBytes(),
         ]);
     }

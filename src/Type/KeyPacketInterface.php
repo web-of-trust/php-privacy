@@ -9,10 +9,7 @@
 namespace OpenPGP\Type;
 
 use DateTimeInterface;
-use OpenPGP\Enum\{
-    HashAlgorithm,
-    KeyAlgorithm,
-};
+use OpenPGP\Enum\{HashAlgorithm, KeyAlgorithm};
 
 /**
  * Key packet interface

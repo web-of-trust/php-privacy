@@ -32,7 +32,7 @@ final class OpenPGP
      * @param \DateTimeInterface $time
      * @return Type\PrivateKeyInterface
      */
-    public static function generateKey(
+     public static function generateKey(
         array $userIDs,
         string $passphrase,
         Enum\KeyType $type = Enum\KeyType::Rsa,

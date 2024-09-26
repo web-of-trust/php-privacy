@@ -9,10 +9,7 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\SymmetricAlgorithm;
-use OpenPGP\Type\{
-    PacketListInterface,
-    SessionKeyInterface,
-};
+use OpenPGP\Type\{PacketListInterface, SessionKeyInterface};
 
 /**
  * Encrypted data packet trait
@@ -45,14 +42,9 @@ trait EncryptedDataTrait
     public function encrypt(
         string $key,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
-    ): self
-    {
+    ): self {
         if ($this->packetList instanceof PacketListInterface) {
-            return self::encryptPackets(
-                $key,
-                $this->packetList,
-                $symmetric,
-            );
+            return self::encryptPackets($key, $this->packetList, $symmetric);
         }
         return $this;
     }
@@ -60,26 +52,22 @@ trait EncryptedDataTrait
     /**
      * {@inheritdoc}
      */
-    public function encryptWithSessionKey(
-        SessionKeyInterface $sessionKey
-    ): self
+    public function encryptWithSessionKey(SessionKeyInterface $sessionKey): self
     {
         return $this->encrypt(
             $sessionKey->getEncryptionKey(),
-            $sessionKey->getSymmetric(),
+            $sessionKey->getSymmetric()
         );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function decryptWithSessionKey(
-        SessionKeyInterface $sessionKey
-    ): self
+    public function decryptWithSessionKey(SessionKeyInterface $sessionKey): self
     {
         return $this->decrypt(
             $sessionKey->getEncryptionKey(),
-            $sessionKey->getSymmetric(),
+            $sessionKey->getSymmetric()
         );
     }
 }

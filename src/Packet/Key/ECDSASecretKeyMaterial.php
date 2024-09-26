@@ -9,14 +9,8 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
-use OpenPGP\Enum\{
-    CurveOid,
-    HashAlgorithm,
-};
-use OpenPGP\Type\{
-    KeyMaterialInterface,
-    SecretKeyMaterialInterface,
-};
+use OpenPGP\Enum\{CurveOid, HashAlgorithm};
+use OpenPGP\Type\{KeyMaterialInterface, SecretKeyMaterialInterface};
 use phpseclib3\Crypt\EC;
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
 use phpseclib3\File\ASN1;
@@ -28,7 +22,8 @@ use phpseclib3\File\ASN1;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class ECDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMaterialInterface
+class ECDSASecretKeyMaterial extends ECSecretKeyMaterial implements
+    SecretKeyMaterialInterface
 {
     /**
      * Read key material from bytes
@@ -38,9 +33,9 @@ class ECDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMat
      * @return self
      */
     public static function fromBytes(
-        string $bytes, KeyMaterialInterface $publicMaterial
-    ): self
-    {
+        string $bytes,
+        KeyMaterialInterface $publicMaterial
+    ): self {
         return new self(Helper::readMPI($bytes), $publicMaterial);
     }
 
@@ -60,17 +55,17 @@ class ECDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMat
                 );
             default:
                 $privateKey = EC::createKey($curveOid->name);
-                $params = PKCS8::load($privateKey->toString('PKCS8'));
+                $params = PKCS8::load($privateKey->toString("PKCS8"));
                 return new self(
-                    $params['dA'],
+                    $params["dA"],
                     new ECDSAPublicKeyMaterial(
                         ASN1::encodeOID($curveOid->value),
                         Helper::bin2BigInt(
                             $privateKey->getEncodedCoordinates()
                         ),
-                        $privateKey->getPublicKey(),
+                        $privateKey->getPublicKey()
                     ),
-                    $privateKey,
+                    $privateKey
                 );
         }
     }
@@ -81,14 +76,14 @@ class ECDSASecretKeyMaterial extends ECSecretKeyMaterial implements SecretKeyMat
     public function sign(HashAlgorithm $hash, string $message): string
     {
         $signature = $this->privateKey
-            ->withSignatureFormat('Raw')
+            ->withSignatureFormat("Raw")
             ->withHash(strtolower($hash->name))
             ->sign($message);
         return implode([
-            pack('n', $signature['r']->getLength()),
-            $signature['r']->toBytes(),
-            pack('n', $signature['s']->getLength()),
-            $signature['s']->toBytes(),
+            pack("n", $signature["r"]->getLength()),
+            $signature["r"]->toBytes(),
+            pack("n", $signature["s"]->getLength()),
+            $signature["s"]->toBytes(),
         ]);
     }
 }

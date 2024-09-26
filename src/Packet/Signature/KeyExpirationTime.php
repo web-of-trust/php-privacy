@@ -34,8 +34,7 @@ class KeyExpirationTime extends SignatureSubpacket
         string $data,
         bool $critical = false,
         bool $isLong = false
-    )
-    {
+    ) {
         parent::__construct(
             SignatureSubpacketType::KeyExpirationTime->value,
             $data,
@@ -51,11 +50,9 @@ class KeyExpirationTime extends SignatureSubpacket
      * @param bool $critical
      * @return self
      */
-    public static function fromTime(
-        int $seconds, bool $critical = false
-    ): self
+    public static function fromTime(int $seconds, bool $critical = false): self
     {
-        return new self(pack('N', $seconds), $critical);
+        return new self(pack("N", $seconds), $critical);
     }
 
     /**

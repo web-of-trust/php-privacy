@@ -12,23 +12,22 @@ use DateTimeInterface;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\LiteralFormat as Format;
 use OpenPGP\Enum\PacketTag;
-use OpenPGP\Type\{
-    ForSigningInterface,
-    LiteralDataInterface,
-};
+use OpenPGP\Type\{ForSigningInterface, LiteralDataInterface};
 
 /**
  * Implementation of the Literal Data Packet (Tag 11)
  *
  * See RFC 9580, section 5.9.
- * 
+ *
  * A Literal Data packet contains the body of a message; data that is not to be further interpreted.
  *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class LiteralData extends AbstractPacket implements ForSigningInterface, LiteralDataInterface
+class LiteralData extends AbstractPacket implements
+    ForSigningInterface,
+    LiteralDataInterface
 {
     private readonly DateTimeInterface $time;
 
@@ -44,10 +43,9 @@ class LiteralData extends AbstractPacket implements ForSigningInterface, Literal
     public function __construct(
         private readonly string $data,
         private readonly Format $format = Format::Utf8,
-        private readonly string $filename = '',
-        ?DateTimeInterface $time = null,
-    )
-    {
+        private readonly string $filename = "",
+        ?DateTimeInterface $time = null
+    ) {
         parent::__construct(PacketTag::LiteralData);
         $this->time = $time ?? (new \DateTime())->setTimestamp(time());
     }
@@ -70,9 +68,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface, Literal
         $offset += 4;
         $data = substr($bytes, $offset);
 
-        return new self(
-            $data, $format, $filename, $time
-        );
+        return new self($data, $format, $filename, $time);
     }
 
     /**
@@ -86,12 +82,9 @@ class LiteralData extends AbstractPacket implements ForSigningInterface, Literal
     public static function fromText(
         string $text,
         Format $format = Format::Utf8,
-        ?DateTimeInterface $time = null,
-    ): self
-    {
-        return new self(
-            $text, $format, '', $time
-        );
+        ?DateTimeInterface $time = null
+    ): self {
+        return new self($text, $format, "", $time);
     }
 
     /**
@@ -135,7 +128,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface, Literal
             chr($this->format->value),
             chr(strlen($this->filename)),
             $this->filename,
-            pack('N', $this->time->getTimestamp()),
+            pack("N", $this->time->getTimestamp()),
         ]);
     }
 
@@ -144,10 +137,7 @@ class LiteralData extends AbstractPacket implements ForSigningInterface, Literal
      */
     public function toBytes(): string
     {
-        return implode([
-            $this->getHeader(),
-            $this->getSignBytes(),
-        ]);
+        return implode([$this->getHeader(), $this->getSignBytes()]);
     }
 
     /**
@@ -158,13 +148,11 @@ class LiteralData extends AbstractPacket implements ForSigningInterface, Literal
         if ($this->format === Format::Text || $this->format === Format::Utf8) {
             // Remove trailing whitespace and normalize EOL to canonical form <CR><LF>
             $data = Helper::removeTrailingSpaces(
-                mb_convert_encoding($this->data, 'UTF-8')
+                mb_convert_encoding($this->data, "UTF-8")
             );
-            return preg_replace(
-                Helper::EOL_PATTERN, Helper::CRLF, $data
-            ) ?? $data;
-        }
-        else {
+            return preg_replace(Helper::EOL_PATTERN, Helper::CRLF, $data) ??
+                $data;
+        } else {
             return $this->data;
         }
     }

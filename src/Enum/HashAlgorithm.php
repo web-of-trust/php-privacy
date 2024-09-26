@@ -44,7 +44,7 @@ enum HashAlgorithm: int
      */
     public function digestSize(): int
     {
-        return match($this) {
+        return match ($this) {
             self::Unknown => 0,
             self::Md5 => 16,
             self::Sha1, self::Ripemd160 => 20,
@@ -62,7 +62,7 @@ enum HashAlgorithm: int
      */
     public function saltSize(): int
     {
-        return match($this) {
+        return match ($this) {
             self::Unknown, self::Md5, self::Sha1, self::Ripemd160 => 0,
             self::Sha224, self::Sha256, self::Sha3_256 => 16,
             self::Sha384 => 24,
@@ -80,7 +80,9 @@ enum HashAlgorithm: int
     public function hash(string $message, bool $binary = true): string
     {
         return hash(
-            strtolower(str_replace('_', '-', $this->name)), $message, $binary
+            strtolower(str_replace("_", "-", $this->name)),
+            $message,
+            $binary
         );
     }
 }

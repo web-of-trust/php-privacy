@@ -32,8 +32,7 @@ class PreferredKeyServer extends SignatureSubpacket
         string $data,
         bool $critical = false,
         bool $isLong = false
-    )
-    {
+    ) {
         parent::__construct(
             SignatureSubpacketType::PreferredKeyServer->value,
             $data,

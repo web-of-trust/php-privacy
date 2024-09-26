@@ -9,10 +9,7 @@
 namespace OpenPGP\Type;
 
 use DateTimeInterface;
-use OpenPGP\Enum\{
-    CompressionAlgorithm,
-    SymmetricAlgorithm,
-};
+use OpenPGP\Enum\{CompressionAlgorithm, SymmetricAlgorithm};
 
 /**
  * Literal message interface
@@ -21,7 +18,9 @@ use OpenPGP\Enum\{
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInterface
+interface LiteralMessageInterface extends
+    ArmorableInterface,
+    PacketContainerInterface
 {
     /**
      * Get literal data
@@ -43,7 +42,7 @@ interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInt
         array $signingKeys,
         array $recipients = [],
         ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null,
+        ?DateTimeInterface $time = null
     ): self;
 
     /**
@@ -59,7 +58,7 @@ interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInt
         array $signingKeys,
         array $recipients = [],
         ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null,
+        ?DateTimeInterface $time = null
     ): SignatureInterface;
 
     /**
@@ -74,7 +73,7 @@ interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInt
     function verifyDetached(
         array $verificationKeys,
         SignatureInterface $signature,
-        ?DateTimeInterface $time = null,
+        ?DateTimeInterface $time = null
     ): array;
 
     /**
@@ -89,7 +88,7 @@ interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInt
     function encrypt(
         array $encryptionKeys = [],
         array $passwords = [],
-        ?SymmetricAlgorithm $symmetric = null,
+        ?SymmetricAlgorithm $symmetric = null
     ): EncryptedMessageInterface;
 
     /**
@@ -99,7 +98,5 @@ interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInt
      * @param CompressionAlgorithm $algorithm
      * @return self
      */
-    function compress(
-        ?CompressionAlgorithm $algorithm = null
-    ): self;
+    function compress(?CompressionAlgorithm $algorithm = null): self;
 }

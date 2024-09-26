@@ -9,12 +9,7 @@
 namespace OpenPGP\Type;
 
 use DateTimeInterface;
-use OpenPGP\Enum\{
-    CurveOid,
-    KeyAlgorithm,
-    RevocationReasonTag,
-    RSAKeySize,
-};
+use OpenPGP\Enum\{CurveOid, KeyAlgorithm, RevocationReasonTag, RSAKeySize};
 
 /**
  * Private key interface
@@ -61,7 +56,8 @@ interface PrivateKeyInterface extends KeyInterface
      * @return array
      */
     function getDecryptionKeyPackets(
-        string $keyID = '', ?DateTimeInterface $time = null
+        string $keyID = "",
+        ?DateTimeInterface $time = null
     ): array;
 
     /**
@@ -72,10 +68,7 @@ interface PrivateKeyInterface extends KeyInterface
      * @param array $subkeyPassphrases
      * @return self
      */
-    function encrypt(
-        string $passphrase,
-        array $subkeyPassphrases = [],
-    ): self;
+    function encrypt(string $passphrase, array $subkeyPassphrases = []): self;
 
     /**
      * Unlock a private key with the given passphrase.
@@ -85,10 +78,7 @@ interface PrivateKeyInterface extends KeyInterface
      * @param array $subkeyPassphrases
      * @return self
      */
-    function decrypt(
-        string $passphrase,
-        array $subkeyPassphrases = [],
-    ): self;
+    function decrypt(string $passphrase, array $subkeyPassphrases = []): self;
 
     /**
      * Add userIDs to the key.
@@ -119,7 +109,7 @@ interface PrivateKeyInterface extends KeyInterface
         CurveOid $curve = CurveOid::Secp521r1,
         int $keyExpiry = 0,
         bool $forSigning = false,
-        ?DateTimeInterface $time = null,
+        ?DateTimeInterface $time = null
     ): self;
 
     /**
@@ -132,7 +122,7 @@ interface PrivateKeyInterface extends KeyInterface
      */
     function certifyKey(
         KeyInterface $key,
-        ?DateTimeInterface $time = null,
+        ?DateTimeInterface $time = null
     ): KeyInterface;
 
     /**
@@ -147,9 +137,9 @@ interface PrivateKeyInterface extends KeyInterface
      */
     function revokeKey(
         KeyInterface $key,
-        string $revocationReason = '',
+        string $revocationReason = "",
         ?RevocationReasonTag $reasonTag = null,
-        ?DateTimeInterface $time = null,
+        ?DateTimeInterface $time = null
     ): KeyInterface;
 
     /**
@@ -163,9 +153,9 @@ interface PrivateKeyInterface extends KeyInterface
      */
     function revokeUser(
         string $userID,
-        string $revocationReason = '',
+        string $revocationReason = "",
         ?RevocationReasonTag $reasonTag = null,
-        ?DateTimeInterface $time = null,
+        ?DateTimeInterface $time = null
     ): self;
 
     /**
@@ -179,8 +169,8 @@ interface PrivateKeyInterface extends KeyInterface
      */
     function revokeSubkey(
         string $keyID,
-        string $revocationReason = '',
+        string $revocationReason = "",
         ?RevocationReasonTag $reasonTag = null,
-        ?DateTimeInterface $time = null,
+        ?DateTimeInterface $time = null
     ): self;
 }

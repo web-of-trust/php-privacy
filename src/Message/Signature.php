@@ -9,15 +9,9 @@
 namespace OpenPGP\Message;
 
 use DateTimeInterface;
-use OpenPGP\Common\{
-    Armor,
-    Config,
-};
+use OpenPGP\Common\{Armor, Config};
 use OpenPGP\Enum\ArmorType;
-use OpenPGP\Packet\{
-    LiteralData,
-    PacketList,
-};
+use OpenPGP\Packet\{LiteralData, PacketList};
 use OpenPGP\Type\{
     CleartextMessageInterface,
     KeyInterface,
@@ -25,7 +19,7 @@ use OpenPGP\Type\{
     LiteralDataInterface,
     PacketListInterface,
     SignatureInterface,
-    SignaturePacketInterface,
+    SignaturePacketInterface
 };
 
 /**
@@ -47,9 +41,7 @@ class Signature implements SignatureInterface
      * @param PacketListInterface $packetList
      * @return self
      */
-    public function __construct(
-        PacketListInterface $packetList
-    )
+    public function __construct(PacketListInterface $packetList)
     {
         $this->packetList = $packetList->whereType(
             SignaturePacketInterface::class
@@ -65,7 +57,9 @@ class Signature implements SignatureInterface
     public static function fromArmored(string $armored): self
     {
         return self::fromBytes(
-            Armor::decode($armored)->assert(ArmorType::Signature)->getData()
+            Armor::decode($armored)
+                ->assert(ArmorType::Signature)
+                ->getData()
         );
     }
 
@@ -86,8 +80,8 @@ class Signature implements SignatureInterface
     public function getSigningKeyIDs(bool $toHex = false): array
     {
         return array_map(
-            static fn ($packet): string => $packet->getIssuerKeyID($toHex),
-            $this->getPackets(),
+            static fn($packet): string => $packet->getIssuerKeyID($toHex),
+            $this->getPackets()
         );
     }
 
@@ -97,39 +91,36 @@ class Signature implements SignatureInterface
     public function verify(
         array $verificationKeys,
         LiteralDataInterface $literalData,
-        ?DateTimeInterface $time = null,
-    ): array
-    {
+        ?DateTimeInterface $time = null
+    ): array {
         $verificationKeys = array_filter(
             $verificationKeys,
-            static fn ($key): bool => $key instanceof KeyInterface,
+            static fn($key): bool => $key instanceof KeyInterface
         );
         if (empty($verificationKeys)) {
-            Config::getLogger()->warning('No verification keys provided.');
+            Config::getLogger()->warning("No verification keys provided.");
         }
         $verifications = [];
         foreach ($this->packetList as $packet) {
             foreach ($verificationKeys as $key) {
                 $keyPacket = null;
                 try {
-                    $keyPacket = $key->toPublic()->getSigningKeyPacket(
-                        $packet->getIssuerKeyID()
-                    );
-                }
-                catch (\Throwable $e) {
+                    $keyPacket = $key
+                        ->toPublic()
+                        ->getSigningKeyPacket($packet->getIssuerKeyID());
+                } catch (\Throwable $e) {
                     Config::getLogger()->error($e->getMessage());
                 }
                 if ($keyPacket instanceof KeyPacketInterface) {
                     $isVerified = false;
-                    $verificationError = '';
+                    $verificationError = "";
                     try {
                         $isVerified = $packet->verify(
                             $keyPacket,
                             $literalData->getSignBytes(),
-                            $time,
+                            $time
                         );
-                    }
-                    catch (\Throwable $e) {
+                    } catch (\Throwable $e) {
                         $verificationError = $e->getMessage();
                         Config::getLogger()->error($verificationError);
                     }
@@ -138,7 +129,7 @@ class Signature implements SignatureInterface
                         $keyPacket->getKeyID(),
                         $packet,
                         $isVerified,
-                        $verificationError,
+                        $verificationError
                     );
                 }
             }
@@ -152,13 +143,12 @@ class Signature implements SignatureInterface
     public function verifyCleartext(
         array $verificationKeys,
         CleartextMessageInterface $cleartext,
-        ?DateTimeInterface $time = null,
-    ): array
-    {
+        ?DateTimeInterface $time = null
+    ): array {
         return $this->verify(
             $verificationKeys,
             LiteralData::fromText($cleartext->getText()),
-            $time,
+            $time
         );
     }
 
@@ -169,7 +159,7 @@ class Signature implements SignatureInterface
     {
         return Armor::encode(
             ArmorType::Signature,
-            $this->getPacketList()->encode(),
+            $this->getPacketList()->encode()
         );
     }
 

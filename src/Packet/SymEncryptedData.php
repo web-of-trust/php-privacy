@@ -8,18 +8,12 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Common\{
-    Config,
-    Helper,
-};
-use OpenPGP\Enum\{
-    PacketTag,
-    SymmetricAlgorithm,
-};
+use OpenPGP\Common\{Config, Helper};
+use OpenPGP\Enum\{PacketTag, SymmetricAlgorithm};
 use OpenPGP\Type\{
     EncryptedDataPacketInterface,
     PacketListInterface,
-    SessionKeyInterface,
+    SessionKeyInterface
 };
 
 /**
@@ -31,7 +25,8 @@ use OpenPGP\Type\{
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInterface
+class SymEncryptedData extends AbstractPacket implements
+    EncryptedDataPacketInterface
 {
     use EncryptedDataTrait;
 
@@ -46,9 +41,8 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
      */
     public function __construct(
         private readonly string $encrypted,
-        private readonly ?PacketListInterface $packetList = null,
-    )
-    {
+        private readonly ?PacketListInterface $packetList = null
+    ) {
         parent::__construct(PacketTag::SymEncryptedData);
     }
 
@@ -71,9 +65,8 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
     public static function encryptPackets(
         string $key,
         PacketListInterface $packetList,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-    ): self
-    {
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+    ): self {
         Helper::assertSymmetric($symmetric);
         $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
         $cipher->setKey($key);
@@ -82,7 +75,8 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
         $cipher->setIV(substr($prefix, 2));
 
         return new self(
-            $prefix . $cipher->encrypt($packetList->encode()), $packetList
+            $prefix . $cipher->encrypt($packetList->encode()),
+            $packetList
         );
     }
 
@@ -94,13 +88,13 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
      * @return self
      */
     public static function encryptPacketsWithSessionKey(
-        SessionKeyInterface $sessionKey, PacketListInterface $packetList
-    ): self
-    {
+        SessionKeyInterface $sessionKey,
+        PacketListInterface $packetList
+    ): self {
         return self::encryptPackets(
             $sessionKey->getEncryptionKey(),
             $packetList,
-            $sessionKey->getSymmetric(),
+            $sessionKey->getSymmetric()
         );
     }
 
@@ -117,16 +111,14 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
      */
     public function decrypt(
         string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-    ): self
-    {
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+    ): self {
         if (!Config::allowUnauthenticated()) {
-            throw new \RuntimeException('Message is not authenticated.');
+            throw new \RuntimeException("Message is not authenticated.");
         }
         if ($this->packetList instanceof PacketListInterface) {
             return $this;
-        }
-        else {
+        } else {
             $blockSize = $symmetric->blockSize();
             $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
             $cipher->setKey($key);
@@ -136,7 +128,7 @@ class SymEncryptedData extends AbstractPacket implements EncryptedDataPacketInte
                 $this->encrypted,
                 PacketList::decode(
                     $cipher->decrypt(substr($this->encrypted, $blockSize + 2))
-                ),
+                )
             );
         }
     }

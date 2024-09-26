@@ -13,7 +13,7 @@ use OpenPGP\Enum\ArmorType;
 use OpenPGP\Packet\{
     PacketList,
     PublicKeyEncryptedSessionKey,
-    SymEncryptedSessionKey,
+    SymEncryptedSessionKey
 };
 use OpenPGP\Type\{
     EncryptedDataPacketInterface,
@@ -21,7 +21,7 @@ use OpenPGP\Type\{
     LiteralMessageInterface,
     PacketListInterface,
     PrivateKeyInterface,
-    SessionKeyInterface,
+    SessionKeyInterface
 };
 
 /**
@@ -31,7 +31,8 @@ use OpenPGP\Type\{
  * @category Message
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterface
+class EncryptedMessage extends AbstractMessage implements
+    EncryptedMessageInterface
 {
     private ?SessionKeyInterface $sessionKey = null;
 
@@ -44,7 +45,9 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
     public static function fromArmored(string $armored): self
     {
         return self::fromBytes(
-            Armor::decode($armored)->assert(ArmorType::Message)->getData()
+            Armor::decode($armored)
+                ->assert(ArmorType::Message)
+                ->getData()
         );
     }
 
@@ -82,25 +85,27 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
      */
     public function decrypt(
         array $decryptionKeys = [],
-        array $passwords = [],
-    ): LiteralMessageInterface
-    {
+        array $passwords = []
+    ): LiteralMessageInterface {
         $decryptionKeys = array_filter(
             $decryptionKeys,
-            static fn ($key) => $key instanceof PrivateKeyInterface,
+            static fn($key) => $key instanceof PrivateKeyInterface
         );
         if (empty($decryptionKeys) && empty($passwords)) {
             throw new \InvalidArgumentException(
-                'No decryption keys or passwords provided.'
+                "No decryption keys or passwords provided."
             );
         }
 
         return new LiteralMessage(
-            $this->getEncryptedPacket()->decryptWithSessionKey(
-                $this->sessionKey = $this->decryptSessionKey(
-                    $decryptionKeys, $passwords
+            $this->getEncryptedPacket()
+                ->decryptWithSessionKey(
+                    $this->sessionKey = $this->decryptSessionKey(
+                        $decryptionKeys,
+                        $passwords
+                    )
                 )
-            )->getPacketList()
+                ->getPacketList()
         );
     }
 
@@ -112,47 +117,47 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
      * @return SessionKeyInterface
      */
     private function decryptSessionKey(
-        array $decryptionKeys, array $passwords
-    ): SessionKeyInterface
-    {
+        array $decryptionKeys,
+        array $passwords
+    ): SessionKeyInterface {
         $sessionKeys = [];
         if (!empty($passwords)) {
-            $this->getLogger()->warning(
-                'Decrypt session keys by passwords.'
-            );
+            $this->getLogger()->warning("Decrypt session keys by passwords.");
             $skeskPacketList = $this->getPacketList()->whereType(
                 SymEncryptedSessionKey::class
             );
             foreach ($skeskPacketList as $skesk) {
                 foreach ($passwords as $password) {
                     try {
-                        $sessionKeys[] = $skesk->decrypt($password)->getSessionKey();
+                        $sessionKeys[] = $skesk
+                            ->decrypt($password)
+                            ->getSessionKey();
                         break;
-                    }
-                    catch (\Throwable $e) {
+                    } catch (\Throwable $e) {
                         $this->getLogger()->error($e);
                     }
                 }
             }
         }
         if (empty($sessionKeys) && !empty($decryptionKeys)) {
-            $this->getLogger()->warning(
-                'Decrypt session keys by public keys.'
-            );
+            $this->getLogger()->warning("Decrypt session keys by public keys.");
             $pkeskPacketList = $this->getPacketList()->whereType(
                 PublicKeyEncryptedSessionKey::class
             );
             foreach ($pkeskPacketList as $pkesk) {
                 foreach ($decryptionKeys as $key) {
                     $keyPacket = $key->getEncryptionKeyPacket();
-                    if ($pkesk->getKeyAlgorithm() === $keyPacket->getKeyAlgorithm() &&
+                    if (
+                        $pkesk->getKeyAlgorithm() ===
+                            $keyPacket->getKeyAlgorithm() &&
                         strcmp($pkesk->getKeyID(), $keyPacket->getKeyID()) === 0
                     ) {
                         try {
-                            $sessionKeys[] = $pkesk->decrypt($keyPacket)->getSessionKey();
+                            $sessionKeys[] = $pkesk
+                                ->decrypt($keyPacket)
+                                ->getSessionKey();
                             break;
-                        }
-                        catch (\Throwable $e) {
+                        } catch (\Throwable $e) {
                             $this->getLogger()->error($e);
                         }
                     }
@@ -161,7 +166,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
         }
 
         if (empty($sessionKeys)) {
-            throw new \RuntimeException('Session key decryption failed.');
+            throw new \RuntimeException("Session key decryption failed.");
         }
 
         return array_pop($sessionKeys);
@@ -175,13 +180,12 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
      */
     private static function assertEncryptedPacket(
         PacketListInterface $packetList
-    ): EncryptedDataPacketInterface
-    {
-        $encryptedPackets = $packetList->whereType(
-            EncryptedDataPacketInterface::class
-        )->getPackets();
+    ): EncryptedDataPacketInterface {
+        $encryptedPackets = $packetList
+            ->whereType(EncryptedDataPacketInterface::class)
+            ->getPackets();
         if (empty($encryptedPackets)) {
-            throw new \RuntimeException('No encrypted data packets found.');
+            throw new \RuntimeException("No encrypted data packets found.");
         }
         return array_pop($encryptedPackets);
     }

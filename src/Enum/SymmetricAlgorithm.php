@@ -90,7 +90,7 @@ enum SymmetricAlgorithm: int
      */
     public function keySize(): int
     {
-        return match($this) {
+        return match ($this) {
             self::Plaintext => 0,
             self::Aes128,
             self::Blowfish,
@@ -98,14 +98,8 @@ enum SymmetricAlgorithm: int
             self::Cast5,
             self::Idea
                 => 128,
-            self::Aes192,
-            self::Camellia192,
-            self::TripleDes
-                => 192,
-            self::Aes256,
-            self::Camellia256,
-            self::Twofish
-                => 256,
+            self::Aes192, self::Camellia192, self::TripleDes => 192,
+            self::Aes256, self::Camellia256, self::Twofish => 256,
         };
     }
 
@@ -116,7 +110,7 @@ enum SymmetricAlgorithm: int
      */
     public function keySizeInByte(): int
     {
-        return ($this->keySize() + 7) >> 3;
+        return $this->keySize() + 7 >> 3;
     }
 
     /**
@@ -126,13 +120,9 @@ enum SymmetricAlgorithm: int
      */
     public function blockSize(): int
     {
-        return match($this) {
+        return match ($this) {
             self::Plaintext => 0,
-            self::Blowfish,
-            self::Idea,
-            self::TripleDes,
-            self::Cast5
-                => 8,
+            self::Blowfish, self::Idea, self::TripleDes, self::Cast5 => 8,
             self::Aes128,
             self::Aes192,
             self::Aes256,
@@ -150,9 +140,9 @@ enum SymmetricAlgorithm: int
      * @param string $mode - The cipher mode
      * @return BlockCipher
      */
-    public function cipherEngine(string $mode = 'cfb'): BlockCipher
+    public function cipherEngine(string $mode = "cfb"): BlockCipher
     {
-        return match($this) {
+        return match ($this) {
             self::Plaintext => throw new \RuntimeException(
                 'Symmetric algorithm "Plaintext" is unsupported.'
             ),
@@ -160,10 +150,11 @@ enum SymmetricAlgorithm: int
             self::TripleDes => new Crypt\TripleDES($mode),
             self::Cast5 => new Symmetric\CAST5($mode),
             self::Blowfish => new Crypt\Blowfish($mode),
-            self::Aes128, self::Aes192, self::Aes256
-                => new Crypt\AES($mode),
+            self::Aes128, self::Aes192, self::Aes256 => new Crypt\AES($mode),
             self::Twofish => new Crypt\Twofish($mode),
-            self::Camellia128, self::Camellia192, self::Camellia256
+            self::Camellia128,
+            self::Camellia192,
+            self::Camellia256
                 => new Symmetric\Camellia($mode),
         };
     }
@@ -175,33 +166,47 @@ enum SymmetricAlgorithm: int
      */
     public function ecbCipherEngine(): Symmetric\EcbCipher
     {
-        return match($this) {
+        return match ($this) {
             self::Plaintext => throw new \InvalidArgumentException(
                 'Symmetric algorithm "Plaintext" is unsupported.'
             ),
-            self::Idea => new class extends Symmetric\IDEA implements Symmetric\EcbCipher {
+            self::Idea => new class extends Symmetric\IDEA implements
+                Symmetric\EcbCipher
+            {
                 use Symmetric\EcbCipherTrait;
             },
-            self::TripleDes => new class extends Crypt\TripleDES implements Symmetric\EcbCipher {
+            self::TripleDes => new class extends Crypt\TripleDES implements
+                Symmetric\EcbCipher
+            {
                 use Symmetric\EcbCipherTrait;
             },
-            self::Cast5 => new class extends Symmetric\CAST5 implements Symmetric\EcbCipher {
+            self::Cast5 => new class extends Symmetric\CAST5 implements
+                Symmetric\EcbCipher
+            {
                 use Symmetric\EcbCipherTrait;
             },
-            self::Blowfish => new class extends Crypt\Blowfish implements Symmetric\EcbCipher {
+            self::Blowfish => new class extends Crypt\Blowfish implements
+                Symmetric\EcbCipher
+            {
                 use Symmetric\EcbCipherTrait;
             },
-            self::Aes128, self::Aes192, self::Aes256
-                => new class extends Crypt\AES implements Symmetric\EcbCipher {
-                    use Symmetric\EcbCipherTrait;
-                },
-            self::Twofish => new class extends Crypt\Twofish implements Symmetric\EcbCipher {
+            self::Aes128, self::Aes192, self::Aes256 => new class
+                extends Crypt\AES
+                implements Symmetric\EcbCipher
+            {
                 use Symmetric\EcbCipherTrait;
             },
-            self::Camellia128, self::Camellia192, self::Camellia256
-                => new class extends Symmetric\Camellia implements Symmetric\EcbCipher {
-                    use Symmetric\EcbCipherTrait;
-                },
+            self::Twofish => new class extends Crypt\Twofish implements
+                Symmetric\EcbCipher
+            {
+                use Symmetric\EcbCipherTrait;
+            },
+            self::Camellia128, self::Camellia192, self::Camellia256 => new class
+                extends Symmetric\Camellia
+                implements Symmetric\EcbCipher
+            {
+                use Symmetric\EcbCipherTrait;
+            },
         };
     }
 }

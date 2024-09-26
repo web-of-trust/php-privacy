@@ -8,10 +8,10 @@
 
 namespace OpenPGP\Packet\Signature;
 
-use phpseclib3\Common\Functions\Strings;
 use OpenPGP\Enum\SignatureSubpacketType;
 use OpenPGP\Packet\SignatureSubpacket;
 use OpenPGP\Type\KeyPacketInterface;
+use phpseclib3\Common\Functions\Strings;
 
 /**
  * IntendedRecipientFingerprint sub-packet class
@@ -35,8 +35,7 @@ class IntendedRecipientFingerprint extends SignatureSubpacket
         string $data,
         bool $critical = false,
         bool $isLong = false
-    )
-    {
+    ) {
         parent::__construct(
             SignatureSubpacketType::IntendedRecipientFingerprint->value,
             $data,
@@ -53,11 +52,12 @@ class IntendedRecipientFingerprint extends SignatureSubpacket
      * @return self
      */
     public static function fromKeyPacket(
-        KeyPacketInterface $key, bool $critical = false
-    ): self
-    {
+        KeyPacketInterface $key,
+        bool $critical = false
+    ): self {
         return new self(
-            chr($key->getVersion()) . $key->getFingerprint(), $critical
+            chr($key->getVersion()) . $key->getFingerprint(),
+            $critical
         );
     }
 
@@ -69,9 +69,9 @@ class IntendedRecipientFingerprint extends SignatureSubpacket
      * @return self
      */
     public static function wildcard(
-        bool $isV6 = true, bool $critical = false
-    ): self
-    {
+        bool $isV6 = true,
+        bool $critical = false
+    ): self {
         return new self(
             chr($isV6 ? 6 : 4) . str_repeat("\x00", $isV6 ? 32 : 20),
             $critical
@@ -96,6 +96,8 @@ class IntendedRecipientFingerprint extends SignatureSubpacket
      */
     public function getKeyFingerprint(bool $toHex = false): string
     {
-        return $toHex ? Strings::bin2hex(substr($this->getData(), 1)) : substr($this->getData(), 1);
+        return $toHex
+            ? Strings::bin2hex(substr($this->getData(), 1))
+            : substr($this->getData(), 1);
     }
 }

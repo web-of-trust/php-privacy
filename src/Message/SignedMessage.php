@@ -12,10 +12,7 @@ use DateTimeInterface;
 use OpenPGP\Common\Armor;
 use OpenPGP\Enum\ArmorType;
 use OpenPGP\Packet\PacketList;
-use OpenPGP\Type\{
-    SignatureInterface,
-    SignedMessageInterface,
-};
+use OpenPGP\Type\{SignatureInterface, SignedMessageInterface};
 
 /**
  * OpenPGP signed message class
@@ -38,9 +35,8 @@ class SignedMessage extends CleartextMessage implements SignedMessageInterface
      */
     public function __construct(
         string $text,
-        private readonly SignatureInterface $signature,
-    )
-    {
+        private readonly SignatureInterface $signature
+    ) {
         parent::__construct($text);
     }
 
@@ -55,7 +51,7 @@ class SignedMessage extends CleartextMessage implements SignedMessageInterface
         $armor = Armor::decode($armored)->assert(ArmorType::SignedMessage);
         return new self(
             $armor->getText(),
-            new Signature(PacketList::decode($armor->getData())),
+            new Signature(PacketList::decode($armor->getData()))
         );
     }
 
@@ -77,11 +73,11 @@ class SignedMessage extends CleartextMessage implements SignedMessageInterface
             $this->signature->getPacketList()->encode(),
             $this->getText(),
             array_map(
-                static fn ($packet) => strtoupper(
-                    str_replace('_', '-', $packet->getHashAlgorithm()->name)
+                static fn($packet) => strtoupper(
+                    str_replace("_", "-", $packet->getHashAlgorithm()->name)
                 ),
-                $this->signature->getPackets(),
-            ),
+                $this->signature->getPackets()
+            )
         );
     }
 
@@ -89,11 +85,13 @@ class SignedMessage extends CleartextMessage implements SignedMessageInterface
      * {@inheritdoc}
      */
     public function verify(
-        array $verificationKeys, ?DateTimeInterface $time = null
-    ): array
-    {
+        array $verificationKeys,
+        ?DateTimeInterface $time = null
+    ): array {
         return $this->signature->verifyCleartext(
-            $verificationKeys, $this, $time
+            $verificationKeys,
+            $this,
+            $time
         );
     }
 

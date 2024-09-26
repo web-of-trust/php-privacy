@@ -19,7 +19,8 @@ use OpenPGP\Type\PublicKeyMaterialInterface;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class ECDSAPublicKeyMaterial extends ECPublicKeyMaterial implements PublicKeyMaterialInterface
+class ECDSAPublicKeyMaterial extends ECPublicKeyMaterial implements
+    PublicKeyMaterialInterface
 {
     /**
      * Read key material from bytes
@@ -32,7 +33,7 @@ class ECDSAPublicKeyMaterial extends ECPublicKeyMaterial implements PublicKeyMat
         $length = ord($bytes[0]);
         return new self(
             substr($bytes, 1, $length),
-            Helper::readMPI(substr($bytes, $length + 1)),
+            Helper::readMPI(substr($bytes, $length + 1))
         );
     }
 
@@ -42,16 +43,13 @@ class ECDSAPublicKeyMaterial extends ECPublicKeyMaterial implements PublicKeyMat
     public function verify(
         HashAlgorithm $hash,
         string $message,
-        string $signature,
-    ): bool
-    {
+        string $signature
+    ): bool {
         $r = Helper::readMPI($signature);
-        $s = Helper::readMPI(
-            substr($signature, $r->getLengthInBytes() + 2)
-        );
+        $s = Helper::readMPI(substr($signature, $r->getLengthInBytes() + 2));
         return $this->publicKey
-            ->withSignatureFormat('Raw')
+            ->withSignatureFormat("Raw")
             ->withHash(strtolower($hash->name))
-            ->verify($message, ['r' => $r, 's' => $s]);
+            ->verify($message, ["r" => $r, "s" => $s]);
     }
 }

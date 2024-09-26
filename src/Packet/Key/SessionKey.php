@@ -31,9 +31,8 @@ class SessionKey implements SessionKeyInterface
      */
     public function __construct(
         private readonly string $encryptionKey,
-        private readonly Symmetric $symmetric = Symmetric::Aes128,
-    )
-    {
+        private readonly Symmetric $symmetric = Symmetric::Aes128
+    ) {
     }
 
     /**
@@ -48,9 +47,7 @@ class SessionKey implements SessionKeyInterface
             substr($bytes, 1, strlen($bytes) - 3),
             Symmetric::from(ord($bytes[0]))
         );
-        return $sessionKey->checksum(
-            substr($bytes, strlen($bytes) - 2)
-        );
+        return $sessionKey->checksum(substr($bytes, strlen($bytes) - 2));
     }
 
     /**
@@ -61,11 +58,10 @@ class SessionKey implements SessionKeyInterface
      */
     public static function produceKey(
         Symmetric $symmetric = Symmetric::Aes128
-    ): self
-    {
+    ): self {
         return new self(
             Random::string($symmetric->keySizeInByte()),
-            $symmetric,
+            $symmetric
         );
     }
 
@@ -91,7 +87,7 @@ class SessionKey implements SessionKeyInterface
     public function checksum(string $checksum): self
     {
         if (strcmp($this->computeChecksum(), $checksum) !== 0) {
-            throw new \RuntimeException('Session key checksum mismatch!');
+            throw new \RuntimeException("Session key checksum mismatch!");
         }
         return $this;
     }
@@ -109,9 +105,6 @@ class SessionKey implements SessionKeyInterface
      */
     public function toBytes(): string
     {
-        return implode([
-            chr($this->symmetric->value),
-            $this->encryptionKey,
-        ]);
+        return implode([chr($this->symmetric->value), $this->encryptionKey]);
     }
 }

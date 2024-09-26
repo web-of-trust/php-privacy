@@ -9,14 +9,8 @@
 namespace OpenPGP\Type;
 
 use DateTimeInterface;
-use OpenPGP\Enum\{
-    KeyAlgorithm,
-    RevocationReasonTag,
-};
-use Psr\Log\{
-    LoggerAwareInterface,
-    LoggerInterface,
-};
+use OpenPGP\Enum\{KeyAlgorithm, RevocationReasonTag};
+use Psr\Log\{LoggerAwareInterface, LoggerInterface};
 
 /**
  * Key interface
@@ -25,7 +19,10 @@ use Psr\Log\{
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketContainerInterface
+interface KeyInterface extends
+    ArmorableInterface,
+    LoggerAwareInterface,
+    PacketContainerInterface
 {
     /**
      * Return key packet
@@ -122,7 +119,8 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
      * @return KeyPacketInterface
      */
     function getSigningKeyPacket(
-        string $keyID = '', ?DateTimeInterface $time = null
+        string $keyID = "",
+        ?DateTimeInterface $time = null
     ): KeyPacketInterface;
 
     /**
@@ -134,7 +132,8 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
      * @return KeyPacketInterface
      */
     function getEncryptionKeyPacket(
-        string $keyID = '', ?DateTimeInterface $time = null
+        string $keyID = "",
+        ?DateTimeInterface $time = null
     ): KeyPacketInterface;
 
     /**
@@ -184,7 +183,7 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
     function isRevoked(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTimeInterface $time = null,
+        ?DateTimeInterface $time = null
     ): bool;
 
     /**
@@ -198,7 +197,7 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
     function isCertified(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTimeInterface $time = null,
+        ?DateTimeInterface $time = null
     ): bool;
 
     /**
@@ -209,9 +208,7 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
      * @param DateTimeInterface $time
      * @return bool
      */
-    function verify(
-        string $userID = '', ?DateTimeInterface $time = null
-    ): bool;
+    function verify(string $userID = "", ?DateTimeInterface $time = null): bool;
 
     /**
      * Certify by private key.
@@ -221,7 +218,8 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
      * @return self
      */
     function certifyBy(
-        PrivateKeyInterface $signKey, ?DateTimeInterface $time = null
+        PrivateKeyInterface $signKey,
+        ?DateTimeInterface $time = null
     ): self;
 
     /**
@@ -235,9 +233,9 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
      */
     function revokeBy(
         PrivateKeyInterface $signKey,
-        string $revocationReason = '',
+        string $revocationReason = "",
         ?RevocationReasonTag $reasonTag = null,
-        ?DateTimeInterface $time = null,
+        ?DateTimeInterface $time = null
     ): self;
 
     /**

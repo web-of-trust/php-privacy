@@ -25,7 +25,7 @@ use phpseclib3\File\ASN1;
  */
 class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
 {
-    const CURVE25519_KEY_LENGTH  = 32;
+    const CURVE25519_KEY_LENGTH = 32;
 
     /**
      * Read key material from bytes
@@ -35,12 +35,10 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
      * @return self
      */
     public static function fromBytes(
-        string $bytes, KeyMaterialInterface $publicMaterial
-    ): self
-    {
-        return new self(
-            Helper::readMPI($bytes), $publicMaterial
-        );
+        string $bytes,
+        KeyMaterialInterface $publicMaterial
+    ): self {
+        return new self(Helper::readMPI($bytes), $publicMaterial);
     }
 
     /**
@@ -60,22 +58,22 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
                     /// The lowest three bits must be 0
                     $secretKey[31] = $secretKey[31] & "\xf8";
                     $d = Helper::bin2BigInt($secretKey);
-                } while ($d->getLengthInBytes() !== self::CURVE25519_KEY_LENGTH);
+                } while (
+                    $d->getLengthInBytes() !== self::CURVE25519_KEY_LENGTH
+                );
 
                 $privateKey = EC::loadPrivateKeyFormat(
-                    'MontgomeryPrivate', strrev($secretKey)
+                    "MontgomeryPrivate",
+                    strrev($secretKey)
                 );
                 $q = Helper::bin2BigInt(
                     "\x40" . $privateKey->getEncodedCoordinates()
                 );
-            }
-            else {
+            } else {
                 $privateKey = EC::createKey($curveOid->name);
-                $params = PKCS8::load($privateKey->toString('PKCS8'));
-                $d = $params['dA'];
-                $q = Helper::bin2BigInt(
-                    $privateKey->getEncodedCoordinates()
-                );
+                $params = PKCS8::load($privateKey->toString("PKCS8"));
+                $d = $params["dA"];
+                $q = Helper::bin2BigInt($privateKey->getEncodedCoordinates());
             }
             return new self(
                 $d,
@@ -85,12 +83,11 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
                     $curveOid->hashAlgorithm(),
                     $curveOid->symmetricAlgorithm(),
                     ECDHPublicKeyMaterial::DEFAULT_RESERVED,
-                    $privateKey->getPublicKey(),
+                    $privateKey->getPublicKey()
                 ),
-                $privateKey,
+                $privateKey
             );
-        }
-        else {
+        } else {
             throw new \InvalidArgumentException(
                 "Curve {$curveOid->name} is not supported for ECDH key generation."
             );

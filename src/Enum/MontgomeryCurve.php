@@ -9,10 +9,7 @@
 namespace OpenPGP\Enum;
 
 use phpseclib3\Crypt\EC\BaseCurves\Montgomery;
-use phpseclib3\Crypt\EC\Curves\{
-    Curve25519,
-    Curve448,
-};
+use phpseclib3\Crypt\EC\Curves\{Curve25519, Curve448};
 
 /**
  * Montgomery Curve Enum
@@ -34,9 +31,9 @@ enum MontgomeryCurve
      */
     public function getCurve(): Montgomery
     {
-        return match($this) {
+        return match ($this) {
             self::Curve25519 => new Curve25519(),
-            self::Curve448   => new Curve448(),
+            self::Curve448 => new Curve448(),
         };
     }
 
@@ -49,7 +46,7 @@ enum MontgomeryCurve
     {
         return match ($this) {
             self::Curve25519 => 32,
-            self::Curve448   => 56,
+            self::Curve448 => 56,
         };
     }
 
@@ -62,7 +59,7 @@ enum MontgomeryCurve
     {
         return match ($this) {
             self::Curve25519 => KekSize::Normal,
-            self::Curve448   => KekSize::High,
+            self::Curve448 => KekSize::High,
         };
     }
 
@@ -74,8 +71,8 @@ enum MontgomeryCurve
     public function hashAlgorithm(): string
     {
         return match ($this) {
-            self::Curve25519 => 'sha256',
-            self::Curve448   => 'sha512',
+            self::Curve25519 => "sha256",
+            self::Curve448 => "sha512",
         };
     }
 
@@ -88,7 +85,7 @@ enum MontgomeryCurve
     {
         return match ($this) {
             self::Curve25519 => SymmetricAlgorithm::Aes128,
-            self::Curve448   => SymmetricAlgorithm::Aes256,
+            self::Curve448 => SymmetricAlgorithm::Aes256,
         };
     }
 
@@ -99,9 +96,9 @@ enum MontgomeryCurve
      */
     public function hkdfInfo(): string
     {
-        return match($this) {
-            self::Curve25519 => 'OpenPGP X25519',
-            self::Curve448   => 'OpenPGP X448',
+        return match ($this) {
+            self::Curve25519 => "OpenPGP X25519",
+            self::Curve448 => "OpenPGP X448",
         };
     }
 }

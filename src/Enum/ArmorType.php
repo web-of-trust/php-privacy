@@ -68,16 +68,18 @@ enum ArmorType
     {
         preg_match(self::BEGIN_PATTERN, $text, $matches);
         if (empty($matches)) {
-            throw new \UnexpectedValueException('Unknown ASCII armor type');
+            throw new \UnexpectedValueException("Unknown ASCII armor type");
         }
         return match (1) {
-            preg_match('/MESSAGE, PART \d+\/\d+/', $matches[0]) => self::MultipartSection,
-            preg_match('/MESSAGE, PART \d+/', $matches[0]) => self::MultipartLast,
-            preg_match('/SIGNED MESSAGE/', $matches[0]) => self::SignedMessage,
-            preg_match('/MESSAGE/', $matches[0]) => self::Message,
-            preg_match('/PUBLIC KEY BLOCK/', $matches[0]) => self::PublicKey,
-            preg_match('/PRIVATE KEY BLOCK/', $matches[0]) => self::PrivateKey,
-            preg_match('/SIGNATURE/', $matches[0]) => self::Signature,
+            preg_match("/MESSAGE, PART \d+\/\d+/", $matches[0])
+                => self::MultipartSection,
+            preg_match("/MESSAGE, PART \d+/", $matches[0])
+                => self::MultipartLast,
+            preg_match("/SIGNED MESSAGE/", $matches[0]) => self::SignedMessage,
+            preg_match("/MESSAGE/", $matches[0]) => self::Message,
+            preg_match("/PUBLIC KEY BLOCK/", $matches[0]) => self::PublicKey,
+            preg_match("/PRIVATE KEY BLOCK/", $matches[0]) => self::PrivateKey,
+            preg_match("/SIGNATURE/", $matches[0]) => self::Signature,
             default => self::Message,
         };
     }

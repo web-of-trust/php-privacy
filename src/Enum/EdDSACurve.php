@@ -9,10 +9,7 @@
 namespace OpenPGP\Enum;
 
 use phpseclib3\Crypt\EC\BaseCurves\TwistedEdwards;
-use phpseclib3\Crypt\EC\Curves\{
-    Ed25519,
-    Ed448,
-};
+use phpseclib3\Crypt\EC\Curves\{Ed25519, Ed448};
 
 /**
  * Ed DSA Curve Enum
@@ -34,9 +31,9 @@ enum EdDSACurve
      */
     public function getCurve(): TwistedEdwards
     {
-        return match($this) {
+        return match ($this) {
             self::Ed25519 => new Ed25519(),
-            self::Ed448   => new Ed448(),
+            self::Ed448 => new Ed448(),
         };
     }
 
@@ -49,7 +46,7 @@ enum EdDSACurve
     {
         return match ($this) {
             self::Ed25519 => Ed25519::SIZE,
-            self::Ed448   => Ed448::SIZE,
+            self::Ed448 => Ed448::SIZE,
         };
     }
 
@@ -62,7 +59,7 @@ enum EdDSACurve
     {
         return match ($this) {
             self::Ed25519 => HashAlgorithm::Sha256,
-            self::Ed448   => HashAlgorithm::Sha512,
+            self::Ed448 => HashAlgorithm::Sha512,
         };
     }
 }

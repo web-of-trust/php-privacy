@@ -8,11 +8,7 @@
 
 namespace OpenPGP\Packet\Signature;
 
-use OpenPGP\Enum\{
-    KeyAlgorithm,
-    RevocationKeyTag,
-    SignatureSubpacketType,
-};
+use OpenPGP\Enum\{KeyAlgorithm, RevocationKeyTag, SignatureSubpacketType};
 use OpenPGP\Packet\SignatureSubpacket;
 
 /**
@@ -36,8 +32,7 @@ class RevocationKey extends SignatureSubpacket
         string $data,
         bool $critical = false,
         bool $isLong = false
-    )
-    {
+    ) {
         parent::__construct(
             SignatureSubpacketType::RevocationKey->value,
             $data,
@@ -60,11 +55,12 @@ class RevocationKey extends SignatureSubpacket
         KeyAlgorithm $keyAlgorithm,
         string $fingerprint,
         bool $critical = false
-    ): self
-    {
+    ): self {
         return new self(
             self::revocationToBytes(
-                $signatureClass, $keyAlgorithm, $fingerprint
+                $signatureClass,
+                $keyAlgorithm,
+                $fingerprint
             ),
             $critical
         );
@@ -104,8 +100,7 @@ class RevocationKey extends SignatureSubpacket
         RevocationKeyTag $signatureClass,
         KeyAlgorithm $keyAlgorithm,
         string $fingerprint
-    ): string
-    {
+    ): string {
         return implode([
             chr($signatureClass->value),
             chr($keyAlgorithm->value),

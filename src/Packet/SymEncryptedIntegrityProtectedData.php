@@ -8,20 +8,12 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Common\{
-    Config,
-    Helper,
-};
-use OpenPGP\Enum\{
-    AeadAlgorithm,
-    HashAlgorithm,
-    PacketTag,
-    SymmetricAlgorithm,
-};
+use OpenPGP\Common\{Config, Helper};
+use OpenPGP\Enum\{AeadAlgorithm, HashAlgorithm, PacketTag, SymmetricAlgorithm};
 use OpenPGP\Type\{
     AeadEncryptedDataPacketInterface,
     PacketListInterface,
-    SessionKeyInterface,
+    SessionKeyInterface
 };
 use phpseclib3\Common\Functions\Strings;
 use phpseclib3\Crypt\Random;
@@ -35,15 +27,16 @@ use phpseclib3\Crypt\Random;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadEncryptedDataPacketInterface
+class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
+    AeadEncryptedDataPacketInterface
 {
     use AeadEncryptedDataTrait, EncryptedDataTrait;
 
-    const VERSION_1  = 1;
-    const VERSION_2  = 2;
-    const HASH_ALGO  = 'sha1';
+    const VERSION_1 = 1;
+    const VERSION_2 = 2;
+    const HASH_ALGO = "sha1";
     const MDC_SUFFIX = "\xd3\x14";
-    const SALT_SIZE  = 32;
+    const SALT_SIZE = 32;
 
     /**
      * Constructor
@@ -63,14 +56,13 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
         private readonly ?SymmetricAlgorithm $symmetric = null,
         private readonly ?AeadAlgorithm $aead = null,
         private readonly int $chunkSize = 12,
-        private readonly string $salt = '',
-        private readonly ?PacketListInterface $packetList = null,
-    )
-    {
+        private readonly string $salt = "",
+        private readonly ?PacketListInterface $packetList = null
+    ) {
         parent::__construct(PacketTag::SymEncryptedIntegrityProtectedData);
         if ($version !== self::VERSION_1 && $version !== self::VERSION_2) {
             throw new \InvalidArgumentException(
-                "Version $version of the SEIPD packet is unsupported.",
+                "Version $version of the SEIPD packet is unsupported."
             );
         }
         $isV2 = $version === self::VERSION_2;
@@ -84,7 +76,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
         }
         if (!empty($salt) && strlen($salt) !== self::SALT_SIZE) {
             throw new \LengthException(
-                'Salt size must be ' . self::SALT_SIZE . ' bytes.'
+                "Salt size must be " . self::SALT_SIZE . " bytes."
             );
         }
     }
@@ -119,14 +111,11 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
                 $symmetric,
                 $aead,
                 $chunkSize,
-                $salt,
+                $salt
             );
         }
 
-        return new self(
-            $version,
-            substr($bytes, $offset),
-        );
+        return new self($version, substr($bytes, $offset));
     }
 
     /**
@@ -142,31 +131,31 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
         string $key,
         PacketListInterface $packetList,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-        ?AeadAlgorithm $aead = null,
-    ): self
-    {
+        ?AeadAlgorithm $aead = null
+    ): self {
         Helper::assertSymmetric($symmetric);
         $aeadProtect = $aead instanceof AeadAlgorithm;
         $version = $aeadProtect ? self::VERSION_2 : self::VERSION_1;
 
-        $salt = '';
+        $salt = "";
         $chunkSize = 0;
         if ($aeadProtect) {
             $salt = Random::string(self::SALT_SIZE);
             $chunkSize = Config::getAeadChunkSize();
             $cryptor = new self(
                 $version,
-                '',
+                "",
                 $symmetric,
                 $aead,
                 $chunkSize,
-                $salt,
+                $salt
             );
             $encrypted = $cryptor->aeadCrypt(
-                self::AEAD_ENCRYPT, $key, $packetList->encode()
+                self::AEAD_ENCRYPT,
+                $key,
+                $packetList->encode()
             );
-        }
-        else {
+        } else {
             $toHash = implode([
                 Helper::generatePrefix($symmetric),
                 $packetList->encode(),
@@ -189,7 +178,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
             $aead,
             $chunkSize,
             $salt,
-            $packetList,
+            $packetList
         );
     }
 
@@ -204,14 +193,13 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
     public static function encryptPacketsWithSessionKey(
         SessionKeyInterface $sessionKey,
         PacketListInterface $packetList,
-        ?AeadAlgorithm $aead = null,
-    ): self
-    {
+        ?AeadAlgorithm $aead = null
+    ): self {
         return self::encryptPackets(
             $sessionKey->getEncryptionKey(),
             $packetList,
             $sessionKey->getSymmetric(),
-            $aead,
+            $aead
         );
     }
 
@@ -220,19 +208,16 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
      */
     public function toBytes(): string
     {
-        return $this->version === self::VERSION_2 ?
-            implode([
+        return $this->version === self::VERSION_2
+            ? implode([
                 chr($this->version),
                 chr($this->symmetric->value),
                 chr($this->aead->value),
                 chr($this->chunkSize),
                 $this->salt,
                 $this->encrypted,
-            ]) :
-            implode([
-                chr($this->version),
-                $this->encrypted,
-            ]);
+            ])
+            : implode([chr($this->version), $this->encrypted]);
     }
 
     /**
@@ -245,35 +230,37 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
         return $this->salt;
     }
 
-
     /**
      * {@inheritdoc}
      */
     public function decrypt(
         string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
-    ): self
-    {
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+    ): self {
         if ($this->packetList instanceof PacketListInterface) {
             return $this;
-        }
-        else {
+        } else {
             $this->getLogger()->debug(
-                'Decrypt the encrypted data contained in the packet.'
+                "Decrypt the encrypted data contained in the packet."
             );
             if ($this->aead instanceof AeadAlgorithm) {
                 $length = strlen($this->encrypted);
                 $data = substr(
-                    $this->encrypted, 0, $length - $this->aead->tagLength()
+                    $this->encrypted,
+                    0,
+                    $length - $this->aead->tagLength()
                 );
                 $authTag = substr(
-                    $this->encrypted, $length - $this->aead->tagLength()
+                    $this->encrypted,
+                    $length - $this->aead->tagLength()
                 );
                 $packetBytes = $this->aeadCrypt(
-                    self::AEAD_DECRYPT, $key, $data, $authTag
+                    self::AEAD_DECRYPT,
+                    $key,
+                    $data,
+                    $authTag
                 );
-            }
-            else {
+            } else {
                 $symmetric = $this->symmetric ?? $symmetric;
                 $size = $symmetric->blockSize();
                 $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
@@ -281,15 +268,21 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
                 $cipher->setIV(str_repeat(self::ZERO_CHAR, $size));
 
                 $decrypted = $cipher->decrypt($this->encrypted);
-                $digestSize = strlen($decrypted) - HashAlgorithm::Sha1->digestSize();
+                $digestSize =
+                    strlen($decrypted) - HashAlgorithm::Sha1->digestSize();
                 $realHash = substr($decrypted, $digestSize);
                 $toHash = substr($decrypted, 0, $digestSize);
-                if (strcmp($realHash, hash(self::HASH_ALGO, $toHash, true)) !== 0) {
-                    throw new \RuntimeException('Modification detected.');
+                if (
+                    strcmp($realHash, hash(self::HASH_ALGO, $toHash, true)) !==
+                    0
+                ) {
+                    throw new \RuntimeException("Modification detected.");
                 }
                 // Remove random prefix & MDC packet
                 $packetBytes = substr(
-                    $toHash, $size + 2, strlen($toHash) - $size - 4
+                    $toHash,
+                    $size + 2,
+                    strlen($toHash) - $size - 4
                 );
             }
 
@@ -300,7 +293,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
                 $this->aead,
                 $this->chunkSize,
                 $this->salt,
-                PacketList::decode($packetBytes),
+                PacketList::decode($packetBytes)
             );
         }
     }
@@ -315,11 +308,13 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
      * @return string
      */
     private function aeadCrypt(
-        string $fn, string $key, string $data, string $finalChunk = ''
-    ): string
-    {
+        string $fn,
+        string $key,
+        string $data,
+        string $finalChunk = ""
+    ): string {
         // chunkSize = (uint32_t) 1 << (c + 6)
-        $chunkSize = (1 << ($this->chunkSize + 6));
+        $chunkSize = 1 << $this->chunkSize + 6;
         if ($fn === self::AEAD_DECRYPT) {
             $chunkSize += $this->aead->tagLength();
         }
@@ -329,47 +324,52 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements AeadE
         $keySize = $this->symmetric->keySizeInByte();
         $ivLength = $this->aead->ivLength();
         $derivedKey = hash_hkdf(
-            Config::HKDF_ALGO, $key, $keySize + $ivLength, $aData, $this->salt
+            Config::HKDF_ALGO,
+            $key,
+            $keySize + $ivLength,
+            $aData,
+            $this->salt
         );
         $kek = substr($derivedKey, 0, $keySize);
         $nonce = substr($derivedKey, $keySize, $ivLength);
         // The last 8 bytes of HKDF output are unneeded, but this avoids one copy.
         $nonce = substr_replace(
-            $nonce, str_repeat(self::ZERO_CHAR, 8), $ivLength - 8
+            $nonce,
+            str_repeat(self::ZERO_CHAR, 8),
+            $ivLength - 8
         );
         $cipher = $this->aead->cipherEngine($kek, $this->symmetric);
 
         $crypted = [];
-        for ($index = 0; $index === 0 || strlen($data);) {
+        for ($index = 0; $index === 0 || strlen($data); ) {
             // Take a chunk of `data`, en/decrypt it, and shift `data` to the next chunk.
             $crypted[] = $cipher->$fn(
                 Strings::shift($data, $chunkSize),
                 $nonce,
-                $aData,
+                $aData
             );
             $nonce = substr_replace(
-                $nonce, pack('N', ++$index), $ivLength - 4, 4
+                $nonce,
+                pack("N", ++$index),
+                $ivLength - 4,
+                4
             );
         }
         $processed = array_sum(
-            array_map(static fn ($bytes) => strlen($bytes), $crypted)
+            array_map(static fn($bytes) => strlen($bytes), $crypted)
         );
-        $aDataTag = implode([
-            $aData,
-            str_repeat(self::ZERO_CHAR, 8),
-        ]);
+        $aDataTag = implode([$aData, str_repeat(self::ZERO_CHAR, 8)]);
         $aDataTag = substr_replace(
-            $aDataTag, pack('N', $processed), strlen($aDataTag) - 4, 4
+            $aDataTag,
+            pack("N", $processed),
+            strlen($aDataTag) - 4,
+            4
         );
 
         // After the final chunk, we either encrypt a final, empty data
         // chunk to get the final authentication tag or validate that final
         // authentication tag.
-        $crypted[] = $cipher->$fn(
-            $finalChunk,
-            $nonce,
-            $aDataTag,
-        );
+        $crypted[] = $cipher->$fn($finalChunk, $nonce, $aDataTag);
         return implode($crypted);
     }
 }
