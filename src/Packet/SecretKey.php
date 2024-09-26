@@ -214,18 +214,15 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 "Key algorithm {$keyAlgorithm->name} is unsupported."
             ),
         };
-        switch ($keyAlgorithm) {
-            case KeyAlgorithm::X25519:
-            case KeyAlgorithm::X448:
-            case KeyAlgorithm::Ed25519:
-            case KeyAlgorithm::Ed448:
-                $version = PublicKey::VERSION_6;
-                break;
-            default:
-                $version = Config::useV6Key() ?
-                    PublicKey::VERSION_6 : PublicKey::VERSION_4;
-                break;
-        }
+        $version = match ($keyAlgorithm) {
+            KeyAlgorithm::X25519,
+            KeyAlgorithm::X448,
+            KeyAlgorithm::Ed25519,
+            KeyAlgorithm::Ed448
+                => PublicKey::VERSION_6,
+            default => Config::useV6Key() ?
+                PublicKey::VERSION_6 : PublicKey::VERSION_4,
+        };
         return new self(
             new PublicKey(
                 $version,

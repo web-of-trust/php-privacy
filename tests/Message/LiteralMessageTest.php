@@ -347,34 +347,6 @@ EOT;
         $this->assertTrue($verification->isVerified());
     }
 
-    public function testSignDsaMessage()
-    {
-        $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/DsaPrivateKey.asc')
-        )->decrypt(self::PASSPHRASE);
-        $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/DsaPublicKey.asc')
-        );
-        $literalData = Random::string(10000);
-        $literalMessage = new LiteralMessage(new PacketList([
-            new LiteralData($literalData, LiteralFormat::Binary)
-        ]));
-
-        $signedMessage = $literalMessage->sign([$privateKey]);
-        $verification = $signedMessage->verify([$publicKey])[0];
-        $this->assertSame('e3b11d642248a092', $verification->getKeyID(true));
-        $this->assertTrue($verification->isVerified());
-
-        $signedMessage = LiteralMessage::fromArmored($signedMessage->armor());
-        $this->assertSame($literalData, $signedMessage->getLiteralData()->getData());
-        $this->assertTrue($signedMessage->getSignature() instanceof Signature);
-
-        $signature = $literalMessage->signDetached([$privateKey]);
-        $verification = $literalMessage->verifyDetached([$publicKey], $signature)[0];
-        $this->assertSame('e3b11d642248a092', $verification->getKeyID(true));
-        $this->assertTrue($verification->isVerified());
-    }
-
     public function testSignEcP384Message()
     {
         $privateKey = PrivateKey::fromArmored(

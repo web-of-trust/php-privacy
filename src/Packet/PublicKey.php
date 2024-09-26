@@ -259,18 +259,15 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         ?HashAlgorithm $preferredHash = null
     ): HashAlgorithm
     {
-        if ($this->keyMaterial instanceof Key\ECPublicKeyMaterial) {
-            return $this->keyMaterial->getCurveOid()->hashAlgorithm();
-        }
-        elseif ($this->keyAlgorithm === KeyAlgorithm::Ed25519) {
-            return EdDSACurve::Ed25519->hashAlgorithm();
-        }
-        elseif ($this->keyAlgorithm === KeyAlgorithm::Ed448) {
-            return EdDSACurve::Ed448->hashAlgorithm();
-        }
-        else {
-            return $preferredHash ?? Config::getPreferredHash();
-        }
+        return match (true) {
+            $this->keyMaterial instanceof Key\ECPublicKeyMaterial
+                => $this->keyMaterial->getCurveOid()->hashAlgorithm(),
+            $this->keyAlgorithm === KeyAlgorithm::Ed25519
+                => EdDSACurve::Ed25519->hashAlgorithm(),
+            $this->keyAlgorithm === KeyAlgorithm::Ed448
+                => EdDSACurve::Ed25519->hashAlgorithm(),
+            default => $preferredHash ?? Config::getPreferredHash(),
+        };
     }
 
     /**

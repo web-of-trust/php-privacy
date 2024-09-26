@@ -170,10 +170,11 @@ abstract class ECSecretKeyMaterial implements ECKeyMaterialInterface, KeyMateria
             switch ($curveOid) {
                 case CurveOid::Ed25519:
                 case CurveOid::Curve25519:
-                    $dG = Helper::bin2BigInt(
-                        "\x40" . $this->privateKey->getEncodedCoordinates()
+                    return $this->publicMaterial->getQ()->equals(
+                        Helper::bin2BigInt(
+                            "\x40" . $this->privateKey->getEncodedCoordinates()
+                        )
                     );
-                    return $this->publicMaterial->getQ()->equals($dG);
                 default:
                     $params = $this->publicMaterial->getParameters();
                     $QA = $params['QA'];

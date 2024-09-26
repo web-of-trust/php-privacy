@@ -112,16 +112,15 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
                 ]))
             );
 
-            if ($keyMaterial->getCurveOid() === CurveOid::Curve25519) {
-                $ephemeralKey = Helper::bin2BigInt(
+            $ephemeralKey = match ($keyMaterial->getCurveOid()) {
+                CurveOid::Curve25519 => Helper::bin2BigInt(
                     "\x40" . $privateKey->getEncodedCoordinates()
-                );
-            }
-            else {
-                $ephemeralKey = Helper::bin2BigInt(
+                ),
+                default => Helper::bin2BigInt(
                     $privateKey->getEncodedCoordinates()
-                );
-            }
+                ),
+            };
+
             return new self(
                 $ephemeralKey,
                 $wrappedKey,

@@ -108,7 +108,7 @@ interface PrivateKeyInterface extends KeyInterface
      * @param RSAKeySize $rsaKeySize
      * @param CurveOid $curve
      * @param int $keyExpiry
-     * @param bool $subkeySign
+     * @param bool $forSigning
      * @param DateTimeInterface $time
      * @return self
      */
@@ -118,7 +118,7 @@ interface PrivateKeyInterface extends KeyInterface
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
         CurveOid $curve = CurveOid::Secp521r1,
         int $keyExpiry = 0,
-        bool $subkeySign = false,
+        bool $forSigning = false,
         ?DateTimeInterface $time = null,
     ): self;
 

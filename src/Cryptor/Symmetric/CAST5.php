@@ -628,31 +628,14 @@ class CAST5 extends BlockCipher
             $rp = $ri;
 
             $li = $rp;
-
-            switch ($i) {
-                case  1:
-                case  4:
-                case  7:
-                case 10:
-                case 13:
-                case 16:
-                    $ri = $lp ^ self::f1($rp, $this->masking[$i], $this->rotating[$i]);
-                    break;
-                case  2:
-                case  5:
-                case  8:
-                case 11:
-                case 14:
-                    $ri = $lp ^ self::f2($rp, $this->masking[$i], $this->rotating[$i]);
-                    break;
-                case  3:
-                case  6:
-                case  9:
-                case 12:
-                case 15:
-                    $ri = $lp ^ self::f3($rp, $this->masking[$i], $this->rotating[$i]);
-                    break;
-            }
+            $ri = match ($i) {
+                1, 4, 7, 10, 13, 16
+                    => $lp ^ self::f1($rp, $this->masking[$i], $this->rotating[$i]),
+                2, 5, 8, 11, 14
+                    => $lp ^ self::f2($rp, $this->masking[$i], $this->rotating[$i]),
+                3, 6, 9, 12, 15
+                    => $lp ^ self::f3($rp, $this->masking[$i], $this->rotating[$i]),
+            };
         }
         return [$ri, $li];
     }
@@ -677,31 +660,14 @@ class CAST5 extends BlockCipher
             $rp = $ri;
 
             $li = $rp;
-
-            switch ($i) {
-                case  1:
-                case  4:
-                case  7:
-                case 10:
-                case 13:
-                case 16:
-                    $ri = $lp ^ self::f1($rp, $this->masking[$i], $this->rotating[$i]);
-                    break;
-                case  2:
-                case  5:
-                case  8:
-                case 11:
-                case 14:
-                    $ri = $lp ^ self::f2($rp, $this->masking[$i], $this->rotating[$i]);
-                    break;
-                case  3:
-                case  6:
-                case  9:
-                case 12:
-                case 15:
-                    $ri = $lp ^ self::f3($rp, $this->masking[$i], $this->rotating[$i]);
-                    break;
-            }
+            $ri = match ($i) {
+                1, 4, 7, 10, 13, 16
+                    => $lp ^ self::f1($rp, $this->masking[$i], $this->rotating[$i]),
+                2, 5, 8, 11, 14
+                    => $lp ^ self::f2($rp, $this->masking[$i], $this->rotating[$i]),
+                3, 6, 9, 12, 15
+                    => $lp ^ self::f3($rp, $this->masking[$i], $this->rotating[$i]),
+            };
         }
         return [$ri, $li];
     }

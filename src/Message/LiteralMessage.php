@@ -240,25 +240,8 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
         }
         $aead = ($aeadSupported && Config::aeadProtect()) ?
             Config::getPreferredAead() : null;
-
         $sessionKey = SessionKey::produceKey(
             $symmetric ?? Config::getPreferredSymmetric()
-        );
-        $pkeskPackets = array_map(
-            static fn ($key) => PublicKeyEncryptedSessionKey::encryptSessionKey(
-                $key->toPublic()->getEncryptionKeyPacket(),
-                $sessionKey,
-            ),
-            $encryptionKeys,
-        );
-        $skeskPackets = array_map(
-            static fn ($password) => SymEncryptedSessionKey::encryptSessionKey(
-                $password,
-                $sessionKey,
-                $symmetric ?? Config::getPreferredSymmetric(),
-                $aead,
-            ),
-            $passwords,
         );
         $packetList = ($addPadding || !empty($aead)) ? new PacketList([
             ...$this->getPackets(),
@@ -266,14 +249,27 @@ class LiteralMessage extends AbstractMessage implements LiteralMessageInterface,
                 Config::PADDING_MIN, Config::PADDING_MAX)
             ),
         ]) : $this->getPacketList();
-        $encryptedPacket = SymEncryptedIntegrityProtectedData::encryptPacketsWithSessionKey(
-            $sessionKey, $packetList, $aead,
-        );
 
         return new EncryptedMessage(new PacketList([
-            ...$pkeskPackets,
-            ...$skeskPackets,
-            $encryptedPacket,
+            ...array_map(
+                static fn ($key) => PublicKeyEncryptedSessionKey::encryptSessionKey(
+                    $key->toPublic()->getEncryptionKeyPacket(),
+                    $sessionKey,
+                ),
+                $encryptionKeys,
+            ), // pkesk packets
+            ...array_map(
+                static fn ($password) => SymEncryptedSessionKey::encryptSessionKey(
+                    $password,
+                    $sessionKey,
+                    $symmetric ?? Config::getPreferredSymmetric(),
+                    $aead,
+                ),
+                $passwords,
+            ), // skesk packets
+            SymEncryptedIntegrityProtectedData::encryptPacketsWithSessionKey(
+                $sessionKey, $packetList, $aead,
+            ), // seipd packet
         ]));
     }
 

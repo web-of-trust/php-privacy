@@ -20,7 +20,7 @@ final class OpenPGP
     /**
      * Generate a new OpenPGP key pair. Support RSA, ECC, Curve25519 and Curve448 key types.
      * The generated primary key will have signing capabilities.
-     * One subkey with encryption capabilities is also generated.
+     * One subkey with encryption capabilities is also generated if `signOnly` is false.
      *
      * @param array $userIDs
      * @param string $passphrase
@@ -28,6 +28,7 @@ final class OpenPGP
      * @param Enum\RSAKeySize $rsaKeySize
      * @param Enum\CurveOid $curve
      * @param int $keyExpiry
+     * @param bool $signOnly
      * @param \DateTimeInterface $time
      * @return Type\PrivateKeyInterface
      */
@@ -38,6 +39,7 @@ final class OpenPGP
         Enum\RSAKeySize $rsaKeySize = Enum\RSAKeySize::Normal,
         Enum\CurveOid $curve = Enum\CurveOid::Secp521r1,
         int $keyExpiry = 0,
+        bool $signOnly = false,
         ?\DateTimeInterface $time = null,
     ): Type\PrivateKeyInterface
     {
@@ -48,6 +50,7 @@ final class OpenPGP
             $rsaKeySize,
             $curve,
             $keyExpiry,
+            $signOnly,
             $time,
         );
     }

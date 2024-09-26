@@ -466,20 +466,13 @@ class Camellia extends BlockCipher
     protected function setupKey(): void
     {
         $this->reset();
-        $keyLength = strlen($this->key);
-        switch ($keyLength) {
-            case 16:
-                $this->keyIs128 = true;
-                break;
-            case 24:
-            case 32:
-                $this->keyIs128 = false;
-                break;
-            default:
-                throw new \LengthException(
-                    'Key sizes are only 16/24/32 bytes.'
-                );
-        }
+        $this->keyIs128 = match (strlen($this->key)) {
+            16 => true,
+            24, 32 => false,
+            default => throw new \LengthException(
+                'Key sizes are only 16/24/32 bytes.'
+            ),
+        };
     }
 
     private function reset(): void

@@ -126,7 +126,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     /**
      * Generate a new OpenPGP key pair. Support RSA, ECC, Curve25519 and Curve448 key types.
      * The generated primary key will have signing capabilities.
-     * One subkey with encryption capabilities is also generated.
+     * One subkey with encryption capabilities is also generated if `signOnly` is false.
      *
      * @param array<string> $userIDs
      * @param string $passphrase
@@ -134,6 +134,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
      * @param RSAKeySize $rsaKeySize
      * @param CurveOid $curve
      * @param int $keyExpiry
+     * @param bool $signOnly
      * @param DateTimeInterface $time
      * @return self
      */
@@ -144,6 +145,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
         CurveOid $curve = CurveOid::Secp521r1,
         int $keyExpiry = 0,
+        bool $signOnly = false,
         ?DateTimeInterface $time = null,
     ): self
     {
@@ -185,20 +187,11 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $curve,
             $time,
         );
-        $secretSubkey = SecretSubkey::generate(
-            $subkeyAlgorithm,
-            $rsaKeySize,
-            $subkeyCurve,
-            $time,
-        );
 
         $v6Key = $secretKey->getVersion() === 6;
         $aead = ($v6Key && Config::aeadProtect()) ?
             Config::getPreferredAead() : null;
         $secretKey = $secretKey->encrypt(
-            $passphrase, Config::getPreferredSymmetric(), $aead
-        );
-        $secretSubkey = $secretSubkey->encrypt(
             $passphrase, Config::getPreferredSymmetric(), $aead
         );
 
@@ -227,15 +220,25 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $index++;
         }
 
-        // Wrap secret subkey with binding signature
-        $packets[] = $secretSubkey;
-        $packets[] = Signature::createSubkeyBinding(
-            $secretKey,
-            $secretSubkey,
-            $keyExpiry,
-            false,
-            $time,
-        );
+        if (!$signOnly) {
+            $secretSubkey = SecretSubkey::generate(
+                $subkeyAlgorithm,
+                $rsaKeySize,
+                $subkeyCurve,
+                $time,
+            )->encrypt(
+                $passphrase, Config::getPreferredSymmetric(), $aead
+            );
+            // Wrap secret subkey with binding signature
+            $packets[] = $secretSubkey;
+            $packets[] = Signature::createSubkeyBinding(
+                $secretKey,
+                $secretSubkey,
+                $keyExpiry,
+                false,
+                $time,
+            );
+        }
 
         return self::fromPacketList(new PacketList($packets));
     }
@@ -483,7 +486,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
         CurveOid $curve = CurveOid::Secp521r1,
         int $keyExpiry = 0,
-        bool $subkeySign = false,
+        bool $forSigning = false,
         ?DateTimeInterface $time = null,
     ): self
     {
@@ -514,7 +517,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                     $self->getSecretKeyPacket(),
                     $secretSubkey,
                     $keyExpiry,
-                    $subkeySign,
+                    $forSigning,
                     $time,
                 ),
             ],

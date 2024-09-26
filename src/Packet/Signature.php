@@ -451,7 +451,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      * @param SecretKeyPacketInterface $signKey
      * @param SubkeyPacketInterface $subkey
      * @param int $keyExpiry
-     * @param bool $subkeySign
+     * @param bool $forSigning
      * @param DateTimeInterface $time
      * @return self
      */
@@ -459,7 +459,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         SecretKeyPacketInterface $signKey,
         SubkeyPacketInterface $subkey,
         int $keyExpiry = 0,
-        bool $subkeySign = false,
+        bool $forSigning = false,
         ?DateTimeInterface $time = null,
     ): self
     {
@@ -467,7 +467,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         if ($keyExpiry > 0) {
             $subpackets[] = Signature\KeyExpirationTime::fromTime($keyExpiry);
         }
-        if ($subkeySign) {
+        if ($forSigning) {
             $subpackets[] = Signature\KeyFlags::fromFlags(
                 KeyFlag::SignData->value
             );
@@ -1215,28 +1215,23 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         string $message,
     ): string
     {
-        switch ($signKey->getKeyAlgorithm()) {
-            case KeyAlgorithm::RsaEncryptSign:
-            case KeyAlgorithm::RsaSign:
-            case KeyAlgorithm::Dsa:
-            case KeyAlgorithm::EcDsa:
-            case KeyAlgorithm::EdDsaLegacy:
-            case KeyAlgorithm::Ed25519:
-            case KeyAlgorithm::Ed448:
-                $keyMaterial = $signKey->getKeyMaterial();
-                if ($keyMaterial instanceof SecretKeyMaterialInterface) {
-                    return $keyMaterial->sign($hash, $message);
-                }
-                else {
-                    throw new \RuntimeException(
-                        'Invalid key material for signing.',
-                    );
-                }
-            default:
-                throw new \RuntimeException(
-                    'Unsupported public key algorithm for signing.',
-                );
+        if (!($signKey->getKeyMaterial() instanceof SecretKeyMaterialInterface)) {
+            throw new \RuntimeException(
+                'Invalid key material for signing.',
+            );
         }
+        return match ($signKey->getKeyAlgorithm()) {
+            KeyAlgorithm::RsaEncryptSign,
+            KeyAlgorithm::RsaSign,
+            // KeyAlgorithm::Dsa,
+            KeyAlgorithm::EcDsa,
+            KeyAlgorithm::EdDsaLegacy,
+            KeyAlgorithm::Ed25519,
+            KeyAlgorithm::Ed448 => $signKey->getKeyMaterial()->sign($hash, $message),
+            default => throw new \RuntimeException(
+                "Key algorithm {$signKey->getKeyAlgorithm()->name} is unsupported for signing.",
+            ),
+        };
     }
 
     private static function calculateTrailer(

@@ -356,34 +356,31 @@ class SymEncryptedSessionKey extends AbstractPacket
      */
     public function toBytes(): string
     {
-        switch ($this->version) {
-            case self::VERSION_6:
-                return implode([
-                    chr($this->version),
-                    chr(3 + $this->s2k->getLength() + strlen($this->iv)),
-                    chr($this->symmetric->value),
-                    chr($this->aead->value),
-                    chr($this->s2k->getLength()),
-                    $this->s2k->toBytes(),
-                    $this->iv,
-                    $this->encrypted,
-                ]);
-            case self::VERSION_5:
-                return implode([
-                    chr($this->version),
-                    chr($this->symmetric->value),
-                    chr($this->aead->value),
-                    $this->s2k->toBytes(),
-                    $this->iv,
-                    $this->encrypted,
-                ]);
-            default:
-                return implode([
-                    chr($this->version),
-                    chr($this->symmetric->value),
-                    $this->s2k->toBytes(),
-                    $this->encrypted,
-                ]);
-        }
+        return match ($this->version) {
+            self::VERSION_6 => implode([
+                chr($this->version),
+                chr(3 + $this->s2k->getLength() + strlen($this->iv)),
+                chr($this->symmetric->value),
+                chr($this->aead->value),
+                chr($this->s2k->getLength()),
+                $this->s2k->toBytes(),
+                $this->iv,
+                $this->encrypted,
+            ]),
+            self::VERSION_5 => implode([
+                chr($this->version),
+                chr($this->symmetric->value),
+                chr($this->aead->value),
+                $this->s2k->toBytes(),
+                $this->iv,
+                $this->encrypted,
+            ]),
+            default => implode([
+                chr($this->version),
+                chr($this->symmetric->value),
+                $this->s2k->toBytes(),
+                $this->encrypted,
+            ]),
+        };
     }
 }

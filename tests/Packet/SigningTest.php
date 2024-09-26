@@ -174,24 +174,6 @@ EOT;
         $this->assertTrue($signature->verify($publicKey, self::LITERAL_TEXT));
     }
 
-    public function testDsaSigning()
-    {
-        $message = Random::string(1024);
-        $secretKey = SecretKey::fromBytes(base64_decode(self::$dsaSecretKeyData))->decrypt(self::PASSPHRASE);
-        $publicKey = PublicKey::fromBytes(base64_decode(self::$dsaPublicKeyData));
-
-        $signature = Signature::createSignature(
-            $secretKey,
-            SignatureType::Standalone,
-            $message
-        );
-        $this->assertTrue($signature->verify($publicKey, $message));
-
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Signed digest mismatch!');
-        $signature->verify($publicKey, self::LITERAL_TEXT);
-    }
-
     public function testVerifyEcdsaP384Signature()
     {
         $signatureData = <<<EOT

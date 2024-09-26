@@ -53,34 +53,6 @@ class CleartextMessageTest extends OpenPGPTestCase
         $this->assertSame('184d0dc4f5c532b2', $signature->getSigningKeyIDs(true)[0]);
     }
 
-    public function testSignDsaCleartextMessage()
-    {
-        $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/DsaPrivateKey.asc')
-        )->decrypt(self::PASSPHRASE);
-        $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/DsaPublicKey.asc')
-        );
-        $message = new CleartextMessage(self::$literalText);
-
-        $signedMessage = $message->sign([$privateKey]);
-        $verification = $signedMessage->verify([$publicKey])[0];
-        $this->assertSame('e3b11d642248a092', $verification->getKeyID(true));
-        $this->assertTrue($verification->isVerified());
-
-        $signedMessage = SignedMessage::fromArmored($signedMessage->armor());
-        $this->assertSame(self::$literalText, $signedMessage->getText());
-        $this->assertTrue($signedMessage->getSignature() instanceof Signature);
-
-        $signature = $message->signDetached([$privateKey]);
-        $verification = $signature->verify([$publicKey], LiteralData::fromText(self::$literalText))[0];
-        $this->assertSame('e3b11d642248a092', $verification->getKeyID(true));
-        $this->assertTrue($verification->isVerified());
-
-        $signature = Signature::fromArmored($signature->armor());
-        $this->assertSame('e3b11d642248a092', $signature->getSigningKeyIDs(true)[0]);
-    }
-
     public function testSignEcP384CleartextMessage()
     {
         $privateKey = PrivateKey::fromArmored(

@@ -264,21 +264,19 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
         $this->getLogger()->debug(
             'Decrypt public key encrypted session key.'
         );
-        switch ($this->keyAlgorithm) {
-            case KeyAlgorithm::RsaEncryptSign:
-            case KeyAlgorithm::RsaEncrypt:
-            case KeyAlgorithm::ElGamal:
-            case KeyAlgorithm::Ecdh:
-            case KeyAlgorithm::X25519:
-            case KeyAlgorithm::X448:
-                return $this->sessionKeyCryptor->decryptSessionKey(
-                    $secretKey
-                );
-            default:
-                throw new \RuntimeException(
-                    "Public key algorithm {$this->keyAlgorithm->name} of the PKESK packet is unsupported."
-                );
-        }
+        return match ($this->keyAlgorithm) {
+            KeyAlgorithm::RsaEncryptSign,
+            KeyAlgorithm::RsaEncrypt,
+            KeyAlgorithm::ElGamal,
+            KeyAlgorithm::Ecdh,
+            KeyAlgorithm::X25519,
+            KeyAlgorithm::X448 => $this->sessionKeyCryptor->decryptSessionKey(
+                $secretKey
+            ),
+            default => throw new \RuntimeException(
+                "Public key algorithm {$this->keyAlgorithm->name} is unsupported."
+            ),
+        };
     }
 
     private static function produceSessionKeyCryptor(

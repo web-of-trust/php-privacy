@@ -121,16 +121,13 @@ final class CMac
      */
     protected function getRValue(int $size): string
     {
-        switch ($size * 8) {
-            case 64:
-                return str_repeat(self::ZERO_CHAR, 7) . "\x1B";
-            case 128:
-                return str_repeat(self::ZERO_CHAR, 15) . "\x87";
-            default:
-                throw new \LengthException(
-                    'Unsupported block size for the cipher.'
-                );
-        }
+        return match ($size * 8) {
+            64 => str_repeat(self::ZERO_CHAR, 7) . "\x1B",
+            128 => str_repeat(self::ZERO_CHAR, 15) . "\x87",
+            default => throw new \LengthException(
+                'Unsupported block size for the cipher.'
+            ),
+        };
     }
 
     private function leftShift(string $data, int $bits): string
