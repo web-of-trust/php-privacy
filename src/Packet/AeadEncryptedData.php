@@ -196,10 +196,10 @@ class AeadEncryptedData extends AbstractPacket implements
     /**
      * En/decrypt the payload.
      *
-     * @param string $fn - Whether to encrypt or decrypt
-     * @param string $key - The session key used to en/decrypt the payload
-     * @param string $data - The data to en/decrypt
-     * @param string $finalChunk - For encryption: empty final chunk; for decryption: final authentication tag
+     * @param string $fn
+     * @param string $key
+     * @param string $data
+     * @param string $finalChunk
      * @return string
      */
     private function crypt(
@@ -208,7 +208,6 @@ class AeadEncryptedData extends AbstractPacket implements
         string $data,
         string $finalChunk = ""
     ): string {
-        // chunkSize = ((uint64_t)1 << (c + 6))
         $chunkSize = 1 << $this->chunkSize + 6;
         if ($fn === self::AEAD_DECRYPT) {
             $chunkSize += $this->aead->tagLength();
@@ -237,9 +236,7 @@ class AeadEncryptedData extends AbstractPacket implements
             $ciData = substr($aData, 5, 8);
         }
 
-        // After the final chunk, we either encrypt a final, empty data
-        // chunk to get the final authentication tag or validate that final
-        // authentication tag.
+        // For encryption: empty final chunk; for decryption: final authentication tag
         $aDataTag = substr_replace(
             str_repeat(self::ZERO_CHAR, 21),
             $aData,

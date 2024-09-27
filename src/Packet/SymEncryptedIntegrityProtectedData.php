@@ -301,10 +301,10 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
     /**
      * AEAD en/decrypt the payload.
      *
-     * @param string $fn - Whether to encrypt or decrypt
-     * @param string $key - The session key used to en/decrypt the payload
-     * @param string $data - The data to en/decrypt
-     * @param string $finalChunk - For encryption: empty final chunk; for decryption: final authentication tag
+     * @param string $fn
+     * @param string $key
+     * @param string $data
+     * @param string $finalChunk
      * @return string
      */
     private function aeadCrypt(
@@ -313,7 +313,6 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
         string $data,
         string $finalChunk = ""
     ): string {
-        // chunkSize = (uint32_t) 1 << (c + 6)
         $chunkSize = 1 << $this->chunkSize + 6;
         if ($fn === self::AEAD_DECRYPT) {
             $chunkSize += $this->aead->tagLength();
@@ -357,9 +356,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
             );
         }
 
-        // After the final chunk, we either encrypt a final, empty data
-        // chunk to get the final authentication tag or validate that final
-        // authentication tag.
+        // For encryption: empty final chunk; for decryption: final authentication tag
         $processed = array_sum(
             array_map(static fn($bytes) => strlen($bytes), $crypted)
         );
