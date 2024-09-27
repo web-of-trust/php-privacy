@@ -236,7 +236,8 @@ class AeadEncryptedData extends AbstractPacket implements
             $ciData = substr($aData, 5, 8);
         }
 
-        // For encryption: empty final chunk; for decryption: final authentication tag
+        // For encryption: empty final chunk
+        // For decryption: final authentication tag
         $aDataTag = substr_replace(
             str_repeat(self::ZERO_CHAR, 21),
             $aData,

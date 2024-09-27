@@ -356,7 +356,8 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
             );
         }
 
-        // For encryption: empty final chunk; for decryption: final authentication tag
+        // For encryption: empty final chunk
+        // For decryption: final authentication tag
         $processed = array_sum(
             array_map(static fn($bytes) => strlen($bytes), $crypted)
         );
