@@ -302,9 +302,9 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         $subkeys = $this->getSubkeys();
         usort(
             $subkeys,
-            static fn($a, $b): int => (int) $b
-                ->getCreationTime()
-                ?->getTimestamp() - (int) $a->getCreationTime()?->getTimestamp()
+            static fn($a, $b): int =>
+                (int) $b->getCreationTime()?->getTimestamp() -
+                (int) $a->getCreationTime()?->getTimestamp()
         );
 
         $keyPackets = [];
