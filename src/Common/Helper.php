@@ -150,7 +150,7 @@ final class Helper
     {
         return preg_replace_callback(
             "/\*/u",
-            static fn() => chr(random_int(33, 126)),
+            static fn() => chr(random_int(40, 126)),
             str_repeat("*", $length)
         );
     }
