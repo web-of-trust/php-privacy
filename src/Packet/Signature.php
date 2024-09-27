@@ -1174,19 +1174,21 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         string $message
     ): string {
         if (
-            !($signKey->getKeyMaterial() instanceof SecretKeyMaterialInterface)
+            !(
+                $signKey->getSecretKeyMaterial() instanceof
+                SecretKeyMaterialInterface
+            )
         ) {
             throw new \RuntimeException("Invalid key material for signing.");
         }
         return match ($signKey->getKeyAlgorithm()) {
             KeyAlgorithm::RsaEncryptSign,
             KeyAlgorithm::RsaSign,
-            // KeyAlgorithm::Dsa,
             KeyAlgorithm::EcDsa,
             KeyAlgorithm::EdDsaLegacy,
             KeyAlgorithm::Ed25519,
             KeyAlgorithm::Ed448
-                => $signKey->getKeyMaterial()->sign($hash, $message),
+                => $signKey->getSecretKeyMaterial()->sign($hash, $message),
             default => throw new \RuntimeException(
                 "Key algorithm {$signKey->getKeyAlgorithm()->name} is unsupported for signing."
             ),

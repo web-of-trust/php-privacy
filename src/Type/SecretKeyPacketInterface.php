@@ -20,6 +20,13 @@ use OpenPGP\Enum\{AeadAlgorithm, SymmetricAlgorithm};
 interface SecretKeyPacketInterface extends KeyPacketInterface
 {
     /**
+     * Get secret key material
+     *
+     * @return SecretKeyMaterialInterface
+     */
+    function getSecretKeyMaterial(): ?SecretKeyMaterialInterface;
+
+    /**
      * Get public key packet
      *
      * @return PublicKeyPacketInterface

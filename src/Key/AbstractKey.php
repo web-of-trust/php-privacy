@@ -390,7 +390,9 @@ abstract class AbstractKey implements KeyInterface
             $user = $this->getPrimaryUser();
             $features = $user?->getLatestSelfCertification()?->getFeatures();
         }
-        return $features instanceof Features && $features->supportV2SEIPD();
+        return $features instanceof Features
+            ? $features->supportV2SEIPD()
+            : false;
     }
 
     /**
@@ -591,6 +593,16 @@ abstract class AbstractKey implements KeyInterface
         }
         return null;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    abstract public function toPublic(): KeyInterface;
+
+    /**
+     * {@inheritdoc}
+     */
+    abstract public function armor(): string;
 
     /**
      * Set revocation signatures

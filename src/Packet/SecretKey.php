@@ -28,6 +28,7 @@ use OpenPGP\Type\{
     KeyMaterialInterface,
     PublicKeyPacketInterface,
     S2KInterface,
+    SecretKeyMaterialInterface,
     SecretKeyPacketInterface,
     SubkeyPacketInterface
 };
@@ -373,6 +374,16 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     public function getSignBytes(): string
     {
         return $this->publicKey->getSignBytes();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSecretKeyMaterial(): ?SecretKeyMaterialInterface
+    {
+        return $this->keyMaterial instanceof SecretKeyMaterialInterface
+            ? $this->keyMaterial
+            : null;
     }
 
     /**
