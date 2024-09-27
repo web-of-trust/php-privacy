@@ -220,7 +220,7 @@ class AeadEncryptedData extends AbstractPacket implements
             0,
             5
         );
-        $chunkIndex = substr($aData, 5, 8);
+        $ciData = substr($aData, 5, 8);
         $cipher = $this->aead->cipherEngine($key, $this->symmetric);
 
         $crypted = [];
@@ -229,12 +229,12 @@ class AeadEncryptedData extends AbstractPacket implements
             // and shift `data` to the next chunk.
             $crypted[] = $cipher->$fn(
                 Strings::shift($data, $chunkSize),
-                $cipher->getNonce($this->iv, $chunkIndex),
+                $cipher->getNonce($this->iv, $ciData),
                 $aData
             );
 
             $aData = substr_replace($aData, pack("N", ++$index), 9, 4);
-            $chunkIndex = substr($aData, 5, 8);
+            $ciData = substr($aData, 5, 8);
         }
 
         // After the final chunk, we either encrypt a final, empty data
@@ -246,13 +246,13 @@ class AeadEncryptedData extends AbstractPacket implements
             0,
             13
         );
-        $cryptedLength = array_sum(
+        $processed = array_sum(
             array_map(static fn($bytes) => strlen($bytes), $crypted)
         );
-        $aDataTag = substr_replace($aDataTag, pack("N", $cryptedLength), 17, 4);
+        $aDataTag = substr_replace($aDataTag, pack("N", $processed), 17, 4);
         $crypted[] = $cipher->$fn(
             $finalChunk,
-            $cipher->getNonce($this->iv, $chunkIndex),
+            $cipher->getNonce($this->iv, $ciData),
             $aDataTag
         );
 

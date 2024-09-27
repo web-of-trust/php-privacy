@@ -360,13 +360,13 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
         // After the final chunk, we either encrypt a final, empty data
         // chunk to get the final authentication tag or validate that final
         // authentication tag.
-        $cryptedLength = array_sum(
+        $processed = array_sum(
             array_map(static fn($bytes) => strlen($bytes), $crypted)
         );
         $aDataTag = implode([$aData, str_repeat(self::ZERO_CHAR, 8)]);
         $aDataTag = substr_replace(
             $aDataTag,
-            pack("N", $cryptedLength),
+            pack("N", $processed),
             strlen($aDataTag) - 4,
             4
         );
