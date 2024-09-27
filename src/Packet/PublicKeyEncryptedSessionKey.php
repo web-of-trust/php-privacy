@@ -8,24 +8,20 @@
 
 namespace OpenPGP\Packet;
 
-use phpseclib3\Common\Functions\Strings;
-use phpseclib3\Crypt\Random;
-use OpenPGP\Enum\{
-    KeyAlgorithm,
-    PacketTag,
-    SymmetricAlgorithm,
-};
+use OpenPGP\Enum\{KeyAlgorithm, PacketTag, SymmetricAlgorithm};
 use OpenPGP\Type\{
     KeyPacketInterface,
     SecretKeyPacketInterface,
     SessionKeyInterface,
-    SessionKeyCryptorInterface,
+    SessionKeyCryptorInterface
 };
+use phpseclib3\Common\Functions\Strings;
+use phpseclib3\Crypt\Random;
 
 /**
  * PublicKeyEncryptedSessionKey represents a Public-Key Encrypted Session Key packet.
  * See RFC 4880, section 5.1.
- * 
+ *
  * A Public-Key Encrypted Session Key packet holds the session key used to encrypt a message.
  * Zero or more Public-Key Encrypted Session Key packets and/or Symmetric-Key Encrypted Session Key
  * packets may precede a Symmetrically Encrypted Data Packet, which holds an encrypted message.
@@ -35,7 +31,7 @@ use OpenPGP\Type\{
  * Session Key packet for each OpenPGP key to which the message is encrypted.
  * The recipient of the message finds a session key that is encrypted to their public key,
  * decrypts the session key, and then uses the session key to decrypt the message.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -58,8 +54,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
         private readonly KeyAlgorithm $publicKeyAlgorithm,
         private readonly SessionKeyCryptorInterface $sessionKeyCryptor,
         private readonly ?SessionKeyInterface $sessionKey = null
-    )
-    {
+    ) {
         parent::__construct(PacketTag::PublicKeyEncryptedSessionKey);
     }
 
@@ -72,7 +67,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
         $version = ord($bytes[$offset++]);
         if ($version !== self::VERSION) {
             throw new \UnexpectedValueException(
-                "Version $version of the PKESK packet is unsupported.",
+                "Version $version of the PKESK packet is unsupported."
             );
         }
 
@@ -83,9 +78,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
         return new self(
             $keyID,
             $keyAlgorithm,
-            self::readMaterial(
-                substr($bytes, $offset), $keyAlgorithm
-            )
+            self::readMaterial(substr($bytes, $offset), $keyAlgorithm)
         );
     }
 
@@ -99,8 +92,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     public static function encryptSessionKey(
         KeyPacketInterface $keyPacket,
         SessionKeyInterface $sessionKey
-    ): self
-    {
+    ): self {
         return new self(
             $keyPacket->getKeyID(),
             $keyPacket->getKeyAlgorithm(),
@@ -130,7 +122,9 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
      */
     public function getPublicKeyID(bool $toHex = false): string
     {
-        return $toHex ? Strings::bin2hex($this->publicKeyID) : $this->publicKeyID;
+        return $toHex
+            ? Strings::bin2hex($this->publicKeyID)
+            : $this->publicKeyID;
     }
 
     /**
@@ -173,8 +167,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     {
         if ($this->sessionKey instanceof SessionKeyInterface) {
             return $this;
-        }
-        else {
+        } else {
             return new self(
                 $secretKey->getKeyID(),
                 $secretKey->getKeyAlgorithm(),
@@ -186,19 +179,14 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
 
     private function decryptSessionKey(
         SecretKeyPacketInterface $secretKey
-    ): SessionKeyInterface
-    {
-        $this->getLogger()->debug(
-            'Decrypt public key encrypted session key.'
-        );
+    ): SessionKeyInterface {
+        $this->getLogger()->debug("Decrypt public key encrypted session key.");
         switch ($this->publicKeyAlgorithm) {
             case KeyAlgorithm::RsaEncryptSign:
             case KeyAlgorithm::RsaEncrypt:
             case KeyAlgorithm::ElGamal:
             case KeyAlgorithm::Ecdh:
-                return $this->sessionKeyCryptor->decryptSessionKey(
-                    $secretKey
-                );
+                return $this->sessionKeyCryptor->decryptSessionKey($secretKey);
             default:
                 throw new \UnexpectedValueException(
                     "Public key algorithm {$this->publicKeyAlgorithm->name} of the PKESK packet is unsupported."
@@ -207,19 +195,25 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     }
 
     private static function produceSessionKeyCryptor(
-        SessionKeyInterface $sessionKey, KeyPacketInterface $keyPacket
-    ): SessionKeyCryptorInterface
-    {
-        return match($keyPacket->getKeyAlgorithm()) {
-            KeyAlgorithm::RsaEncryptSign, KeyAlgorithm::RsaEncrypt
-            => Key\RSASessionKeyCryptor::encryptSessionKey(
-                $sessionKey, $keyPacket->getKeyMaterial()->getAsymmetricKey()
+        SessionKeyInterface $sessionKey,
+        KeyPacketInterface $keyPacket
+    ): SessionKeyCryptorInterface {
+        return match ($keyPacket->getKeyAlgorithm()) {
+            KeyAlgorithm::RsaEncryptSign,
+            KeyAlgorithm::RsaEncrypt
+                => Key\RSASessionKeyCryptor::encryptSessionKey(
+                $sessionKey,
+                $keyPacket->getKeyMaterial()->getAsymmetricKey()
             ),
-            KeyAlgorithm::ElGamal => Key\ElGamalSessionKeyCryptor::encryptSessionKey(
-                $sessionKey, $keyPacket->getKeyMaterial()->getAsymmetricKey()
+            KeyAlgorithm::ElGamal
+                => Key\ElGamalSessionKeyCryptor::encryptSessionKey(
+                $sessionKey,
+                $keyPacket->getKeyMaterial()->getAsymmetricKey()
             ),
             KeyAlgorithm::Ecdh => Key\ECDHSessionKeyCryptor::encryptSessionKey(
-                $sessionKey, $keyPacket->getKeyMaterial(), $keyPacket->getFingerprint()
+                $sessionKey,
+                $keyPacket->getKeyMaterial(),
+                $keyPacket->getFingerprint()
             ),
             default => throw new \UnexpectedValueException(
                 "Public key algorithm {$keyPacket->getKeyAlgorithm()->name} of the PKESK packet is unsupported."
@@ -228,13 +222,16 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     }
 
     private static function readMaterial(
-        string $bytes, KeyAlgorithm $keyAlgorithm
-    ): SessionKeyCryptorInterface
-    {
-        return match($keyAlgorithm) {
-            KeyAlgorithm::RsaEncryptSign, KeyAlgorithm::RsaEncrypt
-            => Key\RSASessionKeyCryptor::fromBytes($bytes),
-            KeyAlgorithm::ElGamal => Key\ElGamalSessionKeyCryptor::fromBytes($bytes),
+        string $bytes,
+        KeyAlgorithm $keyAlgorithm
+    ): SessionKeyCryptorInterface {
+        return match ($keyAlgorithm) {
+            KeyAlgorithm::RsaEncryptSign,
+            KeyAlgorithm::RsaEncrypt
+                => Key\RSASessionKeyCryptor::fromBytes($bytes),
+            KeyAlgorithm::ElGamal => Key\ElGamalSessionKeyCryptor::fromBytes(
+                $bytes
+            ),
             KeyAlgorithm::Ecdh => Key\ECDHSessionKeyCryptor::fromBytes($bytes),
             default => throw new \UnexpectedValueException(
                 "Public key algorithm {$keyAlgorithm->name} of the PKESK packet is unsupported."

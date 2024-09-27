@@ -12,7 +12,7 @@ use OpenPGP\Enum\SymmetricAlgorithm;
 
 /**
  * Encrypted data packet packet interface
- * 
+ *
  * @package  OpenPGP
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -51,9 +51,7 @@ interface EncryptedDataPacketInterface extends PacketInterface
      * @param SessionKeyInterface $sessionKey
      * @return self
      */
-    function encryptWithSessionKey(
-        SessionKeyInterface $sessionKey
-    ): self;
+    function encryptWithSessionKey(SessionKeyInterface $sessionKey): self;
 
     /**
      * Decrypt the encrypted data contained in the packet.
@@ -73,7 +71,5 @@ interface EncryptedDataPacketInterface extends PacketInterface
      * @param SessionKeyInterface $sessionKey
      * @return self
      */
-    function decryptWithSessionKey(
-        SessionKeyInterface $sessionKey
-    ): self;
+    function decryptWithSessionKey(SessionKeyInterface $sessionKey): self;
 }

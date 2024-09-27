@@ -14,12 +14,13 @@ use OpenPGP\Type\PublicKeyMaterialInterface;
 
 /**
  * EdDSA public key material class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class EdDSAPublicKeyMaterial extends ECPublicKeyMaterial implements PublicKeyMaterialInterface
+class EdDSAPublicKeyMaterial extends ECPublicKeyMaterial implements
+    PublicKeyMaterialInterface
 {
     /**
      * Read key material from bytes
@@ -43,18 +44,14 @@ class EdDSAPublicKeyMaterial extends ECPublicKeyMaterial implements PublicKeyMat
         HashAlgorithm $hash,
         string $message,
         string $signature
-    ): bool
-    {
+    ): bool {
         $bitLength = Helper::bytesToShort($signature);
-        $r = substr(
-            $signature, 2, Helper::bit2ByteLength($bitLength)
-        );
+        $r = substr($signature, 2, Helper::bit2ByteLength($bitLength));
 
-        $bitLength = Helper::bytesToShort(
-            substr($signature, strlen($r) + 2)
-        );
+        $bitLength = Helper::bytesToShort(substr($signature, strlen($r) + 2));
         $s = substr(
-            $signature, strlen($r) + 4,
+            $signature,
+            strlen($r) + 4,
             Helper::bit2ByteLength($bitLength)
         );
         return $this->getPublicKey()->verify(

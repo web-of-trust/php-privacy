@@ -14,7 +14,7 @@ use OpenPGP\Enum\RevocationReasonTag;
 /**
  * OpenPGP user interface
  * that represents an user ID or attribute packet and the relevant signatures.
- * 
+ *
  * @package  OpenPGP
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -23,56 +23,56 @@ interface UserInterface extends PacketContainerInterface
 {
     /**
      * Get user ID packet
-     * 
+     *
      * @return UserIDPacketInterface
      */
     function getUserIDPacket(): UserIDPacketInterface;
 
     /**
      * Get revocation signatures
-     * 
+     *
      * @return array
      */
     function getRevocationCertifications(): array;
 
     /**
      * Get self signatures
-     * 
+     *
      * @return array
      */
     function getSelfCertifications(): array;
 
     /**
      * Get other signatures
-     * 
+     *
      * @return array<SignaturePacketInterface>
      */
     function getOtherCertifications(): array;
 
     /**
      * Get latest self certification
-     * 
+     *
      * @return SignaturePacketInterface
      */
     function getLatestSelfCertification(): ?SignaturePacketInterface;
 
     /**
      * Get user ID
-     * 
+     *
      * @return string
      */
     function getUserID(): string;
 
     /**
      * Return user is primary
-     * 
+     *
      * @return bool
      */
     function isPrimary(): bool;
 
     /**
      * Check if a given certificate of the user is revoked
-     * 
+     *
      * @param KeyInterface $verifyKey
      * @param SignaturePacketInterface $certificate
      * @param DateTimeInterface $time
@@ -88,7 +88,7 @@ interface UserInterface extends PacketContainerInterface
      * Verify user is certified.
      * Check for existence of other signatures, revocation signatures
      * and validity of other signature.
-     * 
+     *
      * @param KeyInterface $verifyKey
      * @param SignaturePacketInterface $certificate
      * @param DateTimeInterface $time
@@ -104,7 +104,7 @@ interface UserInterface extends PacketContainerInterface
      * Verify user.
      * Check for existence of self signatures, revocation signatures
      * and validity of self signature.
-     * 
+     *
      * @param DateTimeInterface $time
      * @return bool
      */
@@ -113,18 +113,19 @@ interface UserInterface extends PacketContainerInterface
     /**
      * Generate third-party certification over this user and its primary key.
      * Return clone user with new certification.
-     * 
+     *
      * @param PrivateKeyInterface $signKey
      * @param DateTimeInterface $time
      * @return self
      */
     function certifyBy(
-        PrivateKeyInterface $signKey, ?DateTimeInterface $time = null
+        PrivateKeyInterface $signKey,
+        ?DateTimeInterface $time = null
     ): self;
 
     /**
      * Revoke the user & return clone user with new revocation signature
-     * 
+     *
      * @param PrivateKeyInterface $signKey
      * @param string $revocationReason
      * @param RevocationReasonTag $reasonTag
@@ -133,7 +134,7 @@ interface UserInterface extends PacketContainerInterface
      */
     function revokeBy(
         PrivateKeyInterface $signKey,
-        string $revocationReason = '',
+        string $revocationReason = "",
         RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
         ?DateTimeInterface $time = null
     ): self;

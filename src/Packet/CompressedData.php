@@ -14,11 +14,11 @@ use OpenPGP\Type\PacketListInterface;
 
 /**
  * Implementation of the Compressed Data Packet (Tag 8)
- * 
+ *
  * The Compressed Data packet contains compressed data.
  * Typically, this packet is found as the contents of an encrypted packet,
  * or following a Signature or One-Pass Signature packet, and contains a literal data packet.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -42,8 +42,7 @@ class CompressedData extends AbstractPacket
         private readonly string $compressed,
         private readonly PacketListInterface $packetList,
         private readonly Algorithm $algorithm = Algorithm::Uncompressed
-    )
-    {
+    ) {
         parent::__construct(PacketTag::CompressedData);
     }
 
@@ -71,8 +70,7 @@ class CompressedData extends AbstractPacket
     public static function fromPacketList(
         PacketListInterface $packetList,
         Algorithm $algorithm = Algorithm::Uncompressed
-    ): self
-    {
+    ): self {
         return new self(
             self::compress($packetList, $algorithm),
             $packetList,
@@ -90,8 +88,7 @@ class CompressedData extends AbstractPacket
     public static function fromPackets(
         array $packets,
         Algorithm $algorithm = Algorithm::Uncompressed
-    )
-    {
+    ): self {
         return self::fromPacketList(new PacketList($packets), $algorithm);
     }
 
@@ -130,29 +127,32 @@ class CompressedData extends AbstractPacket
      */
     public function toBytes(): string
     {
-        return implode([
-            chr($this->algorithm->value),
-            $this->compressed,
-        ]);
+        return implode([chr($this->algorithm->value), $this->compressed]);
     }
 
     private static function compress(
-        PacketListInterface $packetList, Algorithm $algorithm
-    ): string
-    {
-        return match($algorithm) {
+        PacketListInterface $packetList,
+        Algorithm $algorithm
+    ): string {
+        return match ($algorithm) {
             Algorithm::Uncompressed => $packetList->encode(),
-            Algorithm::Zip => \gzdeflate($packetList->encode(), self::DEFLATE_LEVEL),
-            Algorithm::Zlib => \gzcompress($packetList->encode(), self::DEFLATE_LEVEL),
+            Algorithm::Zip => \gzdeflate(
+                $packetList->encode(),
+                self::DEFLATE_LEVEL
+            ),
+            Algorithm::Zlib => \gzcompress(
+                $packetList->encode(),
+                self::DEFLATE_LEVEL
+            ),
             Algorithm::BZip2 => \bzcompress($packetList->encode()),
         };
     }
 
     private static function decompress(
-        string $compressed, Algorithm $algorithm
-    ): PacketListInterface
-    {
-        return match($algorithm) {
+        string $compressed,
+        Algorithm $algorithm
+    ): PacketListInterface {
+        return match ($algorithm) {
             Algorithm::Uncompressed => PacketList::decode($compressed),
             Algorithm::Zip => PacketList::decode(\gzinflate($compressed)),
             Algorithm::Zlib => PacketList::decode(\gzuncompress($compressed)),

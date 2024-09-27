@@ -8,15 +8,12 @@
 
 namespace OpenPGP\Packet\Signature;
 
-use OpenPGP\Enum\{
-    SignatureSubpacketType,
-    SupportFeature,
-};
+use OpenPGP\Enum\{SignatureSubpacketType, SupportFeature};
 use OpenPGP\Packet\SignatureSubpacket;
 
 /**
  * Features sub-packet class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -35,8 +32,7 @@ class Features extends SignatureSubpacket
         string $data,
         bool $critical = false,
         bool $isLong = false
-    )
-    {
+    ) {
         parent::__construct(
             SignatureSubpacketType::Features->value,
             $data,
@@ -53,9 +49,9 @@ class Features extends SignatureSubpacket
      * @return self
      */
     public static function fromFeatures(
-        int $features = 0, bool $critical = false
-    ): self
-    {
+        int $features = 0,
+        bool $critical = false
+    ): self {
         return new self(chr($features), $critical);
     }
 
@@ -66,8 +62,9 @@ class Features extends SignatureSubpacket
      */
     public function supportModificationDetection(): bool
     {
-        return (ord($this->getData()[0]) & SupportFeature::ModificationDetection->value)
-            === SupportFeature::ModificationDetection->value;
+        return (ord($this->getData()[0]) &
+            SupportFeature::ModificationDetection->value) ===
+            SupportFeature::ModificationDetection->value;
     }
 
     /**
@@ -77,8 +74,9 @@ class Features extends SignatureSubpacket
      */
     public function supportAeadEncryptedData(): bool
     {
-        return (ord($this->getData()[0]) & SupportFeature::AeadEncryptedData->value)
-            === SupportFeature::AeadEncryptedData->value;
+        return (ord($this->getData()[0]) &
+            SupportFeature::AeadEncryptedData->value) ===
+            SupportFeature::AeadEncryptedData->value;
     }
 
     /**
@@ -88,7 +86,8 @@ class Features extends SignatureSubpacket
      */
     public function supportVersion5PublicKey(): bool
     {
-        return (ord($this->getData()[0]) & SupportFeature::Version5PublicKey->value)
-            === SupportFeature::Version5PublicKey->value;
+        return (ord($this->getData()[0]) &
+            SupportFeature::Version5PublicKey->value) ===
+            SupportFeature::Version5PublicKey->value;
     }
 }

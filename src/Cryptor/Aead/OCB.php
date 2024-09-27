@@ -16,25 +16,25 @@ use phpseclib3\Crypt\Common\BlockCipher;
  * An implementation of RFC 7253 on The OCB Authenticated-Encryption Algorithm.
  * For those still concerned about the original patents around this, please see:
  * https://mailarchive.ietf.org/arch/msg/cfrg/qLTveWOdTJcLn4HP3ev-vrj05Vg/
- * 
+ *
  * see https://tools.ietf.org/html/rfc7253
- * 
+ *
  * @package  OpenPGP
  * @category Cryptor
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 final class OCB implements AeadCipher
 {
-    const ZERO_CHAR     = "\x00";
-    const ONE_CHAR      = "\x01";
-    const ZERO_BLOCK    = "\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0";
+    const ZERO_CHAR = "\x00";
+    const ONE_CHAR = "\x01";
+    const ZERO_BLOCK = "\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0";
 
-    const BLOCK_LENGTH  = 16;
-    const IV_LENGTH     = 15;
-    const TAG_LENGTH    = 16;
+    const BLOCK_LENGTH = 16;
+    const IV_LENGTH = 15;
+    const TAG_LENGTH = 16;
 
-    const MASK_ASTERISK = 'x';
-    const MASK_DOLLAR   = '$';
+    const MASK_ASTERISK = "x";
+    const MASK_DOLLAR = '$';
 
     private readonly BlockCipher $encipher;
 
@@ -54,11 +54,10 @@ final class OCB implements AeadCipher
     public function __construct(
         string $key,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
-    )
-    {
+    ) {
         if ($symmetric->blockSize() !== self::BLOCK_LENGTH) {
             throw new \InvalidArgumentException(
-                'Cipher must have a block size of ' . self::BLOCK_LENGTH
+                "Cipher must have a block size of " . self::BLOCK_LENGTH
             );
         }
         $this->encipher = $symmetric->ecbCipherEngine();
@@ -80,9 +79,10 @@ final class OCB implements AeadCipher
      * {@inheritdoc}
      */
     public function encrypt(
-        string $plaintext, string $nonce, string $adata = ''
-    ): string
-    {
+        string $plaintext,
+        string $nonce,
+        string $adata = ""
+    ): string {
         return $this->crypt($this->encipher, $plaintext, $nonce, $adata);
     }
 
@@ -90,12 +90,13 @@ final class OCB implements AeadCipher
      * {@inheritdoc}
      */
     public function decrypt(
-        string $ciphertext, string $nonce, string $adata = ''
-    ): string
-    {
+        string $ciphertext,
+        string $nonce,
+        string $adata = ""
+    ): string {
         $length = strlen($ciphertext);
         if ($length < self::TAG_LENGTH) {
-            throw new \InvalidArgumentException('Invalid OCB ciphertext');
+            throw new \InvalidArgumentException("Invalid OCB ciphertext");
         }
 
         $tag = substr($ciphertext, $length - self::TAG_LENGTH);
@@ -107,14 +108,14 @@ final class OCB implements AeadCipher
         if ($tag === substr($crypted, $length - self::TAG_LENGTH)) {
             return substr($crypted, 0, $length - self::TAG_LENGTH);
         }
-        throw new \UnexpectedValueException('Authentication tag mismatch');
+        throw new \UnexpectedValueException("Authentication tag mismatch");
     }
 
     /**
      * Get OCB nonce as defined by
      * {@link https://tools.ietf.org/html/draft-ietf-openpgp-rfc4880bis-10#section-5.16.2|RFC4880bis-10,
      * section 5.16.2}.
-     * 
+     *
      * @param string $iv - The initialization vector (15 bytes)
      * @param string $chunkIndex - The chunk index (8 bytes)
      * @return string
@@ -130,7 +131,7 @@ final class OCB implements AeadCipher
 
     /**
      * Encrypt/decrypt data.
-     * 
+     *
      * @param BlockCipher $cipher - Encryption/decryption block cipher function
      * @param string $text - The cleartext or ciphertext (without tag) input
      * @param string $nonce - The nonce (15 bytes)
@@ -138,9 +139,11 @@ final class OCB implements AeadCipher
      * @return string The ciphertext or plaintext output, with tag appended in both cases.
      */
     private function crypt(
-        BlockCipher $cipher, string $text, string $nonce, string $adata
-    ): string
-    {
+        BlockCipher $cipher,
+        string $text,
+        string $nonce,
+        string $adata
+    ): string {
         $length = strlen($text);
         // Consider P as a sequence of 128-bit blocks
         $m = floor($length / self::BLOCK_LENGTH) | 0;
@@ -170,9 +173,13 @@ final class OCB implements AeadCipher
             self::xor(substr($kTop, 0, 8), substr($kTop, 1, 9)),
         ]);
         // Offset_0 = Stretch[1+bottom..128+bottom]
-        $offset = substr(self::shiftRight(
-            substr($stretched, 0 + ($bottom >> 3), 17 + ($bottom >> 3)), 8 - ($bottom & 7)
-        ), 1);
+        $offset = substr(
+            self::shiftRight(
+                substr($stretched, 0 + ($bottom >> 3), 17 + ($bottom >> 3)),
+                8 - ($bottom & 7)
+            ),
+            1
+        );
         // Checksum_0 = zeros(128)
         $checksum = self::ZERO_BLOCK;
 
@@ -187,20 +194,21 @@ final class OCB implements AeadCipher
             // C_i = Offset_i xor ENCIPHER(K, P_i xor Offset_i)
             // P_i = Offset_i xor DECIPHER(K, C_i xor Offset_i)
             if ($cipher === $this->encipher) {
-                $encrypted = self::xor($cipher->encryptBlock(self::xor($offset, $text)), $offset);
+                $encrypted = self::xor(
+                    $cipher->encryptBlock(self::xor($offset, $text)),
+                    $offset
+                );
+            } else {
+                $encrypted = self::xor(
+                    $cipher->decryptBlock(self::xor($offset, $text)),
+                    $offset
+                );
             }
-            else {
-                $encrypted = self::xor($cipher->decryptBlock(self::xor($offset, $text)), $offset);
-            }
-            $ct = substr_replace(
-                $ct,
-                $encrypted,
-                $pos,
-                strlen($encrypted)
-            );
+            $ct = substr_replace($ct, $encrypted, $pos, strlen($encrypted));
             // Checksum_i = Checksum_{i-1} xor P_i
             $checksum = self::xor(
-                $checksum, $cipher === $this->encipher ? $text : substr($ct, $pos)
+                $checksum,
+                $cipher === $this->encipher ? $text : substr($ct, $pos)
             );
 
             $text = substr($text, self::BLOCK_LENGTH);
@@ -216,15 +224,13 @@ final class OCB implements AeadCipher
             $padding = $this->encipher->encryptBlock($offset);
             // C_* = P_* xor Pad[1..bitlen(P_*)]
             $paddedText = self::xor($text, $padding);
-            $ct = substr_replace(
-                $ct,
-                $paddedText,
-                $pos,
-                strlen($paddedText)
-            );
+            $ct = substr_replace($ct, $paddedText, $pos, strlen($paddedText));
 
             // Checksum_* = Checksum_m xor (P_* || 1 || new Uint8Array(127-bitlen(P_*)))
-            $input = $cipher === $this->encipher ? $text : substr($ct, $pos, strlen($ct) - self::TAG_LENGTH);
+            $input =
+                $cipher === $this->encipher
+                    ? $text
+                    : substr($ct, $pos, strlen($ct) - self::TAG_LENGTH);
             $xorInput = substr_replace(
                 self::ZERO_BLOCK,
                 $input,
@@ -253,11 +259,13 @@ final class OCB implements AeadCipher
 
     private function extendKeyVariables(string $text, string $adata): void
     {
-        $newMaxNtz = self::nbits(
-            floor(max(strlen($text), strlen($adata)) / self::BLOCK_LENGTH) | 0
-        ) - 1;
+        $newMaxNtz =
+            self::nbits(
+                floor(max(strlen($text), strlen($adata)) / self::BLOCK_LENGTH) |
+                    0
+            ) - 1;
         for ($i = $this->maxNtz + 1; $i <= $newMaxNtz; $i++) {
-          $this->mask[$i] = self::double($this->mask[$i - 1]);
+            $this->mask[$i] = self::double($this->mask[$i - 1]);
         }
         $this->maxNtz = $newMaxNtz;
     }
@@ -287,7 +295,12 @@ final class OCB implements AeadCipher
         if ($length) {
             $offset = self::xor($offset, $this->mask[self::MASK_ASTERISK]);
 
-            $cipherInput = substr_replace(self::ZERO_BLOCK, $adata, 0, strlen($adata));
+            $cipherInput = substr_replace(
+                self::ZERO_BLOCK,
+                $adata,
+                0,
+                strlen($adata)
+            );
             $cipherInput[$length] = "\x80";
             $cipherInput = self::xor($cipherInput, $offset);
 
@@ -384,7 +397,7 @@ final class OCB implements AeadCipher
                 $data[$i] = chr(ord($data[$i]) >> $bits);
                 if ($i > 0) {
                     $data[$i] = chr(
-                        ord($data[$i]) | (ord($data[$i - 1]) << (8 - $bits))
+                        ord($data[$i]) | (ord($data[$i - 1]) << 8 - $bits)
                     );
                 }
             }

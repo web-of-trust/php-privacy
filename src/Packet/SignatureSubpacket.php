@@ -12,7 +12,7 @@ use OpenPGP\Type\SubpacketInterface;
 
 /**
  * Signature sub-packet class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -33,8 +33,7 @@ class SignatureSubpacket implements SubpacketInterface
         private readonly string $data,
         private readonly bool $critical = false,
         private readonly bool $isLong = false
-    )
-    {
+    ) {
     }
 
     /**
@@ -63,7 +62,7 @@ class SignatureSubpacket implements SubpacketInterface
 
     /**
      * Returns is critical
-     * 
+     *
      * @return bool
      */
     public function isCritical(): bool
@@ -76,26 +75,23 @@ class SignatureSubpacket implements SubpacketInterface
      */
     public function toBytes(): string
     {
-        $header = '';
+        $header = "";
         $bodyLen = strlen($this->data) + 1;
         if ($this->isLong) {
-            $header = "\xff" . pack('N', $bodyLen);
-        }
-        else {
+            $header = "\xff" . pack("N", $bodyLen);
+        } else {
             if ($bodyLen < 192) {
                 $header = chr($bodyLen);
-            }
-            elseif ($bodyLen <= 8383) {
+            } elseif ($bodyLen <= 8383) {
                 $header = implode([
-                    chr(((($bodyLen - 192) >> 8) & 0xff) + 192),
+                    chr((($bodyLen - 192 >> 8) & 0xff) + 192),
                     chr($bodyLen - 192),
                 ]);
-            }
-            else {
-                $header = "\xff" . pack('N', $bodyLen);
+            } else {
+                $header = "\xff" . pack("N", $bodyLen);
             }
         }
-        
+
         return implode([
             $header,
             $this->critical ? chr($this->type | 0x80) : chr($this->type),

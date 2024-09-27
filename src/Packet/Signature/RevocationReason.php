@@ -8,17 +8,13 @@
 
 namespace OpenPGP\Packet\Signature;
 
-use OpenPGP\Enum\{
-    KeyAlgorithm,
-    RevocationReasonTag,
-    SignatureSubpacketType,
-};
+use OpenPGP\Enum\{RevocationReasonTag, SignatureSubpacketType};
 use OpenPGP\Packet\SignatureSubpacket;
 
 /**
  * RevocationReason sub-packet class
  * Represents revocation reason OpenPGP signature sub packet.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -37,8 +33,7 @@ class RevocationReason extends SignatureSubpacket
         string $data,
         bool $critical = false,
         bool $isLong = false
-    )
-    {
+    ) {
         parent::__construct(
             SignatureSubpacketType::RevocationReason->value,
             $data,
@@ -59,10 +54,10 @@ class RevocationReason extends SignatureSubpacket
         RevocationReasonTag $reason,
         string $description,
         bool $critical = false
-    ): self
-    {
+    ): self {
         return new self(
-            self::revocationToBytes($reason, $description), $critical
+            self::revocationToBytes($reason, $description),
+            $critical
         );
     }
 
@@ -89,11 +84,7 @@ class RevocationReason extends SignatureSubpacket
     private static function revocationToBytes(
         RevocationReasonTag $reason,
         string $description
-    ): string
-    {
-        return implode([
-            chr($reason->value),
-            $description,
-        ]);
+    ): string {
+        return implode([chr($reason->value), $description]);
     }
 }

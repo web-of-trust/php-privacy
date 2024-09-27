@@ -8,15 +8,15 @@
 
 namespace OpenPGP\Packet\Signature;
 
-use phpseclib3\Common\Functions\Strings;
 use OpenPGP\Enum\SignatureSubpacketType;
 use OpenPGP\Packet\SignatureSubpacket;
 use OpenPGP\Type\KeyPacketInterface;
+use phpseclib3\Common\Functions\Strings;
 
 /**
  * IssuerFingerprint sub-packet class
  * Giving the issuer key fingerprint.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -35,8 +35,7 @@ class IssuerFingerprint extends SignatureSubpacket
         string $data,
         bool $critical = false,
         bool $isLong = false
-    )
-    {
+    ) {
         parent::__construct(
             SignatureSubpacketType::IssuerFingerprint->value,
             $data,
@@ -53,17 +52,18 @@ class IssuerFingerprint extends SignatureSubpacket
      * @return self
      */
     public static function fromKeyPacket(
-        KeyPacketInterface $key, bool $critical = false
-    ): self
-    {
+        KeyPacketInterface $key,
+        bool $critical = false
+    ): self {
         return new self(
-            chr($key->getVersion()) . $key->getFingerprint(), $critical
+            chr($key->getVersion()) . $key->getFingerprint(),
+            $critical
         );
     }
 
     /**
      * Get key version
-     * 
+     *
      * @return int
      */
     public function getKeyVersion(): int
@@ -73,12 +73,14 @@ class IssuerFingerprint extends SignatureSubpacket
 
     /**
      * Get fingerprint
-     * 
+     *
      * @param bool $toHex
      * @return string
      */
     public function getKeyFingerprint(bool $toHex = false): string
     {
-        return $toHex ? Strings::bin2hex(substr($this->getData(), 1)) : substr($this->getData(), 1);
+        return $toHex
+            ? Strings::bin2hex(substr($this->getData(), 1))
+            : substr($this->getData(), 1);
     }
 }

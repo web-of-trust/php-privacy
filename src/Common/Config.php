@@ -12,26 +12,23 @@ use OpenPGP\Enum\{
     AeadAlgorithm,
     CompressionAlgorithm,
     HashAlgorithm,
-    SymmetricAlgorithm,
+    SymmetricAlgorithm
 };
-use Psr\Log\{
-    LoggerInterface,
-    NullLogger,
-};
+use Psr\Log\{LoggerInterface, NullLogger};
 
 /**
  * Config class
- * 
+ *
  * @package  OpenPGP
  * @category Common
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 final class Config
 {
-    const VERSION = 'PHP Privacy v1';
-    const COMMENT = 'https://github.com/web-of-trust/php-privacy';
+    const VERSION = "PHP Privacy v1";
+    const COMMENT = "https://github.com/web-of-trust/php-privacy";
 
-    const SALT_NOTATION = 'salt@openpgp.org';
+    const SALT_NOTATION = "salt@openpgp.org";
 
     private static HashAlgorithm $preferredHash = HashAlgorithm::Sha256;
 
@@ -92,8 +89,7 @@ final class Config
      */
     public static function setPreferredSymmetric(
         SymmetricAlgorithm $symmetric
-    ): void
-    {
+    ): void {
         self::$preferredSymmetric = $symmetric;
     }
 
@@ -114,8 +110,7 @@ final class Config
      */
     public static function setPreferredCompression(
         CompressionAlgorithm $compression
-    ): void
-    {
+    ): void {
         self::$preferredCompression = $compression;
     }
 
@@ -177,9 +172,7 @@ final class Config
      *
      * @param AeadAlgorithm $algo
      */
-    public static function setPreferredAead(
-        AeadAlgorithm $algo
-    ): void
+    public static function setPreferredAead(AeadAlgorithm $algo): void
     {
         self::$preferredAead = $algo;
     }

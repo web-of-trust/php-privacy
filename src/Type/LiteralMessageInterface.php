@@ -9,19 +9,18 @@
 namespace OpenPGP\Type;
 
 use DateTimeInterface;
-use OpenPGP\Enum\{
-    CompressionAlgorithm,
-    SymmetricAlgorithm,
-};
+use OpenPGP\Enum\{CompressionAlgorithm, SymmetricAlgorithm};
 
 /**
  * Literal message interface
- * 
+ *
  * @package  OpenPGP
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInterface
+interface LiteralMessageInterface extends
+    ArmorableInterface,
+    PacketContainerInterface
 {
     /**
      * Get literal data
@@ -95,7 +94,5 @@ interface LiteralMessageInterface extends ArmorableInterface, PacketContainerInt
      * @param CompressionAlgorithm $algorithm
      * @return self
      */
-    function compress(
-        ?CompressionAlgorithm $algorithm = null
-    ): self;
+    function compress(?CompressionAlgorithm $algorithm = null): self;
 }

@@ -9,23 +9,20 @@
 namespace OpenPGP\Type;
 
 use DateTimeInterface;
-use OpenPGP\Enum\{
-    KeyAlgorithm,
-    RevocationReasonTag,
-};
-use Psr\Log\{
-    LoggerAwareInterface,
-    LoggerInterface,
-};
+use OpenPGP\Enum\{KeyAlgorithm, RevocationReasonTag};
+use Psr\Log\{LoggerAwareInterface, LoggerInterface};
 
 /**
  * Key interface
- * 
+ *
  * @package  OpenPGP
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketContainerInterface
+interface KeyInterface extends
+    ArmorableInterface,
+    LoggerAwareInterface,
+    PacketContainerInterface
 {
     /**
      * Return key packet
@@ -57,21 +54,21 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
 
     /**
      * Get creation time
-     * 
+     *
      * @return DateTimeInterface
      */
     function getCreationTime(): DateTimeInterface;
 
     /**
      * Get key algorithm
-     * 
+     *
      * @return KeyAlgorithm
      */
     function getKeyAlgorithm(): KeyAlgorithm;
 
     /**
      * Get fingerprint
-     * 
+     *
      * @param bool $toHex
      * @return string
      */
@@ -79,7 +76,7 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
 
     /**
      * Get key ID
-     * 
+     *
      * @param bool $toHex
      * @return string
      */
@@ -87,7 +84,7 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
 
     /**
      * Get key strength
-     * 
+     *
      * @return int
      */
     function getKeyStrength(): int;
@@ -95,30 +92,32 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
     /**
      * Return last created key packet or key packet by given keyID
      * that is available for signing or verification
-     * 
+     *
      * @param string $keyID
      * @param DateTimeInterface $time
      * @return KeyPacketInterface
      */
     function getSigningKeyPacket(
-        string $keyID = '', ?DateTimeInterface $time = null
+        string $keyID = "",
+        ?DateTimeInterface $time = null
     ): KeyPacketInterface;
 
     /**
      * Return last created key packet or key packet by given keyID
      * that is available for encryption or decryption
-     * 
+     *
      * @param string $keyID
      * @param DateTimeInterface $time
      * @return KeyPacketInterface
      */
     function getEncryptionKeyPacket(
-        string $keyID = '', ?DateTimeInterface $time = null
+        string $keyID = "",
+        ?DateTimeInterface $time = null
     ): KeyPacketInterface;
 
     /**
      * Return primary user
-     * 
+     *
      * @param DateTimeInterface $time
      * @return UserInterface
      */
@@ -126,14 +125,14 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
 
     /**
      * Return key is private
-     * 
+     *
      * @return bool
      */
     function isPrivate(): bool;
 
     /**
      * Return AEAD supported
-     * 
+     *
      * @return bool
      */
     function aeadSupported(): bool;
@@ -169,29 +168,28 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
     /**
      * Verify key.
      * Checks for revocation signatures, expiration time and valid self signature.
-     * 
+     *
      * @param string $userID
      * @param DateTimeInterface $time
      * @return bool
      */
-    function verify(
-        string $userID = '', ?DateTimeInterface $time = null
-    ): bool;
+    function verify(string $userID = "", ?DateTimeInterface $time = null): bool;
 
     /**
      * Certify by private key.
-     * 
+     *
      * @param PrivateKeyInterface $signKey
      * @param DateTimeInterface $time
      * @return self
      */
     function certifyBy(
-        PrivateKeyInterface $signKey, ?DateTimeInterface $time = null
+        PrivateKeyInterface $signKey,
+        ?DateTimeInterface $time = null
     ): self;
 
     /**
      * Revoke by private key.
-     * 
+     *
      * @param PrivateKeyInterface $signKey
      * @param string $revocationReason
      * @param RevocationReasonTag $reasonTag
@@ -200,14 +198,14 @@ interface KeyInterface extends ArmorableInterface, LoggerAwareInterface, PacketC
      */
     function revokeBy(
         PrivateKeyInterface $signKey,
-        string $revocationReason = '',
+        string $revocationReason = "",
         RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
         ?DateTimeInterface $time = null
     ): self;
 
     /**
      * Get the logger.
-     * 
+     *
      * @return LoggerInterface
      */
     function getLogger(): LoggerInterface;

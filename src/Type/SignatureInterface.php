@@ -12,12 +12,14 @@ use DateTimeInterface;
 
 /**
  * Signature interface
- * 
+ *
  * @package  OpenPGP
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-interface SignatureInterface extends ArmorableInterface, PacketContainerInterface
+interface SignatureInterface extends
+    ArmorableInterface,
+    PacketContainerInterface
 {
     /**
      * Get signing key IDs

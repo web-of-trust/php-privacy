@@ -8,29 +8,19 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\Common\{
-    AsymmetricKey,
-    PrivateKey,
-    PublicKey,
-};
-use phpseclib3\Crypt\EC;
-use phpseclib3\Crypt\EC\Curves\{
-    Curve25519,
-    Ed25519,
-};
-use phpseclib3\Crypt\EC\PrivateKey as ECPrivateKey;
-use phpseclib3\Crypt\EC\Formats\Keys\{
-    MontgomeryPrivate,
-    PKCS8,
-};
-use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\CurveOid;
 use OpenPGP\Type\KeyMaterialInterface;
+use phpseclib3\Crypt\Common\{AsymmetricKey, PrivateKey, PublicKey};
+use phpseclib3\Crypt\EC;
+use phpseclib3\Crypt\EC\Curves\{Curve25519, Ed25519};
+use phpseclib3\Crypt\EC\PrivateKey as ECPrivateKey;
+use phpseclib3\Crypt\EC\Formats\Keys\{MontgomeryPrivate, PKCS8};
+use phpseclib3\Math\BigInteger;
 
 /**
  * EC secret key material class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -54,29 +44,26 @@ abstract class ECSecretKeyMaterial implements KeyMaterialInterface
         private readonly BigInteger $d,
         private readonly KeyMaterialInterface $publicMaterial,
         ?ECPrivateKey $privateKey = null
-    )
-    {
+    ) {
         if ($privateKey instanceof ECPrivateKey) {
             $this->privateKey = $privateKey;
-        }
-        else {
-            $format = 'PKCS8';
+        } else {
+            $format = "PKCS8";
             $params = $publicMaterial->getParameters();
-            $curve = $params['curve'];
+            $curve = $params["curve"];
             if ($curve instanceof Curve25519) {
                 $key = strrev($d->toBytes());
-                $format = 'MontgomeryPrivate';
-            }
-            elseif ($curve instanceof Ed25519) {
+                $format = "MontgomeryPrivate";
+            } elseif ($curve instanceof Ed25519) {
                 $arr = $curve->extractSecret($d->toBytes());
                 $key = PKCS8::savePrivateKey(
-                    $arr['dA'], $curve, $params['QA'], $arr['secret']
+                    $arr["dA"],
+                    $curve,
+                    $params["QA"],
+                    $arr["secret"]
                 );
-            }
-            else {
-                $key = PKCS8::savePrivateKey(
-                    $d, $curve, $params['QA']
-                );
+            } else {
+                $key = PKCS8::savePrivateKey($d, $curve, $params["QA"]);
             }
             $this->privateKey = EC::loadPrivateKeyFormat($format, $key);
         }
@@ -148,14 +135,13 @@ abstract class ECSecretKeyMaterial implements KeyMaterialInterface
     public function getParameters(): array
     {
         $params = $this->publicMaterial->getParameters();
-        $curve = $params['curve'];
+        $curve = $params["curve"];
         if ($curve instanceof Curve25519) {
             return MontgomeryPrivate::load(
-                $this->privateKey->toString('MontgomeryPrivate')
+                $this->privateKey->toString("MontgomeryPrivate")
             );
-        }
-        else {
-            return PKCS8::load($this->privateKey->toString('PKCS8'));
+        } else {
+            return PKCS8::load($this->privateKey->toString("PKCS8"));
         }
     }
 
@@ -175,10 +161,11 @@ abstract class ECSecretKeyMaterial implements KeyMaterialInterface
                     return $this->publicMaterial->getQ()->equals($dG);
                 default:
                     $params = $this->publicMaterial->getParameters();
-                    $QA = $params['QA'];
-                    $curve = $params['curve'];
+                    $QA = $params["QA"];
+                    $curve = $params["curve"];
                     list($x, $y) = $curve->multiplyPoint(
-                        $curve->getBasePoint(), $this->d
+                        $curve->getBasePoint(),
+                        $this->d
                     );
                     return $x->equals($QA[0]) && $y->equals($QA[1]);
             }
@@ -191,9 +178,6 @@ abstract class ECSecretKeyMaterial implements KeyMaterialInterface
      */
     public function toBytes(): string
     {
-        return implode([
-            pack('n', $this->d->getLength()),
-            $this->d->toBytes(),
-        ]);
+        return implode([pack("n", $this->d->getLength()), $this->d->toBytes()]);
     }
 }

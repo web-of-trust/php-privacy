@@ -13,7 +13,7 @@ use OpenPGP\Enum\PacketTag;
 
 /**
  * Packet reader class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -30,15 +30,14 @@ class PacketReader
      */
     public function __construct(
         private readonly PacketTag $packetTag,
-        private readonly string $data = '',
+        private readonly string $data = "",
         private readonly int $offset = 0
-    )
-    {
+    ) {
     }
 
     /**
      * Get packet tag
-     * 
+     *
      * @return PacketTag
      */
     public function getPacketTag(): PacketTag
@@ -48,7 +47,7 @@ class PacketReader
 
     /**
      * Get packet data
-     * 
+     *
      * @return string
      */
     public function getData(): string
@@ -58,7 +57,7 @@ class PacketReader
 
     /**
      * Get offset
-     * 
+     *
      * @return int
      */
     public function getOffset(): int
@@ -75,21 +74,22 @@ class PacketReader
      */
     public static function read(string $bytes, int $offset = 0): self
     {
-        if (strlen($bytes) <= $offset ||
+        if (
+            strlen($bytes) <= $offset ||
             strlen(substr($bytes, $offset)) < 2 ||
             (ord($bytes[$offset]) & 0x80) === 0
         ) {
             throw new \UnexpectedValueException(
-                'Error during parsing. This data probably does not conform to a valid OpenPGP format.',
+                "Error during parsing. This data probably does not conform to a valid OpenPGP format."
             );
         }
 
         $headerByte = ord($bytes[$offset++]);
-        $oldFormat = (($headerByte & 0x40) != 0) ? false : true;
+        $oldFormat = ($headerByte & 0x40) != 0 ? false : true;
         $tagByte = $oldFormat ? ($headerByte & 0x3f) >> 2 : $headerByte & 0x3f;
         $tag = PacketTag::from($tagByte);
 
-        $packetData = '';
+        $packetData = "";
         if ($oldFormat) {
             $lengthType = $headerByte & 0x03;
             switch ($lengthType) {
@@ -108,18 +108,16 @@ class PacketReader
                     $packetLength = strlen($bytes) - $offset;
             }
             $packetData = substr($bytes, $offset, $packetLength);
-        }
-        else {
+        } else {
             $length = ord($bytes[$offset++]);
             if ($length < 192) {
                 $packetLength = $length;
                 $packetData = substr($bytes, $offset, $packetLength);
-            }
-            elseif ($length < 224) {
-                $packetLength = (($length - 192) << 8) + (ord($bytes[$offset++])) + 192;
+            } elseif ($length < 224) {
+                $packetLength =
+                    ($length - 192 << 8) + ord($bytes[$offset++]) + 192;
                 $packetData = substr($bytes, $offset, $packetLength);
-            }
-            elseif ($length < 255) {
+            } elseif ($length < 255) {
                 $partialLength = 1 << ($length & 0x1f);
                 $partialData = [substr($bytes, $offset, $partialLength)];
                 $pos = $offset + $partialLength;
@@ -130,19 +128,17 @@ class PacketReader
                         $partialData[] = substr($bytes, $pos, $partialLength);
                         $pos += $partialLength;
                         break;
-                    }
-                    elseif ($length < 224) {
-                        $partialLength = (($length - 192) << 8) + (ord($bytes[$pos++])) + 192;
+                    } elseif ($length < 224) {
+                        $partialLength =
+                            ($length - 192 << 8) + ord($bytes[$pos++]) + 192;
                         $partialData[] = substr($bytes, $pos, $partialLength);
                         $pos += $partialLength;
                         break;
-                    }
-                    elseif ($length < 255) {
+                    } elseif ($length < 255) {
                         $partialLength = 1 << ($length & 0x1f);
                         $partialData[] = substr($bytes, $pos, $partialLength);
                         $pos += $partialLength;
-                    }
-                    else {
+                    } else {
                         $partialLength = Helper::bytesToLong($bytes, $pos);
                         $pos += 4;
                         $partialData[] = substr($bytes, $pos, $partialLength);
@@ -152,18 +148,13 @@ class PacketReader
                 }
                 $packetData = implode($partialData);
                 $packetLength = $pos - $offset;
-            }
-            else {
+            } else {
                 $packetLength = Helper::bytesToLong($bytes, $offset);
                 $offset += 4;
                 $packetData = substr($bytes, $offset, $packetLength);
             }
         }
 
-        return new self(
-            $tag,
-            $packetData,
-            $offset + $packetLength
-        );
+        return new self($tag, $packetData, $offset + $packetLength);
     }
 }

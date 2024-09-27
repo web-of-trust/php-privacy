@@ -8,23 +8,15 @@
 
 namespace OpenPGP\Message;
 
-use OpenPGP\Common\{
-    Armor,
-    Config,
-};
+use OpenPGP\Common\{Armor, Config};
 use OpenPGP\Enum\ArmorType;
 use OpenPGP\Packet\PacketList;
 use OpenPGP\Type\{
     ArmorableInterface,
     PacketContainerInterface,
-    PacketInterface,
-    PacketListInterface,
+    PacketListInterface
 };
-use Psr\Log\{
-    LoggerAwareInterface,
-    LoggerAwareTrait,
-    LoggerInterface,
-};
+use Psr\Log\{LoggerAwareInterface, LoggerAwareTrait, LoggerInterface};
 
 /**
  * OpenPGP abstract message class
@@ -33,7 +25,10 @@ use Psr\Log\{
  * @category Message
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-abstract class AbstractMessage implements ArmorableInterface, LoggerAwareInterface, PacketContainerInterface
+abstract class AbstractMessage implements
+    ArmorableInterface,
+    LoggerAwareInterface,
+    PacketContainerInterface
 {
     use LoggerAwareTrait;
 
@@ -45,8 +40,7 @@ abstract class AbstractMessage implements ArmorableInterface, LoggerAwareInterfa
      */
     public function __construct(
         private readonly PacketListInterface $packetList
-    )
-    {
+    ) {
         $this->setLogger(Config::getLogger());
     }
 

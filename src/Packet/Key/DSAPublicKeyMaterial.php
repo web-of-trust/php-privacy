@@ -8,24 +8,18 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\Common\{
-    AsymmetricKey,
-    PublicKey,
-};
+use OpenPGP\Common\Helper;
+use OpenPGP\Enum\HashAlgorithm;
+use OpenPGP\Type\{KeyMaterialInterface, PublicKeyMaterialInterface};
+use phpseclib3\Crypt\Common\{AsymmetricKey, PublicKey};
 use phpseclib3\Crypt\DSA;
 use phpseclib3\Crypt\DSA\PublicKey as DSAPublicKey;
 use phpseclib3\Crypt\DSA\Formats\Keys\PKCS8;
 use phpseclib3\Math\BigInteger;
-use OpenPGP\Common\Helper;
-use OpenPGP\Enum\HashAlgorithm;
-use OpenPGP\Type\{
-    KeyMaterialInterface,
-    PublicKeyMaterialInterface,
-};
 
 /**
  * DSA public key material class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -53,14 +47,15 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
         private readonly BigInteger $generator,
         private readonly BigInteger $exponent,
         ?DSAPublicKey $publicKey = null
-    )
-    {
-        $this->publicKey = $publicKey ?? DSA::loadPublicKey([
-            'y' => $exponent,
-            'p' => $prime,
-            'q' => $order,
-            'g' => $generator,
-        ]);
+    ) {
+        $this->publicKey =
+            $publicKey ??
+            DSA::loadPublicKey([
+                "y" => $exponent,
+                "p" => $prime,
+                "q" => $order,
+                "g" => $generator,
+            ]);
     }
 
     /**
@@ -82,12 +77,7 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
         $offset += $generator->getLengthInBytes() + 2;
         $exponent = Helper::readMPI(substr($bytes, $offset));
 
-        return new self(
-            $prime,
-            $order,
-            $generator,
-            $exponent
-        );
+        return new self($prime, $order, $generator, $exponent);
     }
 
     /**
@@ -167,7 +157,7 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
      */
     public function getParameters(): array
     {
-        return PKCS8::load($this->publicKey->toString('PKCS8'));
+        return PKCS8::load($this->publicKey->toString("PKCS8"));
     }
 
     /**
@@ -184,13 +174,13 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
     public function toBytes(): string
     {
         return implode([
-            pack('n', $this->prime->getLength()),
+            pack("n", $this->prime->getLength()),
             $this->prime->toBytes(),
-            pack('n', $this->order->getLength()),
+            pack("n", $this->order->getLength()),
             $this->order->toBytes(),
-            pack('n', $this->generator->getLength()),
+            pack("n", $this->generator->getLength()),
             $this->generator->toBytes(),
-            pack('n', $this->exponent->getLength()),
+            pack("n", $this->exponent->getLength()),
             $this->exponent->toBytes(),
         ]);
     }
@@ -202,15 +192,12 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
         HashAlgorithm $hash,
         string $message,
         string $signature
-    ): bool
-    {
+    ): bool {
         $r = Helper::readMPI($signature);
-        $s = Helper::readMPI(
-            substr($signature, $r->getLengthInBytes() + 2)
-        );
+        $s = Helper::readMPI(substr($signature, $r->getLengthInBytes() + 2));
         return $this->publicKey
-            ->withSignatureFormat('Raw')
+            ->withSignatureFormat("Raw")
             ->withHash(strtolower($hash->name))
-            ->verify($message, ['r' => $r, 's' => $s]);
+            ->verify($message, ["r" => $r, "s" => $s]);
     }
 }

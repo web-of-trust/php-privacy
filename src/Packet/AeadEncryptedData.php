@@ -9,37 +9,34 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Common\Config;
-use OpenPGP\Enum\{
-    AeadAlgorithm,
-    PacketTag,
-    SymmetricAlgorithm,
-};
+use OpenPGP\Enum\{AeadAlgorithm, PacketTag, SymmetricAlgorithm};
 use OpenPGP\Type\{
     EncryptedDataPacketInterface,
     SessionKeyInterface,
-    PacketListInterface,
+    PacketListInterface
 };
 use phpseclib3\Crypt\Random;
 
 /**
  * AEAD Protected Data Packet class
- * 
+ *
  * Implementation of the Symmetrically Encrypted Authenticated Encryption with
  * Additional Data (AEAD) Protected Data Packet(Tag 20)
  * See https://datatracker.ietf.org/doc/html/draft-ietf-openpgp-rfc4880bis#name-aead-encrypted-data-packet-
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInterface
+class AeadEncryptedData extends AbstractPacket implements
+    EncryptedDataPacketInterface
 {
     use EncryptedDataTrait;
 
-    const VERSION      = 1;
-    const ZERO_CHAR    = "\x00";
-    const AEAD_ENCRYPT = 'encrypt';
-    const AEAD_DECRYPT = 'decrypt';
+    const VERSION = 1;
+    const ZERO_CHAR = "\x00";
+    const AEAD_ENCRYPT = "encrypt";
+    const AEAD_DECRYPT = "decrypt";
 
     /**
      * Constructor
@@ -57,10 +54,9 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
         private readonly AeadAlgorithm $aead,
         private readonly int $chunkSize,
         private readonly string $iv,
-        private readonly string $encrypted = '',
+        private readonly string $encrypted = "",
         private readonly ?PacketListInterface $packetList = null
-    )
-    {
+    ) {
         parent::__construct(PacketTag::AeadEncryptedData);
     }
 
@@ -75,8 +71,8 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
         $version = ord($bytes[$offset++]);
         if ($version !== self::VERSION) {
             throw new \UnexpectedValueException(
-                "Version $version of the AEAD-encrypted data packet is not supported.",
-          );
+                "Version $version of the AEAD-encrypted data packet is not supported."
+            );
         }
 
         $symmetric = SymmetricAlgorithm::from(ord($bytes[$offset++]));
@@ -86,13 +82,7 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
         $offset += $aead->ivLength();
         $encrypted = substr($bytes, $offset);
 
-        return new self(
-            $symmetric,
-            $aead,
-            $chunkSize,
-            $iv,
-            $encrypted
-        );
+        return new self($symmetric, $aead, $chunkSize, $iv, $encrypted);
     }
 
     /**
@@ -107,18 +97,12 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
         string $key,
         PacketListInterface $packetList,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
-    ): self
-    {
+    ): self {
         $aead = Config::getPreferredAead();
         $chunkSize = Config::getAeadChunkSize();
         $iv = Random::string($aead->ivLength());
 
-        $encryptor = new self(
-            $symmetric,
-            $aead,
-            $chunkSize,
-            $iv
-        );
+        $encryptor = new self($symmetric, $aead, $chunkSize, $iv);
 
         return new self(
             $symmetric,
@@ -138,9 +122,9 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
      * @return self
      */
     public static function encryptPacketsWithSessionKey(
-        SessionKeyInterface $sessionKey, PacketListInterface $packetList
-    ): self
-    {
+        SessionKeyInterface $sessionKey,
+        PacketListInterface $packetList
+    ): self {
         return self::encryptPackets(
             $sessionKey->getEncryptionKey(),
             $packetList,
@@ -205,7 +189,7 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
 
     /**
      * Get initialization vector
-     * 
+     *
      * @return string
      */
     public function getIV(): string
@@ -230,18 +214,19 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
     public function decrypt(
         string $key,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
-    ): self
-    {
+    ): self {
         if ($this->packetList instanceof PacketListInterface) {
             return $this;
-        }
-        else {
+        } else {
             $length = strlen($this->encrypted);
             $data = substr(
-                $this->encrypted, 0, $length - $this->aead->tagLength()
+                $this->encrypted,
+                0,
+                $length - $this->aead->tagLength()
             );
             $authTag = substr(
-                $this->encrypted, $length - $this->aead->tagLength()
+                $this->encrypted,
+                $length - $this->aead->tagLength()
             );
 
             return new self(
@@ -259,7 +244,7 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
 
     /**
      * En/decrypt the payload.
-     * 
+     *
      * @param string $fn - Whether to encrypt or decrypt
      * @param string $key - The session key used to en/decrypt the payload
      * @param string $data - The data to en/decrypt
@@ -267,24 +252,29 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
      * @return string
      */
     protected function crypt(
-        string $fn, string $key, string $data, string $finalChunk = ''
-    ): string
-    {
+        string $fn,
+        string $key,
+        string $data,
+        string $finalChunk = ""
+    ): string {
         $cipher = $this->aead->cipherEngine($key, $this->symmetric);
 
         $dataLength = strlen($data);
         $tagLength = $fn === self::AEAD_DECRYPT ? $this->aead->tagLength() : 0;
         // chunk_size = ((uint64_t)1 << (c + 6))
-        $chunkSize = (1 << ($this->chunkSize + 6)) + $tagLength;
+        $chunkSize = (1 << $this->chunkSize + 6) + $tagLength;
 
         $aData = $this->getAData();
         $aDataBuffer = substr_replace(
-            str_repeat(self::ZERO_CHAR, 13), $aData, 0, strlen($aData)
+            str_repeat(self::ZERO_CHAR, 13),
+            $aData,
+            0,
+            strlen($aData)
         );
 
         $crypted = [];
         $chunkIndexData = substr($aDataBuffer, 5, 8);
-        for ($chunkIndex = 0; $chunkIndex === 0 || strlen($data) > 0;) {
+        for ($chunkIndex = 0; $chunkIndex === 0 || strlen($data) > 0; ) {
             $crypted[] = $cipher->$fn(
                 substr($data, 0, $chunkSize),
                 $cipher->getNonce($this->iv, $chunkIndexData),
@@ -292,9 +282,12 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
             );
             // We take a chunk of data, en/decrypt it, and shift `data` to the next chunk.
             $data = substr($data, $chunkSize);
-            $ciBytes = pack('N', ++$chunkIndex);
+            $ciBytes = pack("N", ++$chunkIndex);
             $aDataBuffer = substr_replace(
-                $aDataBuffer, $ciBytes, 9, strlen($ciBytes)
+                $aDataBuffer,
+                $ciBytes,
+                9,
+                strlen($ciBytes)
             );
             $chunkIndexData = substr($aDataBuffer, 5, 8);
         }
@@ -303,10 +296,21 @@ class AeadEncryptedData extends AbstractPacket implements EncryptedDataPacketInt
         // chunk to get the final authentication tag or validate that final
         // authentication tag.
         $aDataTagBuffer = substr_replace(
-            str_repeat(self::ZERO_CHAR, 21), $aDataBuffer, 0, strlen($aDataBuffer))
-        ;
-        $cryptedBytes = pack('N', $dataLength - $tagLength * (int) ceil($dataLength / $chunkSize));
-        $aDataTagBuffer = substr_replace($aDataTagBuffer, $cryptedBytes, 17, strlen($cryptedBytes));
+            str_repeat(self::ZERO_CHAR, 21),
+            $aDataBuffer,
+            0,
+            strlen($aDataBuffer)
+        );
+        $cryptedBytes = pack(
+            "N",
+            $dataLength - $tagLength * (int) ceil($dataLength / $chunkSize)
+        );
+        $aDataTagBuffer = substr_replace(
+            $aDataTagBuffer,
+            $cryptedBytes,
+            17,
+            strlen($cryptedBytes)
+        );
         $crypted[] = $cipher->$fn(
             $finalChunk,
             $cipher->getNonce($this->iv, $chunkIndexData),

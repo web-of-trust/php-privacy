@@ -13,13 +13,13 @@ use OpenPGP\Enum\PacketTag;
 /**
  * Implementation of the Trust Packet (Tag 12)
  * See https://tools.ietf.org/html/rfc4880#section-5.10
- * 
+ *
  * The Trust packet is used only within keyrings and is not normally exported.
  * Trust packets contain data that record the user's specifications
  * of which key holders are trustworthy introducers, along with other information
  * that implementing software uses for trust information.
  * The format of Trust packets is defined by a given implementation.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com

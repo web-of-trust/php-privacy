@@ -8,19 +8,16 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\Common\AsymmetricKey;
-use phpseclib3\Crypt\RSA;
-use phpseclib3\Crypt\RSA\{
-    PrivateKey,
-    PublicKey,
-};
-use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Type\SessionKeyInterface;
+use phpseclib3\Crypt\Common\AsymmetricKey;
+use phpseclib3\Crypt\RSA;
+use phpseclib3\Crypt\RSA\{PrivateKey, PublicKey};
+use phpseclib3\Math\BigInteger;
 
 /**
  * RSA session key cryptor class.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -33,9 +30,7 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
      * @param BigInteger $encrypted
      * @return self
      */
-    public function __construct(
-        private readonly BigInteger $encrypted
-    )
+    public function __construct(private readonly BigInteger $encrypted)
     {
     }
 
@@ -45,9 +40,7 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
      * @param string $bytes
      * @return self
      */
-    public static function fromBytes(
-        string $bytes
-    ): self
+    public static function fromBytes(string $bytes): self
     {
         return new self(Helper::readMPI($bytes));
     }
@@ -60,21 +53,24 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
      * @return self
      */
     public static function encryptSessionKey(
-        SessionKeyInterface $sessionKey, AsymmetricKey $publicKey
-    ): self
-    {
+        SessionKeyInterface $sessionKey,
+        AsymmetricKey $publicKey
+    ): self {
         if ($publicKey instanceof PublicKey) {
             $publicKey = $publicKey->withPadding(RSA::ENCRYPTION_PKCS1);
             return new self(
-                Helper::bin2BigInt($publicKey->encrypt(implode([
-                    $sessionKey->toBytes(),
-                    $sessionKey->computeChecksum(),
-                ])))
+                Helper::bin2BigInt(
+                    $publicKey->encrypt(
+                        implode([
+                            $sessionKey->toBytes(),
+                            $sessionKey->computeChecksum(),
+                        ])
+                    )
+                )
             );
-        }
-        else {
+        } else {
             throw new \InvalidArgumentException(
-                'Public key is not instance of RSA key'
+                "Public key is not instance of RSA key"
             );
         }
     }
@@ -85,7 +81,7 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
     public function toBytes(): string
     {
         return implode([
-            pack('n', $this->encrypted->getLength()),
+            pack("n", $this->encrypted->getLength()),
             $this->encrypted->toBytes(),
         ]);
     }
@@ -107,13 +103,10 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
     {
         if ($privateKey instanceof PrivateKey) {
             $privateKey = $privateKey->withPadding(RSA::ENCRYPTION_PKCS1);
-            return $privateKey->decrypt(
-                $this->encrypted->toBytes()
-            );
-        }
-        else {
+            return $privateKey->decrypt($this->encrypted->toBytes());
+        } else {
             throw new \InvalidArgumentException(
-                'Private key is not instance of RSA key'
+                "Private key is not instance of RSA key"
             );
         }
     }

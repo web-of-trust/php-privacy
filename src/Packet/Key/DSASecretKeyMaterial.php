@@ -8,28 +8,18 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\Common\{
-    AsymmetricKey,
-    PrivateKey,
-    PublicKey,
-};
+use OpenPGP\Common\Helper;
+use OpenPGP\Enum\{DHKeySize, HashAlgorithm};
+use OpenPGP\Type\{KeyMaterialInterface, SecretKeyMaterialInterface};
+use phpseclib3\Crypt\Common\{AsymmetricKey, PrivateKey, PublicKey};
 use phpseclib3\Crypt\DSA;
 use phpseclib3\Crypt\DSA\PrivateKey as DSAPrivateKey;
 use phpseclib3\Crypt\DSA\Formats\Keys\PKCS8;
 use phpseclib3\Math\BigInteger;
-use OpenPGP\Common\Helper;
-use OpenPGP\Enum\{
-    DHKeySize,
-    HashAlgorithm,
-};
-use OpenPGP\Type\{
-    KeyMaterialInterface,
-    SecretKeyMaterialInterface,
-};
 
 /**
  * DSA secret key material class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -53,12 +43,13 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
         private readonly BigInteger $exponent,
         private readonly KeyMaterialInterface $publicMaterial,
         ?DSAPrivateKey $privateKey = null
-    )
-    {
-        $this->privateKey = $privateKey ?? DSA::loadPrivateKey([
-            'x' => $exponent,
-            ...$publicMaterial->getParameters(),
-        ]);
+    ) {
+        $this->privateKey =
+            $privateKey ??
+            DSA::loadPrivateKey([
+                "x" => $exponent,
+                ...$publicMaterial->getParameters(),
+            ]);
     }
 
     /**
@@ -69,12 +60,10 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
      * @return self
      */
     public static function fromBytes(
-        string $bytes, KeyMaterialInterface $publicMaterial
-    ): self
-    {
-        return new self(
-            Helper::readMPI($bytes), $publicMaterial
-        );
+        string $bytes,
+        KeyMaterialInterface $publicMaterial
+    ): self {
+        return new self(Helper::readMPI($bytes), $publicMaterial);
     }
 
     /**
@@ -85,20 +74,17 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
      */
     public static function generate(
         DHKeySize $keySize = DHKeySize::L2048_N224
-    ): self
-    {
-        $privateKey = DSA::createKey(
-            $keySize->lSize(), $keySize->nSize()
-        );
-        $params = PKCS8::load($privateKey->toString('PKCS8'));
+    ): self {
+        $privateKey = DSA::createKey($keySize->lSize(), $keySize->nSize());
+        $params = PKCS8::load($privateKey->toString("PKCS8"));
         return new self(
-            $params['x'],
+            $params["x"],
             new DSAPublicKeyMaterial(
-                $params['p'],
-                $params['q'],
-                $params['g'],
-                $params['g']->powMod($params['x'], $params['p']),
-                $privateKey->getPublicKey(),
+                $params["p"],
+                $params["q"],
+                $params["g"],
+                $params["g"]->powMod($params["x"], $params["p"]),
+                $privateKey->getPublicKey()
             ),
             $privateKey
         );
@@ -159,7 +145,7 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
      */
     public function getParameters(): array
     {
-        return PKCS8::load($this->privateKey->toString('PKCS8'));
+        return PKCS8::load($this->privateKey->toString("PKCS8"));
     }
 
     /**
@@ -178,8 +164,10 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
             $exponent = $this->publicMaterial->getExponent();
 
             // Check that 1 < g < p
-            if ($generator->compare($one) <= 0 ||
-                $generator->compare($prime) >= 0) {
+            if (
+                $generator->compare($one) <= 0 ||
+                $generator->compare($prime) >= 0
+            ) {
                 return false;
             }
 
@@ -221,7 +209,7 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
     public function toBytes(): string
     {
         return implode([
-            pack('n', $this->exponent->getLength()),
+            pack("n", $this->exponent->getLength()),
             $this->exponent->toBytes(),
         ]);
     }
@@ -232,14 +220,14 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
     public function sign(HashAlgorithm $hash, string $message): string
     {
         $signature = $this->privateKey
-            ->withSignatureFormat('Raw')
+            ->withSignatureFormat("Raw")
             ->withHash(strtolower($hash->name))
             ->sign($message);
         return implode([
-            pack('n', $signature['r']->getLength()),
-            $signature['r']->toBytes(),
-            pack('n', $signature['s']->getLength()),
-            $signature['s']->toBytes(),
+            pack("n", $signature["r"]->getLength()),
+            $signature["r"]->toBytes(),
+            pack("n", $signature["s"]->getLength()),
+            $signature["s"]->toBytes(),
         ]);
     }
 }

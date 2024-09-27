@@ -12,7 +12,7 @@ use DateTimeInterface;
 
 /**
  * Signed message interface
- * 
+ *
  * @package  OpenPGP
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -34,5 +34,8 @@ interface SignedMessageInterface extends ArmorableInterface
      * @param DateTimeInterface $time
      * @return array
      */
-    function verify(array $verificationKeys, ?DateTimeInterface $time = null): array;
+    function verify(
+        array $verificationKeys,
+        ?DateTimeInterface $time = null
+    ): array;
 }

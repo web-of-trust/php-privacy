@@ -9,30 +9,21 @@
 namespace OpenPGP\Key;
 
 use DateTimeInterface;
-use OpenPGP\Enum\{
-    KeyAlgorithm,
-    RevocationReasonTag,
-};
-use OpenPGP\Packet\{
-    PacketList,
-    Signature,
-};
-use OpenPGP\Packet\Signature\{
-    KeyFlags,
-    RevocationReason,
-};
+use OpenPGP\Enum\{KeyAlgorithm, RevocationReasonTag};
+use OpenPGP\Packet\{PacketList, Signature};
+use OpenPGP\Packet\Signature\{KeyFlags, RevocationReason};
 use OpenPGP\Type\{
     KeyInterface,
     PacketListInterface,
     PrivateKeyInterface,
     SignaturePacketInterface,
     SubkeyInterface,
-    SubkeyPacketInterface,
+    SubkeyPacketInterface
 };
 
 /**
  * OpenPGP sub key class
- * 
+ *
  * @package  OpenPGP
  * @category Key
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -41,14 +32,14 @@ class Subkey implements SubkeyInterface
 {
     /**
      * Revocation signature packets
-     * 
+     *
      * @var array
      */
     private array $revocationSignatures;
 
     /**
      * Binding signature packets
-     * 
+     *
      * @var array
      */
     private array $bindingSignatures;
@@ -67,21 +58,22 @@ class Subkey implements SubkeyInterface
         private readonly SubkeyPacketInterface $keyPacket,
         array $revocationSignatures = [],
         array $bindingSignatures = []
-    )
-    {
+    ) {
         $this->revocationSignatures = array_filter(
             $revocationSignatures,
-            static fn ($signature) => $signature instanceof SignaturePacketInterface
+            static fn($signature) => $signature instanceof
+                SignaturePacketInterface
         );
         $this->bindingSignatures = array_filter(
             $bindingSignatures,
-            static fn ($signature) => $signature instanceof SignaturePacketInterface
+            static fn($signature) => $signature instanceof
+                SignaturePacketInterface
         );
     }
 
     /**
      * Get main key
-     * 
+     *
      * @return KeyInterface
      */
     public function getMainKey(): KeyInterface
@@ -112,14 +104,11 @@ class Subkey implements SubkeyInterface
     {
         if (!empty($this->bindingSignatures)) {
             $signatures = $this->bindingSignatures;
-            usort(
-                $signatures,
-                static function ($a, $b): int {
-                    $aTime = $a->getSignatureCreationTime() ?? new \DateTime();
-                    $bTime = $b->getSignatureCreationTime() ?? new \DateTime();
-                    return $aTime->getTimestamp() - $bTime->getTimestamp();
-                }
-            );
+            usort($signatures, static function ($a, $b): int {
+                $aTime = $a->getSignatureCreationTime() ?? new \DateTime();
+                $bTime = $b->getSignatureCreationTime() ?? new \DateTime();
+                return $aTime->getTimestamp() - $bTime->getTimestamp();
+            });
             return array_pop($signatures);
         }
         return null;
@@ -190,7 +179,7 @@ class Subkey implements SubkeyInterface
             return false;
         }
         $keyFlags = $this->getLatestBindingSignature()?->getKeyFlags();
-        if (($keyFlags instanceof KeyFlags) && !$keyFlags->isSignData()) {
+        if ($keyFlags instanceof KeyFlags && !$keyFlags->isSignData()) {
             return false;
         }
         return true;
@@ -205,9 +194,13 @@ class Subkey implements SubkeyInterface
             return false;
         }
         $keyFlags = $this->getLatestBindingSignature()?->getKeyFlags();
-        if (($keyFlags instanceof KeyFlags) &&
-           !($keyFlags->isEncryptCommunication() || $keyFlags->isEncryptStorage()))
-        {
+        if (
+            $keyFlags instanceof KeyFlags &&
+            !(
+                $keyFlags->isEncryptCommunication() ||
+                $keyFlags->isEncryptStorage()
+            )
+        ) {
             return false;
         }
         return true;
@@ -220,36 +213,39 @@ class Subkey implements SubkeyInterface
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
         ?DateTimeInterface $time = null
-    ): bool
-    {
+    ): bool {
         if (!empty($this->revocationSignatures)) {
             $revocationKeyIDs = [];
             $keyID = $certificate?->getIssuerKeyID();
-            $keyPacket = $verifyKey?->toPublic()->getSigningKeyPacket() ??
-                         $this->mainKey->toPublic()->getSigningKeyPacket();
+            $keyPacket =
+                $verifyKey?->toPublic()->getSigningKeyPacket() ??
+                $this->mainKey->toPublic()->getSigningKeyPacket();
             foreach ($this->revocationSignatures as $signature) {
                 if (empty($keyID) || $keyID === $signature->getIssuerKeyID()) {
-                    if ($signature->verify(
-                        $keyPacket,
-                        implode([
-                            $this->mainKey->getKeyPacket()->getSignBytes(),
-                            $this->keyPacket->getSignBytes(),
-                        ]),
-                        $time
-                    )) {
+                    if (
+                        $signature->verify(
+                            $keyPacket,
+                            implode([
+                                $this->mainKey->getKeyPacket()->getSignBytes(),
+                                $this->keyPacket->getSignBytes(),
+                            ]),
+                            $time
+                        )
+                    ) {
                         $reason = $signature->getRevocationReason();
                         if ($reason instanceof RevocationReason) {
-                            $this->mainKey->getLogger()->warning(
-                                'Subkey is revoked. Reason: {reason}',
-                                [
-                                    'reason' => $reason->getDescription(),
-                                ]
-                            );
-                        }
-                        else {
-                            $this->mainKey->getLogger()->warning(
-                                'Subkey is revoked.'
-                            );
+                            $this->mainKey
+                                ->getLogger()
+                                ->warning(
+                                    "Subkey is revoked. Reason: {reason}",
+                                    [
+                                        "reason" => $reason->getDescription(),
+                                    ]
+                                );
+                        } else {
+                            $this->mainKey
+                                ->getLogger()
+                                ->warning("Subkey is revoked.");
                         }
                         return true;
                     }
@@ -271,14 +267,16 @@ class Subkey implements SubkeyInterface
         }
         $keyPacket = $this->mainKey->toPublic()->getSigningKeyPacket();
         foreach ($this->bindingSignatures as $signature) {
-            if (!$signature->verify(
-                $keyPacket,
-                implode([
-                    $this->mainKey->getKeyPacket()->getSignBytes(),
-                    $this->keyPacket->getSignBytes(),
-                ]),
-                $time
-            )) {
+            if (
+                !$signature->verify(
+                    $keyPacket,
+                    implode([
+                        $this->mainKey->getKeyPacket()->getSignBytes(),
+                        $this->keyPacket->getSignBytes(),
+                    ]),
+                    $time
+                )
+            ) {
                 return false;
             }
         }
@@ -290,11 +288,10 @@ class Subkey implements SubkeyInterface
      */
     public function revokeBy(
         PrivateKeyInterface $signKey,
-        string $revocationReason = '',
+        string $revocationReason = "",
         RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
         ?DateTimeInterface $time = null
-    ): self
-    {
+    ): self {
         $self = clone $this;
         $keyPacket = $signKey->getSigningKeyPacket();
         $self->revocationSignatures[] = Signature::createSubkeyRevocation(

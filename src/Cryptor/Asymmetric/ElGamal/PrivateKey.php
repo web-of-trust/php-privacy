@@ -8,9 +8,9 @@
 
 namespace OpenPGP\Cryptor\Asymmetric\ElGamal;
 
-use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Cryptor\Asymmetric\ElGamal;
+use phpseclib3\Math\BigInteger;
 
 /**
  * ElGamal private key class
@@ -34,9 +34,8 @@ class PrivateKey extends ElGamal
         private readonly BigInteger $x,
         BigInteger $y,
         BigInteger $prime,
-        BigInteger $generator,
-    )
-    {
+        BigInteger $generator
+    ) {
         parent::__construct($y, $prime, $generator);
     }
 
@@ -56,7 +55,9 @@ class PrivateKey extends ElGamal
     public function getPublicKey(): PublicKey
     {
         return new PublicKey(
-            $this->getY(), $this->getPrime(), $this->getGenerator()
+            $this->getY(),
+            $this->getPrime(),
+            $this->getGenerator()
         );
     }
 
@@ -72,7 +73,7 @@ class PrivateKey extends ElGamal
         $length = strlen($cipherText);
         if ($length > $inputSize) {
             throw new \InvalidArgumentException(
-                'cipher text too large for ' . self::ALGORITHM . ' cipher.'
+                "cipher text too large for " . self::ALGORITHM . " cipher."
             );
         }
 
@@ -81,14 +82,13 @@ class PrivateKey extends ElGamal
         $gamma = Helper::bin2BigInt(
             substr($cipherText, 0, (int) ($length / 2))
         );
-        $phi = Helper::bin2BigInt(
-            substr($cipherText, (int) ($length / 2))
-        );
-        list(, $m) = $gamma->modPow(
-            $prime->subtract($one->add($this->getX())), $prime
-        )->multiply($phi)->divide($prime);
+        $phi = Helper::bin2BigInt(substr($cipherText, (int) ($length / 2)));
+        list(, $m) = $gamma
+            ->modPow($prime->subtract($one->add($this->getX())), $prime)
+            ->multiply($phi)
+            ->divide($prime);
 
-        $outputSize = ($this->getBitSize() - 1) >> 3;
+        $outputSize = $this->getBitSize() - 1 >> 3;
         return substr($m->toBytes(), 0, $outputSize);
     }
 
@@ -102,13 +102,13 @@ class PrivateKey extends ElGamal
     public function toString($type, array $options = []): string
     {
         return implode([
-            pack('n', $this->getPrime()->getLength()),
+            pack("n", $this->getPrime()->getLength()),
             $this->getPrime()->toBytes(),
-            pack('n', $this->getGenerator()->getLength()),
+            pack("n", $this->getGenerator()->getLength()),
             $this->getGenerator()->toBytes(),
-            pack('n', $this->getX()->getLength()),
+            pack("n", $this->getX()->getLength()),
             $this->getX()->toBytes(),
-            pack('n', $this->getY()->getLength()),
+            pack("n", $this->getY()->getLength()),
             $this->getY()->toBytes(),
         ]);
     }

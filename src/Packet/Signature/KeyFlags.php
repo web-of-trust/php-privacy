@@ -8,16 +8,13 @@
 
 namespace OpenPGP\Packet\Signature;
 
-use OpenPGP\Enum\{
-    KeyFlag,
-    SignatureSubpacketType,
-};
+use OpenPGP\Enum\{KeyFlag, SignatureSubpacketType};
 use OpenPGP\Packet\SignatureSubpacket;
 
 /**
  * KeyFlags sub-packet class
  * Holding the key flag values.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -36,8 +33,7 @@ class KeyFlags extends SignatureSubpacket
         string $data,
         bool $critical = false,
         bool $isLong = false
-    )
-    {
+    ) {
         parent::__construct(
             SignatureSubpacketType::KeyFlags->value,
             $data,
@@ -53,9 +49,7 @@ class KeyFlags extends SignatureSubpacket
      * @param bool $critical
      * @return self
      */
-    public static function fromFlags(
-        int $flags, bool $critical = false
-    ): self
+    public static function fromFlags(int $flags, bool $critical = false): self
     {
         return new self(self::flagsToBytes($flags), $critical);
     }
@@ -70,7 +64,7 @@ class KeyFlags extends SignatureSubpacket
         $flags = 0;
         $data = $this->getData();
         for ($i = 0; $i != strlen($data); $i++) {
-          $flags |= ord($data[$i]) << ($i * 8);
+            $flags |= ord($data[$i]) << $i * 8;
         }
         return $flags;
     }
@@ -82,8 +76,8 @@ class KeyFlags extends SignatureSubpacket
      */
     public function isCertifyKeys(): bool
     {
-        return ($this->getFlags() & KeyFlag::CertifyKeys->value)
-            === KeyFlag::CertifyKeys->value;
+        return ($this->getFlags() & KeyFlag::CertifyKeys->value) ===
+            KeyFlag::CertifyKeys->value;
     }
 
     /**
@@ -93,8 +87,8 @@ class KeyFlags extends SignatureSubpacket
      */
     public function isSignData(): bool
     {
-        return ($this->getFlags() & KeyFlag::SignData->value)
-            === KeyFlag::SignData->value;
+        return ($this->getFlags() & KeyFlag::SignData->value) ===
+            KeyFlag::SignData->value;
     }
 
     /**
@@ -104,8 +98,8 @@ class KeyFlags extends SignatureSubpacket
      */
     public function isEncryptCommunication(): bool
     {
-        return ($this->getFlags() & KeyFlag::EncryptCommunication->value)
-            === KeyFlag::EncryptCommunication->value;
+        return ($this->getFlags() & KeyFlag::EncryptCommunication->value) ===
+            KeyFlag::EncryptCommunication->value;
     }
 
     /**
@@ -115,8 +109,8 @@ class KeyFlags extends SignatureSubpacket
      */
     public function isEncryptStorage(): bool
     {
-        return ($this->getFlags() & KeyFlag::EncryptStorage->value)
-            === KeyFlag::EncryptStorage->value;
+        return ($this->getFlags() & KeyFlag::EncryptStorage->value) ===
+            KeyFlag::EncryptStorage->value;
     }
 
     private static function flagsToBytes(int $flags): string
@@ -124,7 +118,7 @@ class KeyFlags extends SignatureSubpacket
         $size = 0;
         $bytes = [];
         for ($i = 0; $i < 4; $i++) {
-            $bytes[$i] = chr(($flags >> ($i * 8)) & 0xff);
+            $bytes[$i] = chr(($flags >> $i * 8) & 0xff);
             if (ord($bytes[$i]) != 0) {
                 $size = $i;
             }

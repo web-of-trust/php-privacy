@@ -8,17 +8,17 @@
 
 namespace OpenPGP\Packet\Key;
 
+use OpenPGP\Common\Helper;
+use OpenPGP\Enum\CurveOid;
+use OpenPGP\Type\KeyMaterialInterface;
 use phpseclib3\Crypt\EC;
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
 use phpseclib3\Crypt\Random;
 use phpseclib3\File\ASN1;
-use OpenPGP\Common\Helper;
-use OpenPGP\Enum\CurveOid;
-use OpenPGP\Type\KeyMaterialInterface;
 
 /**
  * ECDH secret key material class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -35,12 +35,10 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
      * @return self
      */
     public static function fromBytes(
-        string $bytes, KeyMaterialInterface $publicMaterial
-    ): self
-    {
-        return new self(
-            Helper::readMPI($bytes), $publicMaterial
-        );
+        string $bytes,
+        KeyMaterialInterface $publicMaterial
+    ): self {
+        return new self(Helper::readMPI($bytes), $publicMaterial);
     }
 
     /**
@@ -61,19 +59,17 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
                 $d = Helper::bin2BigInt($secretKey);
 
                 $privateKey = EC::loadPrivateKeyFormat(
-                    'MontgomeryPrivate', strrev($secretKey)
+                    "MontgomeryPrivate",
+                    strrev($secretKey)
                 );
                 $q = Helper::bin2BigInt(
                     "\x40" . $privateKey->getEncodedCoordinates()
                 );
-            }
-            else {
+            } else {
                 $privateKey = EC::createKey($curveOid->name);
-                $params = PKCS8::load($privateKey->toString('PKCS8'));
-                $d = $params['dA'];
-                $q = Helper::bin2BigInt(
-                    $privateKey->getEncodedCoordinates()
-                );
+                $params = PKCS8::load($privateKey->toString("PKCS8"));
+                $d = $params["dA"];
+                $q = Helper::bin2BigInt($privateKey->getEncodedCoordinates());
             }
             return new self(
                 $d,
@@ -85,10 +81,9 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
                     ECDHPublicKeyMaterial::DEFAULT_RESERVED,
                     $privateKey->getPublicKey()
                 ),
-                $privateKey,
+                $privateKey
             );
-        }
-        else {
+        } else {
             throw new \UnexpectedValueException(
                 "{$curveOid->name} is not supported for ECDH key generation."
             );

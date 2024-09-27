@@ -8,15 +8,12 @@
 
 namespace OpenPGP\Packet\Signature;
 
-use OpenPGP\Enum\{
-    HashAlgorithm,
-    SignatureSubpacketType,
-};
+use OpenPGP\Enum\{HashAlgorithm, SignatureSubpacketType};
 use OpenPGP\Packet\SignatureSubpacket;
 
 /**
  * PreferredHashAlgorithms sub-packet class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -35,8 +32,7 @@ class PreferredHashAlgorithms extends SignatureSubpacket
         string $data,
         bool $critical = false,
         bool $isLong = false
-    )
-    {
+    ) {
         parent::__construct(
             SignatureSubpacketType::PreferredHashAlgorithms->value,
             $data,
@@ -53,7 +49,7 @@ class PreferredHashAlgorithms extends SignatureSubpacket
     public function getPreferences(): array
     {
         return array_map(
-            fn ($pref) => HashAlgorithm::from(ord($pref)),
+            fn($pref) => HashAlgorithm::from(ord($pref)),
             str_split($this->getData())
         );
     }

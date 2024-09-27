@@ -8,22 +8,17 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Enum\{
-    HashAlgorithm,
-    KeyAlgorithm,
-    PacketTag,
-    SignatureType,
-};
+use OpenPGP\Enum\{HashAlgorithm, KeyAlgorithm, PacketTag, SignatureType};
 
 /**
  * OnePassSignature represents a One-Pass Signature packet.
  * See RFC 4880, section 5.4.
- * 
+ *
  * The One-Pass Signature packet precedes the signed data and contains enough information
  * to allow the receiver to begin calculating any hashes needed to verify the signature.
  * It allows the Signature packet to be placed at the end of the message,
  * so that the signer can compute the entire signed message in one pass.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -48,8 +43,7 @@ class OnePassSignature extends AbstractPacket
         private readonly KeyAlgorithm $keyAlgorithm,
         private readonly string $issuerKeyID,
         private readonly int $nested = 0
-    )
-    {
+    ) {
         parent::__construct(PacketTag::OnePassSignature);
     }
 
@@ -63,7 +57,7 @@ class OnePassSignature extends AbstractPacket
         $version = ord($bytes[$offset++]);
         if ($version != self::VERSION) {
             throw new \RuntimeException(
-                "Version $version of the one-pass signature packet is unsupported.",
+                "Version $version of the one-pass signature packet is unsupported."
             );
         }
 
@@ -102,14 +96,16 @@ class OnePassSignature extends AbstractPacket
      * @param int $nested
      * @return self
      */
-    public static function fromSignature(Signature $signature, int $nested = 0): self
-    {
+    public static function fromSignature(
+        Signature $signature,
+        int $nested = 0
+    ): self {
         return new self(
             $signature->getSignatureType(),
             $signature->getHashAlgorithm(),
             $signature->getKeyAlgorithm(),
             $signature->getIssuerKeyID(),
-            $nested,
+            $nested
         );
     }
 

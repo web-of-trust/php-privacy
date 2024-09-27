@@ -8,13 +8,13 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\Common\BlockCipher;
 use OpenPGP\Enum\KekSize;
+use phpseclib3\Crypt\Common\BlockCipher;
 
 /**
  * KeyWrapper class
  * An implementation of the key wrapper based on RFC 3394.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -33,8 +33,7 @@ abstract class KeyWrapper
     protected function __construct(
         private readonly BlockCipher $cipher,
         private readonly KekSize $kekSize
-    )
-    {
+    ) {
         $this->cipher->disablePadding();
     }
 
@@ -54,19 +53,14 @@ abstract class KeyWrapper
         $r = $key;
         $n = intval(strlen($key) / 8);
         for ($j = 0; $j <= 5; $j++) {
-            for ($i = 1; $i <= $n; $i++) { 
-                $buffer = implode([
-                    $a,
-                    substr($r, ($i - 1) * 8, 8),
-                ]);
+            for ($i = 1; $i <= $n; $i++) {
+                $buffer = implode([$a, substr($r, ($i - 1) * 8, 8)]);
                 $buffer = $this->cipher->encrypt($buffer);
 
                 $a = substr($buffer, 0, 8);
-                $a[7] = chr(ord($a[7]) ^ ($n * $j + $i) & 0xff);
+                $a[7] = chr(ord($a[7]) ^ (($n * $j + $i) & 0xff));
 
-                $r = substr_replace(
-                    $r, substr($buffer, 8, 8), ($i - 1) * 8, 8
-                );
+                $r = substr_replace($r, substr($buffer, 8, 8), ($i - 1) * 8, 8);
             }
         }
         return implode([$a, $r]);
@@ -89,24 +83,17 @@ abstract class KeyWrapper
         $n = intval(strlen($wrappedKey) / 8) - 1;
         for ($j = 5; $j >= 0; $j--) {
             for ($i = $n; $i >= 1; $i--) {
-                $a[7] = chr(ord($a[7]) ^ ($n * $j + $i) & 0xff);
-                $buffer = implode([
-                    $a,
-                    substr($r, ($i - 1) * 8, 8),
-                ]);
+                $a[7] = chr(ord($a[7]) ^ (($n * $j + $i) & 0xff));
+                $buffer = implode([$a, substr($r, ($i - 1) * 8, 8)]);
                 $buffer = $this->cipher->decrypt($buffer);
 
                 $a = substr($buffer, 0, 8);
-                $r = substr_replace(
-                    $r, substr($buffer, 8, 8), ($i - 1) * 8, 8
-                );
+                $r = substr_replace($r, substr($buffer, 8, 8), ($i - 1) * 8, 8);
             }
         }
 
         if (strcmp(self::IV, $a) !== 0) {
-            throw new \UnexpectedValueException(
-                'Integrity check failed.'
-            );
+            throw new \UnexpectedValueException("Integrity check failed.");
         }
 
         return $r;
@@ -122,12 +109,12 @@ abstract class KeyWrapper
         }
         if (strlen($key) < 16) {
             throw new \LengthException(
-                'Key length must be at least 16 octets.'
+                "Key length must be at least 16 octets."
             );
         }
         if (strlen($key) % 8 !== 0) {
             throw new \LengthException(
-                'Key length must be a multiple of 64 bits.'
+                "Key length must be a multiple of 64 bits."
             );
         }
     }

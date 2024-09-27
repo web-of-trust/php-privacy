@@ -29,10 +29,9 @@ class UserAttributeSubpacket implements SubpacketInterface
      */
     public function __construct(
         private readonly int $type = 0,
-        private readonly string $data = '',
+        private readonly string $data = "",
         private readonly bool $isLong = false
-    )
-    {
+    ) {
     }
 
     /**
@@ -67,24 +66,18 @@ class UserAttributeSubpacket implements SubpacketInterface
         $data = [];
         $bodyLen = strlen($this->data) + 1;
         if ($bodyLen < 192 && !$this->isLong) {
+            $data = [chr($bodyLen), chr($this->type), $this->data];
+        } elseif ($bodyLen <= 8383 && !$this->isLong) {
             $data = [
-                chr($bodyLen),
-                chr($this->type),
-                $this->data,
-            ];
-        }
-        elseif ($bodyLen <= 8383 && !$this->isLong) {
-            $data = [
-                chr(((($bodyLen - 192) >> 8) & 0xff) + 192),
+                chr((($bodyLen - 192 >> 8) & 0xff) + 192),
                 chr($bodyLen - 192),
                 chr($this->type),
                 $this->data,
             ];
-        }
-        else {
+        } else {
             $data = [
                 "\xff",
-                pack('N', $bodyLen),
+                pack("N", $bodyLen),
                 chr($this->type),
                 $this->data,
             ];

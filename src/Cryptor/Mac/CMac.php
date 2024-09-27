@@ -16,7 +16,7 @@ use phpseclib3\Crypt\Common\BlockCipher;
  * CMac class
  * A Cipher based MAC generator (Based upon the CMAC specification)
  * See http://csrc.nist.gov/publications/nistpubs/800-38B/SP_800-38B.pdf
- * 
+ *
  * @package  OpenPGP
  * @category Cryptor
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -41,8 +41,7 @@ final class CMac
     public function __construct(
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         private int $macSize = 0
-    )
-    {
+    ) {
         $this->cipher = $symmetric->ecbCipherEngine();
         $this->blockSize = $symmetric->blockSize();
         $this->zeroBlock = str_repeat(self::ZERO_CHAR, $this->blockSize);
@@ -53,7 +52,7 @@ final class CMac
 
         if ($this->macSize > $this->blockSize) {
             throw new \LengthException(
-                'MAC size must be less or equal to ' . $this->blockSize
+                "MAC size must be less or equal to " . $this->blockSize
             );
         }
     }
@@ -68,9 +67,9 @@ final class CMac
     public function generate(string $data, string $key): string
     {
         $this->cipher->setKey($key);
-        $keys    = $this->generateKeys();
+        $keys = $this->generateKeys();
         $mBlocks = $this->splitData($data, $keys);
-        $cBlock  = $this->zeroBlock;
+        $cBlock = $this->zeroBlock;
         foreach ($mBlocks as $block) {
             $cBlock = $this->cipher->encryptBlock($cBlock ^ $block);
         }
@@ -128,20 +127,20 @@ final class CMac
                 return str_repeat(self::ZERO_CHAR, 15) . "\x87";
             default:
                 throw new \LengthException(
-                    'Unsupported block size for the cipher'
+                    "Unsupported block size for the cipher"
                 );
         }
     }
 
     private function leftShift(string $data, int $bits): string
     {
-        $mask   = (Bitwise::MASK_8BITS << (8 - $bits)) & Bitwise::MASK_8BITS;
-        $state  = 0;
-        $result = '';
+        $mask = (Bitwise::MASK_8BITS << 8 - $bits) & Bitwise::MASK_8BITS;
+        $state = 0;
+        $result = "";
         for ($i = strlen($data) - 1; $i >= 0; $i--) {
-            $tmp     = ord($data[$i]);
+            $tmp = ord($data[$i]);
             $result .= chr(($tmp << $bits) | $state);
-            $state   = ($tmp & $mask) >> (8 - $bits);
+            $state = ($tmp & $mask) >> 8 - $bits;
         }
         return strrev($result);
     }
@@ -158,17 +157,20 @@ final class CMac
         $data = str_split($data, $this->blockSize);
         $last = end($data);
         if ($last === false) {
-            $last = '';
+            $last = "";
         }
         if (strlen($last) != $this->blockSize) {
             //Pad the last element
-            $last .= "\x80" . substr(
-                $this->zeroBlock, 0, $this->blockSize - 1 - strlen($last)
-            );
-            $last  = $last ^ $keys[1];
-        }
-        else {
-            $last  = $last ^ $keys[0];
+            $last .=
+                "\x80" .
+                substr(
+                    $this->zeroBlock,
+                    0,
+                    $this->blockSize - 1 - strlen($last)
+                );
+            $last = $last ^ $keys[1];
+        } else {
+            $last = $last ^ $keys[0];
         }
         $data[count($data) - 1] = $last;
         return $data;

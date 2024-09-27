@@ -9,15 +9,11 @@
 namespace OpenPGP\Type;
 
 use DateTimeInterface;
-use OpenPGP\Enum\{
-    HashAlgorithm,
-    KeyAlgorithm,
-    SignatureType,
-};
+use OpenPGP\Enum\{HashAlgorithm, KeyAlgorithm, SignatureType};
 
 /**
  * Signature packet interface
- * 
+ *
  * @package  OpenPGP
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -26,28 +22,28 @@ interface SignaturePacketInterface extends PacketInterface
 {
     /**
      * Get version
-     * 
+     *
      * @return int
      */
     function getVersion(): int;
 
     /**
      * Get signature type
-     * 
+     *
      * @return SignatureType
      */
     function getSignatureType(): SignatureType;
 
     /**
      * Get key algorithm
-     * 
+     *
      * @return KeyAlgorithm
      */
     function getKeyAlgorithm(): KeyAlgorithm;
 
     /**
      * Get hash algorithm
-     * 
+     *
      * @return HashAlgorithm
      */
     function getHashAlgorithm(): HashAlgorithm;
@@ -102,7 +98,7 @@ interface SignaturePacketInterface extends PacketInterface
         KeyPacketInterface $verifyKey,
         string $dataToVerify,
         ?DateTimeInterface $time = null,
-        string $detachedDataHeader = ''
+        string $detachedDataHeader = ""
     ): bool;
 
     /**

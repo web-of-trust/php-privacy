@@ -15,7 +15,7 @@ use phpseclib3\Crypt\Random;
 
 /**
  * Session key class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -32,8 +32,7 @@ class SessionKey implements SessionKeyInterface
     public function __construct(
         private readonly string $encryptionKey,
         private readonly Symmetric $symmetric = Symmetric::Aes128
-    )
-    {
+    ) {
     }
 
     /**
@@ -52,7 +51,7 @@ class SessionKey implements SessionKeyInterface
         $checksum = substr($bytes, strlen($bytes) - 2);
         if (strcmp($sessionKey->computeChecksum(), $checksum) !== 0) {
             throw new \UnexpectedValueException(
-                'Session key checksum mismatch!'
+                "Session key checksum mismatch!"
             );
         }
 
@@ -67,8 +66,7 @@ class SessionKey implements SessionKeyInterface
      */
     public static function produceKey(
         Symmetric $symmetric = Symmetric::Aes128
-    ): self
-    {
+    ): self {
         return new self(
             Random::string($symmetric->keySizeInByte()),
             $symmetric
@@ -104,9 +102,6 @@ class SessionKey implements SessionKeyInterface
      */
     public function toBytes(): string
     {
-        return implode([
-            chr($this->symmetric->value),
-            $this->encryptionKey,
-        ]);
+        return implode([chr($this->symmetric->value), $this->encryptionKey]);
     }
 }

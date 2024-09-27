@@ -9,20 +9,13 @@
 namespace OpenPGP\Key;
 
 use OpenPGP\Common\Armor;
-use OpenPGP\Enum\{
-    ArmorType,
-    PacketTag,
-};
+use OpenPGP\Enum\{ArmorType, PacketTag};
 use OpenPGP\Packet\PacketList;
-use OpenPGP\Type\{
-    KeyInterface,
-    PacketListInterface,
-    PublicKeyPacketInterface,
-};
+use OpenPGP\Type\{KeyInterface, PacketListInterface, PublicKeyPacketInterface};
 
 /**
  * OpenPGP public key class
- * 
+ *
  * @package  OpenPGP
  * @category Key
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -45,8 +38,7 @@ class PublicKey extends AbstractKey
         array $directSignatures = [],
         array $users = [],
         array $subkeys = []
-    )
-    {
+    ) {
         parent::__construct(
             $keyPacket,
             $revocationSignatures,
@@ -65,14 +57,14 @@ class PublicKey extends AbstractKey
      * @return array
      */
     public static function readPublicKeys(
-        string $data, bool $armored = true
-    ): array
-    {
+        string $data,
+        bool $armored = true
+    ): array {
         if ($armored) {
             $armor = Armor::decode($data);
             if ($armor->getType() !== ArmorType::PublicKey) {
                 throw new \UnexpectedValueException(
-                    'Armored text not of public key type.'
+                    "Armored text not of public key type."
                 );
             }
             $data = $armor->getData();
@@ -87,8 +79,7 @@ class PublicKey extends AbstractKey
                 $publicKeys[] = self::fromPacketList(
                     $packetList->slice($indexes[$i], $length)
                 );
-            }
-            else {
+            } else {
                 $publicKeys[] = self::fromPacketList(
                     $packetList->slice($indexes[$i])
                 );
@@ -108,7 +99,7 @@ class PublicKey extends AbstractKey
         $armor = Armor::decode($armored);
         if ($armor->getType() !== ArmorType::PublicKey) {
             throw new \UnexpectedValueException(
-                'Armored text not of public key type.'
+                "Armored text not of public key type."
             );
         }
         return self::fromBytes($armor->getData());
@@ -122,9 +113,7 @@ class PublicKey extends AbstractKey
      */
     public static function fromBytes(string $bytes): self
     {
-        return self::fromPacketList(
-            PacketList::decode($bytes)
-        );
+        return self::fromPacketList(PacketList::decode($bytes));
     }
 
     /**
@@ -133,20 +122,18 @@ class PublicKey extends AbstractKey
      * @param PacketListInterface $packetList
      * @return self
      */
-    public static function fromPacketList(
-        PacketListInterface $packetList
-    ): self
+    public static function fromPacketList(PacketListInterface $packetList): self
     {
         $keyStruct = self::readPacketList($packetList);
-        if (!($keyStruct['keyPacket'] instanceof PublicKeyPacketInterface)) {
+        if (!($keyStruct["keyPacket"] instanceof PublicKeyPacketInterface)) {
             throw new \UnexpectedValueException(
-                'Key packet is not public key type.'
+                "Key packet is not public key type."
             );
         }
         $publicKey = new self(
-            $keyStruct['keyPacket'],
-            $keyStruct['revocationSignatures'],
-            $keyStruct['directSignatures']
+            $keyStruct["keyPacket"],
+            $keyStruct["revocationSignatures"],
+            $keyStruct["directSignatures"]
         );
         self::applyKeyStructure($publicKey, $keyStruct);
 

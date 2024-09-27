@@ -13,14 +13,14 @@ use OpenPGP\Type\UserIDPacketInterface;
 
 /**
  * User attribute packet class
- * 
+ *
  * Implementation of the User ID Packet (Tag 13)
  * A User ID packet consists of UTF-8 text that is intended to represent
  * the name and email address of the key holder.
  * By convention, it includes an RFC2822 mail name-addr,
  * but there are no restrictions on its content.
  * The packet length in the header specifies the length of the User ID.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -40,7 +40,7 @@ class UserAttribute extends AbstractPacket implements UserIDPacketInterface
         parent::__construct(PacketTag::UserAttribute);
         $this->attributes = array_filter(
             $attributes,
-            static fn ($attr) => $attr instanceof UserAttributeSubpacket
+            static fn($attr) => $attr instanceof UserAttributeSubpacket
         );
     }
 
@@ -49,9 +49,7 @@ class UserAttribute extends AbstractPacket implements UserIDPacketInterface
      */
     public static function fromBytes(string $bytes): self
     {
-        return new self(
-            SubpacketReader::readUserAttributes($bytes)
-        );
+        return new self(SubpacketReader::readUserAttributes($bytes));
     }
 
     /**
@@ -59,10 +57,12 @@ class UserAttribute extends AbstractPacket implements UserIDPacketInterface
      */
     public function toBytes(): string
     {
-        return implode(array_map(
-            static fn ($attr): string => $attr->toBytes(),
-            $this->attributes
-        ));
+        return implode(
+            array_map(
+                static fn($attr): string => $attr->toBytes(),
+                $this->attributes
+            )
+        );
     }
 
     /**
@@ -71,11 +71,7 @@ class UserAttribute extends AbstractPacket implements UserIDPacketInterface
     public function getSignBytes(): string
     {
         $bytes = $this->toBytes();
-        return implode([
-            "\xd1",
-            pack('N', strlen($bytes)),
-            $bytes,
-        ]);
+        return implode(["\xd1", pack("N", strlen($bytes)), $bytes]);
     }
 
     /**

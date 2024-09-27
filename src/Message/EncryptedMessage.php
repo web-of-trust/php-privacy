@@ -13,7 +13,7 @@ use OpenPGP\Enum\ArmorType;
 use OpenPGP\Packet\{
     PacketList,
     PublicKeyEncryptedSessionKey,
-    SymEncryptedSessionKey,
+    SymEncryptedSessionKey
 };
 use OpenPGP\Type\{
     EncryptedDataPacketInterface,
@@ -21,7 +21,7 @@ use OpenPGP\Type\{
     LiteralMessageInterface,
     PacketListInterface,
     PrivateKeyInterface,
-    SessionKeyInterface,
+    SessionKeyInterface
 };
 
 /**
@@ -31,7 +31,8 @@ use OpenPGP\Type\{
  * @category Message
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterface
+class EncryptedMessage extends AbstractMessage implements
+    EncryptedMessageInterface
 {
     private ?SessionKeyInterface $sessionKey = null;
 
@@ -46,7 +47,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
         $armor = Armor::decode($armored);
         if ($armor->getType() !== ArmorType::Message) {
             throw new \UnexpectedValueException(
-                'Armored text not of message type.'
+                "Armored text not of message type."
             );
         }
         return self::fromBytes($armor->getData());
@@ -70,9 +71,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
      */
     public function getEncryptedPacket(): EncryptedDataPacketInterface
     {
-        $encryptedPackets = self::validatePacketList(
-            $this->getPacketList()
-        );
+        $encryptedPackets = self::validatePacketList($this->getPacketList());
         return array_pop($encryptedPackets);
     }
 
@@ -90,27 +89,25 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
     public function decrypt(
         array $decryptionKeys = [],
         array $passwords = []
-    ): LiteralMessageInterface
-    {
+    ): LiteralMessageInterface {
         $decryptionKeys = array_filter(
             $decryptionKeys,
-            static fn ($key) => $key instanceof PrivateKeyInterface
+            static fn($key) => $key instanceof PrivateKeyInterface
         );
         if (empty($decryptionKeys) && empty($passwords)) {
             throw new \InvalidArgumentException(
-                'No decryption keys or passwords provided.'
+                "No decryption keys or passwords provided."
             );
         }
 
         $decryptedPacket = $this->getEncryptedPacket()->decryptWithSessionKey(
             $this->sessionKey = $this->decryptSessionKey(
-                $decryptionKeys, $passwords
+                $decryptionKeys,
+                $passwords
             )
         );
 
-        return new LiteralMessage(
-            $decryptedPacket->getPacketList()
-        );
+        return new LiteralMessage($decryptedPacket->getPacketList());
     }
 
     /**
@@ -121,46 +118,47 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
      * @return SessionKeyInterface
      */
     private function decryptSessionKey(
-        array $decryptionKeys, array $passwords
-    ): SessionKeyInterface
-    {
+        array $decryptionKeys,
+        array $passwords
+    ): SessionKeyInterface {
         $sessionKeys = [];
         if (!empty($passwords)) {
-            $this->getLogger()->warning(
-                'Decrypt session keys by passwords.'
-            );
+            $this->getLogger()->warning("Decrypt session keys by passwords.");
             $skeskPacketList = $this->getPacketList()->whereType(
                 SymEncryptedSessionKey::class
             );
             foreach ($skeskPacketList as $skesk) {
                 foreach ($passwords as $password) {
                     try {
-                        $sessionKeys[] = $skesk->decrypt($password)->getSessionKey();
+                        $sessionKeys[] = $skesk
+                            ->decrypt($password)
+                            ->getSessionKey();
                         break;
-                    }
-                    catch (\Throwable $e) {
+                    } catch (\Throwable $e) {
                         $this->getLogger()->error($e);
                     }
                 }
             }
         }
         if (empty($sessionKeys) && !empty($decryptionKeys)) {
-            $this->getLogger()->warning(
-                'Decrypt session keys by public keys.'
-            );
+            $this->getLogger()->warning("Decrypt session keys by public keys.");
             $pkeskPacketList = $this->getPacketList()->whereType(
                 PublicKeyEncryptedSessionKey::class
             );
             foreach ($pkeskPacketList as $pkesk) {
                 foreach ($decryptionKeys as $key) {
                     $keyPacket = $key->getEncryptionKeyPacket();
-                    if ($pkesk->getPublicKeyAlgorithm() === $keyPacket->getKeyAlgorithm() &&
-                        $pkesk->getPublicKeyID() === $keyPacket->getKeyID()) {
+                    if (
+                        $pkesk->getPublicKeyAlgorithm() ===
+                            $keyPacket->getKeyAlgorithm() &&
+                        $pkesk->getPublicKeyID() === $keyPacket->getKeyID()
+                    ) {
                         try {
-                            $sessionKeys[] = $pkesk->decrypt($keyPacket)->getSessionKey();
+                            $sessionKeys[] = $pkesk
+                                ->decrypt($keyPacket)
+                                ->getSessionKey();
                             break;
-                        }
-                        catch (\Throwable $e) {
+                        } catch (\Throwable $e) {
                             $this->getLogger()->error($e);
                         }
                     }
@@ -170,7 +168,7 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
 
         if (empty($sessionKeys)) {
             throw new \UnexpectedValueException(
-                'Session key decryption failed.'
+                "Session key decryption failed."
             );
         }
 
@@ -179,14 +177,13 @@ class EncryptedMessage extends AbstractMessage implements EncryptedMessageInterf
 
     private static function validatePacketList(
         PacketListInterface $packetList
-    ): array
-    {
-        $encryptedPackets = $packetList->whereType(
-            EncryptedDataPacketInterface::class
-        )->getPackets();
+    ): array {
+        $encryptedPackets = $packetList
+            ->whereType(EncryptedDataPacketInterface::class)
+            ->getPackets();
         if (empty($encryptedPackets)) {
             throw new \UnexpectedValueException(
-                'No encrypted data packets found.'
+                "No encrypted data packets found."
             );
         }
         return $encryptedPackets;

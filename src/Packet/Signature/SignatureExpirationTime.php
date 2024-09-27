@@ -16,7 +16,7 @@ use OpenPGP\Packet\SignatureSubpacket;
 /**
  * SignatureExpirationTime sub-packet class
  * Giving giving signature expiration time.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -35,8 +35,7 @@ class SignatureExpirationTime extends SignatureSubpacket
         string $data,
         bool $critical = false,
         bool $isLong = false
-    )
-    {
+    ) {
         parent::__construct(
             SignatureSubpacketType::SignatureExpirationTime->value,
             $data,
@@ -53,15 +52,15 @@ class SignatureExpirationTime extends SignatureSubpacket
      * @return self
      */
     public static function fromTime(
-        DateTimeInterface $time, bool $critical = false
-    ): self
-    {
-        return new self(pack('N', $time->getTimestamp()), $critical);
+        DateTimeInterface $time,
+        bool $critical = false
+    ): self {
+        return new self(pack("N", $time->getTimestamp()), $critical);
     }
 
     /**
      * Get expiration time
-     * 
+     *
      * @return DateTimeInterface
      */
     public function getExpirationTime(): DateTimeInterface

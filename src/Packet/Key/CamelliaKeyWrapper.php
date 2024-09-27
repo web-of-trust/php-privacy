@@ -13,7 +13,7 @@ use OpenPGP\Enum\KekSize;
 /**
  * CamelliaKeyWrapper class
  * An implementation of the Camellia key wrapper based on RFC 3657/RFC 3394.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -29,7 +29,8 @@ class CamelliaKeyWrapper extends KeyWrapper
     public function __construct(KekSize $kekSize = KekSize::S32)
     {
         parent::__construct(
-            new \OpenPGP\Cryptor\Symmetric\Camellia('ecb'), $kekSize
+            new \OpenPGP\Cryptor\Symmetric\Camellia("ecb"),
+            $kekSize
         );
     }
 }

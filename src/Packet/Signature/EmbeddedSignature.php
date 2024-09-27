@@ -9,15 +9,12 @@
 namespace OpenPGP\Packet\Signature;
 
 use OpenPGP\Enum\SignatureSubpacketType;
-use OpenPGP\Packet\{
-    Signature,
-    SignatureSubpacket,
-};
+use OpenPGP\Packet\{Signature, SignatureSubpacket};
 use OpenPGP\Type\SignaturePacketInterface;
 
 /**
  * EmbeddedSignature sub-packet class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -36,8 +33,7 @@ class EmbeddedSignature extends SignatureSubpacket
         string $data,
         bool $critical = false,
         bool $isLong = false
-    )
-    {
+    ) {
         parent::__construct(
             SignatureSubpacketType::EmbeddedSignature->value,
             $data,
@@ -52,8 +48,9 @@ class EmbeddedSignature extends SignatureSubpacket
      * @param SignaturePacketInterface $signature
      * @return self
      */
-    public static function fromSignature(SignaturePacketInterface $signature): self
-    {
+    public static function fromSignature(
+        SignaturePacketInterface $signature
+    ): self {
         return new self($signature->toBytes());
     }
 

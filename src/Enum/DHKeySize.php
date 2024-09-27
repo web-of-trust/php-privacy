@@ -9,7 +9,7 @@
 namespace OpenPGP\Enum;
 
 /**
- * Diffie-Hellman key size enum
+ * Dsa & ElGamal key size enum
  *
  * @package  OpenPGP
  * @category Enum
@@ -27,7 +27,7 @@ enum DHKeySize
 
     public function lSize(): int
     {
-        return match($this) {
+        return match ($this) {
             self::L1024_N160 => 1024,
             self::L2048_N224 => 2048,
             self::L2048_N256 => 2048,
@@ -37,7 +37,7 @@ enum DHKeySize
 
     public function nSize(): int
     {
-        return match($this) {
+        return match ($this) {
             self::L1024_N160 => 160,
             self::L2048_N224 => 224,
             self::L2048_N256 => 256,

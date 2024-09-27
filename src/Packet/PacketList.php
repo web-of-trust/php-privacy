@@ -9,14 +9,11 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\PacketTag;
-use OpenPGP\Type\{
-    PacketInterface,
-    PacketListInterface,
-};
+use OpenPGP\Type\{PacketInterface, PacketListInterface};
 
 /**
  * Packet list class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -38,15 +35,17 @@ class PacketList implements PacketListInterface
      */
     public function __construct(array $packets = [])
     {
-        $this->packets = array_values(array_filter(
-            $packets,
-            static fn ($packet) => $packet instanceof PacketInterface
-        ));
+        $this->packets = array_values(
+            array_filter(
+                $packets,
+                static fn($packet) => $packet instanceof PacketInterface
+            )
+        );
     }
 
     /**
      * Decode packets from bytes
-     * 
+     *
      * @param string $bytes
      * @return self
      */
@@ -66,9 +65,7 @@ class PacketList implements PacketListInterface
                     );
                     break;
                 case PacketTag::Signature:
-                    $packets[] = Signature::fromBytes(
-                        $reader->getData()
-                    );
+                    $packets[] = Signature::fromBytes($reader->getData());
                     break;
                 case PacketTag::SymEncryptedSessionKey:
                     $packets[] = SymEncryptedSessionKey::fromBytes(
@@ -81,24 +78,16 @@ class PacketList implements PacketListInterface
                     );
                     break;
                 case PacketTag::SecretKey:
-                    $packets[] = SecretKey::fromBytes(
-                        $reader->getData()
-                    );
+                    $packets[] = SecretKey::fromBytes($reader->getData());
                     break;
                 case PacketTag::PublicKey:
-                    $packets[] = PublicKey::fromBytes(
-                        $reader->getData()
-                    );
+                    $packets[] = PublicKey::fromBytes($reader->getData());
                     break;
                 case PacketTag::SecretSubkey:
-                    $packets[] = SecretSubkey::fromBytes(
-                        $reader->getData()
-                    );
+                    $packets[] = SecretSubkey::fromBytes($reader->getData());
                     break;
                 case PacketTag::CompressedData:
-                    $packets[] = CompressedData::fromBytes(
-                        $reader->getData()
-                    );
+                    $packets[] = CompressedData::fromBytes($reader->getData());
                     break;
                 case PacketTag::SymEncryptedData:
                     $packets[] = SymEncryptedData::fromBytes(
@@ -109,29 +98,19 @@ class PacketList implements PacketListInterface
                     $packets[] = new Marker();
                     break;
                 case PacketTag::LiteralData:
-                    $packets[] = LiteralData::fromBytes(
-                        $reader->getData()
-                    );
+                    $packets[] = LiteralData::fromBytes($reader->getData());
                     break;
                 case PacketTag::Trust:
-                    $packets[] = Trust::fromBytes(
-                        $reader->getData()
-                    );
+                    $packets[] = Trust::fromBytes($reader->getData());
                     break;
                 case PacketTag::UserID:
-                    $packets[] = UserID::fromBytes(
-                        $reader->getData()
-                    );
+                    $packets[] = UserID::fromBytes($reader->getData());
                     break;
                 case PacketTag::PublicSubkey:
-                    $packets[] = PublicSubkey::fromBytes(
-                        $reader->getData()
-                    );
+                    $packets[] = PublicSubkey::fromBytes($reader->getData());
                     break;
                 case PacketTag::UserAttribute:
-                    $packets[] = UserAttribute::fromBytes(
-                        $reader->getData()
-                    );
+                    $packets[] = UserAttribute::fromBytes($reader->getData());
                     break;
                 case PacketTag::SymEncryptedIntegrityProtectedData:
                     $packets[] = SymEncryptedIntegrityProtectedData::fromBytes(
@@ -184,10 +163,12 @@ class PacketList implements PacketListInterface
      */
     public function encode(): string
     {
-        return implode(array_map(
-            static fn ($packet): string => $packet->encode(),
-            $this->packets
-        ));
+        return implode(
+            array_map(
+                static fn($packet): string => $packet->encode(),
+                $this->packets
+            )
+        );
     }
 
     /**
@@ -195,10 +176,12 @@ class PacketList implements PacketListInterface
      */
     public function whereTag(PacketTag $tag): self
     {
-        $packets = array_values(array_filter(
-            $this->packets,
-            static fn ($packet) => $packet->getTag() === $tag
-        ));
+        $packets = array_values(
+            array_filter(
+                $this->packets,
+                static fn($packet) => $packet->getTag() === $tag
+            )
+        );
         return new self($packets);
     }
 
@@ -207,10 +190,12 @@ class PacketList implements PacketListInterface
      */
     public function whereType(string $type): self
     {
-        $packets = array_values(array_filter(
-            $this->packets,
-            static fn ($packet) => $packet instanceof $type
-        ));
+        $packets = array_values(
+            array_filter(
+                $this->packets,
+                static fn($packet) => $packet instanceof $type
+            )
+        );
         return new self($packets);
     }
 

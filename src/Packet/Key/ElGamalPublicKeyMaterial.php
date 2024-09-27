@@ -8,15 +8,15 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\Common\AsymmetricKey;
-use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Cryptor\Asymmetric\ElGamal\PublicKey;
 use OpenPGP\Type\KeyMaterialInterface;
+use phpseclib3\Crypt\Common\AsymmetricKey;
+use phpseclib3\Math\BigInteger;
 
 /**
  * ElGamal public key material class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -42,11 +42,9 @@ class ElGamalPublicKeyMaterial implements KeyMaterialInterface
         private readonly BigInteger $generator,
         private readonly BigInteger $exponent,
         ?PublicKey $publicKey = null
-    )
-    {
-        $this->publicKey = $publicKey ?? new PublicKey(
-            $exponent, $prime, $generator
-        );
+    ) {
+        $this->publicKey =
+            $publicKey ?? new PublicKey($exponent, $prime, $generator);
     }
 
     /**
@@ -65,11 +63,7 @@ class ElGamalPublicKeyMaterial implements KeyMaterialInterface
         $offset += $generator->getLengthInBytes() + 2;
         $exponent = Helper::readMPI(substr($bytes, $offset));
 
-        return new self(
-            $prime,
-            $generator,
-            $exponent
-        );
+        return new self($prime, $generator, $exponent);
     }
 
     /**
@@ -140,9 +134,9 @@ class ElGamalPublicKeyMaterial implements KeyMaterialInterface
     public function getParameters(): array
     {
         return [
-            'p' => $this->prime,
-            'g' => $this->generator,
-            'y' => $this->exponent,
+            "p" => $this->prime,
+            "g" => $this->generator,
+            "y" => $this->exponent,
         ];
     }
 
@@ -160,11 +154,11 @@ class ElGamalPublicKeyMaterial implements KeyMaterialInterface
     public function toBytes(): string
     {
         return implode([
-            pack('n', $this->prime->getLength()),
+            pack("n", $this->prime->getLength()),
             $this->prime->toBytes(),
-            pack('n', $this->generator->getLength()),
+            pack("n", $this->generator->getLength()),
             $this->generator->toBytes(),
-            pack('n', $this->exponent->getLength()),
+            pack("n", $this->exponent->getLength()),
             $this->exponent->toBytes(),
         ]);
     }

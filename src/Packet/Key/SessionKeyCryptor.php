@@ -8,16 +8,16 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\Common\AsymmetricKey;
 use OpenPGP\Type\{
     SecretKeyPacketInterface,
     SessionKeyCryptorInterface,
-    SessionKeyInterface,
+    SessionKeyInterface
 };
+use phpseclib3\Crypt\Common\AsymmetricKey;
 
 /**
  * Session key cryptor class.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -29,11 +29,10 @@ abstract class SessionKeyCryptor implements SessionKeyCryptorInterface
      */
     public function decryptSessionKey(
         SecretKeyPacketInterface $secretKey
-    ): SessionKeyInterface
-    {
-        return SessionKey::fromBytes($this->decrypt(
-            $secretKey->getKeyMaterial()->getAsymmetricKey()
-        ));
+    ): SessionKeyInterface {
+        return SessionKey::fromBytes(
+            $this->decrypt($secretKey->getKeyMaterial()->getAsymmetricKey())
+        );
     }
 
     /**
@@ -42,5 +41,5 @@ abstract class SessionKeyCryptor implements SessionKeyCryptorInterface
      * @param AsymmetricKey $privateKey
      * @return string
      */
-    protected abstract function decrypt(AsymmetricKey $privateKey): string;
+    abstract protected function decrypt(AsymmetricKey $privateKey): string;
 }

@@ -8,17 +8,13 @@
 
 namespace OpenPGP\Packet\Signature;
 
-use OpenPGP\Enum\{
-    HashAlgorithm,
-    KeyAlgorithm,
-    SignatureSubpacketType,
-};
+use OpenPGP\Enum\{HashAlgorithm, KeyAlgorithm, SignatureSubpacketType};
 use OpenPGP\Packet\SignatureSubpacket;
 
 /**
  * SignatureTarget sub-packet class
  * RFC 4880, Section 5.2.3.25.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -37,8 +33,7 @@ class SignatureTarget extends SignatureSubpacket
         string $data,
         bool $critical = false,
         bool $isLong = false
-    )
-    {
+    ) {
         parent::__construct(
             SignatureSubpacketType::SignatureTarget->value,
             $data,
@@ -61,8 +56,7 @@ class SignatureTarget extends SignatureSubpacket
         HashAlgorithm $hashAlgorithm,
         string $hashData,
         bool $critical = false
-    ): self
-    {
+    ): self {
         return new self(
             self::hashDataToBytes($keyAlgorithm, $hashAlgorithm, $hashData),
             $critical
@@ -103,8 +97,7 @@ class SignatureTarget extends SignatureSubpacket
         KeyAlgorithm $keyAlgorithm,
         HashAlgorithm $hashAlgorithm,
         string $hashData
-    ): string
-    {
+    ): string {
         return implode([
             chr($keyAlgorithm->value),
             chr($hashAlgorithm->value),

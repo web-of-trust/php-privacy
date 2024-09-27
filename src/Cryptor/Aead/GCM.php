@@ -14,15 +14,15 @@ use phpseclib3\Crypt\Common\BlockCipher;
 /**
  * GCM Authenticated-Encryption class
  * Implements the Galois/Counter mode (GCM) detailed in NIST Special Publication 800-38D.
- * 
+ *
  * @package  OpenPGP
  * @category Cryptor
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 final class GCM implements AeadCipher
 {
-    const CIPHER_MODE = 'gcm';
-    const TAG_LENGTH  = 16;
+    const CIPHER_MODE = "gcm";
+    const TAG_LENGTH = 16;
 
     private readonly BlockCipher $cipher;
 
@@ -36,8 +36,7 @@ final class GCM implements AeadCipher
     public function __construct(
         string $key,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
-    )
-    {
+    ) {
         $this->cipher = $symmetric->cipherEngine(self::CIPHER_MODE);
         $this->cipher->setKey($key);
     }
@@ -46,9 +45,10 @@ final class GCM implements AeadCipher
      * {@inheritdoc}
      */
     public function encrypt(
-        string $plaintext, string $nonce, string $adata = ''
-    ): string
-    {
+        string $plaintext,
+        string $nonce,
+        string $adata = ""
+    ): string {
         return implode([
             $this->crypt($plaintext, $nonce, $adata),
             $this->cipher->getTag(),
@@ -59,18 +59,19 @@ final class GCM implements AeadCipher
      * {@inheritdoc}
      */
     public function decrypt(
-        string $ciphertext, string $nonce, string $adata = ''
-    ): string
-    {
+        string $ciphertext,
+        string $nonce,
+        string $adata = ""
+    ): string {
         $length = strlen($ciphertext);
         if ($length < self::TAG_LENGTH) {
-            throw new \InvalidArgumentException('Invalid GCM cipher text.');
+            throw new \InvalidArgumentException("Invalid GCM cipher text.");
         }
-        $this->cipher->setTag(
-            substr($ciphertext, $length - self::TAG_LENGTH)
-        );
+        $this->cipher->setTag(substr($ciphertext, $length - self::TAG_LENGTH));
         return $this->crypt(
-            substr($ciphertext, 0, $length - self::TAG_LENGTH), $nonce, $adata
+            substr($ciphertext, 0, $length - self::TAG_LENGTH),
+            $nonce,
+            $adata
         );
     }
 
@@ -79,7 +80,7 @@ final class GCM implements AeadCipher
      * A future version of the standard may define GCM mode differently,
      * hopefully under a different ID (we use Private/Experimental algorithm
      * ID 100) so that we can maintain backwards compatibility.
-     * 
+     *
      * @param string $iv - The initialization vector (12 bytes)
      * @param string $chunkIndex - The chunk index (8 bytes)
      * @return string
@@ -94,9 +95,10 @@ final class GCM implements AeadCipher
     }
 
     private function crypt(
-        string $text, string $nonce, string $adata = ''
-    ): string
-    {
+        string $text,
+        string $nonce,
+        string $adata = ""
+    ): string {
         $this->cipher->setNonce($nonce);
         $this->cipher->setAAD($adata);
         return $this->cipher->encrypt($text);

@@ -13,7 +13,7 @@ use OpenPGP\Packet\SignatureSubpacket;
 
 /**
  * RegularExpression sub-packet class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -32,8 +32,7 @@ class RegularExpression extends SignatureSubpacket
         string $data,
         bool $critical = false,
         bool $isLong = false
-    )
-    {
+    ) {
         parent::__construct(
             SignatureSubpacketType::RegularExpression->value,
             $data,

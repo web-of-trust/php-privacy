@@ -9,29 +9,21 @@
 namespace OpenPGP\Packet;
 
 use DateTimeInterface;
-use phpseclib3\Common\Functions\Strings;
-use OpenPGP\Common\{
-    Config,
-    Helper,
-};
-use OpenPGP\Enum\{
-    CurveOid,
-    HashAlgorithm,
-    KeyAlgorithm,
-    PacketTag,
-};
+use OpenPGP\Common\{Config, Helper};
+use OpenPGP\Enum\{HashAlgorithm, KeyAlgorithm, PacketTag};
 use OpenPGP\Type\{
     PublicKeyPacketInterface,
     KeyMaterialInterface,
-    SubkeyPacketInterface,
+    SubkeyPacketInterface
 };
+use phpseclib3\Common\Functions\Strings;
 
 /**
  * Public key packet class
- * 
+ *
  * PublicKey represents an OpenPGP public key packet.
  * See RFC 4880, section 5.5.2.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -58,26 +50,26 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         private readonly int $version,
         private readonly DateTimeInterface $creationTime,
         private readonly KeyMaterialInterface $keyMaterial,
-        private readonly KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
-    )
-    {
+        private readonly KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign
+    ) {
         parent::__construct(
-            $this instanceof SubkeyPacketInterface ?
-            PacketTag::PublicSubkey : PacketTag::PublicKey
+            $this instanceof SubkeyPacketInterface
+                ? PacketTag::PublicSubkey
+                : PacketTag::PublicKey
         );
         if ($version !== self::VERSION_4 && $version !== self::VERSION_5) {
             throw new \UnexpectedValueException(
-                "Version $version of the key packet is unsupported.",
+                "Version $version of the key packet is unsupported."
             );
         }
 
         $isV5 = $version === self::VERSION_5;
-        $this->fingerprint = $isV5 ?
-            hash('sha256', $this->getSignBytes(), true) :
-            hash('sha1', $this->getSignBytes(), true);
-        $this->keyID = $isV5 ?
-            substr($this->fingerprint, 0, 8) :
-            substr($this->fingerprint, 12, 8);
+        $this->fingerprint = $isV5
+            ? hash("sha256", $this->getSignBytes(), true)
+            : hash("sha1", $this->getSignBytes(), true);
+        $this->keyID = $isV5
+            ? substr($this->fingerprint, 0, 8)
+            : substr($this->fingerprint, 12, 8);
     }
 
     /**
@@ -91,7 +83,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         $version = ord($bytes[$offset++]);
         if ($version !== self::VERSION_4 && $version !== self::VERSION_5) {
             throw new \UnexpectedValueException(
-                "Version $version of the key packet is unsupported.",
+                "Version $version of the key packet is unsupported."
             );
         }
 
@@ -112,15 +104,11 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         // A series of values comprising the key material.
         // This is algorithm-specific and described in section XXXX.
         $keyMaterial = self::readKeyMaterial(
-            substr($bytes, $offset), $keyAlgorithm
-        );
-
-        return new self(
-            $version,
-            $creationTime,
-            $keyMaterial,
+            substr($bytes, $offset),
             $keyAlgorithm
         );
+
+        return new self($version, $creationTime, $keyMaterial, $keyAlgorithm);
     }
 
     /**
@@ -131,9 +119,11 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         $kmBytes = $this->keyMaterial->toBytes();
         return implode([
             chr($this->version),
-            pack('N', $this->creationTime->getTimestamp()),
+            pack("N", $this->creationTime->getTimestamp()),
             chr($this->keyAlgorithm->value),
-            ($this->version === self::VERSION_5) ? pack('N', strlen($kmBytes)) : '',
+            $this->version === self::VERSION_5
+                ? pack("N", strlen($kmBytes))
+                : "",
             $kmBytes,
         ]);
     }
@@ -175,7 +165,9 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
      */
     public function getFingerprint(bool $toHex = false): string
     {
-        return $toHex ? Strings::bin2hex($this->fingerprint) : $this->fingerprint;
+        return $toHex
+            ? Strings::bin2hex($this->fingerprint)
+            : $this->fingerprint;
     }
 
     /**
@@ -223,12 +215,10 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
      */
     public function getPreferredHash(
         ?HashAlgorithm $preferredHash = null
-    ): HashAlgorithm
-    {
+    ): HashAlgorithm {
         if ($this->keyMaterial instanceof Key\ECPublicKeyMaterial) {
             return $this->keyMaterial->getCurveOid()->hashAlgorithm();
-        }
-        else {
+        } else {
             return $preferredHash ?? Config::getPreferredHash();
         }
     }
@@ -242,27 +232,33 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         $isV5 = $this->version === self::VERSION_5;
         return implode([
             $isV5 ? "\x9a" : "\x99",
-            $isV5 ? pack('N', strlen($bytes)) : pack('n', strlen($bytes)),
+            $isV5 ? pack("N", strlen($bytes)) : pack("n", strlen($bytes)),
             $bytes,
         ]);
     }
 
     private static function readKeyMaterial(
-        string $bytes, KeyAlgorithm $keyAlgorithm
-    ): KeyMaterialInterface
-    {
-        return match($keyAlgorithm) {
+        string $bytes,
+        KeyAlgorithm $keyAlgorithm
+    ): KeyMaterialInterface {
+        return match ($keyAlgorithm) {
             KeyAlgorithm::RsaEncryptSign,
             KeyAlgorithm::RsaEncrypt,
             KeyAlgorithm::RsaSign
                 => Key\RSAPublicKeyMaterial::fromBytes($bytes),
-            KeyAlgorithm::ElGamal => Key\ElGamalPublicKeyMaterial::fromBytes($bytes),
+            KeyAlgorithm::ElGamal => Key\ElGamalPublicKeyMaterial::fromBytes(
+                $bytes
+            ),
             KeyAlgorithm::Dsa => Key\DSAPublicKeyMaterial::fromBytes($bytes),
             KeyAlgorithm::Ecdh => Key\ECDHPublicKeyMaterial::fromBytes($bytes),
-            KeyAlgorithm::EcDsa => Key\ECDSAPublicKeyMaterial::fromBytes($bytes),
-            KeyAlgorithm::EdDsa => Key\EdDSAPublicKeyMaterial::fromBytes($bytes),
+            KeyAlgorithm::EcDsa => Key\ECDSAPublicKeyMaterial::fromBytes(
+                $bytes
+            ),
+            KeyAlgorithm::EdDsa => Key\EdDSAPublicKeyMaterial::fromBytes(
+                $bytes
+            ),
             default => throw new \UnexpectedValueException(
-                "Unsupported PGP public key algorithm encountered",
+                "Unsupported PGP public key algorithm encountered"
             ),
         };
     }

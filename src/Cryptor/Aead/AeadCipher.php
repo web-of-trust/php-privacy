@@ -10,7 +10,7 @@ namespace OpenPGP\Cryptor\Aead;
 
 /**
  * Aead cipher interface
- * 
+ *
  * @package  OpenPGP
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -26,7 +26,9 @@ interface AeadCipher
      * @return string The ciphertext output.
      */
     function encrypt(
-        string $plaintext, string $nonce, string $adata = ''
+        string $plaintext,
+        string $nonce,
+        string $adata = ""
     ): string;
 
     /**
@@ -38,12 +40,14 @@ interface AeadCipher
      * @return string The plaintext output.
      */
     function decrypt(
-        string $ciphertext, string $nonce, string $adata = ''
+        string $ciphertext,
+        string $nonce,
+        string $adata = ""
     ): string;
 
     /**
      * Get aead nonce
-     * 
+     *
      * @param string $iv - The initialization vector
      * @param string $chunkIndex - The chunk index
      * @return string

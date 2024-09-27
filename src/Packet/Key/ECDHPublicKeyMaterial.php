@@ -8,17 +8,14 @@
 
 namespace OpenPGP\Packet\Key;
 
+use OpenPGP\Common\Helper;
+use OpenPGP\Enum\{HashAlgorithm, SymmetricAlgorithm};
 use phpseclib3\Crypt\EC\PublicKey;
 use phpseclib3\Math\BigInteger;
-use OpenPGP\Common\Helper;
-use OpenPGP\Enum\{
-    HashAlgorithm,
-    SymmetricAlgorithm,
-};
 
 /**
  * ECDH public key material class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -45,8 +42,7 @@ class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
         private readonly SymmetricAlgorithm $kdfSymmetric,
         private readonly int $reserved = self::DEFAULT_RESERVED,
         ?PublicKey $publicKey = null
-    )
-    {
+    ) {
         parent::__construct($oid, $q, $publicKey);
     }
 

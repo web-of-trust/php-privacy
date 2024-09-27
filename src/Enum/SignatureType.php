@@ -91,7 +91,7 @@ enum SignatureType: int
      * that it is owned by the primary key and subkey.
      * This signature is calculated the same way as a 0x18 signature: directly on the
      * primary key and subkey, and not on any User ID or other packets.
-     * 
+     *
      * When a signature is made over a key, the hash data starts with the octet 0x99,
      * followed by a two-octet length of the key, and then body  of the key packet.
      * (Note that this is an old-style packet header for a key packet with two-octet length.)

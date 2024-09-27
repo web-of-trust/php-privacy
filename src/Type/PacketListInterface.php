@@ -12,30 +12,33 @@ use OpenPGP\Enum\PacketTag;
 
 /**
  * Packet list interface
- * 
+ *
  * @package  OpenPGP
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-interface PacketListInterface extends \ArrayAccess, \IteratorAggregate, \Countable
+interface PacketListInterface extends
+    \ArrayAccess,
+    \IteratorAggregate,
+    \Countable
 {
     /**
      * Get array packets
-     * 
+     *
      * @return array
      */
     function getPackets(): array;
 
     /**
      * Serialize packets to bytes
-     * 
+     *
      * @return string
      */
     function encode(): string;
 
     /**
      * Filter packets by tag
-     * 
+     *
      * @param PacketTag $tag
      * @return self
      */
@@ -43,7 +46,7 @@ interface PacketListInterface extends \ArrayAccess, \IteratorAggregate, \Countab
 
     /**
      * Filter packets by type (class)
-     * 
+     *
      * @param string $type
      * @return self
      */
@@ -51,7 +54,7 @@ interface PacketListInterface extends \ArrayAccess, \IteratorAggregate, \Countab
 
     /**
      * Extract a slice of the packets
-     * 
+     *
      * @param int $offset
      * @param int $length
      * @return self
@@ -60,7 +63,7 @@ interface PacketListInterface extends \ArrayAccess, \IteratorAggregate, \Countab
 
     /**
      * Return array of found indices by tags
-     * 
+     *
      * @param $tags
      * @return array
      */

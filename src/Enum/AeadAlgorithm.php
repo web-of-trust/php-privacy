@@ -8,12 +8,7 @@
 
 namespace OpenPGP\Enum;
 
-use OpenPGP\Cryptor\Aead\{
-    AeadCipher,
-    EAX,
-    GCM,
-    OCB,
-};
+use OpenPGP\Cryptor\Aead\{AeadCipher, EAX, GCM, OCB};
 
 /**
  * Aead algorithm enum
@@ -37,7 +32,7 @@ enum AeadAlgorithm: int
      */
     public function blockLength(): int
     {
-        return match($this) {
+        return match ($this) {
             self::Eax, self::Ocb, self::Gcm => 16,
         };
     }
@@ -49,7 +44,7 @@ enum AeadAlgorithm: int
      */
     public function ivLength(): int
     {
-        return match($this) {
+        return match ($this) {
             self::Eax => 16,
             self::Ocb => 15,
             self::Gcm => 12,
@@ -63,7 +58,7 @@ enum AeadAlgorithm: int
      */
     public function tagLength(): int
     {
-        return match($this) {
+        return match ($this) {
             self::Eax, self::Ocb, self::Gcm => 16,
         };
     }
@@ -78,9 +73,8 @@ enum AeadAlgorithm: int
     public function cipherEngine(
         string $key,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
-    ): AeadCipher
-    {
-        return match($this) {
+    ): AeadCipher {
+        return match ($this) {
             self::Eax => new EAX($key, $symmetric),
             self::Ocb => new OCB($key, $symmetric),
             self::Gcm => new GCM($key, $symmetric),

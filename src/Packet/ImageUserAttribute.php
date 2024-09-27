@@ -26,7 +26,7 @@ class ImageUserAttribute extends UserAttributeSubpacket
      * @param bool $isLong
      * @return self
      */
-    public function __construct(string $data = '', bool $isLong = false)
+    public function __construct(string $data = "", bool $isLong = false)
     {
         parent::__construct(self::JPEG, $data, $isLong);
     }
@@ -37,16 +37,16 @@ class ImageUserAttribute extends UserAttributeSubpacket
      * @param string $imageData
      * @return self
      */
-    public static function fromImageData(
-        string $imageData
-    ): self
+    public static function fromImageData(string $imageData): self
     {
-        return new self(implode([
-            "\x10\x00\x01",
-            chr(self::JPEG),
-            str_repeat("\x00", 12),
-            $imageData,
-        ]));
+        return new self(
+            implode([
+                "\x10\x00\x01",
+                chr(self::JPEG),
+                str_repeat("\x00", 12),
+                $imageData,
+            ])
+        );
     }
 
     /**

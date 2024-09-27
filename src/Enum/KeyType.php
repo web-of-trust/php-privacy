@@ -15,7 +15,8 @@ namespace OpenPGP\Enum;
  * @category Enum
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-enum KeyType {
+enum KeyType
+{
     case Rsa;
 
     case Dsa;

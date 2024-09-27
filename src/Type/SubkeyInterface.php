@@ -9,14 +9,11 @@
 namespace OpenPGP\Type;
 
 use DateTimeInterface;
-use OpenPGP\Enum\{
-    KeyAlgorithm,
-    RevocationReasonTag,
-};
+use OpenPGP\Enum\{KeyAlgorithm, RevocationReasonTag};
 
 /**
  * Subkey interface
- * 
+ *
  * @package  OpenPGP
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -32,28 +29,28 @@ interface SubkeyInterface extends PacketContainerInterface
 
     /**
      * Get the expiration time of the subkey or null if subkey does not expire.
-     * 
+     *
      * @return DateTimeInterface
      */
     function getExpirationTime(): ?DateTimeInterface;
 
     /**
      * Get creation time
-     * 
+     *
      * @return DateTimeInterface
      */
     function getCreationTime(): DateTimeInterface;
 
     /**
      * Get key algorithm
-     * 
+     *
      * @return KeyAlgorithm
      */
     function getKeyAlgorithm(): KeyAlgorithm;
 
     /**
      * Get fingerprint
-     * 
+     *
      * @param bool $toHex
      * @return string
      */
@@ -61,7 +58,7 @@ interface SubkeyInterface extends PacketContainerInterface
 
     /**
      * Get key ID
-     * 
+     *
      * @param bool $toHex
      * @return string
      */
@@ -69,49 +66,49 @@ interface SubkeyInterface extends PacketContainerInterface
 
     /**
      * Get key strength
-     * 
+     *
      * @return int
      */
     function getKeyStrength(): int;
 
     /**
      * Get revocation signatures
-     * 
+     *
      * @return array
      */
     function getRevocationSignatures(): array;
 
     /**
      * Get binding signatures
-     * 
+     *
      * @return array
      */
     function getBindingSignatures(): array;
 
     /**
      * Get latest binding signature
-     * 
+     *
      * @return SignaturePacketInterface
      */
     function getLatestBindingSignature(): ?SignaturePacketInterface;
 
     /**
      * Return subkey is signing or verification key
-     * 
+     *
      * @return bool
      */
     function isSigningKey(): bool;
 
     /**
      * Return subkey is encryption or decryption key
-     * 
+     *
      * @return bool
      */
     function isEncryptionKey(): bool;
 
     /**
      * Check if a binding signature of a subkey is revoked
-     * 
+     *
      * @param KeyInterface $verifyKey
      * @param SignaturePacketInterface $certificate
      * @param DateTimeInterface $time
@@ -126,7 +123,7 @@ interface SubkeyInterface extends PacketContainerInterface
     /**
      * Verify subkey.
      * Checks for revocation signatures, expiration time and valid binding signature.
-     * 
+     *
      * @param DateTimeInterface $time
      * @return bool
      */
@@ -134,7 +131,7 @@ interface SubkeyInterface extends PacketContainerInterface
 
     /**
      * Revoke the subkey
-     * 
+     *
      * @param PrivateKeyInterface $signKey
      * @param string $revocationReason
      * @param RevocationReasonTag $reasonTag
@@ -143,7 +140,7 @@ interface SubkeyInterface extends PacketContainerInterface
      */
     function revokeBy(
         PrivateKeyInterface $signKey,
-        string $revocationReason = '',
+        string $revocationReason = "",
         RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
         ?DateTimeInterface $time = null
     ): self;

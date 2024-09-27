@@ -8,14 +8,11 @@
 
 namespace OpenPGP\Common;
 
-use OpenPGP\Enum\{
-    HashAlgorithm,
-    S2kType,
-};
+use OpenPGP\Enum\{HashAlgorithm, S2kType};
 
 /**
  * String-to-key class
- * 
+ *
  * Implementation of the String-to-key specifier
  * String-to-key (S2K) specifiers are used to convert passphrase strings into
  * symmetric-key encryption/decryption keys.
@@ -56,9 +53,8 @@ class S2K
         private readonly S2kType $type = S2kType::Iterated,
         private readonly HashAlgorithm $hash = HashAlgorithm::Sha1,
         private readonly int $itCount = self::DEFAULT_IT_COUNT
-    )
-    {
-        $this->count = (16 + ($itCount & 15)) << (($itCount >> 4) + self::EXPBIAS);
+    ) {
+        $this->count = 16 + ($itCount & 15) << ($itCount >> 4) + self::EXPBIAS;
     }
 
     /**
@@ -113,13 +109,13 @@ class S2K
 
     /**
      * Parsing function for a string-to-key specifier
-     * 
+     *
      * @param string $bytes - Payload of string-to-key specifier
      * @return self
      */
     public static function fromBytes(string $bytes): self
     {
-        $salt = '';
+        $salt = "";
         $itCount = self::DEFAULT_IT_COUNT;
 
         $type = S2kType::from(ord($bytes[0]));
@@ -138,16 +134,16 @@ class S2K
 
     /**
      * Serialize s2k information to binary string
-     * 
+     *
      * @return string
      */
     public function toBytes(): string
     {
-        return match($this->type) {
+        return match ($this->type) {
             S2kType::Simple => implode([
                 chr($this->type->value),
-                chr($this->hash->value)],
-            ),
+                chr($this->hash->value),
+            ]),
             S2kType::Salted => implode([
                 chr($this->type->value),
                 chr($this->hash->value),
@@ -159,32 +155,25 @@ class S2K
                 $this->salt,
                 chr($this->itCount),
             ]),
-            S2kType::GNU => implode([
-                chr($this->type->value),
-                'GNU',
-                "\x01",
-            ]),
+            S2kType::GNU => implode([chr($this->type->value), "GNU", "\x01"]),
         };
     }
 
     /**
      * Produce a key using the specified passphrase and the defined hash algorithm
-     * 
+     *
      * @param string $passphrase
      * @param int $keyLen
      * @return string
      */
-    public function produceKey(
-        string $passphrase, int $keyLen
-    ): string
+    public function produceKey(string $passphrase, int $keyLen): string
     {
-        return match($this->type) {
+        return match ($this->type) {
             S2kType::Simple => $this->hash($passphrase, $keyLen),
-            S2kType::Salted => $this->hash(
-                $this->salt . $passphrase, $keyLen
-            ),
+            S2kType::Salted => $this->hash($this->salt . $passphrase, $keyLen),
             S2kType::Iterated => $this->hash(
-                $this->iterate($this->salt . $passphrase), $keyLen
+                $this->iterate($this->salt . $passphrase),
+                $keyLen
             ),
             S2kType::GNU => $this->hash($passphrase, $keyLen),
         };
@@ -192,10 +181,10 @@ class S2K
 
     private function iterate(string $data): string
     {
-        if(strlen($data) >= $this->count) return $data;
-        $data = str_repeat(
-            $data, (int) ceil($this->count / strlen($data))
-        );
+        if (strlen($data) >= $this->count) {
+            return $data;
+        }
+        $data = str_repeat($data, (int) ceil($this->count / strlen($data)));
         return substr($data, 0, $this->count);
     }
 
@@ -203,7 +192,7 @@ class S2K
     {
         $alg = strtolower($this->hash->name);
         $hash = hash($alg, $data, true);
-        while(strlen($hash) < $size) {
+        while (strlen($hash) < $size) {
             $data = "\x00" . $data;
             $hash .= hash($alg, $data, true);
         }

@@ -9,39 +9,36 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Common\Helper;
-use OpenPGP\Enum\{
-    HashAlgorithm,
-    PacketTag,
-    SymmetricAlgorithm,
-};
+use OpenPGP\Enum\{HashAlgorithm, PacketTag, SymmetricAlgorithm};
 use OpenPGP\Type\{
     EncryptedDataPacketInterface,
     PacketListInterface,
-    SessionKeyInterface,
+    SessionKeyInterface
 };
 
 /**
  * Implementation of the Sym. Encrypted Integrity Protected Data Packet (Tag 18)
  * See RFC 4880, section 5.13.
- * 
+ *
  * The Symmetrically Encrypted Integrity Protected Data packet is a variant
  * of the Symmetrically Encrypted Data packet.
  * It is a new feature created for OpenPGP that addresses the problem of
  * detecting a modification to encrypted data.
  * It is used in combination with a Modification Detection Code packet.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class SymEncryptedIntegrityProtectedData extends AbstractPacket implements EncryptedDataPacketInterface
+class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
+    EncryptedDataPacketInterface
 {
     use EncryptedDataTrait;
 
-    const VERSION       = 1;
-    const HASH_ALGO     = 'sha1';
-    const ZERO_CHAR     = "\x00";
-    const CIPHER_MODE   = 'cfb';
+    const VERSION = 1;
+    const HASH_ALGO = "sha1";
+    const ZERO_CHAR = "\x00";
+    const CIPHER_MODE = "cfb";
     const SUFFIX_OCTETS = "\xd3\x14";
 
     /**
@@ -54,8 +51,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
     public function __construct(
         private readonly string $encrypted,
         private readonly ?PacketListInterface $packetList = null
-    )
-    {
+    ) {
         parent::__construct(PacketTag::SymEncryptedIntegrityProtectedData);
     }
 
@@ -69,8 +65,8 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
         $version = ord($bytes[0]);
         if ($version !== self::VERSION) {
             throw new \UnexpectedValueException(
-                "Version $version of the SEIP packet is unsupported.",
-          );
+                "Version $version of the SEIP packet is unsupported."
+            );
         }
 
         return new self(substr($bytes, 1));
@@ -88,8 +84,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
         string $key,
         PacketListInterface $packetList,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
-    ): self
-    {
+    ): self {
         $toHash = implode([
             Helper::generatePrefix($symmetric),
             $packetList->encode(),
@@ -101,9 +96,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
         $cipher->setKey($key);
         $cipher->setIV(str_repeat(self::ZERO_CHAR, $symmetric->blockSize()));
 
-        return new self(
-            $cipher->encrypt($plainText), $packetList
-        );
+        return new self($cipher->encrypt($plainText), $packetList);
     }
 
     /**
@@ -114,9 +107,9 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
      * @return self
      */
     public static function encryptPacketsWithSessionKey(
-        SessionKeyInterface $sessionKey, PacketListInterface $packetList
-    ): self
-    {
+        SessionKeyInterface $sessionKey,
+        PacketListInterface $packetList
+    ): self {
         return self::encryptPackets(
             $sessionKey->getEncryptionKey(),
             $packetList,
@@ -148,14 +141,12 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
     public function decrypt(
         string $key,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
-    ): self
-    {
+    ): self {
         if ($this->packetList instanceof PacketListInterface) {
             return $this;
-        }
-        else {
+        } else {
             $this->getLogger()->debug(
-                'Decrypt the encrypted data contained in the packet.'
+                "Decrypt the encrypted data contained in the packet."
             );
             $size = $symmetric->blockSize();
             $cipher = $symmetric->cipherEngine(self::CIPHER_MODE);
@@ -163,13 +154,12 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements Encry
             $cipher->setIV(str_repeat(self::ZERO_CHAR, $size));
 
             $decrypted = $cipher->decrypt($this->encrypted);
-            $digestSize = strlen($decrypted) - HashAlgorithm::Sha1->digestSize();
+            $digestSize =
+                strlen($decrypted) - HashAlgorithm::Sha1->digestSize();
             $realHash = substr($decrypted, $digestSize);
             $toHash = substr($decrypted, 0, $digestSize);
             if ($realHash !== hash(self::HASH_ALGO, $toHash, true)) {
-                throw new \UnexpectedValueException(
-                    'Modification detected.'
-                );
+                throw new \UnexpectedValueException("Modification detected.");
             }
 
             return new self(

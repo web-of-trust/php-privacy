@@ -13,7 +13,7 @@ use OpenPGP\Enum\SignatureSubpacketType;
 
 /**
  * Sub packet reader class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -31,16 +31,15 @@ class SubpacketReader
      */
     public function __construct(
         private readonly int $type = 0,
-        private readonly string $data = '',
+        private readonly string $data = "",
         private readonly int $offset = 0,
         private readonly bool $isLong = false
-    )
-    {
+    ) {
     }
 
     /**
      * Get type
-     * 
+     *
      * @return int
      */
     public function getType(): int
@@ -50,7 +49,7 @@ class SubpacketReader
 
     /**
      * Get data
-     * 
+     *
      * @return string
      */
     public function getData(): string
@@ -60,7 +59,7 @@ class SubpacketReader
 
     /**
      * Get offset
-     * 
+     *
      * @return int
      */
     public function getOffset(): int
@@ -70,7 +69,7 @@ class SubpacketReader
 
     /**
      * Get is long
-     * 
+     *
      * @return bool
      */
     public function isLong(): bool
@@ -94,137 +93,190 @@ class SubpacketReader
             $offset = $reader->getOffset();
             $data = $reader->getData();
             if (!empty($data)) {
-                $critical = (($reader->getType() & 0x80) != 0);
+                $critical = ($reader->getType() & 0x80) != 0;
                 $type = SignatureSubpacketType::from($reader->getType() & 0x7f);
                 switch ($type) {
                     case SignatureSubpacketType::SignatureCreationTime:
                         $subpackets[] = new Signature\SignatureCreationTime(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::SignatureExpirationTime:
                         $subpackets[] = new Signature\SignatureExpirationTime(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::ExportableCertification:
                         $subpackets[] = new Signature\ExportableCertification(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::TrustSignature:
                         $subpackets[] = new Signature\TrustSignature(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::RegularExpression:
                         $subpackets[] = new Signature\RegularExpression(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::Revocable:
                         $subpackets[] = new Signature\Revocable(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::KeyExpirationTime:
                         $subpackets[] = new Signature\KeyExpirationTime(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::PreferredSymmetricAlgorithms:
                         $subpackets[] = new Signature\PreferredSymmetricAlgorithms(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::RevocationKey:
                         $subpackets[] = new Signature\RevocationKey(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::IssuerKeyID:
                         $subpackets[] = new Signature\IssuerKeyID(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::NotationData:
                         $subpackets[] = new Signature\NotationData(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::PreferredHashAlgorithms:
                         $subpackets[] = new Signature\PreferredHashAlgorithms(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::PreferredCompressionAlgorithms:
                         $subpackets[] = new Signature\PreferredCompressionAlgorithms(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::KeyServerPreferences:
                         $subpackets[] = new Signature\KeyServerPreferences(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::PreferredKeyServer:
                         $subpackets[] = new Signature\PreferredKeyServer(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::PrimaryUserID:
                         $subpackets[] = new Signature\PrimaryUserID(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::PolicyURI:
                         $subpackets[] = new Signature\PolicyURI(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::KeyFlags:
                         $subpackets[] = new Signature\KeyFlags(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::SignerUserID:
                         $subpackets[] = new Signature\SignerUserID(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::RevocationReason:
                         $subpackets[] = new Signature\RevocationReason(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::Features:
                         $subpackets[] = new Signature\Features(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::SignatureTarget:
                         $subpackets[] = new Signature\SignatureTarget(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::EmbeddedSignature:
                         $subpackets[] = new Signature\EmbeddedSignature(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::IssuerFingerprint:
                         $subpackets[] = new Signature\IssuerFingerprint(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     case SignatureSubpacketType::PreferredAeadAlgorithms:
                         $subpackets[] = new Signature\PreferredAeadAlgorithms(
-                            $data, $critical, $reader->isLong()
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                     default:
                         $subpackets[] = new SignatureSubpacket(
-                            $type->value, $data, $critical, $reader->isLong()
+                            $type->value,
+                            $data,
+                            $critical,
+                            $reader->isLong()
                         );
                         break;
                 }
@@ -275,20 +327,16 @@ class SubpacketReader
      * @param int $offset
      * @return self
      */
-    public static function read(
-        string $bytes, int $offset = 0
-    ): self
+    public static function read(string $bytes, int $offset = 0): self
     {
         $isLong = false;
         $header = ord($bytes[$offset++]);
         $length = strlen($bytes) - $offset;
         if ($header < 192) {
             $length = $header;
-        }
-        elseif ($header < 255) {
-            $length = (($header - 192) << 8) + (ord($bytes[$offset++])) + 192;
-        }
-        elseif ($header === 255) {
+        } elseif ($header < 255) {
+            $length = ($header - 192 << 8) + ord($bytes[$offset++]) + 192;
+        } elseif ($header === 255) {
             $isLong = true;
             $length = Helper::bytesToLong($bytes, $offset);
             $offset += 4;

@@ -10,14 +10,14 @@ namespace OpenPGP\Cryptor\Math;
 
 /**
  * Bitwise class
- * 
+ *
  * @package  OpenPGP
  * @category Cryptor
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 final class Bitwise
 {
-    const MASK_8BITS  = 0xff;
+    const MASK_8BITS = 0xff;
     const MASK_16BITS = 0xffff;
     const MASK_32BITS = 0xffffffff;
 
@@ -33,12 +33,12 @@ final class Bitwise
 
     public static function rightRotate(int $x, int $s): int
     {
-        return ($x >> $s) | ($x << (32 - $s));
+        return ($x >> $s) | ($x << 32 - $s);
     }
 
     public static function leftRotate(int $x, int $s): int
     {
-        return ($x << $s) | ($x >> (32 - $s));
+        return ($x << $s) | ($x >> 32 - $s);
     }
 
     public static function leftShift32(int $x, int $s): int

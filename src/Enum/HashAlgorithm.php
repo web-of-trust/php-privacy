@@ -35,7 +35,7 @@ enum HashAlgorithm: int
 
     public function digestSize(): int
     {
-        return match($this) {
+        return match ($this) {
             self::Unknown => 0,
             self::Md5 => 16,
             self::Sha1, self::Ripemd160 => 20,
@@ -48,7 +48,7 @@ enum HashAlgorithm: int
 
     public function saltSize(): int
     {
-        return match($this) {
+        return match ($this) {
             self::Unknown, self::Md5, self::Sha1, self::Ripemd160 => 8,
             self::Sha224, self::Sha256 => 16,
             self::Sha384 => 24,

@@ -23,7 +23,7 @@ use phpseclib3\Crypt\Common\BlockCipher;
  * cipher to encrypt and authenticate data. It's on-line (the length of a
  * message isn't needed to begin processing it), has good performances, it's
  * simple and provably secure (provided the underlying block cipher is secure).
- * 
+ *
  * @package  OpenPGP
  * @category Cryptor
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -34,7 +34,7 @@ final class EAX implements AeadCipher
     const H_TAG = "\x01";
     const C_TAG = "\x02";
 
-    const CIPHER_MODE = 'ctr';
+    const CIPHER_MODE = "ctr";
 
     private readonly BlockCipher $cipher;
     private readonly CMac $mac;
@@ -53,25 +53,25 @@ final class EAX implements AeadCipher
     public function __construct(
         private readonly string $key,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
-    )
-    {
+    ) {
         $this->cipher = $symmetric->cipherEngine(self::CIPHER_MODE);
         $this->cipher->setKey($key);
         $this->mac = new CMac($symmetric);
 
         $tagLength = $this->mac->getMacSize();
         $this->zeroBlock = str_repeat(self::N_TAG, $tagLength);
-        $this->oneBlock  = str_repeat(self::N_TAG, $tagLength - 1) . self::H_TAG;
-        $this->twoBlock  = str_repeat(self::N_TAG, $tagLength - 1) . self::C_TAG;
+        $this->oneBlock = str_repeat(self::N_TAG, $tagLength - 1) . self::H_TAG;
+        $this->twoBlock = str_repeat(self::N_TAG, $tagLength - 1) . self::C_TAG;
     }
 
     /**
      * {@inheritdoc}
      */
     public function encrypt(
-        string $plaintext, string $nonce, string $adata = ''
-    ): string
-    {
+        string $plaintext,
+        string $nonce,
+        string $adata = ""
+    ): string {
         $omacNonce = $this->omac($this->zeroBlock, $nonce);
         $omacAdata = $this->omac($this->oneBlock, $adata);
 
@@ -86,14 +86,15 @@ final class EAX implements AeadCipher
      * {@inheritdoc}
      */
     public function decrypt(
-        string $ciphertext, string $nonce, string $adata = ''
-    ): string
-    {
+        string $ciphertext,
+        string $nonce,
+        string $adata = ""
+    ): string {
         $length = strlen($ciphertext);
         $tagLength = $this->mac->getMacSize();
 
         if ($length < $tagLength) {
-            throw new \LengthException('Invalid EAX ciphertext');
+            throw new \LengthException("Invalid EAX ciphertext");
         }
         $ciphered = substr($ciphertext, 0, $length - $tagLength);
         $ctTag = substr($ciphertext, $length - $tagLength);
@@ -104,7 +105,7 @@ final class EAX implements AeadCipher
         $tag = $omacCiphered ^ $omacAdata ^ $omacNonce;
 
         if ($ctTag !== $tag) {
-            throw new \UnexpectedValueException('Authentication tag mismatch');
+            throw new \UnexpectedValueException("Authentication tag mismatch");
         }
 
         return $this->crypt($ciphered, $omacNonce);
@@ -114,7 +115,7 @@ final class EAX implements AeadCipher
      * Get EAX nonce as defined by
      * {@link https://tools.ietf.org/html/draft-ietf-openpgp-rfc4880bis-10#section-5.16.1|RFC4880bis-10,
      * section 5.16.1}.
-     * 
+     *
      * @param string $iv - The initialization vector (16 bytes)
      * @param string $chunkIndex - The chunk index (8 bytes)
      * @return string
@@ -130,9 +131,7 @@ final class EAX implements AeadCipher
 
     private function omac(string $tag, string $message): string
     {
-        return $this->mac->generate(
-            implode([$tag, $message]), $this->key
-        );
+        return $this->mac->generate(implode([$tag, $message]), $this->key);
     }
 
     private function crypt(string $text, string $iv): string

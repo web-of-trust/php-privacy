@@ -9,10 +9,7 @@
 namespace OpenPGP\Packet;
 
 use DateTimeInterface;
-use OpenPGP\Common\{
-    Config,
-    Helper,
-};
+use OpenPGP\Common\{Config, Helper};
 use OpenPGP\Enum\{
     CompressionAlgorithm,
     HashAlgorithm,
@@ -24,7 +21,7 @@ use OpenPGP\Enum\{
     SignatureSubpacketType,
     SignatureType,
     SupportFeature,
-    SymmetricAlgorithm,
+    SymmetricAlgorithm
 };
 use OpenPGP\Type\{
     KeyPacketInterface,
@@ -35,14 +32,14 @@ use OpenPGP\Type\{
     SubkeyPacketInterface,
     SubpacketInterface,
     UserIDPacketInterface,
-    PublicKeyMaterialInterface,
+    PublicKeyMaterialInterface
 };
 use phpseclib3\Crypt\Random;
 
 /**
  * Signature represents a signature.
  * See RFC 4880, section 5.2.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -80,16 +77,15 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         private readonly string $signature,
         array $hashedSubpackets = [],
         array $unhashedSubpackets = []
-    )
-    {
+    ) {
         parent::__construct(PacketTag::Signature);
         $this->hashedSubpackets = array_filter(
             $hashedSubpackets,
-            static fn ($subpacket) => $subpacket instanceof SignatureSubpacket
+            static fn($subpacket) => $subpacket instanceof SignatureSubpacket
         );
         $this->unhashedSubpackets = array_filter(
             $unhashedSubpackets,
-            static fn ($subpacket) => $subpacket instanceof SignatureSubpacket
+            static fn($subpacket) => $subpacket instanceof SignatureSubpacket
         );
         $this->signatureData = implode([
             chr($this->version),
@@ -111,7 +107,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         $version = ord($bytes[$offset++]);
         if ($version != self::VERSION_4 && $version != self::VERSION_5) {
             throw new \UnexpectedValueException(
-                "Version $version of the signature packet is unsupported.",
+                "Version $version of the signature packet is unsupported."
             );
         }
 
@@ -152,7 +148,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             $signedHashValue,
             $signature,
             $hashedSubpackets,
-            $unhashedSubpackets,
+            $unhashedSubpackets
         );
     }
 
@@ -175,17 +171,14 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         HashAlgorithm $hashAlgorithm = HashAlgorithm::Sha256,
         array $subpackets = [],
         ?DateTimeInterface $time = null,
-        string $detachedDataHeader = ''
-    ): self
-    {
+        string $detachedDataHeader = ""
+    ): self {
         $version = $signKey->getVersion();
         $keyAlgorithm = $signKey->getKeyAlgorithm();
         $hashAlgorithm = $signKey->getPreferredHash($hashAlgorithm);
 
         $hashedSubpackets = [
-            Signature\SignatureCreationTime::fromTime(
-                $time ?? new \DateTime()
-            ),
+            Signature\SignatureCreationTime::fromTime($time ?? new \DateTime()),
             Signature\IssuerFingerprint::fromKeyPacket($signKey),
             Signature\IssuerKeyID::fromKeyID($signKey->getKeyID()),
             Signature\NotationData::fromNotation(
@@ -204,33 +197,30 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             self::subpacketsToBytes($hashedSubpackets),
         ]);
 
-        $trailer = '';
-        if ($version === self::VERSION_5 &&
-            ($signatureType === SignatureType::Binary || $signatureType === SignatureType::Text)
+        $trailer = "";
+        if (
+            $version === self::VERSION_5 &&
+            ($signatureType === SignatureType::Binary ||
+                $signatureType === SignatureType::Text)
         ) {
             $trailer .= $detachedDataHeader;
         }
-        $trailer .= self::calculateTrailer(
-            $version,
-            strlen($signatureData),
-        );
+        $trailer .= self::calculateTrailer($version, strlen($signatureData));
 
-        $message = implode([
-            $dataToSign,
-            $signatureData,
-            $trailer,
-        ]);
+        $message = implode([$dataToSign, $signatureData, $trailer]);
 
         return new self(
             $version,
             $signatureType,
             $keyAlgorithm,
             $hashAlgorithm,
-            substr(hash(
-                strtolower($hashAlgorithm->name), $message, true
-            ), 0, 2),
+            substr(
+                hash(strtolower($hashAlgorithm->name), $message, true),
+                0,
+                2
+            ),
             self::signMessage($signKey, $hashAlgorithm, $message),
-            $hashedSubpackets,
+            $hashedSubpackets
         );
     }
 
@@ -250,8 +240,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         bool $isPrimaryUser = false,
         int $keyExpiry = 0,
         ?DateTimeInterface $time = null
-    )
-    {
+    ): self {
         $subpackets = [
             Signature\KeyFlags::fromFlags(
                 KeyFlag::CertifyKeys->value | KeyFlag::SignData->value
@@ -279,7 +268,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             ),
             Signature\Features::fromFeatures(
                 SupportFeature::ModificationDetection->value |
-                SupportFeature::AeadEncryptedData->value
+                    SupportFeature::AeadEncryptedData->value
             ),
         ];
         if ($isPrimaryUser) {
@@ -291,10 +280,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         return self::createSignature(
             $signKey,
             SignatureType::CertGeneric,
-            implode([
-                $signKey->getSignBytes(),
-                $userID->getSignBytes(),
-            ]),
+            implode([$signKey->getSignBytes(), $userID->getSignBytes()]),
             Config::getPreferredHash(),
             $subpackets,
             $time
@@ -315,15 +301,11 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         KeyPacketInterface $userKey,
         UserIDPacketInterface $userID,
         ?DateTimeInterface $time = null
-    ): self
-    {
+    ): self {
         return self::createSignature(
             $signKey,
             SignatureType::CertGeneric,
-            implode([
-                $userKey->getSignBytes(),
-                $userID->getSignBytes(),
-            ]),
+            implode([$userKey->getSignBytes(), $userID->getSignBytes()]),
             Config::getPreferredHash(),
             [
                 Signature\KeyFlags::fromFlags(
@@ -349,23 +331,20 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         KeyPacketInterface $signKey,
         KeyPacketInterface $userKey,
         UserIDPacketInterface $userID,
-        string $revocationReason = '',
+        string $revocationReason = "",
         RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
         ?DateTimeInterface $time = null
-    ): self
-    {
+    ): self {
         return self::createSignature(
             $signKey,
             SignatureType::CertRevocation,
-            implode([
-                $userKey->getSignBytes(),
-                $userID->getSignBytes(),
-            ]),
+            implode([$userKey->getSignBytes(), $userID->getSignBytes()]),
             Config::getPreferredHash(),
             [
                 Signature\RevocationReason::fromRevocation(
-                    $reasonTag, $revocationReason
-                )
+                    $reasonTag,
+                    $revocationReason
+                ),
             ],
             $time
         );
@@ -384,11 +363,10 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public static function createKeyRevocation(
         KeyPacketInterface $signKey,
         KeyPacketInterface $keyPacket,
-        string $revocationReason = '',
+        string $revocationReason = "",
         RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
         ?DateTimeInterface $time = null
-    ): self
-    {
+    ): self {
         return self::createSignature(
             $signKey,
             SignatureType::KeyRevocation,
@@ -396,8 +374,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             Config::getPreferredHash(),
             [
                 Signature\RevocationReason::fromRevocation(
-                    $reasonTag, $revocationReason
-                )
+                    $reasonTag,
+                    $revocationReason
+                ),
             ],
             $time
         );
@@ -419,8 +398,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         int $keyExpiry = 0,
         bool $subkeySign = false,
         ?DateTimeInterface $time = null
-    ): self
-    {
+    ): self {
         $subpackets = [];
         if ($keyExpiry > 0) {
             $subpackets[] = Signature\KeyExpirationTime::fromTime($keyExpiry);
@@ -442,19 +420,16 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
                     $time
                 )
             );
-        }
-        else {
+        } else {
             $subpackets[] = Signature\KeyFlags::fromFlags(
-                KeyFlag::EncryptCommunication->value | KeyFlag::EncryptStorage->value
+                KeyFlag::EncryptCommunication->value |
+                    KeyFlag::EncryptStorage->value
             );
         }
         return self::createSignature(
             $signKey,
             SignatureType::SubkeyBinding,
-            implode([
-                $signKey->getSignBytes(),
-                $subkey->getSignBytes(),
-            ]),
+            implode([$signKey->getSignBytes(), $subkey->getSignBytes()]),
             Config::getPreferredHash(),
             $subpackets,
             $time
@@ -476,23 +451,20 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         KeyPacketInterface $signKey,
         KeyPacketInterface $primaryKey,
         SubkeyPacketInterface $subkey,
-        string $revocationReason = '',
+        string $revocationReason = "",
         RevocationReasonTag $reasonTag = RevocationReasonTag::NoReason,
         ?DateTimeInterface $time = null
-    ): self
-    {
+    ): self {
         return self::createSignature(
             $signKey,
             SignatureType::SubkeyRevocation,
-            implode([
-                $primaryKey->getSignBytes(),
-                $subkey->getSignBytes(),
-            ]),
+            implode([$primaryKey->getSignBytes(), $subkey->getSignBytes()]),
             Config::getPreferredHash(),
             [
                 Signature\RevocationReason::fromRevocation(
-                    $reasonTag, $revocationReason
-                )
+                    $reasonTag,
+                    $revocationReason
+                ),
             ],
             $time
         );
@@ -514,11 +486,13 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         bool $detached = false,
         ?NotationDataInterface $notationData = null,
         ?DateTimeInterface $time = null
-    )
-    {
+    ): self {
         $signatureType = SignatureType::Binary;
         $format = $literalData->getFormat();
-        if ($format === LiteralFormat::Text || $format === LiteralFormat::Utf8) {
+        if (
+            $format === LiteralFormat::Text ||
+            $format === LiteralFormat::Utf8
+        ) {
             $signatureType = SignatureType::Text;
         }
         $subpackets = [];
@@ -530,10 +504,11 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             );
         }
 
-        $detachedDataHeader = '';
+        $detachedDataHeader = "";
         if ($signKey->getVersion() === self::VERSION_5) {
-            $detachedDataHeader = $detached ?
-                str_repeat("\x00", 6) : $literalData->getHeader();
+            $detachedDataHeader = $detached
+                ? str_repeat("\x00", 6)
+                : $literalData->getHeader();
         }
 
         return self::createSignature(
@@ -567,18 +542,17 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         KeyPacketInterface $verifyKey,
         string $dataToVerify,
         ?DateTimeInterface $time = null,
-        string $detachedDataHeader = ''
-    ): bool
-    {
+        string $detachedDataHeader = ""
+    ): bool {
         if ($this->getIssuerKeyID() !== $verifyKey->getKeyID()) {
             $this->getLogger()->warning(
-                'Signature was not issued by the given public key.'
+                "Signature was not issued by the given public key."
             );
             return false;
         }
         if ($this->keyAlgorithm !== $verifyKey->getKeyAlgorithm()) {
             $this->getLogger()->warning(
-                'Public key algorithm used to sign signature does not match issuer key algorithm.'
+                "Public key algorithm used to sign signature does not match issuer key algorithm."
             );
             return false;
         }
@@ -588,9 +562,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             $time = $time ?? new \DateTime();
             if ($expirationTime < $time) {
                 $this->getLogger()->warning(
-                    'Signature is expired at {expirationTime}.',
+                    "Signature is expired at {expirationTime}.",
                     [
-                        'expirationTime' => $expirationTime->format(
+                        "expirationTime" => $expirationTime->format(
                             DateTimeInterface::RFC3339_EXTENDED
                         ),
                     ]
@@ -599,41 +573,36 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             }
         }
 
-        $trailer = '';
-        if ($this->version === self::VERSION_5 &&
-            ($this->signatureType === SignatureType::Binary || $this->signatureType === SignatureType::Text)
+        $trailer = "";
+        if (
+            $this->version === self::VERSION_5 &&
+            ($this->signatureType === SignatureType::Binary ||
+                $this->signatureType === SignatureType::Text)
         ) {
             $trailer .= $detachedDataHeader;
         }
         $trailer .= self::calculateTrailer(
             $this->version,
-            strlen($this->signatureData),
+            strlen($this->signatureData)
         );
 
-        $message = implode([
-            $dataToVerify,
-            $this->signatureData,
-            $trailer,
-        ]);
-        $hash = hash(
-            strtolower($this->hashAlgorithm->name), $message, true
-        );
+        $message = implode([$dataToVerify, $this->signatureData, $trailer]);
+        $hash = hash(strtolower($this->hashAlgorithm->name), $message, true);
         if (strcmp($this->signedHashValue, substr($hash, 0, 2)) !== 0) {
-            $this->getLogger()->warning(
-                'Signed digest mismatch!'
-            );
+            $this->getLogger()->warning("Signed digest mismatch!");
             return false;
         }
 
         $keyMaterial = $verifyKey->getKeyMaterial();
         if ($keyMaterial instanceof PublicKeyMaterialInterface) {
             return $keyMaterial->verify(
-                $this->hashAlgorithm, $message, $this->signature
+                $this->hashAlgorithm,
+                $message,
+                $this->signature
             );
-        }
-        else {
+        } else {
             $this->getLogger()->warning(
-                'Verify key material is not verifiable.'
+                "Verify key material is not verifiable."
             );
             return false;
         }
@@ -710,7 +679,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     {
         $timestamp = $time?->getTimestamp() ?? time();
         $creationTime = $this->getSignatureCreationTime()?->getTimestamp() ?? 0;
-        $expirationTime = $this->getSignatureExpirationTime()?->getTimestamp() ?? time();
+        $expirationTime =
+            $this->getSignatureExpirationTime()?->getTimestamp() ?? time();
         return !($creationTime < $timestamp && $timestamp < $expirationTime);
     }
 
@@ -827,16 +797,16 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     public function getIssuerKeyID(bool $toHex = false): string
     {
         $type = SignatureSubpacketType::IssuerKeyID;
-        $issuerKeyID = self::getSubpacket($this->hashedSubpackets, $type) ??
-                       self::getSubpacket($this->unhashedSubpackets, $type);
+        $issuerKeyID =
+            self::getSubpacket($this->hashedSubpackets, $type) ??
+            self::getSubpacket($this->unhashedSubpackets, $type);
         if (!($issuerKeyID instanceof Signature\IssuerKeyID)) {
             $issuerFingerprint = $this->getIssuerFingerprint();
             if ($issuerFingerprint instanceof Signature\IssuerFingerprint) {
                 $issuerKeyID = new Signature\IssuerKeyID(
                     substr($issuerFingerprint->getKeyFingerprint(), 12, 20)
                 );
-            }
-            else {
+            } else {
                 $issuerKeyID = Signature\IssuerKeyID::wildcard();
             }
         }
@@ -850,8 +820,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     {
         return array_filter(
             $this->hashedSubpackets,
-            static fn ($subpacket) =>
-                $this->hashedSubpackets->getType() ===
+            static fn($subpacket) => $this->hashedSubpackets->getType() ===
                 SignatureSubpacketType::NotationData->value
         );
     }
@@ -999,12 +968,12 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     {
         $type = SignatureSubpacketType::IssuerFingerprint;
         return self::getSubpacket($this->hashedSubpackets, $type) ??
-               self::getSubpacket($this->unhashedSubpackets, $type);
+            self::getSubpacket($this->unhashedSubpackets, $type);
     }
 
     /**
      * Read subpackets
-     * 
+     *
      * @return array
      */
     private static function readSubpackets(string $bytes): array
@@ -1016,8 +985,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         KeyPacketInterface $signKey,
         HashAlgorithm $hash,
         string $message
-    ): string
-    {
+    ): string {
         switch ($signKey->getKeyAlgorithm()) {
             case KeyAlgorithm::RsaEncryptSign:
             case KeyAlgorithm::RsaSign:
@@ -1027,60 +995,63 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
                 $keyMaterial = $signKey->getKeyMaterial();
                 if ($keyMaterial instanceof SecretKeyMaterialInterface) {
                     return $keyMaterial->sign($hash, $message);
-                }
-                else {
+                } else {
                     throw new \UnexpectedValueException(
-                        'Invalid key material for signing.',
+                        "Invalid key material for signing."
                     );
                 }
             default:
                 throw new \UnexpectedValueException(
-                    'Unsupported public key algorithm for signing.',
+                    "Unsupported public key algorithm for signing."
                 );
         }
     }
 
     private static function calculateTrailer(
-        int $version, int $dataLength
-    ): string
-    {
+        int $version,
+        int $dataLength
+    ): string {
         if ($version === self::VERSION_5) {
-            return chr($version) . "\xff" . str_repeat("\x00", 4) . pack('N', $dataLength);
-        }
-        else {
-            return chr($version) . "\xff" . pack('N', $dataLength);
+            return chr($version) .
+                "\xff" .
+                str_repeat("\x00", 4) .
+                pack("N", $dataLength);
+        } else {
+            return chr($version) . "\xff" . pack("N", $dataLength);
         }
     }
 
     /**
      * Serialize subpackets to bytes
-     * 
+     *
      * @param array $subpackets
      * @return string
      */
     private static function subpacketsToBytes(array $subpackets): string
     {
-        $bytes = implode(array_map(
-            static fn ($subpacket): string => $subpacket->toBytes(),
-            $subpackets
-        ));
-        return pack('n', strlen($bytes)) . $bytes;
+        $bytes = implode(
+            array_map(
+                static fn($subpacket): string => $subpacket->toBytes(),
+                $subpackets
+            )
+        );
+        return pack("n", strlen($bytes)) . $bytes;
     }
 
     /**
      * Get subpacket by type
-     * 
+     *
      * @param array $subpackets
      * @param SignatureSubpacketType $type
      * @return SubpacketInterface
      */
     private static function getSubpacket(
-        array $subpackets, SignatureSubpacketType $type
-    ): ?SubpacketInterface
-    {
+        array $subpackets,
+        SignatureSubpacketType $type
+    ): ?SubpacketInterface {
         $subpackets = array_filter(
             $subpackets,
-            static fn ($subpacket) => $subpacket->getType() === $type->value
+            static fn($subpacket) => $subpacket->getType() === $type->value
         );
         return array_pop($subpackets);
     }

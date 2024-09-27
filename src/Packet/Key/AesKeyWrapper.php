@@ -13,7 +13,7 @@ use OpenPGP\Enum\KekSize;
 /**
  * AesKeyWrapper class
  * An implementation of the AES Key Wrapper from the NIST Key Wrap Specification.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -28,6 +28,6 @@ class AesKeyWrapper extends KeyWrapper
      */
     public function __construct(KekSize $kekSize = KekSize::S32)
     {
-        parent::__construct(new \phpseclib3\Crypt\AES('ecb'), $kekSize);
+        parent::__construct(new \phpseclib3\Crypt\AES("ecb"), $kekSize);
     }
 }

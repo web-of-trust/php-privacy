@@ -10,14 +10,11 @@ namespace OpenPGP\Packet;
 
 use DateTimeInterface;
 use OpenPGP\Enum\KeyAlgorithm;
-use OpenPGP\Type\{
-    KeyMaterialInterface,
-    SubkeyPacketInterface,
-};
+use OpenPGP\Type\{KeyMaterialInterface, SubkeyPacketInterface};
 
 /**
  * Public sub key packet class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -38,14 +35,8 @@ class PublicSubkey extends PublicKey implements SubkeyPacketInterface
         DateTimeInterface $creationTime,
         KeyMaterialInterface $keyMaterial,
         KeyAlgorithm $algorithm = KeyAlgorithm::RsaEncryptSign
-    )
-    {
-        parent::__construct(
-            $version,
-            $creationTime,
-            $keyMaterial,
-            $algorithm
-        );
+    ) {
+        parent::__construct($version, $creationTime, $keyMaterial, $algorithm);
     }
 
     /**

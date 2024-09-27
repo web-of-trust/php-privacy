@@ -8,16 +8,13 @@
 
 namespace OpenPGP\Common;
 
+use OpenPGP\Enum\{S2kType, SymmetricAlgorithm};
 use phpseclib3\Crypt\Random;
 use phpseclib3\Math\BigInteger;
-use OpenPGP\Enum\{
-    S2kType,
-    SymmetricAlgorithm,
-};
 
 /**
  * Helper class
- * 
+ *
  * @package  OpenPGP
  * @category Common
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -62,7 +59,7 @@ final class Helper
      */
     public static function bit2ByteLength(int $bitLength): int
     {
-        return ($bitLength + 7) >> 3;
+        return $bitLength + 7 >> 3;
     }
 
     /**
@@ -73,8 +70,7 @@ final class Helper
      */
     public static function generatePrefix(
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
-    ): string
-    {
+    ): string {
         $size = $symmetric->blockSize();
         $prefix = Random::string($size);
         $repeat = $prefix[$size - 2] . $prefix[$size - 1];
@@ -90,12 +86,11 @@ final class Helper
      * @return int
      */
     public static function bytesToLong(
-        string $bytes, int $offset = 0, bool $be = true
-    ): int
-    {
-        $unpacked = unpack(
-            $be ? 'N' : 'V', substr($bytes, $offset, 4)
-        );
+        string $bytes,
+        int $offset = 0,
+        bool $be = true
+    ): int {
+        $unpacked = unpack($be ? "N" : "V", substr($bytes, $offset, 4));
         return (int) array_pop($unpacked);
     }
 
@@ -108,18 +103,17 @@ final class Helper
      * @return int
      */
     public static function bytesToShort(
-        string $bytes, int $offset = 0, bool $be = true
-    ): int
-    {
-        $unpacked = unpack(
-            $be ? 'n' : 'v', substr($bytes, $offset, 2)
-        );
+        string $bytes,
+        int $offset = 0,
+        bool $be = true
+    ): int {
+        $unpacked = unpack($be ? "n" : "v", substr($bytes, $offset, 2));
         return (int) array_pop($unpacked);
     }
 
     /**
      * Get string 2 key
-     * 
+     *
      * @return S2K
      */
     public static function stringToKey(): S2K
@@ -134,44 +128,43 @@ final class Helper
 
     /**
      * Calculate a 16bit sum of a string by adding each character codes modulus 65535
-     * 
+     *
      * @param string $text - To create a sum of
      * @return string - 2 bytes containing the sum of all charcodes % 65535.
      */
     public static function computeChecksum(string $text): string
     {
-        $sum = array_sum(array_map(
-            static fn ($char) => ord($char),
-            str_split($text)
-        ));
-        return pack('n', $sum & 0xffff);
+        $sum = array_sum(
+            array_map(static fn($char) => ord($char), str_split($text))
+        );
+        return pack("n", $sum & 0xffff);
     }
 
     /**
      * Generate random password
-     * 
+     *
      * @param int $length
      * @return string
      */
-    public static function generatePassword(int $length = 32): string 
+    public static function generatePassword(int $length = 32): string
     {
         return preg_replace_callback(
-            '/\*/u',
-            static fn () => chr(random_int(33, 126)),
-            str_repeat('*', $length)
+            "/\*/u",
+            static fn() => chr(random_int(33, 126)),
+            str_repeat("*", $length)
         );
     }
 
     /**
      * Remove trailing spaces, carriage returns and tabs from each line
-     * 
+     *
      * @param string $text
      * @return string
      */
     public static function removeTrailingSpaces(string $text): string
     {
         $lines = preg_split(self::LINE_SPLIT_PATTERN, $text);
-        $lines = array_map(static fn ($line) => rtrim($line, " \r\t"), $lines);
+        $lines = array_map(static fn($line) => rtrim($line, " \r\t"), $lines);
         return implode(self::EOL, $lines);
     }
 }

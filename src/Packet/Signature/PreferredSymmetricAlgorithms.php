@@ -8,15 +8,12 @@
 
 namespace OpenPGP\Packet\Signature;
 
-use OpenPGP\Enum\{
-    SignatureSubpacketType,
-    SymmetricAlgorithm,
-};
+use OpenPGP\Enum\{SignatureSubpacketType, SymmetricAlgorithm};
 use OpenPGP\Packet\SignatureSubpacket;
 
 /**
  * PreferredSymmetricAlgorithms sub-packet class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -35,8 +32,7 @@ class PreferredSymmetricAlgorithms extends SignatureSubpacket
         string $data,
         bool $critical = false,
         bool $isLong = false
-    )
-    {
+    ) {
         parent::__construct(
             SignatureSubpacketType::PreferredSymmetricAlgorithms->value,
             $data,
@@ -53,7 +49,7 @@ class PreferredSymmetricAlgorithms extends SignatureSubpacket
     public function getPreferences(): array
     {
         return array_map(
-            fn ($pref) => SymmetricAlgorithm::from(ord($pref)),
+            fn($pref) => SymmetricAlgorithm::from(ord($pref)),
             str_split($this->getData())
         );
     }

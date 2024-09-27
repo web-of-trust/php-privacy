@@ -23,7 +23,7 @@ abstract class ElGamal extends AsymmetricKey
     /**
      * Algorithm Name
      */
-    const ALGORITHM = 'ElGamal';
+    const ALGORITHM = "ElGamal";
 
     private readonly int $bitSize;
 
@@ -39,8 +39,7 @@ abstract class ElGamal extends AsymmetricKey
         private readonly BigInteger $y,
         private readonly BigInteger $prime,
         private readonly BigInteger $generator
-    )
-    {
+    ) {
         $this->bitSize = $prime->getLength();
     }
 
@@ -54,9 +53,9 @@ abstract class ElGamal extends AsymmetricKey
      * @return ElGamal\PrivateKey
      */
     public static function createKey(
-        int $lSize = 2048, int $nSize = 224
-    ): ElGamal\PrivateKey
-    {
+        int $lSize = 2048,
+        int $nSize = 224
+    ): ElGamal\PrivateKey {
         $one = new BigInteger(1);
         $two = new BigInteger(2);
         $q = BigInteger::randomPrime($nSize);

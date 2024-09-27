@@ -8,38 +8,35 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\{
-    DH,
-    EC,
-};
-use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
-use phpseclib3\File\ASN1;
-use phpseclib3\Math\BigInteger;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{
     CurveOid,
     HashAlgorithm,
     KekSize,
     KeyAlgorithm,
-    SymmetricAlgorithm,
+    SymmetricAlgorithm
 };
 use OpenPGP\Type\{
     KeyMaterialInterface,
     SecretKeyPacketInterface,
     SessionKeyCryptorInterface,
-    SessionKeyInterface,
+    SessionKeyInterface
 };
+use phpseclib3\Crypt\{DH, EC};
+use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
+use phpseclib3\File\ASN1;
+use phpseclib3\Math\BigInteger;
 
 /**
  * ECDH session key cryptor class.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
 class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
 {
-    const ANONYMOUS_SENDER = 'Anonymous Sender    ';
+    const ANONYMOUS_SENDER = "Anonymous Sender    ";
     const PKCS5_BLOCK_SIZE = 8;
 
     /**
@@ -52,8 +49,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
     public function __construct(
         private readonly BigInteger $ephemeralKey,
         private readonly string $wrappedKey
-    )
-    {
+    ) {
     }
 
     /**
@@ -67,9 +63,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
         $ephemeralKey = Helper::readMPI($bytes);
         $offset = $ephemeralKey->getLengthInBytes() + 2;
         $length = ord($bytes[$offset++]);
-        return new self(
-            $ephemeralKey, substr($bytes, $offset, $length)
-        );
+        return new self($ephemeralKey, substr($bytes, $offset, $length));
     }
 
     /**
@@ -84,12 +78,9 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
         SessionKeyInterface $sessionKey,
         KeyMaterialInterface $keyMaterial,
         string $fingerprint
-    ): self
-    {
+    ): self {
         if ($keyMaterial instanceof ECDHPublicKeyMaterial) {
-            $privateKey = EC::createKey(
-                $keyMaterial->getCurveOid()->name
-            );
+            $privateKey = EC::createKey($keyMaterial->getCurveOid()->name);
             $sharedKey = DH::computeSecret(
                 $privateKey,
                 $keyMaterial->getECPublicKey()->getEncodedCoordinates()
@@ -105,30 +96,28 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
                 $keyMaterial->getKdfSymmetric()->keySizeInByte()
             );
             $wrappedKey = $keyWrapper->wrap(
-                $kek, self::pkcs5Encode(implode([
-                    $sessionKey->toBytes(),
-                    $sessionKey->computeChecksum(),
-                ]))
+                $kek,
+                self::pkcs5Encode(
+                    implode([
+                        $sessionKey->toBytes(),
+                        $sessionKey->computeChecksum(),
+                    ])
+                )
             );
 
             if ($keyMaterial->getCurveOid() === CurveOid::Curve25519) {
                 $ephemeralKey = Helper::bin2BigInt(
                     "\x40" . $privateKey->getEncodedCoordinates()
                 );
-            }
-            else {
+            } else {
                 $ephemeralKey = Helper::bin2BigInt(
                     $privateKey->getEncodedCoordinates()
                 );
             }
-            return new self(
-                $ephemeralKey,
-                $wrappedKey
-            );
-        }
-        else {
+            return new self($ephemeralKey, $wrappedKey);
+        } else {
             throw new \InvalidArgumentException(
-                'Key material is not instance of ECDH key material.'
+                "Key material is not instance of ECDH key material."
             );
         }
     }
@@ -139,7 +128,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
     public function toBytes(): string
     {
         return implode([
-            pack('n', $this->ephemeralKey->getLength()),
+            pack("n", $this->ephemeralKey->getLength()),
             $this->ephemeralKey->toBytes(),
             chr(strlen($this->wrappedKey)),
             $this->wrappedKey,
@@ -171,12 +160,13 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
      */
     public function decryptSessionKey(
         SecretKeyPacketInterface $secretKey
-    ): SessionKeyInterface
-    {
-        return SessionKey::fromBytes($this->decrypt(
-            $secretKey->getKeyMaterial(),
-            $secretKey->getFingerprint()
-        ));
+    ): SessionKeyInterface {
+        return SessionKey::fromBytes(
+            $this->decrypt(
+                $secretKey->getKeyMaterial(),
+                $secretKey->getFingerprint()
+            )
+        );
     }
 
     /**
@@ -187,22 +177,25 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
      * @return string
      */
     public function decrypt(
-        KeyMaterialInterface $keyMaterial, string $fingerprint
-    ): string
-    {
+        KeyMaterialInterface $keyMaterial,
+        string $fingerprint
+    ): string {
         $publicMaterial = $keyMaterial->getPublicMaterial();
-        if ($keyMaterial instanceof ECDHSecretKeyMaterial &&
-            $publicMaterial instanceof ECDHPublicKeyMaterial) {
+        if (
+            $keyMaterial instanceof ECDHSecretKeyMaterial &&
+            $publicMaterial instanceof ECDHPublicKeyMaterial
+        ) {
             if ($publicMaterial->getCurveOid() === CurveOid::Curve25519) {
-                $format = 'MontgomeryPublic';
+                $format = "MontgomeryPublic";
                 $key = substr($this->ephemeralKey->toBytes(), 1);
-            }
-            else {
-                $format = 'PKCS8';
+            } else {
+                $format = "PKCS8";
                 $curve = $publicMaterial->getCurveOid()->getCurve();
                 $key = PKCS8::savePublicKey(
-                    $curve, PKCS8::extractPoint(
-                        "\x00" . $this->ephemeralKey->toBytes(), $curve
+                    $curve,
+                    PKCS8::extractPoint(
+                        "\x00" . $this->ephemeralKey->toBytes(),
+                        $curve
                     )
                 );
             }
@@ -223,17 +216,16 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
             );
             $key = $keyWrapper->unwrap($kek, $this->wrappedKey);
             return self::pkcs5Decode($key);
-        }
-        else {
+        } else {
             throw new \InvalidArgumentException(
-                'Key material is not instance of ECDH key material.'
+                "Key material is not instance of ECDH key material."
             );
         }
     }
 
     /**
      * Key Derivation Function (RFC 6637)
-     * 
+     *
      * @return string
      */
     private static function ecdhKdf(
@@ -241,26 +233,21 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
         string $sharedKey,
         string $param,
         int $keySize
-    ): string
-    {
-        $toHash = implode([
-            pack('N', 1),
-            $sharedKey,
-            $param,
-        ]);
+    ): string {
+        $toHash = implode([pack("N", 1), $sharedKey, $param]);
         $hash = hash(strtolower($hash->name), $toHash, true);
         return substr($hash, 0, $keySize);
     }
 
     /**
      * Build parameter for ECDH algorithm (RFC 6637)
-     * 
+     *
      * @return string
      */
     private static function ecdhParameter(
-        ECDHPublicKeyMaterial $keyMaterial, string $fingerprint
-    ): string
-    {
+        ECDHPublicKeyMaterial $keyMaterial,
+        string $fingerprint
+    ): string {
         $oid = ASN1::encodeOID($keyMaterial->getCurveOid()->value);
         return implode([
             chr(strlen($oid)),
@@ -277,51 +264,49 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
 
     /**
      * Add pkcs5 padding to a message
-     * 
+     *
      * @return string
      */
-    private static function pkcs5Encode(string $message)
+    private static function pkcs5Encode(string $message): string
     {
         $length = strlen($message);
         $n = self::PKCS5_BLOCK_SIZE - ($length % self::PKCS5_BLOCK_SIZE);
         return substr_replace(
-            str_repeat(chr($n), $length + $n), $message, 0, $length
+            str_repeat(chr($n), $length + $n),
+            $message,
+            0,
+            $length
         );
     }
 
     /**
      * Remove pkcs5 padding from a message
-     * 
+     *
      * @return string
      */
-    private static function pkcs5Decode(string $message)
+    private static function pkcs5Decode(string $message): string
     {
         $len = strlen($message);
         $n = ord($message[$len - 1]);
         if ($len < $n || $n > self::PKCS5_BLOCK_SIZE) {
-            throw new \LengthException(
-                'Invalid padding length.'
-            );
+            throw new \LengthException("Invalid padding length.");
         }
         $ps = substr($message, -$n);
         if (strcmp($ps, str_repeat(chr($n), $n)) !== 0) {
-            throw new \UnexpectedValueException(
-                'Invalid padding string.'
-            );
+            throw new \UnexpectedValueException("Invalid padding string.");
         }
         return substr($message, 0, -$n);
     }
 
     private static function selectKeyWrapper(
         SymmetricAlgorithm $symmetric
-    ): KeyWrapper
-    {
+    ): KeyWrapper {
         $keySize = KekSize::from($symmetric->keySizeInByte());
         return match ($symmetric) {
             SymmetricAlgorithm::Camellia128,
             SymmetricAlgorithm::Camellia192,
             SymmetricAlgorithm::Camellia256
-            => new CamelliaKeyWrapper($keySize),
+                => new CamelliaKeyWrapper($keySize),
             default => new AesKeyWrapper($keySize),
         };
     }

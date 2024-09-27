@@ -8,14 +8,14 @@
 
 namespace OpenPGP\Packet\Signature;
 
-use phpseclib3\Common\Functions\Strings;
 use OpenPGP\Enum\SignatureSubpacketType;
 use OpenPGP\Packet\SignatureSubpacket;
+use phpseclib3\Common\Functions\Strings;
 
 /**
  * IssuerKeyID sub-packet class
  * Giving the issuer key ID.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -34,8 +34,7 @@ class IssuerKeyID extends SignatureSubpacket
         string $data,
         bool $critical = false,
         bool $isLong = false
-    )
-    {
+    ) {
         parent::__construct(
             SignatureSubpacketType::IssuerKeyID->value,
             $data,
@@ -52,9 +51,9 @@ class IssuerKeyID extends SignatureSubpacket
      * @return self
      */
     public static function fromKeyID(
-        string $keyID, bool $critical = false
-    ): self
-    {
+        string $keyID,
+        bool $critical = false
+    ): self {
         return new self($keyID, $critical);
     }
 
@@ -64,16 +63,14 @@ class IssuerKeyID extends SignatureSubpacket
      * @param bool $critical
      * @return self
      */
-    public static function wildcard(
-        bool $critical = false
-    ): self
+    public static function wildcard(bool $critical = false): self
     {
         return new self(str_repeat("\x00", 8), $critical);
     }
 
     /**
      * Get key ID
-     * 
+     *
      * @param bool $toHex
      * @return string
      */

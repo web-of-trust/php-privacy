@@ -8,11 +8,8 @@
 
 namespace OpenPGP\Message;
 
+use OpenPGP\Type\{SignaturePacketInterface, VerificationInterface};
 use phpseclib3\Common\Functions\Strings;
-use OpenPGP\Type\{
-    SignaturePacketInterface,
-    VerificationInterface,
-};
 
 /**
  * Verification class
@@ -34,9 +31,8 @@ class Verification implements VerificationInterface
     public function __construct(
         private readonly string $keyID,
         private readonly SignaturePacketInterface $signaturePacket,
-        private readonly bool $isVerified = false,
-    )
-    {
+        private readonly bool $isVerified = false
+    ) {
     }
 
     /**

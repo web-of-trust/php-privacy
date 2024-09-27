@@ -10,7 +10,7 @@ namespace OpenPGP\Cryptor\Symmetric;
 
 /**
  * Ecb cipher trait
- * 
+ *
  * @package  OpenPGP
  * @category Cryptor
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -22,15 +22,17 @@ trait EcbCipherTrait
      *
      * @return self
      */
-    public function __construct() {
-        parent::__construct('ecb');
-        $this->setPreferredEngine('PHP');
+    public function __construct()
+    {
+        parent::__construct("ecb");
+        $this->setPreferredEngine("PHP");
     }
 
     /**
      * {@inheritdoc}
      */
-    public function encryptBlock($in) {
+    public function encryptBlock($in)
+    {
         $this->setup();
         return parent::encryptBlock($in);
     }
@@ -38,7 +40,8 @@ trait EcbCipherTrait
     /**
      * {@inheritdoc}
      */
-    public function decryptBlock($in) {
+    public function decryptBlock($in)
+    {
         $this->setup();
         return parent::decryptBlock($in);
     }

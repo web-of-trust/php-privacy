@@ -11,20 +11,19 @@ namespace OpenPGP\Packet;
 use OpenPGP\Enum\PacketTag;
 use OpenPGP\Common\Config;
 use OpenPGP\Type\PacketInterface;
-use Psr\Log\{
-    LoggerAwareInterface,
-    LoggerAwareTrait,
-    LoggerInterface,
-};
+use Psr\Log\{LoggerAwareInterface, LoggerAwareTrait, LoggerInterface};
 
 /**
  * Abstract packet class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, \Stringable
+abstract class AbstractPacket implements
+    LoggerAwareInterface,
+    PacketInterface,
+    \Stringable
 {
     use LoggerAwareTrait;
 
@@ -68,8 +67,7 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, 
     {
         if (in_array($this->tag, self::PARTIAL_SUPPORTING, true)) {
             return $this->partialEncode();
-        }
-        else {
+        } else {
             $bytes = $this->toBytes();
             return implode([
                 chr(0xc0 | $this->tag->value),
@@ -109,12 +107,11 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, 
     {
         $data = $this->toBytes();
         $dataLengh = strlen($data);
+        $partialData = [];
 
         while ($dataLengh >= self::PARTIAL_MIN_SIZE) {
-            $maxSize = strlen(
-                substr($data, 0, self::PARTIAL_MAX_SIZE)
-            );
-            $powerOf2 = min(log($maxSize) / M_LN2 | 0, 30);
+            $maxSize = strlen(substr($data, 0, self::PARTIAL_MAX_SIZE));
+            $powerOf2 = min((log($maxSize) / M_LN2) | 0, 30);
             $chunkSize = 1 << $powerOf2;
 
             $partialData[] = implode([
@@ -125,15 +122,9 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, 
             $data = substr($data, $chunkSize);
             $dataLengh = strlen($data);
         }
-        $partialData[] = implode([
-            self::bodyLength(strlen($data)),
-            $data,
-        ]);
+        $partialData[] = implode([self::bodyLength(strlen($data)), $data]);
 
-        return implode([
-            chr(0xc0 | $this->tag->value),
-            ...$partialData,
-        ]);
+        return implode([chr(0xc0 | $this->tag->value), ...$partialData]);
     }
 
     /**
@@ -146,15 +137,13 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, 
     {
         if ($length < 192) {
             return chr($length);
-        }
-        elseif ($length > 191 && $length < 8384) {
+        } elseif ($length > 191 && $length < 8384) {
             return implode([
-              chr(((($length - 192) >> 8) & 0xff) + 192),
-              chr(($length - 192) & 0xff),
+                chr((($length - 192 >> 8) & 0xff) + 192),
+                chr(($length - 192) & 0xff),
             ]);
-        }
-        else {
-            return implode(["\xff", pack('N', $length)]);
+        } else {
+            return implode(["\xff", pack("N", $length)]);
         }
     }
 
@@ -168,7 +157,7 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface, 
     {
         if ($power < 0 || $power > 30) {
             throw new \UnexpectedValueException(
-                'Partial length power must be between 1 and 30'
+                "Partial length power must be between 1 and 30"
             );
         }
         return chr(224 + $power);

@@ -13,14 +13,14 @@ use OpenPGP\Type\UserIDPacketInterface;
 
 /**
  * User ID packet class
- * 
+ *
  * Implementation of the User ID packet (Tag 13)
  * A User ID packet consists of UTF-8 text that is intended to represent
  * the name and email address of the key holder.
  * By convention, it includes an RFC2822 mail name-addr,
  * but there are no restrictions on its content.
  * The packet length in the header specifies the length of the User ID.
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -42,8 +42,8 @@ class UserID extends AbstractPacket implements UserIDPacketInterface
     public function __construct(private readonly string $userID)
     {
         parent::__construct(PacketTag::UserID);
-        $this->name    = $this->extractName();
-        $this->email   = $this->extractEmail();
+        $this->name = $this->extractName();
+        $this->email = $this->extractEmail();
         $this->comment = $this->extractComment();
     }
 
@@ -70,7 +70,7 @@ class UserID extends AbstractPacket implements UserIDPacketInterface
     {
         return implode([
             "\xb4",
-            pack('N', strlen($this->userID)),
+            pack("N", strlen($this->userID)),
             $this->userID,
         ]);
     }
@@ -120,7 +120,7 @@ class UserID extends AbstractPacket implements UserIDPacketInterface
         $nameChars = [];
         $chars = str_split($this->userID);
         foreach ($chars as $char) {
-            if ($char === '(' || $char === '<') {
+            if ($char === "(" || $char === "<") {
                 break;
             }
             $nameChars[] = $char;
@@ -130,23 +130,24 @@ class UserID extends AbstractPacket implements UserIDPacketInterface
 
     private function extractEmail(): string
     {
-        if (preg_match('/[\w\.-]+@[\w\.-]+\.\w{2,4}/', $this->userID, $matches)) {
+        if (
+            preg_match("/[\w\.-]+@[\w\.-]+\.\w{2,4}/", $this->userID, $matches)
+        ) {
             return $matches[0];
-        };
-        return '';
+        }
+        return "";
     }
 
     private function extractComment(): string
     {
-        if (str_contains($this->userID, '(') && str_contains($this->userID, ')')) {
-            $start = (int) strpos($this->userID, '(') + 1;
-            $end = (int) strpos($this->userID, ')');
-            return substr(
-                $this->userID,
-                $start,
-                $end - $start,
-            );
+        if (
+            str_contains($this->userID, "(") &&
+            str_contains($this->userID, ")")
+        ) {
+            $start = (int) strpos($this->userID, "(") + 1;
+            $end = (int) strpos($this->userID, ")");
+            return substr($this->userID, $start, $end - $start);
         }
-        return '';
+        return "";
     }
 }

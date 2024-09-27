@@ -27,7 +27,7 @@ enum S2kType: int
 
     public function packetLength(): int
     {
-        return match($this) {
+        return match ($this) {
             self::Simple => 2,
             self::Salted => 10,
             self::Iterated => 11,

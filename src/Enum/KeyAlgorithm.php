@@ -55,7 +55,8 @@ enum KeyAlgorithm: int
             self::ElGamal,
             self::Ecdh,
             self::DiffieHellman,
-            self::Aedh => false,
+            self::Aedh
+                => false,
             default => true,
         };
     }
@@ -72,7 +73,8 @@ enum KeyAlgorithm: int
             self::Dsa,
             self::EcDsa,
             self::EdDsa,
-            self::AeDsa => false,
+            self::AeDsa
+                => false,
             default => true,
         };
     }

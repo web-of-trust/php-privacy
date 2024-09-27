@@ -8,21 +8,18 @@
 
 namespace OpenPGP\Packet\Key;
 
-use phpseclib3\Crypt\Common\{
-    AsymmetricKey,
-    PublicKey,
-};
+use OpenPGP\Enum\CurveOid;
+use OpenPGP\Type\KeyMaterialInterface;
+use phpseclib3\Crypt\Common\{AsymmetricKey, PublicKey};
 use phpseclib3\Crypt\EC;
 use phpseclib3\Crypt\EC\PublicKey as ECPublicKey;
 use phpseclib3\Crypt\EC\Formats\Keys\MontgomeryPublic;
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
 use phpseclib3\Math\BigInteger;
-use OpenPGP\Enum\CurveOid;
-use OpenPGP\Type\KeyMaterialInterface;
 
 /**
  * EC public key material class
- * 
+ *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
@@ -48,23 +45,23 @@ abstract class ECPublicKeyMaterial implements KeyMaterialInterface
         private readonly string $oid,
         private readonly BigInteger $q,
         ?ECPublicKey $publicKey = null
-    )
-    {
+    ) {
         $this->curveOid = CurveOid::fromOid($oid);
         if ($publicKey instanceof ECPublicKey) {
             $this->publicKey = $publicKey;
-        }
-        else {
-            $format = 'PKCS8';
+        } else {
+            $format = "PKCS8";
             $curve = $this->curveOid->getCurve();
             switch ($this->curveOid) {
                 case CurveOid::Curve25519:
                     $key = substr($q->toBytes(), 1);
-                    $format = 'MontgomeryPublic';
+                    $format = "MontgomeryPublic";
                     break;
                 default:
-                    $point = ($this->curveOid === CurveOid::Ed25519) ?
-                             substr($q->toBytes(), 1) : "\x00" . $q->toBytes();
+                    $point =
+                        $this->curveOid === CurveOid::Ed25519
+                            ? substr($q->toBytes(), 1)
+                            : "\x00" . $q->toBytes();
                     $key = PKCS8::savePublicKey(
                         $curve,
                         PKCS8::extractPoint($point, $curve)
@@ -144,11 +141,10 @@ abstract class ECPublicKeyMaterial implements KeyMaterialInterface
     {
         if ($this->curveOid === CurveOid::Curve25519) {
             return MontgomeryPublic::load(
-                $this->publicKey->toString('MontgomeryPublic')
+                $this->publicKey->toString("MontgomeryPublic")
             );
-        }
-        else {
-            return PKCS8::load($this->publicKey->toString('PKCS8'));
+        } else {
+            return PKCS8::load($this->publicKey->toString("PKCS8"));
         }
     }
 
@@ -168,7 +164,7 @@ abstract class ECPublicKeyMaterial implements KeyMaterialInterface
         return implode([
             chr(strlen($this->oid)),
             $this->oid,
-            pack('n', $this->q->getLength()),
+            pack("n", $this->q->getLength()),
             $this->q->toBytes(),
         ]);
     }
