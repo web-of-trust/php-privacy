@@ -216,52 +216,42 @@ class AeadEncryptedData extends AbstractPacket implements
         $chunkSize = (1 << $this->chunkSize + 6) + $tagLength;
 
         $crypted = [];
-        $aDataBytes = substr_replace(
+        $aData = substr_replace(
             str_repeat(self::ZERO_CHAR, 13),
-            $this->getAData(),
+            $this->getAData($this->getTag()->value),
             0,
             5
         );
-        $ciBytes = substr($aDataBytes, 5, 8);
-        for ($chunkIndex = 0; $chunkIndex === 0 || strlen($data) > 0; ) {
+        $chunkIndex = substr($aData, 5, 8);
+        for ($index = 0; $index === 0 || strlen($data) > 0; ) {
             // Take a chunk of `data`, en/decrypt it,
             // and shift `data` to the next chunk.
             $crypted[] = $cipher->$fn(
                 Strings::shift($data, $chunkSize),
-                $cipher->getNonce($this->iv, $ciBytes),
-                $aDataBytes
+                $cipher->getNonce($this->iv, $chunkIndex),
+                $aData
             );
 
-            $aDataBytes = substr_replace(
-                $aDataBytes,
-                pack("N", ++$chunkIndex),
-                9,
-                4
-            );
-            $ciBytes = substr($aDataBytes, 5, 8);
+            $aData = substr_replace($aData, pack("N", ++$index), 9, 4);
+            $chunkIndex = substr($aData, 5, 8);
         }
 
         // After the final chunk, we either encrypt a final, empty data
         // chunk to get the final authentication tag or validate that final
         // authentication tag.
-        $aDataTagBytes = substr_replace(
+        $aDataTag = substr_replace(
             str_repeat(self::ZERO_CHAR, 21),
-            $aDataBytes,
+            $aData,
             0,
             13
         );
         $cryptedLength =
             $dataLength - $tagLength * (int) ceil($dataLength / $chunkSize);
-        $aDataTagBytes = substr_replace(
-            $aDataTagBytes,
-            pack("N", $cryptedLength),
-            17,
-            4
-        );
+        $aDataTag = substr_replace($aDataTag, pack("N", $cryptedLength), 17, 4);
         $crypted[] = $cipher->$fn(
             $finalChunk,
-            $cipher->getNonce($this->iv, $ciBytes),
-            $aDataTagBytes
+            $cipher->getNonce($this->iv, $chunkIndex),
+            $aDataTag
         );
 
         return implode($crypted);

@@ -319,7 +319,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
             $chunkSize += $this->aead->tagLength();
         }
 
-        $aData = $this->getAData();
+        $aData = $this->getAData($this->getTag()->value);
 
         $keySize = $this->symmetric->keySizeInByte();
         $ivLength = $this->aead->ivLength();
@@ -342,7 +342,8 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
 
         $crypted = [];
         for ($index = 0; $index === 0 || strlen($data); ) {
-            // Take a chunk of `data`, en/decrypt it, and shift `data` to the next chunk.
+            // Take a chunk of `data`, en/decrypt it,
+            // and shift `data` to the next chunk.
             $crypted[] = $cipher->$fn(
                 Strings::shift($data, $chunkSize),
                 $nonce,

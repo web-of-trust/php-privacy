@@ -51,10 +51,16 @@ trait AeadEncryptedDataTrait
         return $this->chunkSize;
     }
 
-    private function getAData(): string
+    /**
+     * Get associated data
+     *
+     * @param int $tag
+     * @return string
+     */
+    private function getAData(int $tag): string
     {
         return implode([
-            chr(0xc0 | $this->getTag()->value),
+            chr(0xc0 | $tag),
             chr($this->version),
             chr($this->symmetric->value),
             chr($this->aead->value),
