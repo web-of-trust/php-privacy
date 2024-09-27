@@ -236,17 +236,16 @@ abstract class AbstractKey implements KeyInterface
                     ?->getEmbeddedSignature();
                 if ($signature instanceof EmbeddedSignature) {
                     // verify embedded signature
-                    if (
-                        $signature
-                            ->getSignature()
-                            ->verify(
-                                $subkey->getKeyPacket(),
-                                implode([
-                                    $this->getKeyPacket()->getSignBytes(),
-                                    $subkey->getKeyPacket()->getSignBytes(),
-                                ]),
-                                $time
-                            )
+                    if ($signature
+                        ->getSignature()
+                        ->verify(
+                            $subkey->getKeyPacket(),
+                            implode([
+                                $this->getKeyPacket()->getSignBytes(),
+                                $subkey->getKeyPacket()->getSignBytes(),
+                            ]),
+                            $time
+                        )
                     ) {
                         return $subkey->getKeyPacket();
                     }
@@ -414,13 +413,11 @@ abstract class AbstractKey implements KeyInterface
                     empty($keyID) ||
                     strcmp($keyID, $signature->getIssuerKeyID()) === 0
                 ) {
-                    if (
-                        $signature->verify(
-                            $keyPacket,
-                            $this->keyPacket->getSignBytes(),
-                            $time
-                        )
-                    ) {
+                    if ($signature->verify(
+                        $keyPacket,
+                        $this->keyPacket->getSignBytes(),
+                        $time
+                    )) {
                         $reason = $signature->getRevocationReason();
                         if ($reason instanceof RevocationReason) {
                             $this->getLogger()->warning(
@@ -470,13 +467,11 @@ abstract class AbstractKey implements KeyInterface
             return false;
         }
         foreach ($this->directSignatures as $signature) {
-            if (
-                !$signature->verify(
-                    $this->toPublic()->getKeyPacket(),
-                    $this->keyPacket->getSignBytes(),
-                    $time
-                )
-            ) {
+            if (!$signature->verify(
+                $this->toPublic()->getKeyPacket(),
+                $this->keyPacket->getSignBytes(),
+                $time
+            )) {
                 return false;
             }
         }

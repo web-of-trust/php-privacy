@@ -235,16 +235,14 @@ class Subkey implements SubkeyInterface
                     empty($keyID) ||
                     strcmp($keyID, $signature->getIssuerKeyID()) === 0
                 ) {
-                    if (
-                        $signature->verify(
-                            $keyPacket,
-                            implode([
-                                $this->mainKey->getKeyPacket()->getSignBytes(),
-                                $this->keyPacket->getSignBytes(),
-                            ]),
-                            $time
-                        )
-                    ) {
+                    if ($signature->verify(
+                        $keyPacket,
+                        implode([
+                            $this->mainKey->getKeyPacket()->getSignBytes(),
+                            $this->keyPacket->getSignBytes(),
+                        ]),
+                        $time
+                    )) {
                         $reason = $signature->getRevocationReason();
                         if ($reason instanceof RevocationReason) {
                             $this->mainKey
@@ -280,16 +278,14 @@ class Subkey implements SubkeyInterface
         }
         $keyPacket = $this->mainKey->toPublic()->getSigningKeyPacket();
         foreach ($this->bindingSignatures as $signature) {
-            if (
-                !$signature->verify(
-                    $keyPacket,
-                    implode([
-                        $this->mainKey->getKeyPacket()->getSignBytes(),
-                        $this->keyPacket->getSignBytes(),
-                    ]),
-                    $time
-                )
-            ) {
+            if (!$signature->verify(
+                $keyPacket,
+                implode([
+                    $this->mainKey->getKeyPacket()->getSignBytes(),
+                    $this->keyPacket->getSignBytes(),
+                ]),
+                $time
+            )) {
                 return false;
             }
         }

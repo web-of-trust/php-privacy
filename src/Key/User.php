@@ -186,16 +186,14 @@ class User implements UserInterface
                     empty($keyID) ||
                     strcmp($keyID, $signature->getIssuerKeyID()) === 0
                 ) {
-                    if (
-                        $signature->verify(
-                            $keyPacket,
-                            implode([
-                                $this->mainKey->getKeyPacket()->getSignBytes(),
-                                $this->userIDPacket->getSignBytes(),
-                            ]),
-                            $time
-                        )
-                    ) {
+                    if ($signature->verify(
+                        $keyPacket,
+                        implode([
+                            $this->mainKey->getKeyPacket()->getSignBytes(),
+                            $this->userIDPacket->getSignBytes(),
+                        ]),
+                        $time
+                    )) {
                         $reason = $signature->getRevocationReason();
                         if ($reason instanceof RevocationReason) {
                             $this->mainKey
@@ -238,16 +236,14 @@ class User implements UserInterface
                 empty($keyID) ||
                 strcmp($keyID, $signature->getIssuerKeyID()) === 0
             ) {
-                if (
-                    $signature->verify(
-                        $keyPacket,
-                        implode([
-                            $this->mainKey->getKeyPacket()->getSignBytes(),
-                            $this->userIDPacket->getSignBytes(),
-                        ]),
-                        $time
-                    )
-                ) {
+                if ($signature->verify(
+                    $keyPacket,
+                    implode([
+                        $this->mainKey->getKeyPacket()->getSignBytes(),
+                        $this->userIDPacket->getSignBytes(),
+                    ]),
+                    $time
+                )) {
                     return true;
                 }
             }
@@ -265,16 +261,14 @@ class User implements UserInterface
         }
         $keyPacket = $this->mainKey->toPublic()->getSigningKeyPacket();
         foreach ($this->selfCertifications as $signature) {
-            if (
-                !$signature->verify(
-                    $keyPacket,
-                    implode([
-                        $this->mainKey->getKeyPacket()->getSignBytes(),
-                        $this->userIDPacket->getSignBytes(),
-                    ]),
-                    $time
-                )
-            ) {
+            if (!$signature->verify(
+                $keyPacket,
+                implode([
+                    $this->mainKey->getKeyPacket()->getSignBytes(),
+                    $this->userIDPacket->getSignBytes(),
+                ]),
+                $time
+            )) {
                 return false;
             }
         }
