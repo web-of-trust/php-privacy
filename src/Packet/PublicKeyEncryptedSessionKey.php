@@ -81,10 +81,9 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
             $keyVersion = ord($bytes[$offset++]);
             $keyFingerprint = substr($bytes, $offset, $length - 1);
             $offset += $length - 1;
-            $keyID =
-                $keyVersion === PublicKey::VERSION_6
-                    ? substr($keyFingerprint, 0, self::KEY_ID_SIZE)
-                    : substr($keyFingerprint, 12, self::KEY_ID_SIZE);
+            $keyID = $keyVersion === PublicKey::VERSION_6
+                ? substr($keyFingerprint, 0, self::KEY_ID_SIZE)
+                : substr($keyFingerprint, 12, self::KEY_ID_SIZE);
         } else {
             $keyID = substr($bytes, $offset, self::KEY_ID_SIZE);
             $offset += self::KEY_ID_SIZE;
@@ -114,10 +113,9 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
         KeyPacketInterface $keyPacket,
         SessionKeyInterface $sessionKey
     ): self {
-        $version =
-            $keyPacket->getVersion() === self::VERSION_6
-                ? self::VERSION_6
-                : self::VERSION_3;
+        $version = $keyPacket->getVersion() === self::VERSION_6
+            ? self::VERSION_6
+            : self::VERSION_3;
         return new self(
             $version,
             $keyPacket->getKeyID(),

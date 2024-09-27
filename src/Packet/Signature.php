@@ -302,10 +302,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         int $keyExpiry = 0,
         ?DateTimeInterface $time = null
     ): self {
-        $props =
-            $signKey->getVersion() === self::VERSION_4
-                ? self::keySignatureProperties($signKey->getVersion())
-                : [];
+        $props = $signKey->getVersion() === self::VERSION_4
+            ? self::keySignatureProperties($signKey->getVersion())
+            : [];
         if ($isPrimaryUser) {
             $props[] = new Signature\PrimaryUserID("\x01");
         }
@@ -846,10 +845,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             self::getSubpacket($this->unhashedSubpackets, $type);
         if (!($issuerKeyID instanceof Signature\IssuerKeyID)) {
             $issuerFingerprint = $this->getIssuerFingerprint();
-            $keyID =
-                $this->version === self::VERSION_6
-                    ? substr($issuerFingerprint, 0, PublicKey::KEY_ID_SIZE)
-                    : substr($issuerFingerprint, 12, PublicKey::KEY_ID_SIZE);
+            $keyID = $this->version === self::VERSION_6
+                ? substr($issuerFingerprint, 0, PublicKey::KEY_ID_SIZE)
+                : substr($issuerFingerprint, 12, PublicKey::KEY_ID_SIZE);
             $issuerKeyID = new Signature\IssuerKeyID($keyID);
         }
         return $issuerKeyID->getKeyID($toHex);

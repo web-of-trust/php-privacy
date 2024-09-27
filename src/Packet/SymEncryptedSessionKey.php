@@ -103,10 +103,9 @@ class SymEncryptedSessionKey extends AbstractPacket
 
         // A string-to-key (S2K) specifier, length as defined above.
         $s2kType = S2kType::from(ord($bytes[$offset]));
-        $s2k =
-            $s2kType === S2kType::Argon2
-                ? Argon2S2K::fromBytes(substr($bytes, $offset))
-                : GenericS2K::fromBytes(substr($bytes, $offset));
+        $s2k = $s2kType === S2kType::Argon2
+            ? Argon2S2K::fromBytes(substr($bytes, $offset))
+            : GenericS2K::fromBytes(substr($bytes, $offset));
         $offset += $s2kType->dataLength();
 
         // A starting initialization vector of size specified by the AEAD algorithm.
@@ -143,10 +142,9 @@ class SymEncryptedSessionKey extends AbstractPacket
         $symmetric = $sessionKey?->getSymmetric() ?? $symmetric;
         Helper::assertSymmetric($symmetric);
 
-        $s2k =
-            $aeadProtect && Argon2S2K::argon2Supported()
-                ? Helper::stringToKey(S2kType::Argon2)
-                : Helper::stringToKey(S2kType::Iterated);
+        $s2k = $aeadProtect && Argon2S2K::argon2Supported()
+            ? Helper::stringToKey(S2kType::Argon2)
+            : Helper::stringToKey(S2kType::Iterated);
 
         $keySize = $symmetric->keySizeInByte();
         $key = $s2k->produceKey($password, $keySize);
@@ -291,15 +289,14 @@ class SymEncryptedSessionKey extends AbstractPacket
                         chr($this->symmetric->value),
                         chr($this->aead->value),
                     ]);
-                    $kek =
-                        $this->version === self::VERSION_6
-                            ? hash_hkdf(
-                                Config::HKDF_ALGO,
-                                $key,
-                                $keySize,
-                                $aData
-                            )
-                            : $key;
+                    $kek = $this->version === self::VERSION_6
+                        ? hash_hkdf(
+                            Config::HKDF_ALGO,
+                            $key,
+                            $keySize,
+                            $aData
+                        )
+                        : $key;
                     $cipher = $this->aead->cipherEngine($kek, $this->symmetric);
                     $decrypted = $cipher->decrypt(
                         $this->encrypted,

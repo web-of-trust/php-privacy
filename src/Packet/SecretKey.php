@@ -117,19 +117,17 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 
                 // Only for a version 6 packet, and if string-to-key usage
                 // octet was 253 or 254, an one-octet count of the following field.
-                if (
-                    $isV6 &&
-                    ($s2kUsage === S2kUsage::AeadProtect ||
-                        $s2kUsage === S2kUsage::Cfb)
-                ) {
+                if ($isV6 && (
+                    $s2kUsage === S2kUsage::AeadProtect ||
+                    $s2kUsage === S2kUsage::Cfb
+                )) {
                     $offset++;
                 }
 
                 $s2kType = S2kType::from(ord($bytes[$offset]));
-                $s2k =
-                    $s2kType === S2kType::Argon2
-                        ? Argon2S2K::fromBytes(substr($bytes, $offset))
-                        : GenericS2K::fromBytes(substr($bytes, $offset));
+                $s2k = $s2kType === S2kType::Argon2
+                    ? Argon2S2K::fromBytes(substr($bytes, $offset))
+                    : GenericS2K::fromBytes(substr($bytes, $offset));
                 $offset += $s2kType->dataLength();
                 break;
             default:
@@ -432,10 +430,9 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 );
             }
 
-            $s2k =
-                $aeadProtect && Argon2S2K::argon2Supported()
-                    ? Helper::stringToKey(S2kType::Argon2)
-                    : Helper::stringToKey(S2kType::Iterated);
+            $s2k = $aeadProtect && Argon2S2K::argon2Supported()
+                ? Helper::stringToKey(S2kType::Argon2)
+                : Helper::stringToKey(S2kType::Iterated);
 
             $iv = $aeadProtect
                 ? Random::string($aead->ivLength())

@@ -74,8 +74,11 @@ final class Helper
     ): string {
         $size = $symmetric->blockSize();
         $prefix = Random::string($size);
-        $repeat = $prefix[$size - 2] . $prefix[$size - 1];
-        return $prefix . $repeat;
+        return implode([
+            $prefix,
+            $prefix[$size - 2],
+            $prefix[$size - 1],
+        ]);
     }
 
     /**

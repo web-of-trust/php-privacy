@@ -160,7 +160,7 @@ abstract class ECSecretKeyMaterial implements
                         ->equals(
                             Helper::bin2BigInt(
                                 "\x40" .
-                                    $this->privateKey->getEncodedCoordinates()
+                                $this->privateKey->getEncodedCoordinates()
                             )
                         );
                 default:
