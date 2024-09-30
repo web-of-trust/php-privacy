@@ -27,8 +27,9 @@ use phpseclib3\Crypt\Random;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class SymmetricallyEncryptedIntegrityProtectedData extends AbstractPacket implements
-    AeadEncryptedDataPacketInterface
+class SymmetricallyEncryptedIntegrityProtectedData
+    extends AbstractPacket
+    implements AeadEncryptedDataPacketInterface
 {
     use AeadEncryptedDataTrait, EncryptedDataTrait;
 
@@ -59,7 +60,9 @@ class SymmetricallyEncryptedIntegrityProtectedData extends AbstractPacket implem
         private readonly string $salt = "",
         private readonly ?PacketListInterface $packetList = null
     ) {
-        parent::__construct(PacketTag::SymmetricallyEncryptedIntegrityProtectedData);
+        parent::__construct(
+            PacketTag::SymmetricallyEncryptedIntegrityProtectedData
+        );
         if ($version !== self::VERSION_1 && $version !== self::VERSION_2) {
             throw new \InvalidArgumentException(
                 "Version $version of the SEIPD packet is unsupported."
@@ -135,7 +138,8 @@ class SymmetricallyEncryptedIntegrityProtectedData extends AbstractPacket implem
     ): self {
         Helper::assertSymmetric($symmetric);
         $aeadProtect = $aead instanceof AeadAlgorithm;
-        $version = $aeadProtect ? self::VERSION_2 : self::VERSION_1;
+        $version = $aeadProtect || Config::useV6Key()
+            ? self::VERSION_2 : self::VERSION_1;
 
         $salt = "";
         $chunkSize = 0;
