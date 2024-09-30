@@ -114,6 +114,7 @@ class CleartextMessage implements CleartextMessageInterface
      * Create literal data signature.
      *
      * @param array $signingKeys
+     * @param array $recipients
      * @param NotationDataInterface $notationData
      * @param DateTimeInterface $time
      * @return SignatureInterface

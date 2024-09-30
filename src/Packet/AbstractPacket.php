@@ -8,7 +8,7 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Common\{Config, Helper};
+use OpenPGP\Common\Helper;
 use OpenPGP\Enum\PacketTag;
 use OpenPGP\Type\PacketInterface;
 use phpseclib3\Common\Functions\Strings;
