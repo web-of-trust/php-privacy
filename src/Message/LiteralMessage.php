@@ -247,24 +247,23 @@ class LiteralMessage extends AbstractMessage implements
             }
             if ($key->getVersion() === 6) {
                 $addPadding = true;
+                Config::setUseV6Key(true);
             }
         }
-        $aead =
-            $aeadSupported && Config::aeadProtect()
-                ? Config::getPreferredAead()
-                : null;
+        $aead = $aeadSupported && Config::aeadProtect()
+            ? Config::getPreferredAead()
+            : null;
         $sessionKey = SessionKey::produceKey(
             $symmetric ?? Config::getPreferredSymmetric()
         );
-        $packetList =
-            $addPadding || !empty($aead)
-                ? new PacketList([
-                    ...$this->getPackets(),
-                    Padding::createPadding(
-                        random_int(Config::PADDING_MIN, Config::PADDING_MAX)
-                    ),
-                ])
-                : $this->getPacketList();
+        $packetList = $addPadding || !empty($aead)
+            ? new PacketList([
+                ...$this->getPackets(),
+                Padding::createPadding(
+                    random_int(Config::PADDING_MIN, Config::PADDING_MAX)
+                ),
+            ])
+            : $this->getPacketList();
 
         return new EncryptedMessage(
             new PacketList([
