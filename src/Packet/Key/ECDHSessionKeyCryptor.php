@@ -19,8 +19,7 @@ use OpenPGP\Enum\{
 use OpenPGP\Type\{
     KeyPacketInterface,
     SecretKeyPacketInterface,
-    SessionKeyCryptorInterface,
-    SessionKeyInterface
+    SessionKeyCryptorInterface
 };
 use phpseclib3\Crypt\{DH, EC};
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
@@ -69,12 +68,12 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
     /**
      * Produce cryptor by encrypting session key
      *
-     * @param SessionKeyInterface $sessionKey
+     * @param string $sessionKey
      * @param KeyPacketInterface $keyPacket
      * @return self
      */
     public static function encryptSessionKey(
-        SessionKeyInterface $sessionKey,
+        string $sessionKey,
         KeyPacketInterface $keyPacket
     ): self {
         $keyMaterial = $keyPacket->getKeyMaterial();
@@ -95,12 +94,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
             );
             $wrappedKey = $keyWrapper->wrap(
                 $kek,
-                self::pkcs5Encode(
-                    implode([
-                        $sessionKey->toBytes(),
-                        $sessionKey->computeChecksum(),
-                    ])
-                )
+                self::pkcs5Encode($sessionKey)
             );
 
             $ephemeralKey = match ($keyMaterial->getCurveOid()) {
@@ -156,10 +150,8 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
      */
     public function decryptSessionKey(
         SecretKeyPacketInterface $secretKey
-    ): SessionKeyInterface {
-        return SessionKeyCryptor::sessionKeyFromBytes(
-            $this->decrypt($secretKey)
-        );
+    ): string {
+        return $this->decrypt($secretKey);
     }
 
     /**

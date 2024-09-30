@@ -10,7 +10,6 @@ namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
 use OpenPGP\Cryptor\Asymmetric\ElGamal\{PrivateKey, PublicKey};
-use OpenPGP\Type\SessionKeyInterface;
 use phpseclib3\Crypt\Common\AsymmetricKey;
 use phpseclib3\Crypt\Random;
 use phpseclib3\Math\BigInteger;
@@ -55,23 +54,17 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
     /**
      * Produce cryptor by encrypting session key
      *
-     * @param SessionKeyInterface $sessionKey
+     * @param string $sessionKey
      * @param AsymmetricKey $publicKey
      * @return self
      */
     public static function encryptSessionKey(
-        SessionKeyInterface $sessionKey,
+        string $sessionKey,
         AsymmetricKey $publicKey
     ): self {
         if ($publicKey instanceof PublicKey) {
             $size = $publicKey->getPrime()->getLengthInBytes();
-            $padded = self::pkcs1Encode(
-                implode([
-                    $sessionKey->toBytes(),
-                    $sessionKey->computeChecksum(),
-                ]),
-                $size
-            );
+            $padded = self::pkcs1Encode($sessionKey, $size);
             $encrypted = $publicKey->encrypt($padded);
             return new self(
                 Helper::bin2BigInt(substr($encrypted, 0, $size)),

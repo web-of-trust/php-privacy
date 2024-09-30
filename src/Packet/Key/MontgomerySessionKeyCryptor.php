@@ -9,11 +9,7 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Enum\MontgomeryCurve;
-use OpenPGP\Type\{
-    SecretKeyPacketInterface,
-    SessionKeyCryptorInterface,
-    SessionKeyInterface
-};
+use OpenPGP\Type\{SecretKeyPacketInterface, SessionKeyCryptorInterface};
 use phpseclib3\Crypt\{DH, EC};
 
 /**
@@ -65,21 +61,16 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
     /**
      * Produce cryptor by encrypting session key
      *
-     * @param SessionKeyInterface $sessionKey
+     * @param string $sessionKey
      * @param EC $publicKey
      * @param MontgomeryCurve $curve
      * @return self
      */
     public static function encryptSessionKey(
-        SessionKeyInterface $sessionKey,
+        string $sessionKey,
         EC $publicKey,
         MontgomeryCurve $curve = MontgomeryCurve::Curve25519
     ): self {
-        if ($sessionKey->getSymmetric() !== $curve->symmetricAlgorithm()) {
-            throw new \InvalidArgumentException(
-                "Symmetric algorithm of the session key mismatch!"
-            );
-        }
         $privateKey = EC::createKey($publicKey->getCurve());
         $ephemeralKey = $privateKey->getPublicKey()->getEncodedCoordinates();
 
@@ -100,7 +91,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
 
         return new self(
             $ephemeralKey,
-            $keyWrapper->wrap($kek, $sessionKey->getEncryptionKey()),
+            $keyWrapper->wrap($kek, $sessionKey),
             $curve
         );
     }
@@ -142,11 +133,8 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
      */
     public function decryptSessionKey(
         SecretKeyPacketInterface $secretKey
-    ): SessionKeyInterface {
-        return new SessionKey(
-            $this->decrypt($secretKey->getECKeyMaterial()->getECKey()),
-            $this->curve->symmetricAlgorithm()
-        );
+    ): string {
+        return $this->decrypt($secretKey->getECKeyMaterial()->getECKey());
     }
 
     /**

@@ -9,7 +9,6 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
-use OpenPGP\Type\SessionKeyInterface;
 use phpseclib3\Crypt\Common\AsymmetricKey;
 use phpseclib3\Crypt\RSA;
 use phpseclib3\Crypt\RSA\{PrivateKey, PublicKey};
@@ -48,25 +47,18 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
     /**
      * Produce cryptor by encrypting session key
      *
-     * @param SessionKeyInterface $sessionKey
+     * @param string $sessionKey
      * @param AsymmetricKey $publicKey
      * @return self
      */
     public static function encryptSessionKey(
-        SessionKeyInterface $sessionKey,
+        string $sessionKey,
         AsymmetricKey $publicKey
     ): self {
         if ($publicKey instanceof PublicKey) {
             $publicKey = $publicKey->withPadding(RSA::ENCRYPTION_PKCS1);
             return new self(
-                Helper::bin2BigInt(
-                    $publicKey->encrypt(
-                        implode([
-                            $sessionKey->toBytes(),
-                            $sessionKey->computeChecksum(),
-                        ])
-                    )
-                )
+                Helper::bin2BigInt($publicKey->encrypt($sessionKey))
             );
         } else {
             throw new \RuntimeException("Public key is not RSA key.");

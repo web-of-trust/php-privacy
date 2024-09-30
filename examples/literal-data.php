@@ -183,7 +183,6 @@ $encryptedMessage = OpenPGP::encrypt(
     [
         $rsaPrivateKey->toPublic(),
         $eccPrivateKey->toPublic(),
-        $curve25519PrivateKey->toPublic(),
     ],
     [$passphase],
     [$rsaPrivateKey, $eccPrivateKey, $curve25519PrivateKey, $curve448PrivateKey]
@@ -238,6 +237,23 @@ foreach ($verifications as $verification) {
         PHP_EOL;
 }
 
+echo "Sign & encrypt literal data message with AEAD AES256 cipher:" .
+    PHP_EOL .
+    PHP_EOL;
+Config::setPreferredSymmetric(SymmetricAlgorithm::Aes256);
+Config::setAeadProtect(true);
+$literalMessage = OpenPGP::createLiteralMessage(random_bytes(10000));
+$encryptedMessage = OpenPGP::encrypt(
+    $literalMessage,
+    [
+        $curve25519PrivateKey->toPublic(),
+        $curve448PrivateKey->toPublic(),
+    ],
+    [$passphase],
+    [$rsaPrivateKey, $eccPrivateKey, $curve25519PrivateKey, $curve448PrivateKey]
+);
+echo $armored = $encryptedMessage->armor() . PHP_EOL;
+
 echo "Decrypt with curve25519 key & verify signatures:" . PHP_EOL . PHP_EOL;
 $literalMessage = OpenPGP::decryptMessage($armored, [$curve25519PrivateKey]);
 $verifications = $literalMessage->verify([
@@ -254,19 +270,6 @@ foreach ($verifications as $verification) {
         PHP_EOL;
 }
 
-echo "Sign & encrypt literal data message with AEAD AES256 cipher:" .
-    PHP_EOL .
-    PHP_EOL;
-Config::setPreferredSymmetric(SymmetricAlgorithm::Aes256);
-Config::setAeadProtect(true);
-$literalMessage = OpenPGP::createLiteralMessage(random_bytes(10000));
-$encryptedMessage = OpenPGP::encrypt(
-    $literalMessage,
-    [$curve448PrivateKey->toPublic()],
-    [$passphase],
-    [$rsaPrivateKey, $eccPrivateKey, $curve25519PrivateKey, $curve448PrivateKey]
-);
-echo $armored = $encryptedMessage->armor() . PHP_EOL;
 echo "Decrypt with curve448 & verify signatures:" . PHP_EOL . PHP_EOL;
 $literalMessage = OpenPGP::decryptMessage($armored, [$curve448PrivateKey]);
 $verifications = $literalMessage->verify([

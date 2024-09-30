@@ -281,7 +281,7 @@ EOT;
         $packets = PacketList::decode($pkesk->encode());
         $pkesk = $packets->offsetGet(0)->decrypt($secretSubkey);
         $this->assertSame($secretSubkey->getFingerprint(), $pkesk->getKeyFingerprint());
-        $this->assertEquals($sessionKey, $pkesk->getSessionKey());
+        $this->assertEquals($sessionKey->getEncryptionKey(), $pkesk->getSessionKey()->getEncryptionKey());
     }
 
     public function testX448Encryption()
@@ -294,6 +294,6 @@ EOT;
         $packets = PacketList::decode($pkesk->encode());
         $pkesk = $packets->offsetGet(0)->decrypt($secretSubkey);
         $this->assertSame($secretSubkey->getFingerprint(), $pkesk->getKeyFingerprint());
-        $this->assertEquals($sessionKey, $pkesk->getSessionKey());
+        $this->assertEquals($sessionKey->getEncryptionKey(), $pkesk->getSessionKey()->getEncryptionKey());
     }
 }
