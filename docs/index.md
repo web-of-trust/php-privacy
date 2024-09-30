@@ -1,9 +1,11 @@
-PHP Privacy introduction
-========================
+PHP Privacy
+===========
 
 ## Introduction
-`php-privacy/openpgp` is an implementation of the OpenPGP standard in PHP language.
-It implements [RFC 9580](https://www.rfc-editor.org/rfc/rfc9580).
+PHP Privacy is an implementation of the OpenPGP standard in PHP language.
+It implements [RFC 9580](https://www.rfc-editor.org/rfc/rfc9580) and
+provides encryption with public key or symmetric cryptographic algorithms,
+digital signatures, compression, and key management.
 
 ## Features
 1. Support data signing & encryption.
