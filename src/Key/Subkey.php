@@ -11,7 +11,7 @@ namespace OpenPGP\Key;
 use DateTimeInterface;
 use OpenPGP\Enum\{KeyAlgorithm, RevocationReasonTag};
 use OpenPGP\Packet\{PacketList, Signature};
-use OpenPGP\Packet\Signature\{KeyFlags, RevocationReason};
+use OpenPGP\Packet\Signature\KeyFlags;
 use OpenPGP\Type\{
     KeyInterface,
     PacketListInterface,
@@ -243,21 +243,6 @@ class Subkey implements SubkeyInterface
                         ]),
                         $time
                     )) {
-                        $reason = $signature->getRevocationReason();
-                        if ($reason instanceof RevocationReason) {
-                            $this->mainKey
-                                ->getLogger()
-                                ->warning(
-                                    "Subkey is revoked. Reason: {reason}",
-                                    [
-                                        "reason" => $reason->getDescription(),
-                                    ]
-                                );
-                        } else {
-                            $this->mainKey
-                                ->getLogger()
-                                ->warning("Subkey is revoked.");
-                        }
                         return true;
                     }
                 }

@@ -11,7 +11,6 @@ namespace OpenPGP\Key;
 use DateTimeInterface;
 use OpenPGP\Enum\RevocationReasonTag;
 use OpenPGP\Packet\{PacketList, Signature, UserID};
-use OpenPGP\Packet\Signature\RevocationReason;
 use OpenPGP\Type\{
     KeyInterface,
     PacketListInterface,
@@ -194,18 +193,6 @@ class User implements UserInterface
                         ]),
                         $time
                     )) {
-                        $reason = $signature->getRevocationReason();
-                        if ($reason instanceof RevocationReason) {
-                            $this->mainKey
-                                ->getLogger()
-                                ->warning("User is revoked. Reason: {reason}", [
-                                    "reason" => $reason->getDescription(),
-                                ]);
-                        } else {
-                            $this->mainKey
-                                ->getLogger()
-                                ->warning("User is revoked.");
-                        }
                         return true;
                     }
                 }

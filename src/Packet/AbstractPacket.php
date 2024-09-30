@@ -12,7 +12,6 @@ use OpenPGP\Common\{Config, Helper};
 use OpenPGP\Enum\PacketTag;
 use OpenPGP\Type\PacketInterface;
 use phpseclib3\Common\Functions\Strings;
-use Psr\Log\{LoggerAwareInterface, LoggerAwareTrait, LoggerInterface};
 
 /**
  * Abstract packet class
@@ -21,10 +20,8 @@ use Psr\Log\{LoggerAwareInterface, LoggerAwareTrait, LoggerInterface};
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
+abstract class AbstractPacket implements PacketInterface
 {
-    use LoggerAwareTrait;
-
     /**
      * Packet tag support partial body length
      */
@@ -47,7 +44,6 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
      */
     protected function __construct(private readonly PacketTag $tag)
     {
-        $this->setLogger(Config::getLogger());
     }
 
     /**
@@ -73,14 +69,6 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
                 $bytes,
             ]);
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getLogger(): LoggerInterface
-    {
-        return $this->logger ?? Config::getLogger();
     }
 
     /**

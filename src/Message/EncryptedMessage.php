@@ -123,7 +123,6 @@ class EncryptedMessage extends AbstractMessage implements
         $errors = [];
         $sessionKeys = [];
         if (!empty($passwords)) {
-            $this->getLogger()->debug("Decrypt symmetric encrypted sessionKey.");
             $skeskPacketList = $this->getPacketList()->whereType(
                 SymmetricallyEncryptedSessionKey::class
             );
@@ -141,7 +140,6 @@ class EncryptedMessage extends AbstractMessage implements
             }
         }
         if (empty($sessionKeys) && !empty($decryptionKeys)) {
-            $this->getLogger()->debug("Decrypt public key encrypted session key.");
             $pkeskPacketList = $this->getPacketList()->whereType(
                 PublicKeyEncryptedSessionKey::class
             );
@@ -168,10 +166,7 @@ class EncryptedMessage extends AbstractMessage implements
 
         if (empty($sessionKeys)) {
             throw new \RuntimeException(
-                implode(PHP_EOL, [
-                    "Session key decryption failed.",
-                    ...$errors,
-                ])
+                implode(PHP_EOL, ["Session key decryption failed.", ...$errors])
             );
         }
 

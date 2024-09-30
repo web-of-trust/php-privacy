@@ -16,8 +16,7 @@ use OpenPGP\Packet\Signature\{
     EmbeddedSignature,
     Features,
     KeyExpirationTime,
-    KeyFlags,
-    RevocationReason
+    KeyFlags
 };
 use OpenPGP\Type\{
     KeyInterface,
@@ -30,7 +29,6 @@ use OpenPGP\Type\{
     UserIDPacketInterface,
     UserInterface
 };
-use Psr\Log\{LoggerAwareTrait, LoggerInterface};
 
 /**
  * Abstract OpenPGP key class
@@ -41,8 +39,6 @@ use Psr\Log\{LoggerAwareTrait, LoggerInterface};
  */
 abstract class AbstractKey implements KeyInterface
 {
-    use LoggerAwareTrait;
-
     /**
      * Revocation signature packets
      *
@@ -91,8 +87,7 @@ abstract class AbstractKey implements KeyInterface
         $this->setRevocationSignatures($revocationSignatures)
             ->setDirectSignatures($directSignatures)
             ->setUsers($users)
-            ->setSubkeys($subkeys)
-            ->setLogger(Config::getLogger());
+            ->setSubkeys($subkeys);
     }
 
     /**
@@ -137,14 +132,6 @@ abstract class AbstractKey implements KeyInterface
     public function getPackets(): array
     {
         return $this->getPacketList()->getPackets();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getLogger(): LoggerInterface
-    {
-        return $this->logger ?? Config::getLogger();
     }
 
     /**
@@ -418,19 +405,6 @@ abstract class AbstractKey implements KeyInterface
                         $this->keyPacket->getSignBytes(),
                         $time
                     )) {
-                        $reason = $signature->getRevocationReason();
-                        if ($reason instanceof RevocationReason) {
-                            $this->getLogger()->warning(
-                                "Primary key is revoked. Reason: {reason}",
-                                [
-                                    "reason" => $reason->getDescription(),
-                                ]
-                            );
-                        } else {
-                            $this->getLogger()->warning(
-                                "Primary key is revoked."
-                            );
-                        }
                         return true;
                     }
                 }
@@ -487,8 +461,9 @@ abstract class AbstractKey implements KeyInterface
             $expirationTime instanceof DateTimeInterface &&
             $expirationTime->getTimestamp() < time()
         ) {
-            $this->getLogger()->warning("Primary key is expired.");
-            return false;
+            throw new \RuntimeException(
+                "Primary key is expired."
+            );
         }
         return true;
     }

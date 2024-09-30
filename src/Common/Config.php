@@ -14,7 +14,6 @@ use OpenPGP\Enum\{
     HashAlgorithm,
     SymmetricAlgorithm
 };
-use Psr\Log\{LoggerInterface, NullLogger};
 
 /**
  * Config class
@@ -47,8 +46,6 @@ final class Config
     private static CompressionAlgorithm $preferredCompression = CompressionAlgorithm::Uncompressed;
 
     private static AeadAlgorithm $preferredAead = AeadAlgorithm::Gcm;
-
-    private static ?LoggerInterface $logger = null;
 
     private static int $s2kItCount = 224;
 
@@ -148,29 +145,6 @@ final class Config
     public static function setPreferredAead(AeadAlgorithm $algo): void
     {
         self::$preferredAead = $algo;
-    }
-
-    /**
-     * Get a logger.
-     *
-     * @return LoggerInterface
-     */
-    public static function getLogger(): LoggerInterface
-    {
-        if (!(self::$logger instanceof LoggerInterface)) {
-            self::$logger = new NullLogger();
-        }
-        return self::$logger;
-    }
-
-    /**
-     * Set a logger.
-     *
-     * @param LoggerInterface $logger
-     */
-    public static function setLogger(LoggerInterface $logger): void
-    {
-        self::$logger = $logger;
     }
 
     /**

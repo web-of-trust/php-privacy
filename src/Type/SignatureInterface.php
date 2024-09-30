@@ -30,6 +30,13 @@ interface SignatureInterface extends
     function getSigningKeyIDs(bool $toHex = false): array;
 
     /**
+     * Get verification errors
+     *
+     * @return array
+     */
+    function getVerificationErrors(): array;
+
+    /**
      * Verify signature with literal data
      * Return verification array
      *

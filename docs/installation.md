@@ -47,7 +47,4 @@ Config::setAeadProtect($protect);
 
 // Set use V6 key.
 Config::setUseV6Key($useV6Key);
-
-// Set the logger.
-Config::setLogger($logger);
 ```

@@ -10,7 +10,6 @@ namespace OpenPGP\Type;
 
 use DateTimeInterface;
 use OpenPGP\Enum\{KeyAlgorithm, RevocationReasonTag};
-use Psr\Log\{LoggerAwareInterface, LoggerInterface};
 
 /**
  * Key interface
@@ -21,7 +20,6 @@ use Psr\Log\{LoggerAwareInterface, LoggerInterface};
  */
 interface KeyInterface extends
     ArmorableInterface,
-    LoggerAwareInterface,
     PacketContainerInterface
 {
     /**
@@ -237,11 +235,4 @@ interface KeyInterface extends
         ?RevocationReasonTag $reasonTag = null,
         ?DateTimeInterface $time = null
     ): self;
-
-    /**
-     * Get the logger.
-     *
-     * @return LoggerInterface
-     */
-    function getLogger(): LoggerInterface;
 }

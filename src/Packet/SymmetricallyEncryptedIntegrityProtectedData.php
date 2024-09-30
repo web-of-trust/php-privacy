@@ -240,9 +240,6 @@ class SymmetricallyEncryptedIntegrityProtectedData extends AbstractPacket implem
         if ($this->packetList instanceof PacketListInterface) {
             return $this;
         } else {
-            $this->getLogger()->debug(
-                "Decrypt the encrypted data contained in the packet."
-            );
             if ($this->aead instanceof AeadAlgorithm) {
                 $length = strlen($this->encrypted);
                 $data = substr(

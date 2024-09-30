@@ -9,7 +9,7 @@
 namespace OpenPGP\Message;
 
 use DateTimeInterface;
-use OpenPGP\Common\{Armor, Config};
+use OpenPGP\Common\Armor;
 use OpenPGP\Enum\ArmorType;
 use OpenPGP\Packet\{LiteralData, PacketList};
 use OpenPGP\Type\{
@@ -34,6 +34,8 @@ use OpenPGP\Type\{
 class Signature implements SignatureInterface
 {
     private readonly PacketListInterface $packetList;
+
+    private array $verificationErrors = [];
 
     /**
      * Constructor
@@ -88,6 +90,14 @@ class Signature implements SignatureInterface
     /**
      * {@inheritdoc}
      */
+    public function getVerificationErrors(): array
+    {
+        return $this->verificationErrors;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function verify(
         array $verificationKeys,
         LiteralDataInterface $literalData,
@@ -111,7 +121,7 @@ class Signature implements SignatureInterface
                         ->toPublic()
                         ->getSigningKeyPacket($packet->getIssuerKeyID());
                 } catch (\Throwable $e) {
-                    Config::getLogger()->error($e->getMessage());
+                    $this->verificationErrors[] = $e;
                 }
                 if ($keyPacket instanceof KeyPacketInterface) {
                     $isVerified = false;
@@ -123,8 +133,8 @@ class Signature implements SignatureInterface
                             $time
                         );
                     } catch (\Throwable $e) {
+                        $this->verificationErrors[] = $e;
                         $verificationError = $e->getMessage();
-                        Config::getLogger()->error($verificationError);
                     }
 
                     $verifications[] = new Verification(

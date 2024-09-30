@@ -418,9 +418,6 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         ?AeadAlgorithm $aead = null
     ): self {
         if ($this->isDecrypted()) {
-            $this->getLogger()->debug(
-                "Encrypt secret key material with passphrase."
-            );
             Helper::assertSymmetric($symmetric);
 
             $aeadProtect = $aead instanceof AeadAlgorithm;
@@ -490,10 +487,6 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         if ($this->isDecrypted() || !$this->isEncrypted()) {
             return $this;
         } else {
-            $this->getLogger()->debug(
-                "Decrypt secret key material with passphrase."
-            );
-
             $clearText = "";
             $packetTag = chr(0xc0 | $this->getTag()->value);
             $kek = self::produceEncryptionKey(

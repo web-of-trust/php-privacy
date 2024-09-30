@@ -247,7 +247,6 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     private function decryptSessionKey(
         SecretKeyPacketInterface $secretKey
     ): SessionKeyInterface {
-        $this->getLogger()->debug("Decrypt public key encrypted session key.");
         switch ($this->keyAlgorithm) {
             case KeyAlgorithm::RsaEncryptSign:
             case KeyAlgorithm::RsaEncrypt:
