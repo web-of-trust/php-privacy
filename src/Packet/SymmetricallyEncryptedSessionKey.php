@@ -22,7 +22,7 @@ use phpseclib3\Crypt\Random;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class SymEncryptedSessionKey extends AbstractPacket
+class SymmetricallyEncryptedSessionKey extends AbstractPacket
 {
     const VERSION_4 = 4;
     const VERSION_5 = 5;
@@ -50,7 +50,7 @@ class SymEncryptedSessionKey extends AbstractPacket
         private readonly string $encrypted = "",
         private readonly ?SessionKeyInterface $sessionKey = null
     ) {
-        parent::__construct(PacketTag::SymEncryptedSessionKey);
+        parent::__construct(PacketTag::SymmetricallyEncryptedSessionKey);
         if (
             $version != self::VERSION_4 &&
             $version != self::VERSION_5 &&
@@ -155,7 +155,7 @@ class SymEncryptedSessionKey extends AbstractPacket
         if ($sessionKey instanceof SessionKeyInterface) {
             if ($aeadProtect) {
                 $aData = implode([
-                    chr(0xc0 | PacketTag::SymEncryptedSessionKey->value),
+                    chr(0xc0 | PacketTag::SymmetricallyEncryptedSessionKey->value),
                     chr($version),
                     chr($symmetric->value),
                     chr($aead->value),

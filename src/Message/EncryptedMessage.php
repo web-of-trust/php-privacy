@@ -13,7 +13,7 @@ use OpenPGP\Enum\ArmorType;
 use OpenPGP\Packet\{
     PacketList,
     PublicKeyEncryptedSessionKey,
-    SymEncryptedSessionKey
+    SymmetricallyEncryptedSessionKey
 };
 use OpenPGP\Type\{
     EncryptedDataPacketInterface,
@@ -120,11 +120,12 @@ class EncryptedMessage extends AbstractMessage implements
         array $decryptionKeys,
         array $passwords
     ): SessionKeyInterface {
+        $errors = [];
         $sessionKeys = [];
         if (!empty($passwords)) {
-            $this->getLogger()->warning("Decrypt session keys by passwords.");
+            $this->getLogger()->debug("Decrypt symmetric encrypted sessionKey.");
             $skeskPacketList = $this->getPacketList()->whereType(
-                SymEncryptedSessionKey::class
+                SymmetricallyEncryptedSessionKey::class
             );
             foreach ($skeskPacketList as $skesk) {
                 foreach ($passwords as $password) {
@@ -134,13 +135,13 @@ class EncryptedMessage extends AbstractMessage implements
                             ->getSessionKey();
                         break;
                     } catch (\Throwable $e) {
-                        $this->getLogger()->error($e);
+                        $errors[] = $e->getMessage();
                     }
                 }
             }
         }
         if (empty($sessionKeys) && !empty($decryptionKeys)) {
-            $this->getLogger()->warning("Decrypt session keys by public keys.");
+            $this->getLogger()->debug("Decrypt public key encrypted session key.");
             $pkeskPacketList = $this->getPacketList()->whereType(
                 PublicKeyEncryptedSessionKey::class
             );
@@ -158,7 +159,7 @@ class EncryptedMessage extends AbstractMessage implements
                                 ->getSessionKey();
                             break;
                         } catch (\Throwable $e) {
-                            $this->getLogger()->error($e);
+                            $errors[] = $e->getMessage();
                         }
                     }
                 }
@@ -166,7 +167,12 @@ class EncryptedMessage extends AbstractMessage implements
         }
 
         if (empty($sessionKeys)) {
-            throw new \RuntimeException("Session key decryption failed.");
+            throw new \RuntimeException(
+                implode(PHP_EOL, [
+                    "Session key decryption failed.",
+                    ...$errors,
+                ])
+            );
         }
 
         return array_pop($sessionKeys);

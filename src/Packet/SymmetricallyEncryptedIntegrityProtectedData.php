@@ -19,7 +19,7 @@ use phpseclib3\Common\Functions\Strings;
 use phpseclib3\Crypt\Random;
 
 /**
- * Implementation of the Sym. Encrypted Integrity Protected Data Packet (Tag 18)
+ * Implementation of the Symmetrically Encrypted Integrity Protected Data Packet (Tag 18)
  *
  * See RFC 9580, section 5.13.
  *
@@ -27,7 +27,7 @@ use phpseclib3\Crypt\Random;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
+class SymmetricallyEncryptedIntegrityProtectedData extends AbstractPacket implements
     AeadEncryptedDataPacketInterface
 {
     use AeadEncryptedDataTrait, EncryptedDataTrait;
@@ -59,7 +59,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
         private readonly string $salt = "",
         private readonly ?PacketListInterface $packetList = null
     ) {
-        parent::__construct(PacketTag::SymEncryptedIntegrityProtectedData);
+        parent::__construct(PacketTag::SymmetricallyEncryptedIntegrityProtectedData);
         if ($version !== self::VERSION_1 && $version !== self::VERSION_2) {
             throw new \InvalidArgumentException(
                 "Version $version of the SEIPD packet is unsupported."

@@ -32,8 +32,8 @@ abstract class AbstractPacket implements LoggerAwareInterface, PacketInterface
         PacketTag::AeadEncryptedData,
         PacketTag::CompressedData,
         PacketTag::LiteralData,
-        PacketTag::SymEncryptedData,
-        PacketTag::SymEncryptedIntegrityProtectedData,
+        PacketTag::SymmetricallyEncryptedData,
+        PacketTag::SymmetricallyEncryptedIntegrityProtectedData,
     ];
 
     const PARTIAL_MIN_SIZE = 512;

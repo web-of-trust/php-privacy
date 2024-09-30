@@ -7,7 +7,7 @@ use OpenPGP\Common\GenericS2K;
 use OpenPGP\Enum\HashAlgorithm;
 use OpenPGP\Enum\S2kType;
 use OpenPGP\Enum\SymmetricAlgorithm;
-use OpenPGP\Packet\SymEncryptedSessionKey;
+use OpenPGP\Packet\SymmetricallyEncryptedSessionKey;
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
@@ -21,7 +21,7 @@ class S2KTest extends OpenPGPTestCase
         $passphrase = '1234';
         $salt = '';
 
-        $skesk = SymEncryptedSessionKey::fromBytes(base64_decode($data));
+        $skesk = SymmetricallyEncryptedSessionKey::fromBytes(base64_decode($data));
         $s2k = $skesk->getS2K();
 
         $this->assertSame(SymmetricAlgorithm::Aes256, $skesk->getSymmetric());
@@ -40,7 +40,7 @@ class S2KTest extends OpenPGPTestCase
         $passphrase = '123456';
         $salt = "\xa8\x42\xa7\xa9\x59\xfa\x42\x2a";
 
-        $skesk = SymEncryptedSessionKey::fromBytes(base64_decode($data));
+        $skesk = SymmetricallyEncryptedSessionKey::fromBytes(base64_decode($data));
         $s2k = $skesk->getS2K();
 
         $this->assertSame(SymmetricAlgorithm::Aes256, $skesk->getSymmetric());
@@ -59,7 +59,7 @@ class S2KTest extends OpenPGPTestCase
         $passphrase = 'foobar';
         $salt = "\xbc\x95\x58\x45\x81\x3c\x7c\x37";
 
-        $skesk = SymEncryptedSessionKey::fromBytes(base64_decode($data));
+        $skesk = SymmetricallyEncryptedSessionKey::fromBytes(base64_decode($data));
         $s2k = $skesk->getS2K();
 
         $this->assertSame(SymmetricAlgorithm::Aes256, $skesk->getSymmetric());
@@ -79,7 +79,7 @@ class S2KTest extends OpenPGPTestCase
         $salt = "\x78\x45\xf0\x5b\x55\xf7\xb4\x9e";
         $itCount = 241;
 
-        $skesk = SymEncryptedSessionKey::fromBytes(base64_decode($data));
+        $skesk = SymmetricallyEncryptedSessionKey::fromBytes(base64_decode($data));
         $s2k = $skesk->getS2K();
 
         $this->assertSame(SymmetricAlgorithm::Aes256, $skesk->getSymmetric());
@@ -100,7 +100,7 @@ class S2KTest extends OpenPGPTestCase
         $salt = "\xb9\x67\xea\x96\x53\xdb\x6a\xc8";
         $itCount = 43;
 
-        $skesk = SymEncryptedSessionKey::fromBytes(base64_decode($data));
+        $skesk = SymmetricallyEncryptedSessionKey::fromBytes(base64_decode($data));
         $s2k = $skesk->getS2K();
 
         $this->assertSame(SymmetricAlgorithm::Aes256, $skesk->getSymmetric());
@@ -121,7 +121,7 @@ class S2KTest extends OpenPGPTestCase
         $salt = "\x8f\x81\x74\xc5\xd9\x61\xc7\x79";
         $itCount = 238;
 
-        $skesk = SymEncryptedSessionKey::fromBytes(base64_decode($data));
+        $skesk = SymmetricallyEncryptedSessionKey::fromBytes(base64_decode($data));
         $s2k = $skesk->getS2K();
 
         $this->assertSame(SymmetricAlgorithm::Aes192, $skesk->getSymmetric());
@@ -142,7 +142,7 @@ class S2KTest extends OpenPGPTestCase
         $salt = "\x51\xed\xfc\x15\x45\x40\x65\xac";
         $itCount = 238;
 
-        $skesk = SymEncryptedSessionKey::fromBytes(base64_decode($data));
+        $skesk = SymmetricallyEncryptedSessionKey::fromBytes(base64_decode($data));
         $s2k = $skesk->getS2K();
 
         $this->assertSame(SymmetricAlgorithm::Twofish, $skesk->getSymmetric());
@@ -163,7 +163,7 @@ class S2KTest extends OpenPGPTestCase
         $salt = "\x06\xe4\x61\x5c\xa4\x48\xf9\xdd";
         $itCount = 238;
 
-        $skesk = SymEncryptedSessionKey::fromBytes(base64_decode($data));
+        $skesk = SymmetricallyEncryptedSessionKey::fromBytes(base64_decode($data));
         $s2k = $skesk->getS2K();
 
         $this->assertSame(SymmetricAlgorithm::Aes128, $skesk->getSymmetric());

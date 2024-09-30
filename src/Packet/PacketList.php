@@ -64,8 +64,8 @@ class PacketList implements PacketListInterface
                 PacketTag::Signature => Signature::fromBytes(
                     $reader->getData()
                 ),
-                PacketTag::SymEncryptedSessionKey
-                    => SymEncryptedSessionKey::fromBytes($reader->getData()),
+                PacketTag::SymmetricallyEncryptedSessionKey
+                    => SymmetricallyEncryptedSessionKey::fromBytes($reader->getData()),
                 PacketTag::OnePassSignature => OnePassSignature::fromBytes(
                     $reader->getData()
                 ),
@@ -81,7 +81,7 @@ class PacketList implements PacketListInterface
                 PacketTag::CompressedData => CompressedData::fromBytes(
                     $reader->getData()
                 ),
-                PacketTag::SymEncryptedData => SymEncryptedData::fromBytes(
+                PacketTag::SymmetricallyEncryptedData => SymmetricallyEncryptedData::fromBytes(
                     $reader->getData()
                 ),
                 PacketTag::Marker => new Marker(),
@@ -96,8 +96,8 @@ class PacketList implements PacketListInterface
                 PacketTag::UserAttribute => UserAttribute::fromBytes(
                     $reader->getData()
                 ),
-                PacketTag::SymEncryptedIntegrityProtectedData
-                    => SymEncryptedIntegrityProtectedData::fromBytes(
+                PacketTag::SymmetricallyEncryptedIntegrityProtectedData
+                    => SymmetricallyEncryptedIntegrityProtectedData::fromBytes(
                     $reader->getData()
                 ),
                 PacketTag::AeadEncryptedData => AeadEncryptedData::fromBytes(

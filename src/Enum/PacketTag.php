@@ -31,7 +31,7 @@ enum PacketTag: int
     /**
      * SKESK - Symmetric Key Encrypted Session Key Packet
      */
-    case SymEncryptedSessionKey = 3;
+    case SymmetricallyEncryptedSessionKey = 3;
 
     /**
      * OPS - One-Pass Signature Packet
@@ -61,7 +61,7 @@ enum PacketTag: int
     /**
      * SED - Symmetrically Encrypted Data Packet
      */
-    case SymEncryptedData = 9;
+    case SymmetricallyEncryptedData = 9;
 
     /**
      * MARKER - Marker Packet
@@ -96,7 +96,7 @@ enum PacketTag: int
     /**
      * SEIPD - Symmetrically Encrypted and Integrity Protected Data Packet
      */
-    case SymEncryptedIntegrityProtectedData = 18;
+    case SymmetricallyEncryptedIntegrityProtectedData = 18;
 
     /**
      * MDC - Modification Detection Code Packet
