@@ -107,3 +107,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Change VERSION const.
 - Change SALT_NOTATION const.
 - Fix armor text dash escape.
+
+## 1.2.2 - released 2024-09-30
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.1...1.2.2)
+- Refactor code with phpactor.
+- Add PHP Privacy Examples.
