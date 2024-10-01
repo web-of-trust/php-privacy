@@ -64,7 +64,7 @@ abstract class AbstractPacket implements PacketInterface
         } else {
             $bytes = $this->toBytes();
             return implode([
-                chr($this->getTagByte()),
+                $this->getTagByte(),
                 Helper::simpleLength(strlen($bytes)),
                 $bytes,
             ]);
