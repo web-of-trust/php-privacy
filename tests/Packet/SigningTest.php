@@ -23,8 +23,8 @@ use OpenPGP\Tests\OpenPGPTestCase;
  */
 class SigningTest extends OpenPGPTestCase
 {
-    const PASSPHRASE = 'password';
-    const LITERAL_TEXT = 'Hello PHP PG';
+    const PASSPHRASE = "password";
+    const LITERAL_TEXT = "Hello PHP PG";
 
     private static $rsaPublicKeyData = <<<EOT
 BGRUrD4BCACe8iv48dGvqnbOuPv1DnnrasH/NZ5bbpGHW0gSOXb4p2d7VcfA6hfoyq1yEuZ2VDzJ
@@ -72,7 +72,7 @@ JN3kg8cu61aYn2FKiZDRQEDbHFVHJ52e34OZAmmWZLvzUk11E7dQdnpItffEwp8aGro7pUwGo79k
 2R6iMnzQc3iIUX0Ns/vE3A==
 EOT;
 
-private static $dsaSecretKeyData = <<<EOT
+    private static $dsaSecretKeyData = <<<EOT
 BGRUrHERCAC/HCRsyTviyCVlaBWmhJoSZtmR0SzXjgyd6jbNeQLN4o58oCdUXN1o4aUG3dFmx6ed
 BOIfpOeEgpnELVIvkxtAL5gV1aueOw+On3BeP+ZLtU0E60mDAa0rqCMgZrJLh8vlwaNI0HXNLgFZ
 nyRHFK3Xng8h35MBr5vqXtsjVk+R0SiBikTcI+RmjwprM4rest/RxzYGyQeMm7dn4c8/9jg/ApQP
@@ -136,7 +136,9 @@ vJjdpBj+LWR9e330MWcxUSh7EX8d0yl/SLkM4v/tMPehNFggMbiyKWJmFprzV4ft
 Vz4AQHHwYBHm0u5+yiLZRMi3XYCtCA==
 EOT;
 
-        $publicKey = PublicKey::fromBytes(base64_decode(self::$rsaPublicKeyData));
+        $publicKey = PublicKey::fromBytes(
+            base64_decode(self::$rsaPublicKeyData)
+        );
         $packets = PacketList::decode(base64_decode($signatureData));
         $signature = $packets->offsetGet(0);
         $this->assertTrue($signature->verify($publicKey, self::LITERAL_TEXT));
@@ -145,8 +147,12 @@ EOT;
     public function testRsaSigning()
     {
         $message = Random::string(1024);
-        $secretKey = SecretKey::fromBytes(base64_decode(self::$rsaSecretKeyData))->decrypt(self::PASSPHRASE);
-        $publicKey = PublicKey::fromBytes(base64_decode(self::$rsaPublicKeyData));
+        $secretKey = SecretKey::fromBytes(
+            base64_decode(self::$rsaSecretKeyData)
+        )->decrypt(self::PASSPHRASE);
+        $publicKey = PublicKey::fromBytes(
+            base64_decode(self::$rsaPublicKeyData)
+        );
 
         $signature = Signature::createSignature(
             $secretKey,
@@ -156,7 +162,7 @@ EOT;
         $this->assertTrue($signature->verify($publicKey, $message));
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Signed digest mismatch!');
+        $this->expectExceptionMessage("Signed digest mismatch!");
         $signature->verify($publicKey, self::LITERAL_TEXT);
     }
 
@@ -168,7 +174,9 @@ kh7JAQCjdmK4wB/LZmUJef7oqpacflOg4IrvViKsB86veDD82AD/b4E2BgmJYQmP
 yvpWiOjPTxgs00uGp2bR6t+KmQ0zHds=
 EOT;
 
-        $publicKey = PublicKey::fromBytes(base64_decode(self::$dsaPublicKeyData));
+        $publicKey = PublicKey::fromBytes(
+            base64_decode(self::$dsaPublicKeyData)
+        );
         $packets = PacketList::decode(base64_decode($signatureData));
         $signature = $packets->offsetGet(0);
         $this->assertTrue($signature->verify($publicKey, self::LITERAL_TEXT));
@@ -183,7 +191,9 @@ OwO5mtYBfR6Ya1Vop1BgBeIdTAvcI9qnK7QoLQIjxqo7Q5ADrVcdJuS9fULx1Rff
 cHReFWXuRg==
 EOT;
 
-        $publicKey = PublicKey::fromBytes(base64_decode(self::$ecdsaP384PublicKeyData));
+        $publicKey = PublicKey::fromBytes(
+            base64_decode(self::$ecdsaP384PublicKeyData)
+        );
         $packets = PacketList::decode(base64_decode($signatureData));
         $signature = $packets->offsetGet(0);
         $this->assertTrue($signature->verify($publicKey, self::LITERAL_TEXT));
@@ -192,8 +202,12 @@ EOT;
     public function testEcdsaP384Signing()
     {
         $message = Random::string(1024);
-        $secretKey = SecretKey::fromBytes(base64_decode(self::$ecdsaP384SecretKeyData))->decrypt(self::PASSPHRASE);
-        $publicKey = PublicKey::fromBytes(base64_decode(self::$ecdsaP384PublicKeyData));
+        $secretKey = SecretKey::fromBytes(
+            base64_decode(self::$ecdsaP384SecretKeyData)
+        )->decrypt(self::PASSPHRASE);
+        $publicKey = PublicKey::fromBytes(
+            base64_decode(self::$ecdsaP384PublicKeyData)
+        );
 
         $signature = Signature::createSignature(
             $secretKey,
@@ -203,7 +217,7 @@ EOT;
         $this->assertTrue($signature->verify($publicKey, $message));
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Signed digest mismatch!');
+        $this->expectExceptionMessage("Signed digest mismatch!");
         $signature->verify($publicKey, self::LITERAL_TEXT);
     }
 
@@ -215,7 +229,9 @@ iHUEARMIAB0WIQQG/uMIXUbcAHwOwvAcvNBD20TF1gUCZGH0YgAKCRAcvNBD20TF
 fF5D7Ep6qI0Rxbe+CqxszbalXLLI6dI=
 EOT;
 
-        $publicKey = PublicKey::fromBytes(base64_decode(self::$ecdsaBrainpoolPublicKeyData));
+        $publicKey = PublicKey::fromBytes(
+            base64_decode(self::$ecdsaBrainpoolPublicKeyData)
+        );
         $packets = PacketList::decode(base64_decode($signatureData));
         $signature = $packets->offsetGet(0);
         $this->assertTrue($signature->verify($publicKey, self::LITERAL_TEXT));
@@ -224,8 +240,12 @@ EOT;
     public function testEcdsaBrainpoolSigning()
     {
         $message = Random::string(1024);
-        $secretKey = SecretKey::fromBytes(base64_decode(self::$ecdsaBrainpoolSecretKeyData))->decrypt(self::PASSPHRASE);
-        $publicKey = PublicKey::fromBytes(base64_decode(self::$ecdsaBrainpoolPublicKeyData));
+        $secretKey = SecretKey::fromBytes(
+            base64_decode(self::$ecdsaBrainpoolSecretKeyData)
+        )->decrypt(self::PASSPHRASE);
+        $publicKey = PublicKey::fromBytes(
+            base64_decode(self::$ecdsaBrainpoolPublicKeyData)
+        );
 
         $signature = Signature::createSignature(
             $secretKey,
@@ -235,7 +255,7 @@ EOT;
         $this->assertTrue($signature->verify($publicKey, $message));
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Signed digest mismatch!');
+        $this->expectExceptionMessage("Signed digest mismatch!");
         $signature->verify($publicKey, self::LITERAL_TEXT);
     }
 
@@ -247,7 +267,9 @@ C8JkAQDjt/kCR04bhHbxod+VtVYNrV7EwXDbZW8g9gLJt5CLygEAgAxrd61C1u2s
 HOHMeoSApTEj6wNMvUvtie8VMStFDAI=
 EOT;
 
-        $publicKey = PublicKey::fromBytes(base64_decode(self::$eddsaCurve25519PublicKeyData));
+        $publicKey = PublicKey::fromBytes(
+            base64_decode(self::$eddsaCurve25519PublicKeyData)
+        );
         $packets = PacketList::decode(base64_decode($signatureData));
         $signature = $packets->offsetGet(0);
         $this->assertTrue($signature->verify($publicKey, self::LITERAL_TEXT));
@@ -256,8 +278,12 @@ EOT;
     public function testEddsaCurve25519Signing()
     {
         $message = Random::string(1024);
-        $secretKey = SecretKey::fromBytes(base64_decode(self::$eddsaCurve25519SecretKeyData))->decrypt(self::PASSPHRASE);
-        $publicKey = PublicKey::fromBytes(base64_decode(self::$eddsaCurve25519PublicKeyData));
+        $secretKey = SecretKey::fromBytes(
+            base64_decode(self::$eddsaCurve25519SecretKeyData)
+        )->decrypt(self::PASSPHRASE);
+        $publicKey = PublicKey::fromBytes(
+            base64_decode(self::$eddsaCurve25519PublicKeyData)
+        );
 
         $signature = Signature::createSignature(
             $secretKey,
@@ -267,7 +293,7 @@ EOT;
         $this->assertTrue($signature->verify($publicKey, $message));
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Signed digest mismatch!');
+        $this->expectExceptionMessage("Signed digest mismatch!");
         $signature->verify($publicKey, self::LITERAL_TEXT);
     }
 
@@ -291,13 +317,13 @@ EOT;
         );
         $this->assertSame(KeyAlgorithm::Ed25519, $signature->getKeyAlgorithm());
         $this->assertSame(
-            'cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9',
+            "cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9",
             $signature->getIssuerFingerprint(true)
         );
         $this->assertTrue($signature->verify($publicKey, $message));
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Signed digest mismatch!');
+        $this->expectExceptionMessage("Signed digest mismatch!");
         $signature->verify($publicKey, self::LITERAL_TEXT);
     }
 
@@ -312,18 +338,21 @@ EOT;
 BAAWCAAGBQJV+V+VAAoJEIz94SGXllqa9iIA/1b5DMqY4hAmN72YP9sWwTHf0n7YK/Td5WBuDXVq7TNmAQDQnE+hFSfwOOD1fyIB2C8uoskDMmX6bOtInoVLrmG0BA==
 EOT;
         $signature = Signature::fromBytes(base64_decode($signatureData));
-        $this->assertSame(KeyAlgorithm::EdDsaLegacy, $signature->getKeyAlgorithm());
+        $this->assertSame(
+            KeyAlgorithm::EdDsaLegacy,
+            $signature->getKeyAlgorithm()
+        );
         $this->assertSame($publicKey->getKeyID(), $signature->getIssuerKeyID());
-        $this->assertTrue($signature->verify($publicKey, 'OpenPGP'));
+        $this->assertTrue($signature->verify($publicKey, "OpenPGP"));
     }
 
     public function testFeatures()
     {
         $features = Features::fromFeatures(
             SupportFeature::Version1SEIPD->value |
-            SupportFeature::AeadEncrypted->value |
-            SupportFeature::Version5PublicKey->value |
-            SupportFeature::Version2SEIPD->value
+                SupportFeature::AeadEncrypted->value |
+                SupportFeature::Version5PublicKey->value |
+                SupportFeature::Version2SEIPD->value
         );
         $this->assertTrue($features->supportV1SEIPD());
         $this->assertTrue($features->supportAead());
@@ -335,15 +364,18 @@ EOT;
     {
         $keyFlags = KeyFlags::fromFlags(
             KeyFlag::CertifyKeys->value |
-            KeyFlag::SignData->value |
-            KeyFlag::EncryptCommunication->value |
-            KeyFlag::EncryptStorage->value |
-            KeyFlag::SplitPrivateKey->value |
-            KeyFlag::Authentication->value |
-            KeyFlag::SharedPrivateKey->value
+                KeyFlag::SignData->value |
+                KeyFlag::EncryptCommunication->value |
+                KeyFlag::EncryptStorage->value |
+                KeyFlag::SplitPrivateKey->value |
+                KeyFlag::Authentication->value |
+                KeyFlag::SharedPrivateKey->value
         );
         foreach (KeyFlag::cases() as $flag) {
-            $this->assertSame($keyFlags->getFlags() & $flag->value, $flag->value);
+            $this->assertSame(
+                $keyFlags->getFlags() & $flag->value,
+                $flag->value
+            );
         }
         $this->assertTrue($keyFlags->isCertifyKeys());
         $this->assertTrue($keyFlags->isSignData());
@@ -354,12 +386,20 @@ EOT;
     public function testSignatureSubpackets()
     {
         $initSubpackets = array_map(
-            static fn ($type) => new SignatureSubpacket($type->value, Random::string(100)),
+            static fn($type) => new SignatureSubpacket(
+                $type->value,
+                Random::string(100)
+            ),
             SignatureSubpacketType::cases()
         );
-        $subpackets = SubpacketReader::readSignatureSubpackets(implode(
-            array_map(static fn ($subpacket) => $subpacket->toBytes(), $initSubpackets)
-        ));
+        $subpackets = SubpacketReader::readSignatureSubpackets(
+            implode(
+                array_map(
+                    static fn($subpacket) => $subpacket->toBytes(),
+                    $initSubpackets
+                )
+            )
+        );
         $this->assertSame(count($initSubpackets), count($subpackets));
         foreach ($subpackets as $key => $subpacket) {
             $initSubpacket = $initSubpackets[$key];

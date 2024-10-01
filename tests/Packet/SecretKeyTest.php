@@ -3,10 +3,7 @@
 namespace OpenPGP\Tests\Packet;
 
 use OpenPGP\Common\Config;
-use OpenPGP\Enum\{
-    CurveOid,
-    KeyAlgorithm,
-};
+use OpenPGP\Enum\{Ecc, KeyAlgorithm};
 use OpenPGP\Packet\SecretKey;
 use OpenPGP\Packet\SecretSubkey;
 use OpenPGP\Tests\OpenPGPTestCase;
@@ -16,7 +13,7 @@ use OpenPGP\Tests\OpenPGPTestCase;
  */
 class SecretKeyTest extends OpenPGPTestCase
 {
-    const PASSPHRASE = 'password'; 
+    const PASSPHRASE = "password";
 
     public function testRsaSecretKey()
     {
@@ -39,9 +36,14 @@ BM8cDkFsIy9Mn9e9p85IcXZ3WDuJms/gkYRb1CsVTsvVSft1+xYi/Ve6JmIeRkE1weRLuOMkqvFJ
 QdjujszGY2uSv1iTik/46DAEf0yJ7/7Fwt9gSgTLEbh0NIGE21Z11BKY+ovITfgrmJOhP9kQ6oIX
 RfZglUaCOkOPtqPMQNOpZiV3VY6IOay+r7y9Rx2xT03WrnSowNZQXSCksonthXUZAXoGSeFO
 EOT;
-        $secretKey = SecretKey::fromBytes(base64_decode($data))->decrypt(self::PASSPHRASE);
-        $this->assertSame('fc5004df9473277107eaa605184d0dc4f5c532b2', $secretKey->getFingerprint(true));
-        $this->assertSame('184d0dc4f5c532b2', bin2hex($secretKey->getKeyID()));
+        $secretKey = SecretKey::fromBytes(base64_decode($data))->decrypt(
+            self::PASSPHRASE
+        );
+        $this->assertSame(
+            "fc5004df9473277107eaa605184d0dc4f5c532b2",
+            $secretKey->getFingerprint(true)
+        );
+        $this->assertSame("184d0dc4f5c532b2", bin2hex($secretKey->getKeyID()));
         $this->assertSame(4, $secretKey->getVersion());
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
     }
@@ -67,9 +69,14 @@ HAL5kl+bvXSsfDmiqM9g7i36mtAe5zL9ZJ/A1Af4gOLq2YGVJTvDIr93V8es2XG0yngl5+/o8x8o
 o630OHhhneEQ7blqGQKnBdrXtFKTVwGXA8EkCwgl4IK5OJrs9W+SkwBgfhxDCHprfFyH1ARSzjK1
 TBGwJ0VVxJEtKxd0eQnmvNDYdo2kbGriXFcTyCzMGz/KKfqlsu3kPf/NCNgr+zxx8Z+xyDtG
 EOT;
-        $secretSubkey = SecretSubkey::fromBytes(base64_decode($data))->decrypt(self::PASSPHRASE);
-        $this->assertSame('42badbbe0f2acabacd6cac7c4be1b3a621ef906f', $secretSubkey->getFingerprint(true));
-        $this->assertSame('4be1b3a621ef906f', $secretSubkey->getKeyID(true));
+        $secretSubkey = SecretSubkey::fromBytes(base64_decode($data))->decrypt(
+            self::PASSPHRASE
+        );
+        $this->assertSame(
+            "42badbbe0f2acabacd6cac7c4be1b3a621ef906f",
+            $secretSubkey->getFingerprint(true)
+        );
+        $this->assertSame("4be1b3a621ef906f", $secretSubkey->getKeyID(true));
         $this->assertSame(4, $secretSubkey->getVersion());
         $this->assertTrue($secretSubkey->getKeyMaterial()->isValid());
     }
@@ -94,9 +101,14 @@ JN3kg8cu61aYn2FKiZDRQEDbHFVHJ52e34OZAmmWZLvzUk11E7dQdnpItffEwp8aGro7pUwGo79k
 2R6iMnzQc3iIUX0Ns/vE3P4HAwI031TJbUMz3P8bS2hgTRNhrQbqMISMVyoDSrYH9uYvEfxeAEBV
 KtquoXIM7ith6WK8iUzZ9jyXcWv+iFDE8cDpLEGvR7x3NEt0SfCtN0SL
 EOT;
-        $secretKey = SecretKey::fromBytes(base64_decode($data))->decrypt(self::PASSPHRASE);
-        $this->assertSame('3e57913d5f6ccbdb9022f7dee3b11d642248a092', $secretKey->getFingerprint(true));
-        $this->assertSame('e3b11d642248a092', $secretKey->getKeyID(true));
+        $secretKey = SecretKey::fromBytes(base64_decode($data))->decrypt(
+            self::PASSPHRASE
+        );
+        $this->assertSame(
+            "3e57913d5f6ccbdb9022f7dee3b11d642248a092",
+            $secretKey->getFingerprint(true)
+        );
+        $this->assertSame("e3b11d642248a092", $secretKey->getKeyID(true));
         $this->assertSame(4, $secretKey->getVersion());
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
     }
@@ -116,9 +128,14 @@ pXQHGaN/KFh/UlbLKdBnaVaPy8I4HyzTqyjzvKmN5h8s1cv+7/SJKqWoqipdsp+PBYPdPVujT4Rt
 ZSgDj7aW2N0nvDT5/gcDAs4nuOmbg4AW/52mifokiOaqZ9PXjv0J5asUJIfurNPn9JOPjLrwBpIq
 3Lc5u6tOtzUTB8ynz2AE/17z1wotF/ENP8FryZQ84NJ4QiiYK0Joc95MXj+5uZYpNA==
 EOT;
-        $secretSubkey = SecretSubkey::fromBytes(base64_decode($data))->decrypt(self::PASSPHRASE);
-        $this->assertSame('420a452a98ea130c7747e0b2c0453c8aabe775db', $secretSubkey->getFingerprint(true));
-        $this->assertSame('c0453c8aabe775db', $secretSubkey->getKeyID(true));
+        $secretSubkey = SecretSubkey::fromBytes(base64_decode($data))->decrypt(
+            self::PASSPHRASE
+        );
+        $this->assertSame(
+            "420a452a98ea130c7747e0b2c0453c8aabe775db",
+            $secretSubkey->getFingerprint(true)
+        );
+        $this->assertSame("c0453c8aabe775db", $secretSubkey->getKeyID(true));
         $this->assertSame(4, $secretSubkey->getVersion());
         $this->assertTrue($secretSubkey->getKeyMaterial()->isValid());
     }
@@ -131,9 +148,14 @@ FLQ2klduC2c09LzjULVFn4uQKdMacYb7X0UjI2q6MLGP1fpmg7mq4F8myVJx6lkvpHK44xDh/gcD
 AjbYiI4QU+mo/woxqTXpIZE1wzaaNJ5+iRA7vvc6rdJZSjQUkXTJ3/zOyI4970a4UDTJ948+jiUt
 aJrhbMr17UySI58IyBvTxA3hFy63JRJWy5dhJU7kQ3PljGTlqOGB
 EOT;
-        $secretKey = SecretKey::fromBytes(base64_decode($data))->decrypt(self::PASSPHRASE);
-        $this->assertSame('05c085492d14f90976e7c2b6b202d9e2eada440c', $secretKey->getFingerprint(true));
-        $this->assertSame('b202d9e2eada440c', $secretKey->getKeyID(true));
+        $secretKey = SecretKey::fromBytes(base64_decode($data))->decrypt(
+            self::PASSPHRASE
+        );
+        $this->assertSame(
+            "05c085492d14f90976e7c2b6b202d9e2eada440c",
+            $secretKey->getFingerprint(true)
+        );
+        $this->assertSame("b202d9e2eada440c", $secretKey->getKeyID(true));
         $this->assertSame(4, $secretKey->getVersion());
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
     }
@@ -146,9 +168,14 @@ c1s1wntRUFb9OjS06I8YQVBIPdyegmsMZj9J/fa0qFkd2r3siXb2x3zGqsxe1lvrYDVj9gDYAwEJ
 Cf4HAwIcyJh6Un3tq/+P7HrG3HYoS3MBHwEHsYbsogsXCJyutYSZ3yn4Fuyk8FJnH9GGDJatBxkp
 HjhNl+M7wpWyEyjh9WWJHFrC7Zgbx1RZbFHtM/aCtvqUQHqGwiR7uY9b0w==
 EOT;
-        $secretSubkey = SecretSubkey::fromBytes(base64_decode($data))->decrypt(self::PASSPHRASE);
-        $this->assertSame('7d5bfac8919d26290b28ec56c0b7b9c6bf5824b6', $secretSubkey->getFingerprint(true));
-        $this->assertSame('c0b7b9c6bf5824b6', $secretSubkey->getKeyID(true));
+        $secretSubkey = SecretSubkey::fromBytes(base64_decode($data))->decrypt(
+            self::PASSPHRASE
+        );
+        $this->assertSame(
+            "7d5bfac8919d26290b28ec56c0b7b9c6bf5824b6",
+            $secretSubkey->getFingerprint(true)
+        );
+        $this->assertSame("c0b7b9c6bf5824b6", $secretSubkey->getKeyID(true));
         $this->assertSame(4, $secretSubkey->getVersion());
         $this->assertTrue($secretSubkey->getKeyMaterial()->isValid());
     }
@@ -160,9 +187,14 @@ BGRYXMETCSskAwMCCAEBBwIDBHKh5xdXoTfino6vulZBw4fl5lMtKgzXIeG9zhJuBInpE7gOlxes
 07/JY2b9aIUph0fAku1xE+ljP5I/5pI5qrT+BwMCfKl8O5GIbj3/eruMvK1KnzWCGiQutGTYgQmP
 u5aHJEwxtiXZFAHUTxoHgr3yd0IewonQL4Xxz25Zmp1iNL2VSyfPE5v8EDwgWcxCT9m1pQ==
 EOT;
-        $secretKey = SecretKey::fromBytes(base64_decode($data))->decrypt(self::PASSPHRASE);
-        $this->assertSame('06fee3085d46dc007c0ec2f01cbcd043db44c5d6', $secretKey->getFingerprint(true));
-        $this->assertSame('1cbcd043db44c5d6', $secretKey->getKeyID(true));
+        $secretKey = SecretKey::fromBytes(base64_decode($data))->decrypt(
+            self::PASSPHRASE
+        );
+        $this->assertSame(
+            "06fee3085d46dc007c0ec2f01cbcd043db44c5d6",
+            $secretKey->getFingerprint(true)
+        );
+        $this->assertSame("1cbcd043db44c5d6", $secretKey->getKeyID(true));
         $this->assertSame(4, $secretKey->getVersion());
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
     }
@@ -174,9 +206,14 @@ BGRYXMESCSskAwMCCAEBBwIDBINvienMnFyJJCblEBJ2J9sBZ/hCAHGLbgDZPCC+mTLqDJJx47Sr
 B3ZgWmrx1NRoT2pQfD2qqYo8jQJK8XlgyqIDAQgH/gcDApz0MLgF17Br/2e17kAJ360GEHYrfgn6
 dstKPfglOcNKt8PdckwiF6g8gGm3WSPKU/7MkR2C+lKMOJWFxY0G9U77H35I+Vv9W9828ybAmxM=
 EOT;
-        $secretSubkey = SecretSubkey::fromBytes(base64_decode($data))->decrypt(self::PASSPHRASE);
-        $this->assertSame('457b5979545fba09be179db808a55bdb1d673d5d', $secretSubkey->getFingerprint(true));
-        $this->assertSame('08a55bdb1d673d5d', $secretSubkey->getKeyID(true));
+        $secretSubkey = SecretSubkey::fromBytes(base64_decode($data))->decrypt(
+            self::PASSPHRASE
+        );
+        $this->assertSame(
+            "457b5979545fba09be179db808a55bdb1d673d5d",
+            $secretSubkey->getFingerprint(true)
+        );
+        $this->assertSame("08a55bdb1d673d5d", $secretSubkey->getKeyID(true));
         $this->assertSame(4, $secretSubkey->getVersion());
         $this->assertTrue($secretSubkey->getKeyMaterial()->isValid());
     }
@@ -188,9 +225,14 @@ BGRYXQUWCSsGAQQB2kcPAQEHQLvR0VoiVSt3+xzxSSQrR7/yrMzQG8OXueMhIkQb0UPM/gcDAg3L
 LOtx/PSU/9E+PgO1Rd79U+hHRifxAcg+kLq3aoLBbA7RmrVdDTeQvoFl3C+WCC1WleUW21FsUpce
 31nuheiWbgVEXVXQUOcXaVbGVGY=
 EOT;
-        $secretKey = SecretKey::fromBytes(base64_decode($data))->decrypt(self::PASSPHRASE);
-        $this->assertSame('1c4116eb2b58cfa196c57ddbbdff135160c56a0b', $secretKey->getFingerprint(true));
-        $this->assertSame('bdff135160c56a0b', $secretKey->getKeyID(true));
+        $secretKey = SecretKey::fromBytes(base64_decode($data))->decrypt(
+            self::PASSPHRASE
+        );
+        $this->assertSame(
+            "1c4116eb2b58cfa196c57ddbbdff135160c56a0b",
+            $secretKey->getFingerprint(true)
+        );
+        $this->assertSame("bdff135160c56a0b", $secretKey->getKeyID(true));
         $this->assertSame(4, $secretKey->getVersion());
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
     }
@@ -202,9 +244,14 @@ BGRYXQUSCisGAQQBl1UBBQEBB0BCbUFNqFZKpFLBB339cZrp7udovohvVMiG7qP9+ij6AQMBCAf+
 BwMCXhynxjWHX9z//fP2s+xS5iJ1GuvkHqAq+i32Z7LO/92WrWb521yGgPfAipIfrwxwgLZByGjg
 DE1hLVYK35eygNH+dtRvaK5/hLCNXKeUiQ==
 EOT;
-        $secretSubkey = SecretSubkey::fromBytes(base64_decode($data))->decrypt(self::PASSPHRASE);
-        $this->assertSame('8efa53a375fc569aa9ca564a044eac93f0b69ea0', $secretSubkey->getFingerprint(true));
-        $this->assertSame('044eac93f0b69ea0', $secretSubkey->getKeyID(true));
+        $secretSubkey = SecretSubkey::fromBytes(base64_decode($data))->decrypt(
+            self::PASSPHRASE
+        );
+        $this->assertSame(
+            "8efa53a375fc569aa9ca564a044eac93f0b69ea0",
+            $secretSubkey->getFingerprint(true)
+        );
+        $this->assertSame("044eac93f0b69ea0", $secretSubkey->getKeyID(true));
         $this->assertSame(4, $secretSubkey->getVersion());
         $this->assertTrue($secretSubkey->getKeyMaterial()->isValid());
     }
@@ -215,7 +262,10 @@ EOT;
 BmOHf+MbAAAAIPlNp7tI1gph5WdwamWH0DMZmbudiRoIJC6thFQ9+JWjABlygXsSvnB+jV9YbOYTYSAdNE6yZqLIL95oNXYrZbC3Dac=
 EOT;
         $secretKey = SecretKey::fromBytes(base64_decode($data));
-        $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $secretKey->getFingerprint(true));
+        $this->assertSame(
+            "cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9",
+            $secretKey->getFingerprint(true)
+        );
         $this->assertSame(6, $secretKey->getVersion());
         $this->assertSame(KeyAlgorithm::Ed25519, $secretKey->getKeyAlgorithm());
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
@@ -224,44 +274,71 @@ EOT;
 BmOHf+MZAAAAIIaTJINn+eUBXbki+PSAld2nhJh/LVmFsS+60WyvXkQ1AE1gCk95TUR3XFeibg/u/tVY6a//1q0NWC1X+yui3O24EL4=
 EOT;
         $secretSubkey = SecretSubkey::fromBytes(base64_decode($data));
-        $this->assertSame('12c83f1e706f6308fe151a417743a1f033790e93e9978488d1db378da9930885', $secretSubkey->getFingerprint(true));
+        $this->assertSame(
+            "12c83f1e706f6308fe151a417743a1f033790e93e9978488d1db378da9930885",
+            $secretSubkey->getFingerprint(true)
+        );
         $this->assertSame(6, $secretSubkey->getVersion());
-        $this->assertSame(KeyAlgorithm::X25519, $secretSubkey->getKeyAlgorithm());
+        $this->assertSame(
+            KeyAlgorithm::X25519,
+            $secretSubkey->getKeyAlgorithm()
+        );
         $this->assertTrue($secretSubkey->getKeyMaterial()->isValid());
     }
 
     public function testLockedCurve25519Version6SecretKey()
     {
-        $passphrase = 'correct horse battery staple';
+        $passphrase = "correct horse battery staple";
         $data = <<<EOT
 BmOHf+MbAAAAIPlNp7tI1gph5WdwamWH0DMZmbudiRoIJC6thFQ9+JWj/SYJAhQEXW/XHJ4JbR62kXtubh7srgEEFbSoqSdPq+Yy+HWnBlkgIXglj6SE2Isn8iDj0t4CA8oPH+7La3dTgePi2bFIXCIzjKVR4JomPyLrSZLpZ3qAWA==
 EOT;
-        $secretKey = SecretKey::fromBytes(base64_decode($data))->decrypt($passphrase);
-        $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $secretKey->getFingerprint(true));
+        $secretKey = SecretKey::fromBytes(base64_decode($data))->decrypt(
+            $passphrase
+        );
+        $this->assertSame(
+            "cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9",
+            $secretKey->getFingerprint(true)
+        );
         $this->assertSame(6, $secretKey->getVersion());
         $this->assertSame(KeyAlgorithm::Ed25519, $secretKey->getKeyAlgorithm());
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
 
         $s2k = $secretKey->getS2K();
         $derivedKey = $s2k->produceKey(
-            $passphrase, $secretKey->getSymmetric()->keySizeInByte()
+            $passphrase,
+            $secretKey->getSymmetric()->keySizeInByte()
         );
-        $this->assertSame('832bd2662a5c2b251ee3fc82aec349a766ca539015880133002e5a21960b3bcf', bin2hex($derivedKey));
+        $this->assertSame(
+            "832bd2662a5c2b251ee3fc82aec349a766ca539015880133002e5a21960b3bcf",
+            bin2hex($derivedKey)
+        );
 
         $data = <<<EOT
 BmOHf+MZAAAAIIaTJINn+eUBXbki+PSAld2nhJh/LVmFsS+60WyvXkQ1/SYJAhQEDmGEaCnahpq+DqYVRdwUzAEEFS4Typ/05yT7HC6x34YCCUGvktXKv+W6nfHFC8dcVKOMDaFpd+g3rFQZF0MQcjr6568qNVG/mgDGC7t4mlpc2A==
 EOT;
-        $secretSubkey = SecretSubkey::fromBytes(base64_decode($data))->decrypt($passphrase);
-        $this->assertSame('12c83f1e706f6308fe151a417743a1f033790e93e9978488d1db378da9930885', $secretSubkey->getFingerprint(true));
+        $secretSubkey = SecretSubkey::fromBytes(base64_decode($data))->decrypt(
+            $passphrase
+        );
+        $this->assertSame(
+            "12c83f1e706f6308fe151a417743a1f033790e93e9978488d1db378da9930885",
+            $secretSubkey->getFingerprint(true)
+        );
         $this->assertSame(6, $secretSubkey->getVersion());
-        $this->assertSame(KeyAlgorithm::X25519, $secretSubkey->getKeyAlgorithm());
+        $this->assertSame(
+            KeyAlgorithm::X25519,
+            $secretSubkey->getKeyAlgorithm()
+        );
         $this->assertTrue($secretSubkey->getKeyMaterial()->isValid());
 
         $s2k = $secretSubkey->getS2K();
         $derivedKey = $s2k->produceKey(
-            $passphrase, $secretSubkey->getSymmetric()->keySizeInByte()
+            $passphrase,
+            $secretSubkey->getSymmetric()->keySizeInByte()
         );
-        $this->assertSame('f74a6ce873a089ef13a3da9ac059777bb22340d15eaa6c9dc0f8ef09035c67cd', bin2hex($derivedKey));
+        $this->assertSame(
+            "f74a6ce873a089ef13a3da9ac059777bb22340d15eaa6c9dc0f8ef09035c67cd",
+            bin2hex($derivedKey)
+        );
     }
 
     public function testGenerateRSASecretKey()
@@ -275,11 +352,19 @@ EOT;
         $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
         $this->assertTrue($encryptedSecretKey->isEncrypted());
 
-        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
-        $this->assertSame($secretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        $decryptedSecretKey = SecretKey::fromBytes(
+            $encryptedSecretKey->toBytes()
+        )->decrypt(self::PASSPHRASE);
+        $this->assertSame(
+            $secretKey->getFingerprint(),
+            $decryptedSecretKey->getFingerprint()
+        );
         $this->assertEquals(
-            $secretKey->getKeyMaterial()->getPrivateKey()->toString('Raw'),
-            $decryptedSecretKey->getKeyMaterial()->getPrivateKey()->toString('Raw')
+            $secretKey->getKeyMaterial()->getPrivateKey()->toString("Raw"),
+            $decryptedSecretKey
+                ->getKeyMaterial()
+                ->getPrivateKey()
+                ->toString("Raw")
         );
     }
 
@@ -287,7 +372,7 @@ EOT;
     {
         $secretKey = SecretKey::generate(
             KeyAlgorithm::EcDsa,
-            curveOid: CurveOid::Secp521r1
+            curve: Ecc::Secp521r1
         );
         $this->assertFalse($secretKey->isEncrypted());
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
@@ -297,11 +382,19 @@ EOT;
         $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
         $this->assertTrue($encryptedSecretKey->isEncrypted());
 
-        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
-        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        $decryptedSecretKey = SecretKey::fromBytes(
+            $encryptedSecretKey->toBytes()
+        )->decrypt(self::PASSPHRASE);
         $this->assertSame(
-            $secretKey->getKeyMaterial()->getPrivateKey()->toString('PKCS8'),
-            $decryptedSecretKey->getKeyMaterial()->getPrivateKey()->toString('PKCS8')
+            $encryptedSecretKey->getFingerprint(),
+            $decryptedSecretKey->getFingerprint()
+        );
+        $this->assertSame(
+            $secretKey->getKeyMaterial()->getPrivateKey()->toString("PKCS8"),
+            $decryptedSecretKey
+                ->getKeyMaterial()
+                ->getPrivateKey()
+                ->toString("PKCS8")
         );
     }
 
@@ -309,7 +402,7 @@ EOT;
     {
         $secretKey = SecretKey::generate(
             KeyAlgorithm::EcDsa,
-            curveOid: CurveOid::BrainpoolP512r1
+            curve: Ecc::BrainpoolP512r1
         );
         $this->assertFalse($secretKey->isEncrypted());
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
@@ -319,11 +412,19 @@ EOT;
         $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
         $this->assertTrue($encryptedSecretKey->isEncrypted());
 
-        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
-        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        $decryptedSecretKey = SecretKey::fromBytes(
+            $encryptedSecretKey->toBytes()
+        )->decrypt(self::PASSPHRASE);
         $this->assertSame(
-            $secretKey->getKeyMaterial()->getPrivateKey()->toString('PKCS8'),
-            $decryptedSecretKey->getKeyMaterial()->getPrivateKey()->toString('PKCS8')
+            $encryptedSecretKey->getFingerprint(),
+            $decryptedSecretKey->getFingerprint()
+        );
+        $this->assertSame(
+            $secretKey->getKeyMaterial()->getPrivateKey()->toString("PKCS8"),
+            $decryptedSecretKey
+                ->getKeyMaterial()
+                ->getPrivateKey()
+                ->toString("PKCS8")
         );
     }
 
@@ -331,7 +432,7 @@ EOT;
     {
         $secretKey = SecretKey::generate(
             KeyAlgorithm::EdDsaLegacy,
-            curveOid: CurveOid::Ed25519
+            curve: Ecc::Ed25519
         );
         $this->assertFalse($secretKey->isEncrypted());
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
@@ -341,11 +442,19 @@ EOT;
         $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
         $this->assertTrue($encryptedSecretKey->isEncrypted());
 
-        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
-        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        $decryptedSecretKey = SecretKey::fromBytes(
+            $encryptedSecretKey->toBytes()
+        )->decrypt(self::PASSPHRASE);
         $this->assertSame(
-            $secretKey->getKeyMaterial()->getPrivateKey()->toString('PKCS8'),
-            $decryptedSecretKey->getKeyMaterial()->getPrivateKey()->toString('PKCS8')
+            $encryptedSecretKey->getFingerprint(),
+            $decryptedSecretKey->getFingerprint()
+        );
+        $this->assertSame(
+            $secretKey->getKeyMaterial()->getPrivateKey()->toString("PKCS8"),
+            $decryptedSecretKey
+                ->getKeyMaterial()
+                ->getPrivateKey()
+                ->toString("PKCS8")
         );
     }
 
@@ -353,7 +462,7 @@ EOT;
     {
         $secretKey = SecretKey::generate(
             KeyAlgorithm::Ecdh,
-            curveOid: CurveOid::Secp521r1
+            curve: Ecc::Secp521r1
         );
         $this->assertFalse($secretKey->isEncrypted());
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
@@ -363,11 +472,19 @@ EOT;
         $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
         $this->assertTrue($encryptedSecretKey->isEncrypted());
 
-        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
-        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        $decryptedSecretKey = SecretKey::fromBytes(
+            $encryptedSecretKey->toBytes()
+        )->decrypt(self::PASSPHRASE);
         $this->assertSame(
-            $secretKey->getKeyMaterial()->getPrivateKey()->toString('PKCS8'),
-            $decryptedSecretKey->getKeyMaterial()->getPrivateKey()->toString('PKCS8')
+            $encryptedSecretKey->getFingerprint(),
+            $decryptedSecretKey->getFingerprint()
+        );
+        $this->assertSame(
+            $secretKey->getKeyMaterial()->getPrivateKey()->toString("PKCS8"),
+            $decryptedSecretKey
+                ->getKeyMaterial()
+                ->getPrivateKey()
+                ->toString("PKCS8")
         );
     }
 
@@ -375,7 +492,7 @@ EOT;
     {
         $secretKey = SecretKey::generate(
             KeyAlgorithm::Ecdh,
-            curveOid: CurveOid::BrainpoolP512r1
+            curve: Ecc::BrainpoolP512r1
         );
         $this->assertFalse($secretKey->isEncrypted());
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
@@ -385,11 +502,19 @@ EOT;
         $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
         $this->assertTrue($encryptedSecretKey->isEncrypted());
 
-        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
-        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        $decryptedSecretKey = SecretKey::fromBytes(
+            $encryptedSecretKey->toBytes()
+        )->decrypt(self::PASSPHRASE);
         $this->assertSame(
-            $secretKey->getKeyMaterial()->getPrivateKey()->toString('PKCS8'),
-            $decryptedSecretKey->getKeyMaterial()->getPrivateKey()->toString('PKCS8')
+            $encryptedSecretKey->getFingerprint(),
+            $decryptedSecretKey->getFingerprint()
+        );
+        $this->assertSame(
+            $secretKey->getKeyMaterial()->getPrivateKey()->toString("PKCS8"),
+            $decryptedSecretKey
+                ->getKeyMaterial()
+                ->getPrivateKey()
+                ->toString("PKCS8")
         );
     }
 
@@ -397,7 +522,7 @@ EOT;
     {
         $secretKey = SecretKey::generate(
             KeyAlgorithm::Ecdh,
-            curveOid: CurveOid::Curve25519
+            curve: Ecc::Curve25519
         );
         $this->assertFalse($secretKey->isEncrypted());
         $this->assertTrue($secretKey->getKeyMaterial()->isValid());
@@ -407,11 +532,22 @@ EOT;
         $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
         $this->assertTrue($encryptedSecretKey->isEncrypted());
 
-        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
-        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        $decryptedSecretKey = SecretKey::fromBytes(
+            $encryptedSecretKey->toBytes()
+        )->decrypt(self::PASSPHRASE);
         $this->assertSame(
-            $secretKey->getKeyMaterial()->getPrivateKey()->toString('MontgomeryPrivate'),
-            $decryptedSecretKey->getKeyMaterial()->getPrivateKey()->toString('MontgomeryPrivate')
+            $encryptedSecretKey->getFingerprint(),
+            $decryptedSecretKey->getFingerprint()
+        );
+        $this->assertSame(
+            $secretKey
+                ->getKeyMaterial()
+                ->getPrivateKey()
+                ->toString("MontgomeryPrivate"),
+            $decryptedSecretKey
+                ->getKeyMaterial()
+                ->getPrivateKey()
+                ->toString("MontgomeryPrivate")
         );
     }
 
@@ -428,8 +564,13 @@ EOT;
         $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
         $this->assertTrue($encryptedSecretKey->isEncrypted());
 
-        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
-        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        $decryptedSecretKey = SecretKey::fromBytes(
+            $encryptedSecretKey->toBytes()
+        )->decrypt(self::PASSPHRASE);
+        $this->assertSame(
+            $encryptedSecretKey->getFingerprint(),
+            $decryptedSecretKey->getFingerprint()
+        );
 
         Config::setUseV6Key(false);
     }
@@ -447,8 +588,13 @@ EOT;
         $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
         $this->assertTrue($encryptedSecretKey->isEncrypted());
 
-        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
-        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        $decryptedSecretKey = SecretKey::fromBytes(
+            $encryptedSecretKey->toBytes()
+        )->decrypt(self::PASSPHRASE);
+        $this->assertSame(
+            $encryptedSecretKey->getFingerprint(),
+            $decryptedSecretKey->getFingerprint()
+        );
 
         Config::setUseV6Key(false);
     }
@@ -466,8 +612,13 @@ EOT;
         $encryptedSecretKey = $secretKey->encrypt(self::PASSPHRASE);
         $this->assertTrue($encryptedSecretKey->isEncrypted());
 
-        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
-        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        $decryptedSecretKey = SecretKey::fromBytes(
+            $encryptedSecretKey->toBytes()
+        )->decrypt(self::PASSPHRASE);
+        $this->assertSame(
+            $encryptedSecretKey->getFingerprint(),
+            $decryptedSecretKey->getFingerprint()
+        );
 
         Config::setUseV6Key(false);
     }
@@ -483,12 +634,17 @@ EOT;
         $encryptedSecretKey = $secretKey->encrypt(
             self::PASSPHRASE,
             Config::getPreferredSymmetric(),
-            Config::getPreferredAead(),
+            Config::getPreferredAead()
         );
         $this->assertTrue($encryptedSecretKey->isEncrypted());
 
-        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
-        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        $decryptedSecretKey = SecretKey::fromBytes(
+            $encryptedSecretKey->toBytes()
+        )->decrypt(self::PASSPHRASE);
+        $this->assertSame(
+            $encryptedSecretKey->getFingerprint(),
+            $decryptedSecretKey->getFingerprint()
+        );
     }
 
     public function testGenerateX448Key()
@@ -502,12 +658,17 @@ EOT;
         $encryptedSecretKey = $secretKey->encrypt(
             self::PASSPHRASE,
             Config::getPreferredSymmetric(),
-            Config::getPreferredAead(),
+            Config::getPreferredAead()
         );
         $this->assertTrue($encryptedSecretKey->isEncrypted());
 
-        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
-        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        $decryptedSecretKey = SecretKey::fromBytes(
+            $encryptedSecretKey->toBytes()
+        )->decrypt(self::PASSPHRASE);
+        $this->assertSame(
+            $encryptedSecretKey->getFingerprint(),
+            $decryptedSecretKey->getFingerprint()
+        );
     }
 
     public function testGenerateEd25519Key()
@@ -521,12 +682,17 @@ EOT;
         $encryptedSecretKey = $secretKey->encrypt(
             self::PASSPHRASE,
             Config::getPreferredSymmetric(),
-            Config::getPreferredAead(),
+            Config::getPreferredAead()
         );
         $this->assertTrue($encryptedSecretKey->isEncrypted());
 
-        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
-        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        $decryptedSecretKey = SecretKey::fromBytes(
+            $encryptedSecretKey->toBytes()
+        )->decrypt(self::PASSPHRASE);
+        $this->assertSame(
+            $encryptedSecretKey->getFingerprint(),
+            $decryptedSecretKey->getFingerprint()
+        );
     }
 
     public function testGenerateEd448Key()
@@ -540,29 +706,28 @@ EOT;
         $encryptedSecretKey = $secretKey->encrypt(
             self::PASSPHRASE,
             Config::getPreferredSymmetric(),
-            Config::getPreferredAead(),
+            Config::getPreferredAead()
         );
         $this->assertTrue($encryptedSecretKey->isEncrypted());
 
-        $decryptedSecretKey = SecretKey::fromBytes($encryptedSecretKey->toBytes())->decrypt(self::PASSPHRASE);
-        $this->assertSame($encryptedSecretKey->getFingerprint(), $decryptedSecretKey->getFingerprint());
+        $decryptedSecretKey = SecretKey::fromBytes(
+            $encryptedSecretKey->toBytes()
+        )->decrypt(self::PASSPHRASE);
+        $this->assertSame(
+            $encryptedSecretKey->getFingerprint(),
+            $decryptedSecretKey->getFingerprint()
+        );
     }
 
     public function testGenerateEcDsaSecretKeyException()
     {
         $this->expectException(\InvalidArgumentException::class);
-        SecretKey::generate(
-            KeyAlgorithm::EcDsa,
-            curveOid: CurveOid::Curve25519
-        );
+        SecretKey::generate(KeyAlgorithm::EcDsa, curve: Ecc::Curve25519);
     }
 
     public function testGenerateEcdhSecretKeyException()
     {
         $this->expectException(\InvalidArgumentException::class);
-        SecretKey::generate(
-            KeyAlgorithm::Ecdh,
-            curveOid: CurveOid::Ed25519
-        );
+        SecretKey::generate(KeyAlgorithm::Ecdh, curve: Ecc::Ed25519);
     }
 }

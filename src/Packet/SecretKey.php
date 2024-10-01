@@ -12,7 +12,7 @@ use DateTimeInterface;
 use OpenPGP\Common\{Argon2S2K, Config, GenericS2K, Helper};
 use OpenPGP\Enum\{
     AeadAlgorithm,
-    CurveOid,
+    Ecc,
     EdDSACurve,
     HashAlgorithm,
     KeyAlgorithm,
@@ -174,14 +174,14 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
      *
      * @param KeyAlgorithm $keyAlgorithm
      * @param RSAKeySize $rsaKeySize
-     * @param CurveOid $curveOid
+     * @param Ecc $curve
      * @param DateTimeInterface $time
      * @return self
      */
     public static function generate(
         KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
-        CurveOid $curveOid = CurveOid::Secp521r1,
+        Ecc $curve = Ecc::Secp521r1,
         ?DateTimeInterface $time = null
     ): self {
         $keyMaterial = match ($keyAlgorithm) {
@@ -190,10 +190,10 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             KeyAlgorithm::RsaSign
                 => Key\RSASecretKeyMaterial::generate($rsaKeySize),
             KeyAlgorithm::Ecdh => Key\ECDHSecretKeyMaterial::generate(
-                $curveOid
+                $curve
             ),
             KeyAlgorithm::EcDsa => Key\ECDSASecretKeyMaterial::generate(
-                $curveOid
+                $curve
             ),
             KeyAlgorithm::EdDsaLegacy
                 => Key\EdDSALegacySecretKeyMaterial::generate(),

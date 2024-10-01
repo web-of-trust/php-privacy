@@ -18,16 +18,8 @@ class GCMTest extends OpenPGPTestCase
         $adata = Random::string(10);
 
         $gcm = new GCM(Random::string(16));
-        $ct = $gcm->encrypt(
-            $plaintext,
-            $nonce,
-            $adata
-        );
-        $pt = $gcm->decrypt(
-            $ct,
-            $nonce,
-            $adata
-        );
+        $ct = $gcm->encrypt($plaintext, $nonce, $adata);
+        $pt = $gcm->decrypt($ct, $nonce, $adata);
         $this->assertSame(bin2hex($pt), bin2hex($plaintext));
     }
 }

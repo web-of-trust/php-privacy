@@ -13,7 +13,7 @@ use OpenPGP\Tests\OpenPGPTestCase;
 class EncryptedMessageTest extends OpenPGPTestCase
 {
     const LITERAL_DATA = "Hello PHP PG\n";
-    const PASSPHRASE   = 'password'; 
+    const PASSPHRASE = "password";
 
     private static string $encryptedMessageData = <<<EOT
 -----BEGIN PGP MESSAGE-----
@@ -52,40 +52,62 @@ EOT;
 
     public function testDecryptEncryptedMessage()
     {
-        $encryptedMessage = EncryptedMessage::fromArmored(self::$encryptedMessageData);
+        $encryptedMessage = EncryptedMessage::fromArmored(
+            self::$encryptedMessageData
+        );
 
-        $decryptedMessage = $encryptedMessage->decrypt(passwords: [self::PASSPHRASE]);
-        $this->assertSame(self::LITERAL_DATA, $decryptedMessage->getLiteralData()->getData());
-
-        $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/RsaPrivateKey.asc')
-        )->decrypt(self::PASSPHRASE);
-        $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
-        $this->assertSame(self::LITERAL_DATA, $decryptedMessage->getLiteralData()->getData());
-
-        $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/DsaPrivateKey.asc')
-        )->decrypt(self::PASSPHRASE);
-        $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
-        $this->assertSame(self::LITERAL_DATA, $decryptedMessage->getLiteralData()->getData());
+        $decryptedMessage = $encryptedMessage->decrypt(
+            passwords: [self::PASSPHRASE]
+        );
+        $this->assertSame(
+            self::LITERAL_DATA,
+            $decryptedMessage->getLiteralData()->getData()
+        );
 
         $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/EcP384PrivateKey.asc')
+            file_get_contents("tests/Data/RsaPrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
         $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
-        $this->assertSame(self::LITERAL_DATA, $decryptedMessage->getLiteralData()->getData());
+        $this->assertSame(
+            self::LITERAL_DATA,
+            $decryptedMessage->getLiteralData()->getData()
+        );
 
         $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/EcBrainpoolPrivateKey.asc')
+            file_get_contents("tests/Data/DsaPrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
         $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
-        $this->assertSame(self::LITERAL_DATA, $decryptedMessage->getLiteralData()->getData());
+        $this->assertSame(
+            self::LITERAL_DATA,
+            $decryptedMessage->getLiteralData()->getData()
+        );
 
         $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/EcCurve25519PrivateKey.asc')
+            file_get_contents("tests/Data/EcP384PrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
         $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
-        $this->assertSame(self::LITERAL_DATA, $decryptedMessage->getLiteralData()->getData());
+        $this->assertSame(
+            self::LITERAL_DATA,
+            $decryptedMessage->getLiteralData()->getData()
+        );
+
+        $privateKey = PrivateKey::fromArmored(
+            file_get_contents("tests/Data/EcBrainpoolPrivateKey.asc")
+        )->decrypt(self::PASSPHRASE);
+        $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
+        $this->assertSame(
+            self::LITERAL_DATA,
+            $decryptedMessage->getLiteralData()->getData()
+        );
+
+        $privateKey = PrivateKey::fromArmored(
+            file_get_contents("tests/Data/EcCurve25519PrivateKey.asc")
+        )->decrypt(self::PASSPHRASE);
+        $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
+        $this->assertSame(
+            self::LITERAL_DATA,
+            $decryptedMessage->getLiteralData()->getData()
+        );
     }
 
     public function testDecryptAepdMessage()
@@ -100,16 +122,25 @@ cTHw+kww2UtrXVkeUDQI1EwBBwIQtSJxPQCq1Mg7/Ashm2BQxiCRO1DtO6TN/+sy
 -----END PGP MESSAGE-----
 EOT;
 
-        $encryptedMessage = EncryptedMessage::fromArmored($encryptedMessageData);
-        $this->assertTrue($encryptedMessage->getEncryptedPacket() instanceof AeadEncryptedData);
+        $encryptedMessage = EncryptedMessage::fromArmored(
+            $encryptedMessageData
+        );
+        $this->assertTrue(
+            $encryptedMessage->getEncryptedPacket() instanceof AeadEncryptedData
+        );
 
-        $decryptedMessage = $encryptedMessage->decrypt(passwords: [self::PASSPHRASE]);
-        $this->assertSame(self::LITERAL_DATA, $decryptedMessage->getLiteralData()->getData());
+        $decryptedMessage = $encryptedMessage->decrypt(
+            passwords: [self::PASSPHRASE]
+        );
+        $this->assertSame(
+            self::LITERAL_DATA,
+            $decryptedMessage->getLiteralData()->getData()
+        );
     }
 
     public function testDecryptX25519AeadOcbMessage()
     {
-    $privatekeyData = <<<EOT
+        $privatekeyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
 
 xUsGY4d/4xsAAAAg+U2nu0jWCmHlZ3BqZYfQMxmZu52JGggkLq2EVD34laMAGXKB
@@ -140,7 +171,10 @@ EOT;
         $privateKey = PrivateKey::fromArmored($privatekeyData);
         $encryptedMessage = EncryptedMessage::fromArmored($messageData);
         $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
-        $this->assertSame('Hello, world!', $decryptedMessage->getLiteralData()->getData());
+        $this->assertSame(
+            "Hello, world!",
+            $decryptedMessage->getLiteralData()->getData()
+        );
     }
 
     public function testDecryptAeadEaxMessage()
@@ -156,10 +190,15 @@ QCWKt5Wala0FHdqW6xVDHf719eIlXKeCYVRuM5o=
 EOT;
 
         $encryptedMessage = EncryptedMessage::fromArmored($messageData);
-        $decryptedMessage = $encryptedMessage->decrypt(passwords: [self::PASSPHRASE]);
-        $this->assertSame('Hello, world!', $decryptedMessage->getLiteralData()->getData());
+        $decryptedMessage = $encryptedMessage->decrypt(
+            passwords: [self::PASSPHRASE]
+        );
         $this->assertSame(
-            hex2bin('3881bafe985412459b86c36f98cb9a5e'),
+            "Hello, world!",
+            $decryptedMessage->getLiteralData()->getData()
+        );
+        $this->assertSame(
+            hex2bin("3881bafe985412459b86c36f98cb9a5e"),
             $encryptedMessage->getSessionKey()->getEncryptionKey()
         );
     }
@@ -177,10 +216,15 @@ K82nyM6dZeIS8wHLzZj9yt5pSod61CRzI/boVw==
 EOT;
 
         $encryptedMessage = EncryptedMessage::fromArmored($messageData);
-        $decryptedMessage = $encryptedMessage->decrypt(passwords: [self::PASSPHRASE]);
-        $this->assertSame('Hello, world!', $decryptedMessage->getLiteralData()->getData());
+        $decryptedMessage = $encryptedMessage->decrypt(
+            passwords: [self::PASSPHRASE]
+        );
         $this->assertSame(
-            hex2bin('28e79ab82397d3c63de24ac217d7b791'),
+            "Hello, world!",
+            $decryptedMessage->getLiteralData()->getData()
+        );
+        $this->assertSame(
+            hex2bin("28e79ab82397d3c63de24ac217d7b791"),
             $encryptedMessage->getSessionKey()->getEncryptionKey()
         );
     }
@@ -198,10 +242,15 @@ Ae0Pn/xvxtZbv9JNzQeQlm5tHoWjAFN4TLHYtqBpnvEhVaeyrWJYUxtXZR/Xd3kS
 EOT;
 
         $encryptedMessage = EncryptedMessage::fromArmored($messageData);
-        $decryptedMessage = $encryptedMessage->decrypt(passwords: [self::PASSPHRASE]);
-        $this->assertSame('Hello, world!', $decryptedMessage->getLiteralData()->getData());
+        $decryptedMessage = $encryptedMessage->decrypt(
+            passwords: [self::PASSPHRASE]
+        );
         $this->assertSame(
-            hex2bin('1936fc8568980274bb900d8319360c77'),
+            "Hello, world!",
+            $decryptedMessage->getLiteralData()->getData()
+        );
+        $this->assertSame(
+            hex2bin("1936fc8568980274bb900d8319360c77"),
             $encryptedMessage->getSessionKey()->getEncryptionKey()
         );
     }
@@ -220,10 +269,15 @@ XfA3pqV4mTzF
 EOT;
 
         $encryptedMessage = EncryptedMessage::fromArmored($messageData);
-        $decryptedMessage = $encryptedMessage->decrypt(passwords: [self::PASSPHRASE]);
-        $this->assertSame('Hello, world!', $decryptedMessage->getLiteralData()->getData());
+        $decryptedMessage = $encryptedMessage->decrypt(
+            passwords: [self::PASSPHRASE]
+        );
         $this->assertSame(
-            hex2bin('01fe16bbacfd1e7b78ef3b865187374f'),
+            "Hello, world!",
+            $decryptedMessage->getLiteralData()->getData()
+        );
+        $this->assertSame(
+            hex2bin("01fe16bbacfd1e7b78ef3b865187374f"),
             $encryptedMessage->getSessionKey()->getEncryptionKey()
         );
 
@@ -240,10 +294,15 @@ LVg77Mwwfgl2n/d572WciAM=
 EOT;
 
         $encryptedMessage = EncryptedMessage::fromArmored($messageData);
-        $decryptedMessage = $encryptedMessage->decrypt(passwords: [self::PASSPHRASE]);
-        $this->assertSame('Hello, world!', $decryptedMessage->getLiteralData()->getData());
+        $decryptedMessage = $encryptedMessage->decrypt(
+            passwords: [self::PASSPHRASE]
+        );
         $this->assertSame(
-            hex2bin('27006dae68e509022ce45a14e569e91001c2955af8dfe194'),
+            "Hello, world!",
+            $decryptedMessage->getLiteralData()->getData()
+        );
+        $this->assertSame(
+            hex2bin("27006dae68e509022ce45a14e569e91001c2955af8dfe194"),
             $encryptedMessage->getSessionKey()->getEncryptionKey()
         );
 
@@ -260,10 +319,17 @@ wzcECQS4eJUgIG/3mcaILEJFpmJ8AQQVnZ9l7KtagdClm9UaQ/Z6M/5roklSGpGu
 EOT;
 
         $encryptedMessage = EncryptedMessage::fromArmored($messageData);
-        $decryptedMessage = $encryptedMessage->decrypt(passwords: [self::PASSPHRASE]);
-        $this->assertSame('Hello, world!', $decryptedMessage->getLiteralData()->getData());
+        $decryptedMessage = $encryptedMessage->decrypt(
+            passwords: [self::PASSPHRASE]
+        );
         $this->assertSame(
-            hex2bin('bbeda55b9aae63dac45d4f49d89dacf4af37fefc13bab2f1f8e18fb74580d8b0'),
+            "Hello, world!",
+            $decryptedMessage->getLiteralData()->getData()
+        );
+        $this->assertSame(
+            hex2bin(
+                "bbeda55b9aae63dac45d4f49d89dacf4af37fefc13bab2f1f8e18fb74580d8b0"
+            ),
             $encryptedMessage->getSessionKey()->getEncryptionKey()
         );
     }

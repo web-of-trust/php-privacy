@@ -22,13 +22,13 @@ use phpseclib3\Crypt\EC\Curves\{
 use phpseclib3\File\ASN1;
 
 /**
- * Curve oid enum
+ * Elliptic curve cryptography enum
  *
  * @package  OpenPGP
  * @category Enum
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-enum CurveOid: string
+enum Ecc: string
 {
     case Secp256r1 = "1.2.840.10045.3.1.7";
 

@@ -9,7 +9,7 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
-use OpenPGP\Enum\{CurveOid, HashAlgorithm};
+use OpenPGP\Enum\{Ecc, HashAlgorithm};
 use OpenPGP\Type\{KeyMaterialInterface, SecretKeyMaterialInterface};
 use phpseclib3\Crypt\EC;
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
@@ -42,24 +42,24 @@ class ECDSASecretKeyMaterial extends ECSecretKeyMaterial implements
     /**
      * Generate key material by using EC create key
      *
-     * @param CurveOid $curveOid
+     * @param Ecc $curve
      * @return self
      */
-    public static function generate(CurveOid $curveOid): self
+    public static function generate(Ecc $curve): self
     {
-        switch ($curveOid) {
-            case CurveOid::Ed25519:
-            case CurveOid::Curve25519:
+        switch ($curve) {
+            case Ecc::Ed25519:
+            case Ecc::Curve25519:
                 throw new \InvalidArgumentException(
-                    "Curve {$curveOid->name} is not supported for ECDSA key generation."
+                    "Curve {$curve->name} is not supported for ECDSA key generation."
                 );
             default:
-                $privateKey = EC::createKey($curveOid->name);
+                $privateKey = EC::createKey($curve->name);
                 $params = PKCS8::load($privateKey->toString("PKCS8"));
                 return new self(
                     $params["dA"],
                     new ECDSAPublicKeyMaterial(
-                        ASN1::encodeOID($curveOid->value),
+                        ASN1::encodeOID($curve->value),
                         Helper::bin2BigInt(
                             $privateKey->getEncodedCoordinates()
                         ),

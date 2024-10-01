@@ -14,8 +14,8 @@ use OpenPGP\Tests\OpenPGPTestCase;
  */
 class CleartextMessageTest extends OpenPGPTestCase
 {
-    const LITERAL_TEXT = 'Hello PHP PG';
-    const PASSPHRASE   = 'password';
+    const LITERAL_TEXT = "Hello PHP PG";
+    const PASSPHRASE = "password";
 
     private static string $literalText;
 
@@ -28,16 +28,16 @@ class CleartextMessageTest extends OpenPGPTestCase
     public function testSignRsaCleartextMessage()
     {
         $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/RsaPrivateKey.asc')
+            file_get_contents("tests/Data/RsaPrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/RsaPublicKey.asc')
+            file_get_contents("tests/Data/RsaPublicKey.asc")
         );
         $message = new CleartextMessage(self::$literalText);
 
         $signedMessage = $message->sign([$privateKey]);
         $verification = $signedMessage->verify([$publicKey])[0];
-        $this->assertSame('184d0dc4f5c532b2', $verification->getKeyID(true));
+        $this->assertSame("184d0dc4f5c532b2", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
 
         $signedMessage = SignedMessage::fromArmored($signedMessage->armor());
@@ -45,27 +45,33 @@ class CleartextMessageTest extends OpenPGPTestCase
         $this->assertTrue($signedMessage->getSignature() instanceof Signature);
 
         $signature = $message->signDetached([$privateKey]);
-        $verification = $signature->verify([$publicKey], LiteralData::fromText(self::$literalText))[0];
-        $this->assertSame('184d0dc4f5c532b2', $verification->getKeyID(true));
+        $verification = $signature->verify(
+            [$publicKey],
+            LiteralData::fromText(self::$literalText)
+        )[0];
+        $this->assertSame("184d0dc4f5c532b2", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
 
         $signature = Signature::fromArmored($signature->armor());
-        $this->assertSame('184d0dc4f5c532b2', $signature->getSigningKeyIDs(true)[0]);
+        $this->assertSame(
+            "184d0dc4f5c532b2",
+            $signature->getSigningKeyIDs(true)[0]
+        );
     }
 
     public function testSignEcP384CleartextMessage()
     {
         $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/EcP384PrivateKey.asc')
+            file_get_contents("tests/Data/EcP384PrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcP384PublicKey.asc')
+            file_get_contents("tests/Data/EcP384PublicKey.asc")
         );
         $message = new CleartextMessage(self::$literalText);
 
         $signedMessage = $message->sign([$privateKey]);
         $verification = $signedMessage->verify([$publicKey])[0];
-        $this->assertSame('b202d9e2eada440c', $verification->getKeyID(true));
+        $this->assertSame("b202d9e2eada440c", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
 
         $signedMessage = SignedMessage::fromArmored($signedMessage->armor());
@@ -73,27 +79,33 @@ class CleartextMessageTest extends OpenPGPTestCase
         $this->assertTrue($signedMessage->getSignature() instanceof Signature);
 
         $signature = $message->signDetached([$privateKey]);
-        $verification = $signature->verify([$publicKey], LiteralData::fromText(self::$literalText))[0];
-        $this->assertSame('b202d9e2eada440c', $verification->getKeyID(true));
+        $verification = $signature->verify(
+            [$publicKey],
+            LiteralData::fromText(self::$literalText)
+        )[0];
+        $this->assertSame("b202d9e2eada440c", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
 
         $signature = Signature::fromArmored($signature->armor());
-        $this->assertSame('b202d9e2eada440c', $signature->getSigningKeyIDs(true)[0]);
+        $this->assertSame(
+            "b202d9e2eada440c",
+            $signature->getSigningKeyIDs(true)[0]
+        );
     }
 
     public function testSignEcBrainpoolCleartextMessage()
     {
         $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/EcBrainpoolPrivateKey.asc')
+            file_get_contents("tests/Data/EcBrainpoolPrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcBrainpoolPublicKey.asc')
+            file_get_contents("tests/Data/EcBrainpoolPublicKey.asc")
         );
         $message = new CleartextMessage(self::$literalText);
 
         $signedMessage = $message->sign([$privateKey]);
         $verification = $signedMessage->verify([$publicKey])[0];
-        $this->assertSame('1cbcd043db44c5d6', $verification->getKeyID(true));
+        $this->assertSame("1cbcd043db44c5d6", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
 
         $signedMessage = SignedMessage::fromArmored($signedMessage->armor());
@@ -101,27 +113,33 @@ class CleartextMessageTest extends OpenPGPTestCase
         $this->assertTrue($signedMessage->getSignature() instanceof Signature);
 
         $signature = $message->signDetached([$privateKey]);
-        $verification = $signature->verify([$publicKey], LiteralData::fromText(self::$literalText))[0];
-        $this->assertSame('1cbcd043db44c5d6', $verification->getKeyID(true));
+        $verification = $signature->verify(
+            [$publicKey],
+            LiteralData::fromText(self::$literalText)
+        )[0];
+        $this->assertSame("1cbcd043db44c5d6", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
 
         $signature = Signature::fromArmored($signature->armor());
-        $this->assertSame('1cbcd043db44c5d6', $signature->getSigningKeyIDs(true)[0]);
+        $this->assertSame(
+            "1cbcd043db44c5d6",
+            $signature->getSigningKeyIDs(true)[0]
+        );
     }
 
     public function testSignEcCurve25519CleartextMessage()
     {
         $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/EcCurve25519PrivateKey.asc')
+            file_get_contents("tests/Data/EcCurve25519PrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcCurve25519PublicKey.asc')
+            file_get_contents("tests/Data/EcCurve25519PublicKey.asc")
         );
         $message = new CleartextMessage(self::$literalText);
 
         $signedMessage = $message->sign([$privateKey]);
         $verification = $signedMessage->verify([$publicKey])[0];
-        $this->assertSame('bdff135160c56a0b', $verification->getKeyID(true));
+        $this->assertSame("bdff135160c56a0b", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
 
         $signedMessage = SignedMessage::fromArmored($signedMessage->armor());
@@ -129,12 +147,18 @@ class CleartextMessageTest extends OpenPGPTestCase
         $this->assertTrue($signedMessage->getSignature() instanceof Signature);
 
         $signature = $message->signDetached([$privateKey]);
-        $verification = $signature->verify([$publicKey], LiteralData::fromText(self::$literalText))[0];
-        $this->assertSame('bdff135160c56a0b', $verification->getKeyID(true));
+        $verification = $signature->verify(
+            [$publicKey],
+            LiteralData::fromText(self::$literalText)
+        )[0];
+        $this->assertSame("bdff135160c56a0b", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
 
         $signature = Signature::fromArmored($signature->armor());
-        $this->assertSame('bdff135160c56a0b', $signature->getSigningKeyIDs(true)[0]);
+        $this->assertSame(
+            "bdff135160c56a0b",
+            $signature->getSigningKeyIDs(true)[0]
+        );
     }
 
     public function testVerifyRsaDetachedSignature()
@@ -154,11 +178,14 @@ LUtBiGHLj5wItiAhT3QpbcjkInIK3S4qLHXWBStzWnkNImtxEspJBTzVpGdi5E1x
 EOT;
 
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/RsaPublicKey.asc')
+            file_get_contents("tests/Data/RsaPublicKey.asc")
         );
         $message = new CleartextMessage(self::LITERAL_TEXT);
-        $verification = $message->verifyDetached([$publicKey], Signature::fromArmored($signatureData))[0];
-        $this->assertSame('184d0dc4f5c532b2', $verification->getKeyID(true));
+        $verification = $message->verifyDetached(
+            [$publicKey],
+            Signature::fromArmored($signatureData)
+        )[0];
+        $this->assertSame("184d0dc4f5c532b2", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
@@ -175,11 +202,14 @@ Y3EO7nnFH11dL7kVBegzI7sgpUCU3tM=
 EOT;
 
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/DsaPublicKey.asc')
+            file_get_contents("tests/Data/DsaPublicKey.asc")
         );
         $message = new CleartextMessage(self::LITERAL_TEXT);
-        $verification = $message->verifyDetached([$publicKey], Signature::fromArmored($signatureData))[0];
-        $this->assertSame('e3b11d642248a092', $verification->getKeyID(true));
+        $verification = $message->verifyDetached(
+            [$publicKey],
+            Signature::fromArmored($signatureData)
+        )[0];
+        $this->assertSame("e3b11d642248a092", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
@@ -197,11 +227,14 @@ xRtw3Ue2xQ==
 EOT;
 
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcP384PublicKey.asc')
+            file_get_contents("tests/Data/EcP384PublicKey.asc")
         );
         $message = new CleartextMessage(self::LITERAL_TEXT);
-        $verification = $message->verifyDetached([$publicKey], Signature::fromArmored($signatureData))[0];
-        $this->assertSame('b202d9e2eada440c', $verification->getKeyID(true));
+        $verification = $message->verifyDetached(
+            [$publicKey],
+            Signature::fromArmored($signatureData)
+        )[0];
+        $this->assertSame("b202d9e2eada440c", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
@@ -218,11 +251,14 @@ d9EnxROMwB49IamBzqeeTtdcY7yzAPY=
 EOT;
 
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcBrainpoolPublicKey.asc')
+            file_get_contents("tests/Data/EcBrainpoolPublicKey.asc")
         );
         $message = new CleartextMessage(self::LITERAL_TEXT);
-        $verification = $message->verifyDetached([$publicKey], Signature::fromArmored($signatureData))[0];
-        $this->assertSame('1cbcd043db44c5d6', $verification->getKeyID(true));
+        $verification = $message->verifyDetached(
+            [$publicKey],
+            Signature::fromArmored($signatureData)
+        )[0];
+        $this->assertSame("1cbcd043db44c5d6", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
@@ -239,11 +275,14 @@ CyoSAQDLIMzAp/WoKxBnKAa0iejLSGFFoxeDvRyPNX+Et8OffwD/ePQeePF9ECRZ
 EOT;
 
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcCurve25519PublicKey.asc')
+            file_get_contents("tests/Data/EcCurve25519PublicKey.asc")
         );
         $message = new CleartextMessage(self::LITERAL_TEXT);
-        $verification = $message->verifyDetached([$publicKey], Signature::fromArmored($signatureData))[0];
-        $this->assertSame('bdff135160c56a0b', $verification->getKeyID(true));
+        $verification = $message->verifyDetached(
+            [$publicKey],
+            Signature::fromArmored($signatureData)
+        )[0];
+        $this->assertSame("bdff135160c56a0b", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
@@ -274,10 +313,7 @@ EOT;
         $this->assertTrue($verification->isVerified());
 
         $signature = $message->signDetached([$privateKey]);
-        $this->assertSame(
-            6,
-            $signature->getPackets()[0]->getVersion()
-        );
+        $this->assertSame(6, $signature->getPackets()[0]->getVersion());
 
         $verification = $message->verifyDetached([$publicKey], $signature)[0];
         $this->assertTrue($verification->isVerified());

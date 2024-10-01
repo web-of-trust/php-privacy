@@ -12,12 +12,12 @@ use OpenPGP\Tests\OpenPGPTestCase;
  */
 class SignatureTest extends OpenPGPTestCase
 {
-    const LITERAL_TEXT = 'Hello PHP PG';
+    const LITERAL_TEXT = "Hello PHP PG";
 
     public function testVerifyRsaDetachedSignature()
     {
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/RsaPublicKey.asc')
+            file_get_contents("tests/Data/RsaPublicKey.asc")
         );
 
         $signatureData = <<<EOT
@@ -35,15 +35,18 @@ LUtBiGHLj5wItiAhT3QpbcjkInIK3S4qLHXWBStzWnkNImtxEspJBTzVpGdi5E1x
 EOT;
 
         $signature = Signature::fromArmored($signatureData);
-        $verification = $signature->verify([$publicKey], LiteralData::fromText(self::LITERAL_TEXT))[0];
-        $this->assertSame('184d0dc4f5c532b2', $verification->getKeyID(true));
+        $verification = $signature->verify(
+            [$publicKey],
+            LiteralData::fromText(self::LITERAL_TEXT)
+        )[0];
+        $this->assertSame("184d0dc4f5c532b2", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
     public function testVerifyDsaDetachedSignature()
     {
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/DsaPublicKey.asc')
+            file_get_contents("tests/Data/DsaPublicKey.asc")
         );
 
         $signatureData = <<<EOT
@@ -57,15 +60,18 @@ Y3EO7nnFH11dL7kVBegzI7sgpUCU3tM=
 EOT;
 
         $signature = Signature::fromArmored($signatureData);
-        $verification = $signature->verify([$publicKey], LiteralData::fromText(self::LITERAL_TEXT))[0];
-        $this->assertSame('e3b11d642248a092', $verification->getKeyID(true));
+        $verification = $signature->verify(
+            [$publicKey],
+            LiteralData::fromText(self::LITERAL_TEXT)
+        )[0];
+        $this->assertSame("e3b11d642248a092", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
     public function testVerifyEcP384DetachedSignature()
     {
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcP384PublicKey.asc')
+            file_get_contents("tests/Data/EcP384PublicKey.asc")
         );
 
         $signatureData = <<<EOT
@@ -80,15 +86,18 @@ xRtw3Ue2xQ==
 EOT;
 
         $signature = Signature::fromArmored($signatureData);
-        $verification = $signature->verify([$publicKey], LiteralData::fromText(self::LITERAL_TEXT))[0];
-        $this->assertSame('b202d9e2eada440c', $verification->getKeyID(true));
+        $verification = $signature->verify(
+            [$publicKey],
+            LiteralData::fromText(self::LITERAL_TEXT)
+        )[0];
+        $this->assertSame("b202d9e2eada440c", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
     public function testVerifyEcBrainpoolDetachedSignature()
     {
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcBrainpoolPublicKey.asc')
+            file_get_contents("tests/Data/EcBrainpoolPublicKey.asc")
         );
 
         $signatureData = <<<EOT
@@ -102,15 +111,18 @@ d9EnxROMwB49IamBzqeeTtdcY7yzAPY=
 EOT;
 
         $signature = Signature::fromArmored($signatureData);
-        $verification = $signature->verify([$publicKey], LiteralData::fromText(self::LITERAL_TEXT))[0];
-        $this->assertSame('1cbcd043db44c5d6', $verification->getKeyID(true));
+        $verification = $signature->verify(
+            [$publicKey],
+            LiteralData::fromText(self::LITERAL_TEXT)
+        )[0];
+        $this->assertSame("1cbcd043db44c5d6", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
     public function testVerifyEcCurve25519DetachedSignature()
     {
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcCurve25519PublicKey.asc')
+            file_get_contents("tests/Data/EcCurve25519PublicKey.asc")
         );
 
         $signatureData = <<<EOT
@@ -124,8 +136,11 @@ CyoSAQDLIMzAp/WoKxBnKAa0iejLSGFFoxeDvRyPNX+Et8OffwD/ePQeePF9ECRZ
 EOT;
 
         $signature = Signature::fromArmored($signatureData);
-        $verification = $signature->verify([$publicKey], LiteralData::fromText(self::LITERAL_TEXT))[0];
-        $this->assertSame('bdff135160c56a0b', $verification->getKeyID(true));
+        $verification = $signature->verify(
+            [$publicKey],
+            LiteralData::fromText(self::LITERAL_TEXT)
+        )[0];
+        $this->assertSame("bdff135160c56a0b", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 }

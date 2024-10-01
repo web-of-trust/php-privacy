@@ -9,7 +9,7 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
-use OpenPGP\Enum\CurveOid;
+use OpenPGP\Enum\Ecc;
 use OpenPGP\Type\{ECKeyMaterialInterface, KeyMaterialInterface};
 use phpseclib3\Crypt\Common\{AsymmetricKey, PrivateKey, PublicKey};
 use phpseclib3\Crypt\EC;
@@ -151,10 +151,10 @@ abstract class ECSecretKeyMaterial implements
     public function isValid(): bool
     {
         if ($this->publicMaterial instanceof ECPublicKeyMaterial) {
-            $curveOid = $this->publicMaterial->getCurveOid();
-            switch ($curveOid) {
-                case CurveOid::Ed25519:
-                case CurveOid::Curve25519:
+            $curve = $this->publicMaterial->getEcc();
+            switch ($curve) {
+                case Ecc::Ed25519:
+                case Ecc::Curve25519:
                     return $this->publicMaterial
                         ->getQ()
                         ->equals(

@@ -9,7 +9,7 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
-use OpenPGP\Enum\CurveOid;
+use OpenPGP\Enum\Ecc;
 use OpenPGP\Type\KeyMaterialInterface;
 use phpseclib3\Crypt\EC;
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
@@ -44,13 +44,13 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
     /**
      * Generate key material by using EC create key
      *
-     * @param CurveOid $curveOid
+     * @param Ecc $curve
      * @return self
      */
-    public static function generate(CurveOid $curveOid): self
+    public static function generate(Ecc $curve): self
     {
-        if ($curveOid !== CurveOid::Ed25519) {
-            if ($curveOid === CurveOid::Curve25519) {
+        if ($curve !== Ecc::Ed25519) {
+            if ($curve === Ecc::Curve25519) {
                 do {
                     $secretKey = Random::string(self::CURVE25519_KEY_LENGTH);
                     // The highest bit must be 0 & the second highest bit must be 1
@@ -70,7 +70,7 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
                     "\x40" . $privateKey->getEncodedCoordinates()
                 );
             } else {
-                $privateKey = EC::createKey($curveOid->name);
+                $privateKey = EC::createKey($curve->name);
                 $params = PKCS8::load($privateKey->toString("PKCS8"));
                 $d = $params["dA"];
                 $q = Helper::bin2BigInt($privateKey->getEncodedCoordinates());
@@ -78,10 +78,10 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
             return new self(
                 $d,
                 new ECDHPublicKeyMaterial(
-                    ASN1::encodeOID($curveOid->value),
+                    ASN1::encodeOID($curve->value),
                     $q,
-                    $curveOid->hashAlgorithm(),
-                    $curveOid->symmetricAlgorithm(),
+                    $curve->hashAlgorithm(),
+                    $curve->symmetricAlgorithm(),
                     ECDHPublicKeyMaterial::DEFAULT_RESERVED,
                     $privateKey->getPublicKey()
                 ),
@@ -89,7 +89,7 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
             );
         } else {
             throw new \InvalidArgumentException(
-                "Curve {$curveOid->name} is not supported for ECDH key generation."
+                "Curve {$curve->name} is not supported for ECDH key generation."
             );
         }
     }

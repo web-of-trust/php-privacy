@@ -9,7 +9,7 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
-use OpenPGP\Enum\{CurveOid, HashAlgorithm};
+use OpenPGP\Enum\{Ecc, HashAlgorithm};
 use OpenPGP\Type\{KeyMaterialInterface, SecretKeyMaterialInterface};
 use phpseclib3\Crypt\EC;
 use phpseclib3\Crypt\EC\Curves\Ed25519;
@@ -47,7 +47,7 @@ class EdDSALegacySecretKeyMaterial extends ECSecretKeyMaterial implements
      */
     public static function generate(): self
     {
-        $curve = CurveOid::Ed25519;
+        $curve = Ecc::Ed25519;
         do {
             $privateKey = EC::createKey($curve->name);
             $params = PKCS8::load($privateKey->toString("PKCS8"));

@@ -2,18 +2,11 @@
 
 namespace OpenPGP\Tests\Packet;
 
-use OpenPGP\Enum\{
-    AeadAlgorithm,
-    KeyAlgorithm,
-    SymmetricAlgorithm,
-};
-use OpenPGP\Packet\LiteralData;
+use OpenPGP\Enum\{KeyAlgorithm, SymmetricAlgorithm};
 use OpenPGP\Packet\PacketList;
 use OpenPGP\Packet\PublicKeyEncryptedSessionKey;
 use OpenPGP\Packet\SymEncryptedIntegrityProtectedData;
-use OpenPGP\Packet\SecretKey;
 use OpenPGP\Packet\SecretSubkey;
-use OpenPGP\Packet\Key\MontgomerySecretKeyMaterial;
 use OpenPGP\Packet\Key\SessionKey;
 use OpenPGP\Tests\OpenPGPTestCase;
 
@@ -22,8 +15,8 @@ use OpenPGP\Tests\OpenPGPTestCase;
  */
 class PKESKTest extends OpenPGPTestCase
 {
-    const PASSPHRASE   = 'password';
-    const LITERAL_TEXT = 'Hello, world!';
+    const PASSPHRASE = "password";
+    const LITERAL_TEXT = "Hello, world!";
 
     private static $rsaSecretSubkey = <<<EOT
 BGRUrD4BCACyRTYWSBsXFtxLOmSp3RvaW13GRh8HJ4p7adVqJpDBsvo8iInDgBt542/aoWDGIESA
@@ -58,18 +51,18 @@ pXQHGaN/KFh/UlbLKdBnaVaPy8I4HyzTqyjzvKmN5h8s1cv+7/SJKqWoqipdsp+PBYPdPVujT4Rt
 ZSgDj7aW2N0nvDT5/gcDAs4nuOmbg4AW/52mifokiOaqZ9PXjv0J5asUJIfurNPn9JOPjLrwBpIq
 3Lc5u6tOtzUTB8ynz2AE/17z1wotF/ENP8FryZQ84NJ4QiiYK0Joc95MXj+5uZYpNA==
 EOT;
-        private static $ecdhP384SecretSubkey = <<<EOT
+    private static $ecdhP384SecretSubkey = <<<EOT
 BGRYd7USBSuBBAAiAwMEEWHAaBdPHihwch9e3b4VqOB89WeHI6fGWDLpKj6bJ/ME1VbDPhf0DN0N
 c1s1wntRUFb9OjS06I8YQVBIPdyegmsMZj9J/fa0qFkd2r3siXb2x3zGqsxe1lvrYDVj9gDYAwEJ
 Cf4HAwIcyJh6Un3tq/+P7HrG3HYoS3MBHwEHsYbsogsXCJyutYSZ3yn4Fuyk8FJnH9GGDJatBxkp
 HjhNl+M7wpWyEyjh9WWJHFrC7Zgbx1RZbFHtM/aCtvqUQHqGwiR7uY9b0w==
 EOT;
-        private static $ecdhBrainpoolSecretSubkey = <<<EOT
+    private static $ecdhBrainpoolSecretSubkey = <<<EOT
 BGRYXMESCSskAwMCCAEBBwIDBINvienMnFyJJCblEBJ2J9sBZ/hCAHGLbgDZPCC+mTLqDJJx47Sr
 B3ZgWmrx1NRoT2pQfD2qqYo8jQJK8XlgyqIDAQgH/gcDApz0MLgF17Br/2e17kAJ360GEHYrfgn6
 dstKPfglOcNKt8PdckwiF6g8gGm3WSPKU/7MkR2C+lKMOJWFxY0G9U77H35I+Vv9W9828ybAmxM=
 EOT;
-        private static $ecdhCurve25519SecretSubkey = <<<EOT
+    private static $ecdhCurve25519SecretSubkey = <<<EOT
 BGRYXQUSCisGAQQBl1UBBQEBB0BCbUFNqFZKpFLBB339cZrp7udovohvVMiG7qP9+ij6AQMBCAf+
 BwMCXhynxjWHX9z//fP2s+xS5iJ1GuvkHqAq+i32Z7LO/92WrWb521yGgPfAipIfrwxwgLZByGjg
 DE1hLVYK35eygNH+dtRvaK5/hLCNXKeUiQ==
@@ -89,7 +82,9 @@ JnzOL3WiY9Ln
 EOT;
 
         $packets = PacketList::decode(base64_decode($data));
-        $secretSubkey = SecretSubkey::fromBytes(base64_decode(self::$rsaSecretSubkey))->decrypt(self::PASSPHRASE);
+        $secretSubkey = SecretSubkey::fromBytes(
+            base64_decode(self::$rsaSecretSubkey)
+        )->decrypt(self::PASSPHRASE);
         $pkesk = $packets->offsetGet(0);
         $this->assertSame($secretSubkey->getKeyID(), $pkesk->getKeyID());
         $this->assertNull($pkesk->getSessionKey());
@@ -101,8 +96,13 @@ EOT;
     public function testEncryptRSASessionKey()
     {
         $sessionKey = SessionKey::produceKey();
-        $secretSubkey = SecretSubkey::fromBytes(base64_decode(self::$rsaSecretSubkey))->decrypt(self::PASSPHRASE);
-        $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey($secretSubkey->getPublicKey(), $sessionKey);
+        $secretSubkey = SecretSubkey::fromBytes(
+            base64_decode(self::$rsaSecretSubkey)
+        )->decrypt(self::PASSPHRASE);
+        $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey(
+            $secretSubkey->getPublicKey(),
+            $sessionKey
+        );
         $this->assertSame($secretSubkey->getKeyID(), $pkesk->getKeyID());
 
         $packets = PacketList::decode($pkesk->encode());
@@ -169,7 +169,10 @@ EOT;
         $secretSubkey = SecretSubkey::fromBytes(
             base64_decode(self::$ecdhP384SecretSubkey)
         )->decrypt(self::PASSPHRASE);
-        $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey($secretSubkey->getPublicKey(), $sessionKey);
+        $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey(
+            $secretSubkey->getPublicKey(),
+            $sessionKey
+        );
         $this->assertSame($secretSubkey->getKeyID(), $pkesk->getKeyID());
 
         $packets = PacketList::decode($pkesk->encode());
@@ -206,7 +209,10 @@ EOT;
         $secretSubkey = SecretSubkey::fromBytes(
             base64_decode(self::$ecdhBrainpoolSecretSubkey)
         )->decrypt(self::PASSPHRASE);
-        $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey($secretSubkey->getPublicKey(), $sessionKey);
+        $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey(
+            $secretSubkey->getPublicKey(),
+            $sessionKey
+        );
         $this->assertSame($secretSubkey->getKeyID(), $pkesk->getKeyID());
 
         $packets = PacketList::decode($pkesk->encode());
@@ -242,7 +248,10 @@ EOT;
         $secretSubkey = SecretSubkey::fromBytes(
             base64_decode(self::$ecdhCurve25519SecretSubkey)
         )->decrypt(self::PASSPHRASE);
-        $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey($secretSubkey->getPublicKey(), $sessionKey);
+        $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey(
+            $secretSubkey->getPublicKey(),
+            $sessionKey
+        );
         $this->assertSame($secretSubkey->getKeyID(), $pkesk->getKeyID());
 
         $packets = PacketList::decode($pkesk->encode());
@@ -253,20 +262,28 @@ EOT;
 
     public function testX25519AeadOcbDecryption()
     {
-        $subkeyData = 'BmOHf+MZAAAAIIaTJINn+eUBXbki+PSAld2nhJh/LVmFsS+60WyvXkQ1AE1gCk95TUR3XFeibg/u/tVY6a//1q0NWC1X+yui3O24EL4=';
+        $subkeyData =
+            "BmOHf+MZAAAAIIaTJINn+eUBXbki+PSAld2nhJh/LVmFsS+60WyvXkQ1AE1gCk95TUR3XFeibg/u/tVY6a//1q0NWC1X+yui3O24EL4=";
         $subkey = SecretSubkey::fromBytes(base64_decode($subkeyData));
 
-        $pkeskData = 'BiEGEsg/HnBvYwj+FRpBd0Oh8DN5DpPpl4SI0ds3jamTCIUZh88Y1fG1P4F8zloATPOTzIlYvdwGXyX4SvUJsX3TZ2QY3qNVQ3lWYXkB4GlX+8qKakeltRU+jTq3';
-        $pkesk = PublicKeyEncryptedSessionKey::fromBytes(base64_decode($pkeskData))->decrypt($subkey);
+        $pkeskData =
+            "BiEGEsg/HnBvYwj+FRpBd0Oh8DN5DpPpl4SI0ds3jamTCIUZh88Y1fG1P4F8zloATPOTzIlYvdwGXyX4SvUJsX3TZ2QY3qNVQ3lWYXkB4GlX+8qKakeltRU+jTq3";
+        $pkesk = PublicKeyEncryptedSessionKey::fromBytes(
+            base64_decode($pkeskData)
+        )->decrypt($subkey);
 
         $sessionKey = $pkesk->getSessionKey();
-        $this->assertSame('dd708f6fa1ed65114d68d2343e7c2f1d', bin2hex($sessionKey->getEncryptionKey()));
-
-        $seipdData = 'AgcCBmFkFlNb4LBxbWDgUqVsTEB/nrNrDvr+mtCg35sDPGmiG6nr0sDslb9WnSXJme5KPeFwWPQN+otMaCvj+7vXsn6w9Zu1AF+Ax8b0A4jDCtQGqwUT3Nb5/XN2VihuEXfQD4iK2zHE';
-        $seipd = SymEncryptedIntegrityProtectedData::fromBytes(base64_decode($seipdData));
-        $seipd = $seipd->decryptWithSessionKey(
-            $sessionKey
+        $this->assertSame(
+            "dd708f6fa1ed65114d68d2343e7c2f1d",
+            bin2hex($sessionKey->getEncryptionKey())
         );
+
+        $seipdData =
+            "AgcCBmFkFlNb4LBxbWDgUqVsTEB/nrNrDvr+mtCg35sDPGmiG6nr0sDslb9WnSXJme5KPeFwWPQN+otMaCvj+7vXsn6w9Zu1AF+Ax8b0A4jDCtQGqwUT3Nb5/XN2VihuEXfQD4iK2zHE";
+        $seipd = SymEncryptedIntegrityProtectedData::fromBytes(
+            base64_decode($seipdData)
+        );
+        $seipd = $seipd->decryptWithSessionKey($sessionKey);
         $literalData = $seipd->getPacketList()->offsetGet(0);
         $this->assertSame(self::LITERAL_TEXT, trim($literalData->getData()));
     }
@@ -275,25 +292,49 @@ EOT;
     {
         $sessionKey = SessionKey::produceKey(SymmetricAlgorithm::Aes128);
         $secretSubkey = SecretSubkey::generate(KeyAlgorithm::X25519);
-        $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey($secretSubkey->getPublicKey(), $sessionKey);
-        $this->assertSame($secretSubkey->getFingerprint(), $pkesk->getKeyFingerprint());
+        $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey(
+            $secretSubkey->getPublicKey(),
+            $sessionKey
+        );
+        $this->assertSame(
+            $secretSubkey->getFingerprint(),
+            $pkesk->getKeyFingerprint()
+        );
 
         $packets = PacketList::decode($pkesk->encode());
         $pkesk = $packets->offsetGet(0)->decrypt($secretSubkey);
-        $this->assertSame($secretSubkey->getFingerprint(), $pkesk->getKeyFingerprint());
-        $this->assertEquals($sessionKey->getEncryptionKey(), $pkesk->getSessionKey()->getEncryptionKey());
+        $this->assertSame(
+            $secretSubkey->getFingerprint(),
+            $pkesk->getKeyFingerprint()
+        );
+        $this->assertEquals(
+            $sessionKey->getEncryptionKey(),
+            $pkesk->getSessionKey()->getEncryptionKey()
+        );
     }
 
     public function testX448Encryption()
     {
         $sessionKey = SessionKey::produceKey(SymmetricAlgorithm::Aes256);
         $secretSubkey = SecretSubkey::generate(KeyAlgorithm::X448);
-        $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey($secretSubkey->getPublicKey(), $sessionKey);
-        $this->assertSame($secretSubkey->getFingerprint(), $pkesk->getKeyFingerprint());
+        $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey(
+            $secretSubkey->getPublicKey(),
+            $sessionKey
+        );
+        $this->assertSame(
+            $secretSubkey->getFingerprint(),
+            $pkesk->getKeyFingerprint()
+        );
 
         $packets = PacketList::decode($pkesk->encode());
         $pkesk = $packets->offsetGet(0)->decrypt($secretSubkey);
-        $this->assertSame($secretSubkey->getFingerprint(), $pkesk->getKeyFingerprint());
-        $this->assertEquals($sessionKey->getEncryptionKey(), $pkesk->getSessionKey()->getEncryptionKey());
+        $this->assertSame(
+            $secretSubkey->getFingerprint(),
+            $pkesk->getKeyFingerprint()
+        );
+        $this->assertEquals(
+            $sessionKey->getEncryptionKey(),
+            $pkesk->getSessionKey()->getEncryptionKey()
+        );
     }
 }

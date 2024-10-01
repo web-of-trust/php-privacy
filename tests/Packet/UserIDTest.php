@@ -20,11 +20,7 @@ class UserIDTest extends OpenPGPTestCase
         $email = $this->faker->unique()->safeEmail();
         $comment = $this->faker->unique()->sentence(3);
 
-        $userID = new UserID(implode(' ', [
-            $name,
-            "($comment)",
-            "<$email>",
-        ]));
+        $userID = new UserID(implode(" ", [$name, "($comment)", "<$email>"]));
         $this->assertSame($name, $userID->getName());
         $this->assertSame($email, $userID->getEmail());
         $this->assertSame($comment, $userID->getComment());
@@ -38,7 +34,10 @@ class UserIDTest extends OpenPGPTestCase
     public function testUserAttribute()
     {
         $imageAttr = ImageUserAttribute::fromImageData(Random::string(10));
-        $userAttr = new UserAttributeSubpacket($this->faker->numberBetween(2, 10), Random::string(10));
+        $userAttr = new UserAttributeSubpacket(
+            $this->faker->numberBetween(2, 10),
+            Random::string(10)
+        );
 
         $packet = new UserAttribute([$imageAttr, $userAttr]);
         $this->assertSame($imageAttr, $packet->getAttributes()[0]);

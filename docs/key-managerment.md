@@ -26,7 +26,7 @@ $privateKey = OpenPGP::generateKey(
     [USER_ID],
     PASSPHRASE,
     type: KeyType::Ecc,
-    curve: CurveOid::Secp521r1,
+    curve: Ecc::Secp521r1,
 );
 file_put_contents('privateKey.asc', $privateKey->armor());
 $publicKey = $privateKey->toPublic();

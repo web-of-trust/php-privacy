@@ -8,7 +8,7 @@
 
 namespace OpenPGP\Packet\Key;
 
-use OpenPGP\Enum\CurveOid;
+use OpenPGP\Enum\Ecc;
 use OpenPGP\Type\{ECKeyMaterialInterface, KeyMaterialInterface};
 use phpseclib3\Crypt\Common\{AsymmetricKey, PublicKey};
 use phpseclib3\Crypt\EC;
@@ -28,7 +28,7 @@ abstract class ECPublicKeyMaterial implements
     ECKeyMaterialInterface,
     KeyMaterialInterface
 {
-    private readonly CurveOid $curveOid;
+    private readonly Ecc $ecc;
 
     /**
      * phpseclib3 EC public key
@@ -48,20 +48,20 @@ abstract class ECPublicKeyMaterial implements
         private readonly BigInteger $q,
         ?ECPublicKey $publicKey = null
     ) {
-        $this->curveOid = CurveOid::fromOid($oid);
+        $this->ecc = Ecc::fromOid($oid);
         if ($publicKey instanceof ECPublicKey) {
             $this->publicKey = $publicKey;
         } else {
             $format = "PKCS8";
-            switch ($this->curveOid) {
-                case CurveOid::Curve25519:
+            switch ($this->ecc) {
+                case Ecc::Curve25519:
                     $key = substr($q->toBytes(), 1);
                     $format = "MontgomeryPublic";
                     break;
                 default:
-                    $curve = $this->curveOid->getCurve();
+                    $curve = $this->ecc->getCurve();
                     $point =
-                        $this->curveOid === CurveOid::Ed25519
+                        $this->ecc === Ecc::Ed25519
                             ? substr($q->toBytes(), 1)
                             : "\x00" . $q->toBytes();
                     $key = PKCS8::savePublicKey(
@@ -75,13 +75,13 @@ abstract class ECPublicKeyMaterial implements
     }
 
     /**
-     * Get curve oid
+     * Get ecc enum
      *
-     * @return CurveOid
+     * @return Ecc
      */
-    public function getCurveOid(): CurveOid
+    public function getEcc(): Ecc
     {
-        return $this->curveOid;
+        return $this->ecc;
     }
 
     /**
@@ -139,7 +139,7 @@ abstract class ECPublicKeyMaterial implements
      */
     public function getParameters(): array
     {
-        if ($this->curveOid === CurveOid::Curve25519) {
+        if ($this->ecc === Ecc::Curve25519) {
             return MontgomeryPublic::load(
                 $this->publicKey->toString("MontgomeryPublic")
             );

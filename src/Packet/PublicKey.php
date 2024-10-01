@@ -11,7 +11,7 @@ namespace OpenPGP\Packet;
 use DateTimeInterface;
 use OpenPGP\Common\{Config, Helper};
 use OpenPGP\Enum\{
-    CurveOid,
+    Ecc,
     EdDSACurve,
     HashAlgorithm,
     KeyAlgorithm,
@@ -82,13 +82,13 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
 
         if ($isV6) {
             if ($keyMaterial instanceof Key\ECPublicKeyMaterial) {
-                $curveOid = $keyMaterial->getCurveOid();
+                $curve = $keyMaterial->getEcc();
                 if (
-                    $curveOid === CurveOid::Ed25519 ||
-                    $curveOid === CurveOid::Curve25519
+                    $curve === Ecc::Ed25519 ||
+                    $curve === Ecc::Curve25519
                 ) {
                     throw new \InvalidArgumentException(
-                        "Legacy curve {$curveOid->name} cannot be used with v{$version} key packet."
+                        "Legacy curve {$curve->name} cannot be used with v{$version} key packet."
                     );
                 }
             }
@@ -260,7 +260,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
     ): HashAlgorithm {
         return match (true) {
             $this->keyMaterial instanceof Key\ECPublicKeyMaterial
-                => $this->keyMaterial->getCurveOid()->hashAlgorithm(),
+                => $this->keyMaterial->getEcc()->hashAlgorithm(),
             $this->keyAlgorithm === KeyAlgorithm::Ed25519
                 => EdDSACurve::Ed25519->hashAlgorithm(),
             $this->keyAlgorithm === KeyAlgorithm::Ed448

@@ -13,7 +13,7 @@ use OpenPGP\Common\{Armor, Config};
 use OpenPGP\Enum\{
     AeadAlgorithm,
     ArmorType,
-    CurveOid,
+    Ecc,
     KeyAlgorithm,
     KeyType,
     RevocationReasonTag,
@@ -118,7 +118,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
      * @param string $passphrase
      * @param KeyType $type
      * @param RSAKeySize $rsaKeySize
-     * @param CurveOid $curve
+     * @param Ecc $curve
      * @param int $keyExpiry
      * @param bool $signOnly
      * @param DateTimeInterface $time
@@ -129,7 +129,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         string $passphrase,
         KeyType $type = KeyType::Rsa,
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
-        CurveOid $curve = CurveOid::Secp521r1,
+        Ecc $curve = Ecc::Secp521r1,
         int $keyExpiry = 0,
         bool $signOnly = false,
         ?DateTimeInterface $time = null
@@ -143,12 +143,12 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         switch ($type) {
             case KeyType::Ecc:
                 if (
-                    $curve === CurveOid::Ed25519 ||
-                    $curve === CurveOid::Curve25519
+                    $curve === Ecc::Ed25519 ||
+                    $curve === Ecc::Curve25519
                 ) {
                     $keyAlgorithm = KeyAlgorithm::EdDsaLegacy;
-                    $curve = CurveOid::Ed25519;
-                    $subkeyCurve = CurveOid::Curve25519;
+                    $curve = Ecc::Ed25519;
+                    $subkeyCurve = Ecc::Curve25519;
                 } else {
                     $keyAlgorithm = KeyAlgorithm::EcDsa;
                 }
@@ -472,7 +472,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         string $passphrase,
         KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
-        CurveOid $curve = CurveOid::Secp521r1,
+        Ecc $curve = Ecc::Secp521r1,
         int $keyExpiry = 0,
         bool $forSigning = false,
         ?DateTimeInterface $time = null

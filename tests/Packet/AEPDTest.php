@@ -2,10 +2,7 @@
 
 namespace OpenPGP\Tests\Packet;
 
-use OpenPGP\Enum\{
-    AeadAlgorithm,
-    SymmetricAlgorithm,
-};
+use OpenPGP\Enum\{AeadAlgorithm, SymmetricAlgorithm};
 use OpenPGP\Packet\AeadEncryptedData;
 use OpenPGP\Packet\LiteralData;
 use OpenPGP\Packet\PacketList;
@@ -21,9 +18,11 @@ class AEPDTest extends OpenPGPTestCase
 
     public function testAeadEaxDecrypt()
     {
-        $key = hex2bin('86f1efb86952329f24acd3bfd0e5346d');
-        $iv = hex2bin('b732379f73c4928de25facfe6517ec10');
-        $bytes = hex2bin('0107010eb732379f73c4928de25facfe6517ec105dc11a81dc0cb8a2f6f3d90016384a56fc821ae11ae8dbcb49862655dea88d06a81486801b0ff387bd2eab013de1259586906eab2476');
+        $key = hex2bin("86f1efb86952329f24acd3bfd0e5346d");
+        $iv = hex2bin("b732379f73c4928de25facfe6517ec10");
+        $bytes = hex2bin(
+            "0107010eb732379f73c4928de25facfe6517ec105dc11a81dc0cb8a2f6f3d90016384a56fc821ae11ae8dbcb49862655dea88d06a81486801b0ff387bd2eab013de1259586906eab2476"
+        );
 
         $aepd = AeadEncryptedData::fromBytes($bytes);
         $this->assertEquals($aepd->getSymmetric(), SymmetricAlgorithm::Aes128);
@@ -38,9 +37,11 @@ class AEPDTest extends OpenPGPTestCase
 
     public function testAeadOcbDecrypt()
     {
-        $key = hex2bin('d1f01ba30e130aa7d2582c16e050ae44');
-        $iv = hex2bin('5ed2bc1e470abe8f1d644c7a6c8a56');
-        $bytes = hex2bin('0107020e5ed2bc1e470abe8f1d644c7a6c8a567b0f7701196611a154ba9c2574cd056284a8ef68035c623d93cc708a43211bb6eaf2b27f7c18d571bcd83b20add3a08b73af15b9a098');
+        $key = hex2bin("d1f01ba30e130aa7d2582c16e050ae44");
+        $iv = hex2bin("5ed2bc1e470abe8f1d644c7a6c8a56");
+        $bytes = hex2bin(
+            "0107020e5ed2bc1e470abe8f1d644c7a6c8a567b0f7701196611a154ba9c2574cd056284a8ef68035c623d93cc708a43211bb6eaf2b27f7c18d571bcd83b20add3a08b73af15b9a098"
+        );
 
         $aepd = AeadEncryptedData::fromBytes($bytes);
         $this->assertEquals($aepd->getSymmetric(), SymmetricAlgorithm::Aes128);

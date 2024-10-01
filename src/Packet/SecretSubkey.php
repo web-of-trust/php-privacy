@@ -11,7 +11,7 @@ namespace OpenPGP\Packet;
 use DateTimeInterface;
 use OpenPGP\Enum\{
     AeadAlgorithm,
-    CurveOid,
+    Ecc,
     KeyAlgorithm,
     RSAKeySize,
     S2kUsage,
@@ -78,18 +78,18 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
      *
      * @param KeyAlgorithm $keyAlgorithm
      * @param RSAKeySize $rsaKeySize
-     * @param CurveOid $curveOid
+     * @param Ecc $curve
      * @param DateTimeInterface $time
      * @return self
      */
     public static function generate(
         KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
-        CurveOid $curveOid = CurveOid::Ed25519,
+        Ecc $curve = Ecc::Ed25519,
         ?DateTimeInterface $time = null
     ): self {
         return self::fromSecretKey(
-            SecretKey::generate($keyAlgorithm, $rsaKeySize, $curveOid, $time)
+            SecretKey::generate($keyAlgorithm, $rsaKeySize, $curve, $time)
         );
     }
 

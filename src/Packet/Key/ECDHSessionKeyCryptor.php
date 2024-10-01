@@ -10,7 +10,7 @@ namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{
-    CurveOid,
+    Ecc,
     HashAlgorithm,
     KeyAlgorithm,
     KekSize,
@@ -97,8 +97,8 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
                 self::pkcs5Encode($sessionKey)
             );
 
-            $ephemeralKey = match ($keyMaterial->getCurveOid()) {
-                CurveOid::Curve25519 => Helper::bin2BigInt(
+            $ephemeralKey = match ($keyMaterial->getEcc()) {
+                Ecc::Curve25519 => Helper::bin2BigInt(
                     "\x40" . $privateKey->getEncodedCoordinates()
                 ),
                 default => Helper::bin2BigInt(
@@ -168,12 +168,12 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
             $keyMaterial instanceof ECDHSecretKeyMaterial &&
             $publicMaterial instanceof ECDHPublicKeyMaterial
         ) {
-            if ($publicMaterial->getCurveOid() === CurveOid::Curve25519) {
+            if ($publicMaterial->getEcc() === Ecc::Curve25519) {
                 $format = "MontgomeryPublic";
                 $key = substr($this->ephemeralKey->toBytes(), 1);
             } else {
                 $format = "PKCS8";
-                $curve = $publicMaterial->getCurveOid()->getCurve();
+                $curve = $publicMaterial->getEcc()->getCurve();
                 $key = PKCS8::savePublicKey(
                     $curve,
                     PKCS8::extractPoint(
@@ -233,7 +233,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
         ECDHPublicKeyMaterial $keyMaterial,
         string $fingerprint
     ): string {
-        $oid = ASN1::encodeOID($keyMaterial->getCurveOid()->value);
+        $oid = ASN1::encodeOID($keyMaterial->getEcc()->value);
         return implode([
             chr(strlen($oid)),
             $oid,

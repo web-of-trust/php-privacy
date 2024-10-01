@@ -3,7 +3,7 @@
 namespace OpenPGP\Tests\Key;
 
 use OpenPGP\Common\Config;
-use OpenPGP\Enum\{CurveOid, KeyAlgorithm, KeyType, PacketTag};
+use OpenPGP\Enum\{Ecc, KeyAlgorithm, KeyType, PacketTag};
 use OpenPGP\Key\{PrivateKey, PublicKey};
 use OpenPGP\Type\SecretKeyPacketInterface;
 use OpenPGP\Tests\OpenPGPTestCase;
@@ -13,12 +13,12 @@ use OpenPGP\Tests\OpenPGPTestCase;
  */
 class PrivateKeyTest extends OpenPGPTestCase
 {
-    const PASSPHRASE = 'password'; 
+    const PASSPHRASE = "password";
 
     public function testReadRsaPrivateKey()
     {
         $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/RsaPrivateKey.asc')
+            file_get_contents("tests/Data/RsaPrivateKey.asc")
         );
         $this->assertTrue($privateKey->isPrivate());
         $this->assertTrue($privateKey->isEncrypted());
@@ -26,54 +26,78 @@ class PrivateKeyTest extends OpenPGPTestCase
 
         $privateKey = $privateKey->decrypt(self::PASSPHRASE);
         $this->assertTrue($privateKey->isDecrypted());
-        $this->assertSame('fc5004df9473277107eaa605184d0dc4f5c532b2', $privateKey->getFingerprint(true));
-        $this->assertSame('184d0dc4f5c532b2', $privateKey->getKeyID(true));
+        $this->assertSame(
+            "fc5004df9473277107eaa605184d0dc4f5c532b2",
+            $privateKey->getFingerprint(true)
+        );
+        $this->assertSame("184d0dc4f5c532b2", $privateKey->getKeyID(true));
         $this->assertSame(2048, $privateKey->getKeyStrength());
 
         $subkey = $privateKey->getSubKeys()[0];
-        $this->assertSame('42badbbe0f2acabacd6cac7c4be1b3a621ef906f', $subkey->getFingerprint(true));
-        $this->assertSame('4be1b3a621ef906f', $subkey->getKeyID(true));
+        $this->assertSame(
+            "42badbbe0f2acabacd6cac7c4be1b3a621ef906f",
+            $subkey->getFingerprint(true)
+        );
+        $this->assertSame("4be1b3a621ef906f", $subkey->getKeyID(true));
         $this->assertSame(2048, $subkey->getKeyStrength());
         $this->assertTrue($subkey->verify());
 
         $user = $privateKey->getUsers()[0];
-        $this->assertSame('rsa php pg key <php-pg@dummy.com>', $user->getUserID());
+        $this->assertSame(
+            "rsa php pg key <php-pg@dummy.com>",
+            $user->getUserID()
+        );
         $this->assertTrue($user->verify());
         $primaryUser = $privateKey->getPrimaryUser();
-        $this->assertSame('rsa php pg key <php-pg@dummy.com>', $primaryUser->getUserID());
+        $this->assertSame(
+            "rsa php pg key <php-pg@dummy.com>",
+            $primaryUser->getUserID()
+        );
 
         $signingKey = $privateKey->getSigningKeyPacket();
         $this->assertTrue($signingKey instanceof SecretKeyPacketInterface);
-        $this->assertSame('fc5004df9473277107eaa605184d0dc4f5c532b2', $signingKey->getFingerprint(true));
+        $this->assertSame(
+            "fc5004df9473277107eaa605184d0dc4f5c532b2",
+            $signingKey->getFingerprint(true)
+        );
         $encryptionKey = $privateKey->getEncryptionKeyPacket();
         $this->assertTrue($encryptionKey instanceof SecretKeyPacketInterface);
-        $this->assertSame('42badbbe0f2acabacd6cac7c4be1b3a621ef906f', $encryptionKey->getFingerprint(true));
+        $this->assertSame(
+            "42badbbe0f2acabacd6cac7c4be1b3a621ef906f",
+            $encryptionKey->getFingerprint(true)
+        );
         $decryptionKey = $privateKey->getDecryptionKeyPackets()[0];
-        $this->assertSame('42badbbe0f2acabacd6cac7c4be1b3a621ef906f', $decryptionKey->getFingerprint(true));
+        $this->assertSame(
+            "42badbbe0f2acabacd6cac7c4be1b3a621ef906f",
+            $decryptionKey->getFingerprint(true)
+        );
 
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
-        $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
+        $this->assertSame(
+            $publicKey->getFingerprint(true),
+            $privateKey->getFingerprint(true)
+        );
 
         $passphrase = $this->faker->unique()->password();
         $this->assertEquals(
             $privateKey->getFingerprint(true),
-            PrivateKey::fromArmored(
-                $privateKey->armor()
-            )->decrypt(self::PASSPHRASE)->getFingerprint(true)
+            PrivateKey::fromArmored($privateKey->armor())
+                ->decrypt(self::PASSPHRASE)
+                ->getFingerprint(true)
         );
         $this->assertEquals(
             $privateKey->getFingerprint(true),
-            PrivateKey::fromArmored(
-                $privateKey->encrypt($passphrase)->armor()
-            )->decrypt($passphrase)->getFingerprint(true)
+            PrivateKey::fromArmored($privateKey->encrypt($passphrase)->armor())
+                ->decrypt($passphrase)
+                ->getFingerprint(true)
         );
     }
 
     public function testReadDsaPrivateKey()
     {
         $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/DsaPrivateKey.asc')
+            file_get_contents("tests/Data/DsaPrivateKey.asc")
         );
         $this->assertTrue($privateKey->isPrivate());
         $this->assertTrue($privateKey->isEncrypted());
@@ -81,54 +105,78 @@ class PrivateKeyTest extends OpenPGPTestCase
 
         $privateKey = $privateKey->decrypt(self::PASSPHRASE);
         $this->assertTrue($privateKey->isDecrypted());
-        $this->assertSame('3e57913d5f6ccbdb9022f7dee3b11d642248a092', $privateKey->getFingerprint(true));
-        $this->assertSame('e3b11d642248a092', $privateKey->getKeyID(true));
+        $this->assertSame(
+            "3e57913d5f6ccbdb9022f7dee3b11d642248a092",
+            $privateKey->getFingerprint(true)
+        );
+        $this->assertSame("e3b11d642248a092", $privateKey->getKeyID(true));
         $this->assertSame(2048, $privateKey->getKeyStrength());
 
         $subkey = $privateKey->getSubKeys()[0];
-        $this->assertSame('420a452a98ea130c7747e0b2c0453c8aabe775db', $subkey->getFingerprint(true));
-        $this->assertSame('c0453c8aabe775db', $subkey->getKeyID(true));
+        $this->assertSame(
+            "420a452a98ea130c7747e0b2c0453c8aabe775db",
+            $subkey->getFingerprint(true)
+        );
+        $this->assertSame("c0453c8aabe775db", $subkey->getKeyID(true));
         $this->assertSame(2048, $subkey->getKeyStrength());
         $this->assertTrue($subkey->verify());
 
         $user = $privateKey->getUsers()[0];
-        $this->assertSame('dsa php pg key <php-pg@dummy.com>', $user->getUserID());
+        $this->assertSame(
+            "dsa php pg key <php-pg@dummy.com>",
+            $user->getUserID()
+        );
         $this->assertTrue($user->verify());
         $primaryUser = $privateKey->getPrimaryUser();
-        $this->assertSame('dsa php pg key <php-pg@dummy.com>', $primaryUser->getUserID());
+        $this->assertSame(
+            "dsa php pg key <php-pg@dummy.com>",
+            $primaryUser->getUserID()
+        );
 
         $signingKey = $privateKey->getSigningKeyPacket();
         $this->assertTrue($signingKey instanceof SecretKeyPacketInterface);
-        $this->assertSame('3e57913d5f6ccbdb9022f7dee3b11d642248a092', $signingKey->getFingerprint(true));
+        $this->assertSame(
+            "3e57913d5f6ccbdb9022f7dee3b11d642248a092",
+            $signingKey->getFingerprint(true)
+        );
         $encryptionKey = $privateKey->getEncryptionKeyPacket();
         $this->assertTrue($encryptionKey instanceof SecretKeyPacketInterface);
-        $this->assertSame('420a452a98ea130c7747e0b2c0453c8aabe775db', $encryptionKey->getFingerprint(true));
+        $this->assertSame(
+            "420a452a98ea130c7747e0b2c0453c8aabe775db",
+            $encryptionKey->getFingerprint(true)
+        );
         $decryptionKey = $privateKey->getDecryptionKeyPackets()[0];
-        $this->assertSame('420a452a98ea130c7747e0b2c0453c8aabe775db', $decryptionKey->getFingerprint(true));
+        $this->assertSame(
+            "420a452a98ea130c7747e0b2c0453c8aabe775db",
+            $decryptionKey->getFingerprint(true)
+        );
 
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
-        $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
+        $this->assertSame(
+            $publicKey->getFingerprint(true),
+            $privateKey->getFingerprint(true)
+        );
 
         $passphrase = $this->faker->unique()->password();
         $this->assertEquals(
             $privateKey->getFingerprint(true),
-            PrivateKey::fromArmored(
-                $privateKey->armor()
-            )->decrypt(self::PASSPHRASE)->getFingerprint(true)
+            PrivateKey::fromArmored($privateKey->armor())
+                ->decrypt(self::PASSPHRASE)
+                ->getFingerprint(true)
         );
         $this->assertEquals(
             $privateKey->getFingerprint(true),
-            PrivateKey::fromArmored(
-                $privateKey->encrypt($passphrase)->armor()
-            )->decrypt($passphrase)->getFingerprint(true)
+            PrivateKey::fromArmored($privateKey->encrypt($passphrase)->armor())
+                ->decrypt($passphrase)
+                ->getFingerprint(true)
         );
     }
 
     public function testReadEcP384PrivateKey()
     {
         $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/EcP384PrivateKey.asc')
+            file_get_contents("tests/Data/EcP384PrivateKey.asc")
         );
         $this->assertTrue($privateKey->isPrivate());
         $this->assertTrue($privateKey->isEncrypted());
@@ -136,54 +184,78 @@ class PrivateKeyTest extends OpenPGPTestCase
 
         $privateKey = $privateKey->decrypt(self::PASSPHRASE);
         $this->assertTrue($privateKey->isDecrypted());
-        $this->assertSame('05c085492d14f90976e7c2b6b202d9e2eada440c', $privateKey->getFingerprint(true));
-        $this->assertSame('b202d9e2eada440c', $privateKey->getKeyID(true));
+        $this->assertSame(
+            "05c085492d14f90976e7c2b6b202d9e2eada440c",
+            $privateKey->getFingerprint(true)
+        );
+        $this->assertSame("b202d9e2eada440c", $privateKey->getKeyID(true));
         $this->assertSame(384, $privateKey->getKeyStrength());
 
         $subkey = $privateKey->getSubKeys()[0];
-        $this->assertSame('7d5bfac8919d26290b28ec56c0b7b9c6bf5824b6', $subkey->getFingerprint(true));
-        $this->assertSame('c0b7b9c6bf5824b6', $subkey->getKeyID(true));
+        $this->assertSame(
+            "7d5bfac8919d26290b28ec56c0b7b9c6bf5824b6",
+            $subkey->getFingerprint(true)
+        );
+        $this->assertSame("c0b7b9c6bf5824b6", $subkey->getKeyID(true));
         $this->assertSame(384, $subkey->getKeyStrength());
         $this->assertTrue($subkey->verify());
 
         $user = $privateKey->getUsers()[0];
-        $this->assertSame('ec p-384 php pg key <php-pg@dummy.com>', $user->getUserID());
+        $this->assertSame(
+            "ec p-384 php pg key <php-pg@dummy.com>",
+            $user->getUserID()
+        );
         $this->assertTrue($user->verify());
         $primaryUser = $privateKey->getPrimaryUser();
-        $this->assertSame('ec p-384 php pg key <php-pg@dummy.com>', $primaryUser->getUserID());
+        $this->assertSame(
+            "ec p-384 php pg key <php-pg@dummy.com>",
+            $primaryUser->getUserID()
+        );
 
         $signingKey = $privateKey->getSigningKeyPacket();
         $this->assertTrue($signingKey instanceof SecretKeyPacketInterface);
-        $this->assertSame('05c085492d14f90976e7c2b6b202d9e2eada440c', $signingKey->getFingerprint(true));
+        $this->assertSame(
+            "05c085492d14f90976e7c2b6b202d9e2eada440c",
+            $signingKey->getFingerprint(true)
+        );
         $encryptionKey = $privateKey->getEncryptionKeyPacket();
         $this->assertTrue($encryptionKey instanceof SecretKeyPacketInterface);
-        $this->assertSame('7d5bfac8919d26290b28ec56c0b7b9c6bf5824b6', $encryptionKey->getFingerprint(true));
+        $this->assertSame(
+            "7d5bfac8919d26290b28ec56c0b7b9c6bf5824b6",
+            $encryptionKey->getFingerprint(true)
+        );
         $decryptionKey = $privateKey->getDecryptionKeyPackets()[0];
-        $this->assertSame('7d5bfac8919d26290b28ec56c0b7b9c6bf5824b6', $decryptionKey->getFingerprint(true));
+        $this->assertSame(
+            "7d5bfac8919d26290b28ec56c0b7b9c6bf5824b6",
+            $decryptionKey->getFingerprint(true)
+        );
 
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
-        $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
+        $this->assertSame(
+            $publicKey->getFingerprint(true),
+            $privateKey->getFingerprint(true)
+        );
 
         $passphrase = $this->faker->unique()->password();
         $this->assertEquals(
             $privateKey->getFingerprint(true),
-            PrivateKey::fromArmored(
-                $privateKey->armor()
-            )->decrypt(self::PASSPHRASE)->getFingerprint(true)
+            PrivateKey::fromArmored($privateKey->armor())
+                ->decrypt(self::PASSPHRASE)
+                ->getFingerprint(true)
         );
         $this->assertEquals(
             $privateKey->getFingerprint(true),
-            PrivateKey::fromArmored(
-                $privateKey->encrypt($passphrase)->armor()
-            )->decrypt($passphrase)->getFingerprint(true)
+            PrivateKey::fromArmored($privateKey->encrypt($passphrase)->armor())
+                ->decrypt($passphrase)
+                ->getFingerprint(true)
         );
     }
 
     public function testReadEcBrainpoolPrivateKey()
     {
         $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/EcBrainpoolPrivateKey.asc')
+            file_get_contents("tests/Data/EcBrainpoolPrivateKey.asc")
         );
         $this->assertTrue($privateKey->isPrivate());
         $this->assertTrue($privateKey->isEncrypted());
@@ -191,54 +263,78 @@ class PrivateKeyTest extends OpenPGPTestCase
 
         $privateKey = $privateKey->decrypt(self::PASSPHRASE);
         $this->assertTrue($privateKey->isDecrypted());
-        $this->assertSame('06fee3085d46dc007c0ec2f01cbcd043db44c5d6', $privateKey->getFingerprint(true));
-        $this->assertSame('1cbcd043db44c5d6', $privateKey->getKeyID(true));
+        $this->assertSame(
+            "06fee3085d46dc007c0ec2f01cbcd043db44c5d6",
+            $privateKey->getFingerprint(true)
+        );
+        $this->assertSame("1cbcd043db44c5d6", $privateKey->getKeyID(true));
         $this->assertSame(256, $privateKey->getKeyStrength());
 
         $subkey = $privateKey->getSubKeys()[0];
-        $this->assertSame('457b5979545fba09be179db808a55bdb1d673d5d', $subkey->getFingerprint(true));
-        $this->assertSame('08a55bdb1d673d5d', $subkey->getKeyID(true));
+        $this->assertSame(
+            "457b5979545fba09be179db808a55bdb1d673d5d",
+            $subkey->getFingerprint(true)
+        );
+        $this->assertSame("08a55bdb1d673d5d", $subkey->getKeyID(true));
         $this->assertSame(256, $subkey->getKeyStrength());
         $this->assertTrue($subkey->verify());
 
         $user = $privateKey->getUsers()[0];
-        $this->assertSame('ec brainpool p-256 php pg key <php-pg@dummy.com>', $user->getUserID());
+        $this->assertSame(
+            "ec brainpool p-256 php pg key <php-pg@dummy.com>",
+            $user->getUserID()
+        );
         $this->assertTrue($user->verify());
         $primaryUser = $privateKey->getPrimaryUser();
-        $this->assertSame('ec brainpool p-256 php pg key <php-pg@dummy.com>', $primaryUser->getUserID());
+        $this->assertSame(
+            "ec brainpool p-256 php pg key <php-pg@dummy.com>",
+            $primaryUser->getUserID()
+        );
 
         $signingKey = $privateKey->getSigningKeyPacket();
         $this->assertTrue($signingKey instanceof SecretKeyPacketInterface);
-        $this->assertSame('06fee3085d46dc007c0ec2f01cbcd043db44c5d6', $signingKey->getFingerprint(true));
+        $this->assertSame(
+            "06fee3085d46dc007c0ec2f01cbcd043db44c5d6",
+            $signingKey->getFingerprint(true)
+        );
         $encryptionKey = $privateKey->getEncryptionKeyPacket();
         $this->assertTrue($encryptionKey instanceof SecretKeyPacketInterface);
-        $this->assertSame('457b5979545fba09be179db808a55bdb1d673d5d', $encryptionKey->getFingerprint(true));
+        $this->assertSame(
+            "457b5979545fba09be179db808a55bdb1d673d5d",
+            $encryptionKey->getFingerprint(true)
+        );
         $decryptionKey = $privateKey->getDecryptionKeyPackets()[0];
-        $this->assertSame('457b5979545fba09be179db808a55bdb1d673d5d', $decryptionKey->getFingerprint(true));
+        $this->assertSame(
+            "457b5979545fba09be179db808a55bdb1d673d5d",
+            $decryptionKey->getFingerprint(true)
+        );
 
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
-        $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
+        $this->assertSame(
+            $publicKey->getFingerprint(true),
+            $privateKey->getFingerprint(true)
+        );
 
         $passphrase = $this->faker->unique()->password();
         $this->assertEquals(
             $privateKey->getFingerprint(true),
-            PrivateKey::fromArmored(
-                $privateKey->armor()
-            )->decrypt(self::PASSPHRASE)->getFingerprint(true)
+            PrivateKey::fromArmored($privateKey->armor())
+                ->decrypt(self::PASSPHRASE)
+                ->getFingerprint(true)
         );
         $this->assertEquals(
             $privateKey->getFingerprint(true),
-            PrivateKey::fromArmored(
-                $privateKey->encrypt($passphrase)->armor()
-            )->decrypt($passphrase)->getFingerprint(true)
+            PrivateKey::fromArmored($privateKey->encrypt($passphrase)->armor())
+                ->decrypt($passphrase)
+                ->getFingerprint(true)
         );
     }
 
     public function testReadEcCurve25519PrivateKey()
     {
         $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/EcCurve25519PrivateKey.asc')
+            file_get_contents("tests/Data/EcCurve25519PrivateKey.asc")
         );
         $this->assertTrue($privateKey->isPrivate());
         $this->assertTrue($privateKey->isEncrypted());
@@ -246,47 +342,71 @@ class PrivateKeyTest extends OpenPGPTestCase
 
         $privateKey = $privateKey->decrypt(self::PASSPHRASE);
         $this->assertTrue($privateKey->isDecrypted());
-        $this->assertSame('1c4116eb2b58cfa196c57ddbbdff135160c56a0b', $privateKey->getFingerprint(true));
-        $this->assertSame('bdff135160c56a0b', $privateKey->getKeyID(true));
+        $this->assertSame(
+            "1c4116eb2b58cfa196c57ddbbdff135160c56a0b",
+            $privateKey->getFingerprint(true)
+        );
+        $this->assertSame("bdff135160c56a0b", $privateKey->getKeyID(true));
         $this->assertSame(255, $privateKey->getKeyStrength());
 
         $subkey = $privateKey->getSubKeys()[0];
-        $this->assertSame('8efa53a375fc569aa9ca564a044eac93f0b69ea0', $subkey->getFingerprint(true));
-        $this->assertSame('044eac93f0b69ea0', $subkey->getKeyID(true));
+        $this->assertSame(
+            "8efa53a375fc569aa9ca564a044eac93f0b69ea0",
+            $subkey->getFingerprint(true)
+        );
+        $this->assertSame("044eac93f0b69ea0", $subkey->getKeyID(true));
         $this->assertSame(255, $subkey->getKeyStrength());
         $this->assertTrue($subkey->verify());
 
         $user = $privateKey->getUsers()[0];
-        $this->assertSame('curve 25519 php pg key <php-pg@dummy.com>', $user->getUserID());
+        $this->assertSame(
+            "curve 25519 php pg key <php-pg@dummy.com>",
+            $user->getUserID()
+        );
         $this->assertTrue($user->verify());
         $primaryUser = $privateKey->getPrimaryUser();
-        $this->assertSame('curve 25519 php pg key <php-pg@dummy.com>', $primaryUser->getUserID());
+        $this->assertSame(
+            "curve 25519 php pg key <php-pg@dummy.com>",
+            $primaryUser->getUserID()
+        );
 
         $signingKey = $privateKey->getSigningKeyPacket();
         $this->assertTrue($signingKey instanceof SecretKeyPacketInterface);
-        $this->assertSame('1c4116eb2b58cfa196c57ddbbdff135160c56a0b', $signingKey->getFingerprint(true));
+        $this->assertSame(
+            "1c4116eb2b58cfa196c57ddbbdff135160c56a0b",
+            $signingKey->getFingerprint(true)
+        );
         $encryptionKey = $privateKey->getEncryptionKeyPacket();
         $this->assertTrue($encryptionKey instanceof SecretKeyPacketInterface);
-        $this->assertSame('8efa53a375fc569aa9ca564a044eac93f0b69ea0', $encryptionKey->getFingerprint(true));
+        $this->assertSame(
+            "8efa53a375fc569aa9ca564a044eac93f0b69ea0",
+            $encryptionKey->getFingerprint(true)
+        );
         $decryptionKey = $privateKey->getDecryptionKeyPackets()[0];
-        $this->assertSame('8efa53a375fc569aa9ca564a044eac93f0b69ea0', $decryptionKey->getFingerprint(true));
+        $this->assertSame(
+            "8efa53a375fc569aa9ca564a044eac93f0b69ea0",
+            $decryptionKey->getFingerprint(true)
+        );
 
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
-        $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
+        $this->assertSame(
+            $publicKey->getFingerprint(true),
+            $privateKey->getFingerprint(true)
+        );
 
         $passphrase = $this->faker->unique()->password();
         $this->assertEquals(
             $privateKey->getFingerprint(true),
-            PrivateKey::fromArmored(
-                $privateKey->armor()
-            )->decrypt(self::PASSPHRASE)->getFingerprint(true)
+            PrivateKey::fromArmored($privateKey->armor())
+                ->decrypt(self::PASSPHRASE)
+                ->getFingerprint(true)
         );
         $this->assertEquals(
             $privateKey->getFingerprint(true),
-            PrivateKey::fromArmored(
-                $privateKey->encrypt($passphrase)->armor()
-            )->decrypt($passphrase)->getFingerprint(true)
+            PrivateKey::fromArmored($privateKey->encrypt($passphrase)->armor())
+                ->decrypt($passphrase)
+                ->getFingerprint(true)
         );
     }
 
@@ -322,7 +442,10 @@ class PrivateKeyTest extends OpenPGPTestCase
 
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
-        $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
+        $this->assertSame(
+            $publicKey->getFingerprint(true),
+            $privateKey->getFingerprint(true)
+        );
 
         $privateKey = PrivateKey::fromArmored($privateKey->armor());
         $this->assertTrue($privateKey->isEncrypted());
@@ -340,10 +463,13 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertTrue($subkey->verify());
         $expirationTime = $subkey->getExpirationTime();
         $this->assertSame(
-            $expirationTime->getTimestamp(), $now->getTimestamp() + $keyExpiry
+            $expirationTime->getTimestamp(),
+            $now->getTimestamp() + $keyExpiry
         );
 
-        $subkey = $privateKey->revokeSubkey($subkey->getKeyID())->getSubKeys()[1];
+        $subkey = $privateKey
+            ->revokeSubkey($subkey->getKeyID())
+            ->getSubKeys()[1];
         $this->assertTrue($subkey->isRevoked());
         $user = $privateKey->revokeUser($userID)->getUsers()[0];
         $this->assertTrue($user->isRevoked());
@@ -363,7 +489,7 @@ class PrivateKeyTest extends OpenPGPTestCase
             [$userID],
             $passphrase,
             KeyType::Ecc,
-            curve: CurveOid::Secp521r1
+            curve: Ecc::Secp521r1
         );
         $this->assertTrue($privateKey->isEncrypted());
         $this->assertTrue($privateKey->isDecrypted());
@@ -382,7 +508,10 @@ class PrivateKeyTest extends OpenPGPTestCase
 
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
-        $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
+        $this->assertSame(
+            $publicKey->getFingerprint(true),
+            $privateKey->getFingerprint(true)
+        );
 
         $privateKey = PrivateKey::fromArmored($privateKey->armor());
         $this->assertTrue($privateKey->isEncrypted());
@@ -393,7 +522,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         $privateKey = $privateKey->addSubkey(
             $passphrase,
             KeyAlgorithm::Ecdh,
-            curve: CurveOid::Secp521r1,
+            curve: Ecc::Secp521r1,
             keyExpiry: $keyExpiry,
             time: $now
         );
@@ -401,10 +530,13 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertTrue($subkey->verify());
         $expirationTime = $subkey->getExpirationTime();
         $this->assertSame(
-            $expirationTime->getTimestamp(), $now->getTimestamp() + $keyExpiry
+            $expirationTime->getTimestamp(),
+            $now->getTimestamp() + $keyExpiry
         );
 
-        $subkey = $privateKey->revokeSubkey($subkey->getKeyID())->getSubKeys()[1];
+        $subkey = $privateKey
+            ->revokeSubkey($subkey->getKeyID())
+            ->getSubKeys()[1];
         $this->assertTrue($subkey->isRevoked());
         $user = $privateKey->revokeUser($userID)->getUsers()[0];
         $this->assertTrue($user->isRevoked());
@@ -424,7 +556,7 @@ class PrivateKeyTest extends OpenPGPTestCase
             [$userID],
             $passphrase,
             KeyType::Ecc,
-            curve: CurveOid::BrainpoolP512r1
+            curve: Ecc::BrainpoolP512r1
         );
         $this->assertTrue($privateKey->isEncrypted());
         $this->assertTrue($privateKey->isDecrypted());
@@ -443,7 +575,10 @@ class PrivateKeyTest extends OpenPGPTestCase
 
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
-        $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
+        $this->assertSame(
+            $publicKey->getFingerprint(true),
+            $privateKey->getFingerprint(true)
+        );
 
         $privateKey = PrivateKey::fromArmored($privateKey->armor());
         $this->assertTrue($privateKey->isEncrypted());
@@ -454,7 +589,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         $privateKey = $privateKey->addSubkey(
             $passphrase,
             KeyAlgorithm::Ecdh,
-            curve: CurveOid::BrainpoolP512r1,
+            curve: Ecc::BrainpoolP512r1,
             keyExpiry: $keyExpiry,
             time: $now
         );
@@ -462,10 +597,13 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertTrue($subkey->verify());
         $expirationTime = $subkey->getExpirationTime();
         $this->assertSame(
-            $expirationTime->getTimestamp(), $now->getTimestamp() + $keyExpiry
+            $expirationTime->getTimestamp(),
+            $now->getTimestamp() + $keyExpiry
         );
 
-        $subkey = $privateKey->revokeSubkey($subkey->getKeyID())->getSubKeys()[1];
+        $subkey = $privateKey
+            ->revokeSubkey($subkey->getKeyID())
+            ->getSubKeys()[1];
         $this->assertTrue($subkey->isRevoked());
         $user = $privateKey->revokeUser($userID)->getUsers()[0];
         $this->assertTrue($user->isRevoked());
@@ -485,7 +623,7 @@ class PrivateKeyTest extends OpenPGPTestCase
             [$userID],
             $passphrase,
             KeyType::Ecc,
-            curve: CurveOid::Ed25519
+            curve: Ecc::Ed25519
         );
         $this->assertTrue($privateKey->isEncrypted());
         $this->assertTrue($privateKey->isDecrypted());
@@ -504,7 +642,10 @@ class PrivateKeyTest extends OpenPGPTestCase
 
         $publicKey = $privateKey->toPublic();
         $this->assertTrue($publicKey instanceof PublicKey);
-        $this->assertSame($publicKey->getFingerprint(true), $privateKey->getFingerprint(true));
+        $this->assertSame(
+            $publicKey->getFingerprint(true),
+            $privateKey->getFingerprint(true)
+        );
 
         $privateKey = PrivateKey::fromArmored($privateKey->armor());
         $this->assertTrue($privateKey->isEncrypted());
@@ -515,7 +656,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         $privateKey = $privateKey->addSubkey(
             $passphrase,
             KeyAlgorithm::Ecdh,
-            curve: CurveOid::Curve25519,
+            curve: Ecc::Curve25519,
             keyExpiry: $keyExpiry,
             time: $now
         );
@@ -523,10 +664,13 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertTrue($subkey->verify());
         $expirationTime = $subkey->getExpirationTime();
         $this->assertSame(
-            $expirationTime->getTimestamp(), $now->getTimestamp() + $keyExpiry
+            $expirationTime->getTimestamp(),
+            $now->getTimestamp() + $keyExpiry
         );
 
-        $subkey = $privateKey->revokeSubkey($subkey->getKeyID())->getSubKeys()[1];
+        $subkey = $privateKey
+            ->revokeSubkey($subkey->getKeyID())
+            ->getSubKeys()[1];
         $this->assertTrue($subkey->isRevoked());
         $user = $privateKey->revokeUser($userID)->getUsers()[0];
         $this->assertTrue($user->isRevoked());
@@ -549,7 +693,10 @@ class PrivateKeyTest extends OpenPGPTestCase
             KeyType::Rsa
         );
         $this->assertSame(6, $privateKey->getVersion());
-        $this->assertSame(KeyAlgorithm::RsaEncryptSign, $privateKey->getKeyAlgorithm());
+        $this->assertSame(
+            KeyAlgorithm::RsaEncryptSign,
+            $privateKey->getKeyAlgorithm()
+        );
         $this->assertTrue($privateKey->verify());
         $this->assertTrue($privateKey->aeadProtected());
 
@@ -559,7 +706,10 @@ class PrivateKeyTest extends OpenPGPTestCase
         $subkey = $privateKey->getSubKeys()[0];
         $this->assertTrue($subkey->verify());
         $this->assertSame(6, $subkey->getVersion());
-        $this->assertSame(KeyAlgorithm::RsaEncryptSign, $subkey->getKeyAlgorithm());
+        $this->assertSame(
+            KeyAlgorithm::RsaEncryptSign,
+            $subkey->getKeyAlgorithm()
+        );
 
         $user = $privateKey->getPrimaryUser();
         $this->assertTrue($user->verify());
@@ -585,7 +735,7 @@ class PrivateKeyTest extends OpenPGPTestCase
             [$userID],
             $passphrase,
             KeyType::Ecc,
-            curve: CurveOid::Secp521r1,
+            curve: Ecc::Secp521r1
         );
         $this->assertSame(6, $privateKey->getVersion());
         $this->assertSame(521, $privateKey->getKeyStrength());
@@ -625,11 +775,14 @@ class PrivateKeyTest extends OpenPGPTestCase
         $privateKey = PrivateKey::generate(
             [$userID],
             $passphrase,
-            KeyType::Curve25519,
+            KeyType::Curve25519
         );
         $this->assertSame(6, $privateKey->getVersion());
         $this->assertSame(255, $privateKey->getKeyStrength());
-        $this->assertSame(KeyAlgorithm::Ed25519, $privateKey->getKeyAlgorithm());
+        $this->assertSame(
+            KeyAlgorithm::Ed25519,
+            $privateKey->getKeyAlgorithm()
+        );
         $this->assertTrue($privateKey->verify());
         $this->assertTrue($privateKey->aeadProtected());
 
@@ -665,7 +818,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         $privateKey = PrivateKey::generate(
             [$userID],
             $passphrase,
-            KeyType::Curve448,
+            KeyType::Curve448
         );
         $this->assertSame(6, $privateKey->getVersion());
         $this->assertSame(448, $privateKey->getKeyStrength());
@@ -694,15 +847,16 @@ class PrivateKeyTest extends OpenPGPTestCase
     public function testCertifyKey()
     {
         $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/RsaPrivateKey.asc')
+            file_get_contents("tests/Data/RsaPrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/DsaPublicKey.asc')
+            file_get_contents("tests/Data/DsaPublicKey.asc")
         );
 
         $certifiedKey = $privateKey->certifyKey($publicKey);
         $this->assertSame(
-            $certifiedKey->getFingerprint(), $publicKey->getFingerprint()
+            $certifiedKey->getFingerprint(),
+            $publicKey->getFingerprint()
         );
         $this->assertFalse($publicKey->isCertified($privateKey));
         $this->assertTrue($certifiedKey->isCertified($privateKey));
@@ -711,15 +865,16 @@ class PrivateKeyTest extends OpenPGPTestCase
     public function testRevokeKey()
     {
         $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/RsaPrivateKey.asc')
+            file_get_contents("tests/Data/RsaPrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/DsaPublicKey.asc')
+            file_get_contents("tests/Data/DsaPublicKey.asc")
         );
 
         $revokedKey = $privateKey->revokeKey($publicKey);
         $this->assertSame(
-            $revokedKey->getFingerprint(), $publicKey->getFingerprint()
+            $revokedKey->getFingerprint(),
+            $publicKey->getFingerprint()
         );
         $this->assertFalse($publicKey->isRevoked($privateKey));
         $this->assertTrue($revokedKey->isRevoked($privateKey));
@@ -746,26 +901,43 @@ EOT;
 
         $privateKey = PrivateKey::fromArmored($keyData);
         $this->assertSame(6, $privateKey->getVersion());
-        $this->assertSame(KeyAlgorithm::Ed25519, $privateKey->getKeyAlgorithm());
-        $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $privateKey->getFingerprint(true));
+        $this->assertSame(
+            KeyAlgorithm::Ed25519,
+            $privateKey->getKeyAlgorithm()
+        );
+        $this->assertSame(
+            "cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9",
+            $privateKey->getFingerprint(true)
+        );
         $this->assertTrue($privateKey->verify());
         $this->assertFalse($privateKey->isEncrypted());
 
         $signature = $privateKey->getLatestDirectSignature();
         $this->assertSame(6, $signature->getVersion());
-        $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $signature->getIssuerFingerprint(true));
+        $this->assertSame(
+            "cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9",
+            $signature->getIssuerFingerprint(true)
+        );
 
         $subkey = $privateKey->getSubKeys()[0];
         $this->assertSame(6, $subkey->getVersion());
         $this->assertSame(KeyAlgorithm::X25519, $subkey->getKeyAlgorithm());
-        $this->assertSame('12c83f1e706f6308fe151a417743a1f033790e93e9978488d1db378da9930885', $subkey->getFingerprint(true));
+        $this->assertSame(
+            "12c83f1e706f6308fe151a417743a1f033790e93e9978488d1db378da9930885",
+            $subkey->getFingerprint(true)
+        );
         $this->assertTrue($subkey->verify());
 
         $signature = $subkey->getLatestBindingSignature();
         $this->assertSame(6, $signature->getVersion());
-        $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $signature->getIssuerFingerprint(true));
+        $this->assertSame(
+            "cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9",
+            $signature->getIssuerFingerprint(true)
+        );
 
-        $padding = $privateKey->getPacketList()->whereTag(PacketTag::Padding)[0];
+        $padding = $privateKey
+            ->getPacketList()
+            ->whereTag(PacketTag::Padding)[0];
         $this->assertSame(PacketTag::Padding, $padding->getTag());
     }
 
@@ -792,8 +964,14 @@ EOT;
 
         $privateKey = PrivateKey::fromArmored($keyData);
         $this->assertSame(6, $privateKey->getVersion());
-        $this->assertSame(KeyAlgorithm::Ed25519, $privateKey->getKeyAlgorithm());
-        $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $privateKey->getFingerprint(true));
+        $this->assertSame(
+            KeyAlgorithm::Ed25519,
+            $privateKey->getKeyAlgorithm()
+        );
+        $this->assertSame(
+            "cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9",
+            $privateKey->getFingerprint(true)
+        );
         $this->assertTrue($privateKey->verify());
         $this->assertTrue($privateKey->isEncrypted());
         $this->assertFalse($privateKey->isDecrypted());
@@ -801,23 +979,34 @@ EOT;
 
         $signature = $privateKey->getLatestDirectSignature();
         $this->assertSame(6, $signature->getVersion());
-        $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $signature->getIssuerFingerprint(true));
+        $this->assertSame(
+            "cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9",
+            $signature->getIssuerFingerprint(true)
+        );
 
         $subkey = $privateKey->getSubKeys()[0];
         $this->assertSame(6, $subkey->getVersion());
         $this->assertSame(KeyAlgorithm::X25519, $subkey->getKeyAlgorithm());
-        $this->assertSame('12c83f1e706f6308fe151a417743a1f033790e93e9978488d1db378da9930885', $subkey->getFingerprint(true));
+        $this->assertSame(
+            "12c83f1e706f6308fe151a417743a1f033790e93e9978488d1db378da9930885",
+            $subkey->getFingerprint(true)
+        );
         $this->assertTrue($subkey->verify());
 
         $signature = $subkey->getLatestBindingSignature();
         $this->assertSame(6, $signature->getVersion());
-        $this->assertSame('cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9', $signature->getIssuerFingerprint(true));
+        $this->assertSame(
+            "cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9",
+            $signature->getIssuerFingerprint(true)
+        );
 
-        $privateKey = $privateKey->decrypt('correct horse battery staple');
+        $privateKey = $privateKey->decrypt("correct horse battery staple");
         $this->assertTrue($privateKey->isEncrypted());
         $this->assertTrue($privateKey->isDecrypted());
 
-        $padding = $privateKey->getPacketList()->whereTag(PacketTag::Padding)[0];
+        $padding = $privateKey
+            ->getPacketList()
+            ->whereTag(PacketTag::Padding)[0];
         $this->assertSame(PacketTag::Padding, $padding->getTag());
     }
 }

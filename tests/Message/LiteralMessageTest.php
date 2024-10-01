@@ -8,7 +8,7 @@ use OpenPGP\Enum\{
     CompressionAlgorithm,
     KeyType,
     LiteralFormat,
-    PacketTag,
+    PacketTag
 };
 use OpenPGP\Key\{PrivateKey, PublicKey};
 use OpenPGP\Message\{LiteralMessage, Signature};
@@ -22,7 +22,7 @@ use phpseclib3\Crypt\Random;
 class LiteralMessageTest extends OpenPGPTestCase
 {
     const LITERAL_DATA = "Hello PHP PG\n";
-    const PASSPHRASE   = 'password'; 
+    const PASSPHRASE = "password";
 
     private static string $encryptedMessageData = <<<EOT
 -----BEGIN PGP MESSAGE-----
@@ -59,7 +59,6 @@ XmkILgTV8jsTfQ==
 -----END PGP MESSAGE-----
 EOT;
 
-
     public function testVerifyRsaSignedMessage()
     {
         $messageData = <<<EOT
@@ -78,14 +77,17 @@ koIAxNXOxaRF4vybpbI7FWQ=
 EOT;
 
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/RsaPublicKey.asc')
+            file_get_contents("tests/Data/RsaPublicKey.asc")
         );
         $message = LiteralMessage::fromArmored($messageData);
-        $this->assertSame(self::LITERAL_DATA, $message->getLiteralData()->getData());
+        $this->assertSame(
+            self::LITERAL_DATA,
+            $message->getLiteralData()->getData()
+        );
         $this->assertTrue($message->getSignature() instanceof Signature);
 
         $verification = $message->verify([$publicKey])[0];
-        $this->assertSame('184d0dc4f5c532b2', $verification->getKeyID(true));
+        $this->assertSame("184d0dc4f5c532b2", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
@@ -103,14 +105,17 @@ FFnswifaxuecvj1B6fs9mCZWJpAOBi5OAZjIy3UM/+M4F12pX+B0JoE/qqiBM697
 EOT;
 
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/DsaPublicKey.asc')
+            file_get_contents("tests/Data/DsaPublicKey.asc")
         );
         $message = LiteralMessage::fromArmored($messageData);
-        $this->assertSame(self::LITERAL_DATA, $message->getLiteralData()->getData());
+        $this->assertSame(
+            self::LITERAL_DATA,
+            $message->getLiteralData()->getData()
+        );
         $this->assertTrue($message->getSignature() instanceof Signature);
 
         $verification = $message->verify([$publicKey])[0];
-        $this->assertSame('e3b11d642248a092', $verification->getKeyID(true));
+        $this->assertSame("e3b11d642248a092", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
@@ -128,14 +133,17 @@ olN2PbFm8ibP8kmmPQc+OM3z+u23f89FNfb9Lxr1/As0POP/HcoBAA==
 EOT;
 
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcP384PublicKey.asc')
+            file_get_contents("tests/Data/EcP384PublicKey.asc")
         );
         $message = LiteralMessage::fromArmored($messageData);
-        $this->assertSame(self::LITERAL_DATA, $message->getLiteralData()->getData());
+        $this->assertSame(
+            self::LITERAL_DATA,
+            $message->getLiteralData()->getData()
+        );
         $this->assertTrue($message->getSignature() instanceof Signature);
 
         $verification = $message->verify([$publicKey])[0];
-        $this->assertSame('b202d9e2eada440c', $verification->getKeyID(true));
+        $this->assertSame("b202d9e2eada440c", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
@@ -153,14 +161,17 @@ v2OXGRgB
 EOT;
 
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcBrainpoolPublicKey.asc')
+            file_get_contents("tests/Data/EcBrainpoolPublicKey.asc")
         );
         $message = LiteralMessage::fromArmored($messageData);
-        $this->assertSame(self::LITERAL_DATA, $message->getLiteralData()->getData());
+        $this->assertSame(
+            self::LITERAL_DATA,
+            $message->getLiteralData()->getData()
+        );
         $this->assertTrue($message->getSignature() instanceof Signature);
 
         $verification = $message->verify([$publicKey])[0];
-        $this->assertSame('1cbcd043db44c5d6', $verification->getKeyID(true));
+        $this->assertSame("1cbcd043db44c5d6", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
@@ -178,14 +189,17 @@ fB/SzQ4A
 EOT;
 
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcCurve25519PublicKey.asc')
+            file_get_contents("tests/Data/EcCurve25519PublicKey.asc")
         );
         $message = LiteralMessage::fromArmored($messageData);
-        $this->assertSame(self::LITERAL_DATA, $message->getLiteralData()->getData());
+        $this->assertSame(
+            self::LITERAL_DATA,
+            $message->getLiteralData()->getData()
+        );
         $this->assertTrue($message->getSignature() instanceof Signature);
 
         $verification = $message->verify([$publicKey])[0];
-        $this->assertSame('bdff135160c56a0b', $verification->getKeyID(true));
+        $this->assertSame("bdff135160c56a0b", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
@@ -206,15 +220,17 @@ Mz4sU7yMAc9UOEiLw0lCVD21um9QaA==
 EOT;
 
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/RsaPublicKey.asc')
+            file_get_contents("tests/Data/RsaPublicKey.asc")
         );
-        $message = new LiteralMessage(new PacketList([
-            new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary)
-        ]));
+        $message = new LiteralMessage(
+            new PacketList([
+                new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary),
+            ])
+        );
         $signature = Signature::fromArmored($signatureData);
 
         $verification = $message->verifyDetached([$publicKey], $signature)[0];
-        $this->assertSame('184d0dc4f5c532b2', $verification->getKeyID(true));
+        $this->assertSame("184d0dc4f5c532b2", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
@@ -231,15 +247,17 @@ p4iTK8BfckODOHP9MPV3+gOunYR+sYs=
 EOT;
 
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/DsaPublicKey.asc')
+            file_get_contents("tests/Data/DsaPublicKey.asc")
         );
-        $message = new LiteralMessage(new PacketList([
-            new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary)
-        ]));
+        $message = new LiteralMessage(
+            new PacketList([
+                new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary),
+            ])
+        );
         $signature = Signature::fromArmored($signatureData);
 
         $verification = $message->verifyDetached([$publicKey], $signature)[0];
-        $this->assertSame('e3b11d642248a092', $verification->getKeyID(true));
+        $this->assertSame("e3b11d642248a092", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
@@ -257,15 +275,17 @@ yvVtUIpkjw==
 EOT;
 
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcP384PublicKey.asc')
+            file_get_contents("tests/Data/EcP384PublicKey.asc")
         );
-        $message = new LiteralMessage(new PacketList([
-            new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary)
-        ]));
+        $message = new LiteralMessage(
+            new PacketList([
+                new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary),
+            ])
+        );
         $signature = Signature::fromArmored($signatureData);
 
         $verification = $message->verifyDetached([$publicKey], $signature)[0];
-        $this->assertSame('b202d9e2eada440c', $verification->getKeyID(true));
+        $this->assertSame("b202d9e2eada440c", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
@@ -282,15 +302,17 @@ K1rxwEcNf7raFJ8qt0SLehSchqD5YGQ=
 EOT;
 
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcBrainpoolPublicKey.asc')
+            file_get_contents("tests/Data/EcBrainpoolPublicKey.asc")
         );
-        $message = new LiteralMessage(new PacketList([
-            new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary)
-        ]));
+        $message = new LiteralMessage(
+            new PacketList([
+                new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary),
+            ])
+        );
         $signature = Signature::fromArmored($signatureData);
 
         $verification = $message->verifyDetached([$publicKey], $signature)[0];
-        $this->assertSame('1cbcd043db44c5d6', $verification->getKeyID(true));
+        $this->assertSame("1cbcd043db44c5d6", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
@@ -307,185 +329,240 @@ G5C7hirK1TGRFNn21JYEMGe8v1WCBwg=
 EOT;
 
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcCurve25519PublicKey.asc')
+            file_get_contents("tests/Data/EcCurve25519PublicKey.asc")
         );
-        $message = new LiteralMessage(new PacketList([
-            new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary)
-        ]));
+        $message = new LiteralMessage(
+            new PacketList([
+                new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary),
+            ])
+        );
         $signature = Signature::fromArmored($signatureData);
 
         $verification = $message->verifyDetached([$publicKey], $signature)[0];
-        $this->assertSame('bdff135160c56a0b', $verification->getKeyID(true));
+        $this->assertSame("bdff135160c56a0b", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
     public function testSignRsaMessage()
     {
         $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/RsaPrivateKey.asc')
+            file_get_contents("tests/Data/RsaPrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/RsaPublicKey.asc')
+            file_get_contents("tests/Data/RsaPublicKey.asc")
         );
         $literalData = Random::string(10000);
-        $literalMessage = new LiteralMessage(new PacketList([
-            new LiteralData($literalData, LiteralFormat::Binary)
-        ]));
+        $literalMessage = new LiteralMessage(
+            new PacketList([
+                new LiteralData($literalData, LiteralFormat::Binary),
+            ])
+        );
 
         $signedMessage = $literalMessage->sign([$privateKey]);
         $verification = $signedMessage->verify([$publicKey])[0];
-        $this->assertSame('184d0dc4f5c532b2', $verification->getKeyID(true));
+        $this->assertSame("184d0dc4f5c532b2", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
 
         $signedMessage = LiteralMessage::fromArmored($signedMessage->armor());
-        $this->assertSame($literalData, $signedMessage->getLiteralData()->getData());
+        $this->assertSame(
+            $literalData,
+            $signedMessage->getLiteralData()->getData()
+        );
         $this->assertTrue($signedMessage->getSignature() instanceof Signature);
 
         $signature = $literalMessage->signDetached([$privateKey]);
-        $verification = $literalMessage->verifyDetached([$publicKey], $signature)[0];
-        $this->assertSame('184d0dc4f5c532b2', $verification->getKeyID(true));
+        $verification = $literalMessage->verifyDetached(
+            [$publicKey],
+            $signature
+        )[0];
+        $this->assertSame("184d0dc4f5c532b2", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
     public function testSignEcP384Message()
     {
         $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/EcP384PrivateKey.asc')
+            file_get_contents("tests/Data/EcP384PrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcP384PublicKey.asc')
+            file_get_contents("tests/Data/EcP384PublicKey.asc")
         );
         $literalData = Random::string(10000);
-        $literalMessage = new LiteralMessage(new PacketList([
-            new LiteralData($literalData, LiteralFormat::Binary)
-        ]));
+        $literalMessage = new LiteralMessage(
+            new PacketList([
+                new LiteralData($literalData, LiteralFormat::Binary),
+            ])
+        );
 
         $signedMessage = $literalMessage->sign([$privateKey]);
         $verification = $signedMessage->verify([$publicKey])[0];
-        $this->assertSame('b202d9e2eada440c', $verification->getKeyID(true));
+        $this->assertSame("b202d9e2eada440c", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
 
         $signedMessage = LiteralMessage::fromArmored($signedMessage->armor());
-        $this->assertSame($literalData, $signedMessage->getLiteralData()->getData());
+        $this->assertSame(
+            $literalData,
+            $signedMessage->getLiteralData()->getData()
+        );
         $this->assertTrue($signedMessage->getSignature() instanceof Signature);
 
         $signature = $literalMessage->signDetached([$privateKey]);
-        $verification = $literalMessage->verifyDetached([$publicKey], $signature)[0];
-        $this->assertSame('b202d9e2eada440c', $verification->getKeyID(true));
+        $verification = $literalMessage->verifyDetached(
+            [$publicKey],
+            $signature
+        )[0];
+        $this->assertSame("b202d9e2eada440c", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
     public function testSignEcBrainpoolMessage()
     {
         $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/EcBrainpoolPrivateKey.asc')
+            file_get_contents("tests/Data/EcBrainpoolPrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcBrainpoolPublicKey.asc')
+            file_get_contents("tests/Data/EcBrainpoolPublicKey.asc")
         );
         $literalData = Random::string(10000);
-        $literalMessage = new LiteralMessage(new PacketList([
-            new LiteralData($literalData, LiteralFormat::Binary)
-        ]));
+        $literalMessage = new LiteralMessage(
+            new PacketList([
+                new LiteralData($literalData, LiteralFormat::Binary),
+            ])
+        );
 
         $signedMessage = $literalMessage->sign([$privateKey]);
         $verification = $signedMessage->verify([$publicKey])[0];
-        $this->assertSame('1cbcd043db44c5d6', $verification->getKeyID(true));
+        $this->assertSame("1cbcd043db44c5d6", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
 
         $signedMessage = LiteralMessage::fromArmored($signedMessage->armor());
-        $this->assertSame($literalData, $signedMessage->getLiteralData()->getData());
+        $this->assertSame(
+            $literalData,
+            $signedMessage->getLiteralData()->getData()
+        );
         $this->assertTrue($signedMessage->getSignature() instanceof Signature);
 
         $signature = $literalMessage->signDetached([$privateKey]);
-        $verification = $literalMessage->verifyDetached([$publicKey], $signature)[0];
-        $this->assertSame('1cbcd043db44c5d6', $verification->getKeyID(true));
+        $verification = $literalMessage->verifyDetached(
+            [$publicKey],
+            $signature
+        )[0];
+        $this->assertSame("1cbcd043db44c5d6", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
     public function testSignEcCurve25519Message()
     {
         $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/EcCurve25519PrivateKey.asc')
+            file_get_contents("tests/Data/EcCurve25519PrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
         $publicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcCurve25519PublicKey.asc')
+            file_get_contents("tests/Data/EcCurve25519PublicKey.asc")
         );
         $literalData = Random::string(10000);
-        $literalMessage = new LiteralMessage(new PacketList([
-            new LiteralData($literalData, LiteralFormat::Binary)
-        ]));
+        $literalMessage = new LiteralMessage(
+            new PacketList([
+                new LiteralData($literalData, LiteralFormat::Binary),
+            ])
+        );
 
         $signedMessage = $literalMessage->sign([$privateKey]);
         $verification = $signedMessage->verify([$publicKey])[0];
-        $this->assertSame('bdff135160c56a0b', $verification->getKeyID(true));
+        $this->assertSame("bdff135160c56a0b", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
 
         $signedMessage = LiteralMessage::fromArmored($signedMessage->armor());
-        $this->assertSame($literalData, $signedMessage->getLiteralData()->getData());
+        $this->assertSame(
+            $literalData,
+            $signedMessage->getLiteralData()->getData()
+        );
         $this->assertTrue($signedMessage->getSignature() instanceof Signature);
 
         $signature = $literalMessage->signDetached([$privateKey]);
-        $verification = $literalMessage->verifyDetached([$publicKey], $signature)[0];
-        $this->assertSame('bdff135160c56a0b', $verification->getKeyID(true));
+        $verification = $literalMessage->verifyDetached(
+            [$publicKey],
+            $signature
+        )[0];
+        $this->assertSame("bdff135160c56a0b", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
     }
 
     public function testEncryptWithCompressMessage()
     {
         $rsaPublicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/RsaPublicKey.asc')
+            file_get_contents("tests/Data/RsaPublicKey.asc")
         );
         $ecP384PublicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcP384PublicKey.asc')
+            file_get_contents("tests/Data/EcP384PublicKey.asc")
         );
         $ecBrainpoolPublicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcBrainpoolPublicKey.asc')
+            file_get_contents("tests/Data/EcBrainpoolPublicKey.asc")
         );
         $ecCurve25519PublicKey = PublicKey::fromArmored(
-            file_get_contents('tests/Data/EcCurve25519PublicKey.asc')
+            file_get_contents("tests/Data/EcCurve25519PublicKey.asc")
         );
 
         $literalData = Random::string(10000);
-        $message = new LiteralMessage(new PacketList([
-            new LiteralData($literalData, LiteralFormat::Binary)
-        ]));
-        $encryptedMessage = $message->compress(CompressionAlgorithm::BZip2)->encrypt(
-            [
-                $rsaPublicKey,
-                $ecP384PublicKey,
-                $ecBrainpoolPublicKey,
-                $ecCurve25519PublicKey,
-            ],
-            [self::PASSPHRASE]
+        $message = new LiteralMessage(
+            new PacketList([
+                new LiteralData($literalData, LiteralFormat::Binary),
+            ])
+        );
+        $encryptedMessage = $message
+            ->compress(CompressionAlgorithm::BZip2)
+            ->encrypt(
+                [
+                    $rsaPublicKey,
+                    $ecP384PublicKey,
+                    $ecBrainpoolPublicKey,
+                    $ecCurve25519PublicKey,
+                ],
+                [self::PASSPHRASE]
+            );
+
+        $decryptedMessage = $encryptedMessage->decrypt(
+            passwords: [self::PASSPHRASE]
+        );
+        $this->assertSame(
+            $literalData,
+            $decryptedMessage->getLiteralData()->getData()
         );
 
-        $decryptedMessage = $encryptedMessage->decrypt(passwords: [self::PASSPHRASE]);
-        $this->assertSame($literalData, $decryptedMessage->getLiteralData()->getData());
-
         $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/RsaPrivateKey.asc')
+            file_get_contents("tests/Data/RsaPrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
         $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
-        $this->assertSame($literalData, $decryptedMessage->getLiteralData()->getData());
+        $this->assertSame(
+            $literalData,
+            $decryptedMessage->getLiteralData()->getData()
+        );
 
         $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/EcP384PrivateKey.asc')
+            file_get_contents("tests/Data/EcP384PrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
         $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
-        $this->assertSame($literalData, $decryptedMessage->getLiteralData()->getData());
+        $this->assertSame(
+            $literalData,
+            $decryptedMessage->getLiteralData()->getData()
+        );
 
         $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/EcBrainpoolPrivateKey.asc')
+            file_get_contents("tests/Data/EcBrainpoolPrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
         $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
-        $this->assertSame($literalData, $decryptedMessage->getLiteralData()->getData());
+        $this->assertSame(
+            $literalData,
+            $decryptedMessage->getLiteralData()->getData()
+        );
 
         $privateKey = PrivateKey::fromArmored(
-            file_get_contents('tests/Data/EcCurve25519PrivateKey.asc')
+            file_get_contents("tests/Data/EcCurve25519PrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
         $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
-        $this->assertSame($literalData, $decryptedMessage->getLiteralData()->getData());
+        $this->assertSame(
+            $literalData,
+            $decryptedMessage->getLiteralData()->getData()
+        );
     }
 
     public function testInlineSignedMessage()
@@ -522,7 +599,10 @@ EOT;
         $publicKey = PublicKey::fromArmored($publicKeyData);
         $message = LiteralMessage::fromArmored($messageData);
         $verification = $message->verify([$publicKey])[0];
-        $this->assertSame($publicKey->getKeyID(true), $verification->getKeyID(true));
+        $this->assertSame(
+            $publicKey->getKeyID(true),
+            $verification->getKeyID(true)
+        );
         $this->assertTrue($verification->isVerified());
     }
 
@@ -531,19 +611,28 @@ EOT;
         Config::setAeadProtect(true);
 
         $literalData = Random::string(10000);
-        $message = new LiteralMessage(new PacketList([
-            new LiteralData($literalData, LiteralFormat::Binary)
-        ]));
-        $encryptedMessage = $message->compress(CompressionAlgorithm::BZip2)->encrypt(
-            passwords: [self::PASSPHRASE]
+        $message = new LiteralMessage(
+            new PacketList([
+                new LiteralData($literalData, LiteralFormat::Binary),
+            ])
         );
+        $encryptedMessage = $message
+            ->compress(CompressionAlgorithm::BZip2)
+            ->encrypt(passwords: [self::PASSPHRASE]);
         $encryptedPacket = $encryptedMessage->getEncryptedPacket();
         $this->assertTrue($encryptedPacket->getAead() instanceof AeadAlgorithm);
 
-        $decryptedMessage = $encryptedMessage->decrypt(passwords: [self::PASSPHRASE]);
-        $this->assertSame($literalData, $decryptedMessage->getLiteralData()->getData());
+        $decryptedMessage = $encryptedMessage->decrypt(
+            passwords: [self::PASSPHRASE]
+        );
+        $this->assertSame(
+            $literalData,
+            $decryptedMessage->getLiteralData()->getData()
+        );
 
-        $padding = $decryptedMessage->getPacketList()->whereTag(PacketTag::Padding)[0];
+        $padding = $decryptedMessage
+            ->getPacketList()
+            ->whereTag(PacketTag::Padding)[0];
         $this->assertSame(PacketTag::Padding, $padding->getTag());
 
         Config::setAeadProtect(false);
@@ -567,9 +656,11 @@ EOT;
             KeyType::Curve25519
         );
         $publicKey = $privateKey->toPublic();
-        $message = new LiteralMessage(new PacketList([
-            new LiteralData($literalData, LiteralFormat::Binary)
-        ]));
+        $message = new LiteralMessage(
+            new PacketList([
+                new LiteralData($literalData, LiteralFormat::Binary),
+            ])
+        );
 
         $signedMessage = $message->sign([$privateKey]);
         $this->assertSame(
@@ -581,23 +672,23 @@ EOT;
         $this->assertTrue($verification->isVerified());
 
         $signature = $message->signDetached([$privateKey]);
-        $this->assertSame(
-            6,
-            $signature->getPackets()[0]->getVersion()
-        );
+        $this->assertSame(6, $signature->getPackets()[0]->getVersion());
         $verification = $message->verifyDetached([$publicKey], $signature)[0];
         $this->assertTrue($verification->isVerified());
 
-        $encryptedMessage = $signedMessage->encrypt(
-            [$publicKey]
-        );
+        $encryptedMessage = $signedMessage->encrypt([$publicKey]);
         $encryptedPacket = $encryptedMessage->getEncryptedPacket();
         $this->assertTrue($encryptedPacket->getAead() instanceof AeadAlgorithm);
 
         $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
-        $this->assertSame($literalData, $decryptedMessage->getLiteralData()->getData());
+        $this->assertSame(
+            $literalData,
+            $decryptedMessage->getLiteralData()->getData()
+        );
 
-        $padding = $decryptedMessage->getPacketList()->whereTag(PacketTag::Padding)[0];
+        $padding = $decryptedMessage
+            ->getPacketList()
+            ->whereTag(PacketTag::Padding)[0];
         $this->assertSame(PacketTag::Padding, $padding->getTag());
 
         Config::setAeadProtect(false);
