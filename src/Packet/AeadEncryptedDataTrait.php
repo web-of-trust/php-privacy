@@ -54,13 +54,13 @@ trait AeadEncryptedDataTrait
     /**
      * Get associated data
      *
-     * @param int $tag
+     * @param string $tagByte
      * @return string
      */
-    private function getAData(int $tag): string
+    private function getAData(string $tagByte): string
     {
         return implode([
-            chr(0xc0 | $tag),
+            $tagByte,
             chr($this->version),
             chr($this->symmetric->value),
             chr($this->aead->value),

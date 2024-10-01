@@ -64,7 +64,7 @@ abstract class AbstractPacket implements PacketInterface
         } else {
             $bytes = $this->toBytes();
             return implode([
-                chr(0xc0 | $this->tag->value),
+                chr($this->getTagByte()),
                 Helper::simpleLength(strlen($bytes)),
                 $bytes,
             ]);
@@ -83,6 +83,16 @@ abstract class AbstractPacket implements PacketInterface
      * {@inheritdoc}
      */
     abstract public function toBytes(): string;
+
+    /**
+     * Get encode tag byte
+     *
+     * @return string
+     */
+    protected function getTagByte(): string
+    {
+        return chr(0xc0 | $this->tag->value);
+    }
 
     /**
      * Encode package to the openpgp partial body specifier
@@ -106,6 +116,6 @@ abstract class AbstractPacket implements PacketInterface
         }
         $partialData[] = implode([Helper::simpleLength(strlen($data)), $data]);
 
-        return implode([chr(0xc0 | $this->tag->value), ...$partialData]);
+        return implode([$this->getTagByte(), ...$partialData]);
     }
 }

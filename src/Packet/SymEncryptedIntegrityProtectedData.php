@@ -319,7 +319,7 @@ class SymEncryptedIntegrityProtectedData
             $chunkSize += $this->aead->tagLength();
         }
 
-        $aData = $this->getAData($this->getTag()->value);
+        $aData = $this->getAData($this->getTagByte());
 
         $keySize = $this->symmetric->keySizeInByte();
         $ivLength = $this->aead->ivLength();

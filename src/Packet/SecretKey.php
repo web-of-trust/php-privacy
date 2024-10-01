@@ -434,7 +434,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 ? Random::string($aead->ivLength())
                 : Random::string($symmetric->blockSize());
 
-            $packetTag = chr(0xc0 | $this->getTag()->value);
+            $packetTag = $this->getTagByte();
             $kek = self::produceEncryptionKey(
                 $passphrase,
                 $symmetric,
@@ -487,7 +487,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             return $this;
         } else {
             $clearText = "";
-            $packetTag = chr(0xc0 | $this->getTag()->value);
+            $packetTag = $this->getTagByte();
             $kek = self::produceEncryptionKey(
                 $passphrase,
                 $this->symmetric,

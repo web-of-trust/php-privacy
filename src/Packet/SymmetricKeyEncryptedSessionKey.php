@@ -280,7 +280,7 @@ class SymmetricKeyEncryptedSessionKey extends AbstractPacket
             } else {
                 if ($this->aead instanceof AeadAlgorithm) {
                     $aData = implode([
-                        chr(0xc0 | $this->getTag()->value),
+                        $this->getTagByte(),
                         chr($this->version),
                         chr($this->symmetric->value),
                         chr($this->aead->value),

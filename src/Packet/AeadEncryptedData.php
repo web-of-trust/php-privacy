@@ -215,7 +215,7 @@ class AeadEncryptedData extends AbstractPacket implements
 
         $aData = substr_replace(
             str_repeat(Helper::ZERO_CHAR, 13),
-            $this->getAData($this->getTag()->value),
+            $this->getAData($this->getTagByte()),
             0,
             5
         );
