@@ -459,7 +459,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         } else {
             $subpackets[] = Signature\KeyFlags::fromFlags(
                 KeyFlag::EncryptCommunication->value |
-                    KeyFlag::EncryptStorage->value
+                KeyFlag::EncryptStorage->value
             );
         }
         return self::createSignature(
@@ -1135,8 +1135,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             ),
             Signature\Features::fromFeatures(
                 SupportFeature::Version1SEIPD->value |
-                    SupportFeature::AeadEncrypted->value |
-                    SupportFeature::Version2SEIPD->value
+                SupportFeature::AeadEncrypted->value |
+                SupportFeature::Version2SEIPD->value
             ),
         ];
         if ($version === self::VERSION_6) {
@@ -1144,8 +1144,10 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
                 implode(
                     array_map(
                         static fn($aead) => implode([
-                            $symmetrics[0] . $aead,
-                            $symmetrics[1] . $aead,
+                            $symmetrics[0],
+                            $aead,
+                            $symmetrics[1],
+                            $aead,
                         ]),
                         $aeads
                     )
