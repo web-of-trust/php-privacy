@@ -17,7 +17,7 @@ use OpenPGP\Type\{
 };
 
 /**
- * SymmetricallyEncryptedData packet (tag 9) represents a Symmetrically Encrypted Data packet.
+ * SymEncryptedData packet (tag 9) represents a Symmetrically Encrypted Data packet.
  *
  * See RFC 9580, section 5.7.
  *
@@ -25,7 +25,7 @@ use OpenPGP\Type\{
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class SymmetricallyEncryptedData extends AbstractPacket implements
+class SymEncryptedData extends AbstractPacket implements
     EncryptedDataPacketInterface
 {
     use EncryptedDataTrait;
@@ -43,7 +43,7 @@ class SymmetricallyEncryptedData extends AbstractPacket implements
         private readonly string $encrypted,
         private readonly ?PacketListInterface $packetList = null
     ) {
-        parent::__construct(PacketTag::SymmetricallyEncryptedData);
+        parent::__construct(PacketTag::SymEncryptedData);
     }
 
     /**

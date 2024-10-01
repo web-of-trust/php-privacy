@@ -10,7 +10,7 @@ use OpenPGP\Enum\{
 use OpenPGP\Packet\LiteralData;
 use OpenPGP\Packet\PacketList;
 use OpenPGP\Packet\PublicKeyEncryptedSessionKey;
-use OpenPGP\Packet\SymmetricallyEncryptedIntegrityProtectedData;
+use OpenPGP\Packet\SymEncryptedIntegrityProtectedData;
 use OpenPGP\Packet\SecretKey;
 use OpenPGP\Packet\SecretSubkey;
 use OpenPGP\Packet\Key\MontgomerySecretKeyMaterial;
@@ -263,7 +263,7 @@ EOT;
         $this->assertSame('dd708f6fa1ed65114d68d2343e7c2f1d', bin2hex($sessionKey->getEncryptionKey()));
 
         $seipdData = 'AgcCBmFkFlNb4LBxbWDgUqVsTEB/nrNrDvr+mtCg35sDPGmiG6nr0sDslb9WnSXJme5KPeFwWPQN+otMaCvj+7vXsn6w9Zu1AF+Ax8b0A4jDCtQGqwUT3Nb5/XN2VihuEXfQD4iK2zHE';
-        $seipd = SymmetricallyEncryptedIntegrityProtectedData::fromBytes(base64_decode($seipdData));
+        $seipd = SymEncryptedIntegrityProtectedData::fromBytes(base64_decode($seipdData));
         $seipd = $seipd->decryptWithSessionKey(
             $sessionKey
         );

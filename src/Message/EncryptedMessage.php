@@ -13,7 +13,7 @@ use OpenPGP\Enum\ArmorType;
 use OpenPGP\Packet\{
     PacketList,
     PublicKeyEncryptedSessionKey,
-    SymmetricallyEncryptedSessionKey
+    SymmetricKeyEncryptedSessionKey
 };
 use OpenPGP\Type\{
     EncryptedDataPacketInterface,
@@ -124,7 +124,7 @@ class EncryptedMessage extends AbstractMessage implements
         $sessionKeys = [];
         if (!empty($passwords)) {
             $skeskPacketList = $this->getPacketList()->whereType(
-                SymmetricallyEncryptedSessionKey::class
+                SymmetricKeyEncryptedSessionKey::class
             );
             foreach ($skeskPacketList as $skesk) {
                 foreach ($passwords as $password) {

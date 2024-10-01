@@ -27,7 +27,7 @@ use phpseclib3\Crypt\Random;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class SymmetricallyEncryptedIntegrityProtectedData
+class SymEncryptedIntegrityProtectedData
     extends AbstractPacket
     implements AeadEncryptedDataPacketInterface
 {
@@ -61,7 +61,7 @@ class SymmetricallyEncryptedIntegrityProtectedData
         private readonly ?PacketListInterface $packetList = null
     ) {
         parent::__construct(
-            PacketTag::SymmetricallyEncryptedIntegrityProtectedData
+            PacketTag::SymEncryptedIntegrityProtectedData
         );
         if ($version !== self::VERSION_1 && $version !== self::VERSION_2) {
             throw new \InvalidArgumentException(

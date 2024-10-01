@@ -14,7 +14,7 @@ use OpenPGP\Type\{S2KInterface, SessionKeyInterface};
 use phpseclib3\Crypt\Random;
 
 /**
- * Implementation of the Symmetric-Key Encrypted Session Key packet (Tag 3)
+ * Implementation of the Symmetric Key Encrypted Session Key packet (Tag 3)
  *
  * See RFC 9580, section 5.3.
  *
@@ -22,7 +22,7 @@ use phpseclib3\Crypt\Random;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class SymmetricallyEncryptedSessionKey extends AbstractPacket
+class SymmetricKeyEncryptedSessionKey extends AbstractPacket
 {
     const VERSION_4 = 4;
     const VERSION_5 = 5;
@@ -50,7 +50,7 @@ class SymmetricallyEncryptedSessionKey extends AbstractPacket
         private readonly string $encrypted = "",
         private readonly ?SessionKeyInterface $sessionKey = null
     ) {
-        parent::__construct(PacketTag::SymmetricallyEncryptedSessionKey);
+        parent::__construct(PacketTag::SymmetricKeyEncryptedSessionKey);
         if (
             $version != self::VERSION_4 &&
             $version != self::VERSION_5 &&
@@ -155,7 +155,7 @@ class SymmetricallyEncryptedSessionKey extends AbstractPacket
         if ($sessionKey instanceof SessionKeyInterface) {
             if ($aeadProtect) {
                 $aData = implode([
-                    chr(0xc0 | PacketTag::SymmetricallyEncryptedSessionKey->value),
+                    chr(0xc0 | PacketTag::SymmetricKeyEncryptedSessionKey->value),
                     chr($version),
                     chr($symmetric->value),
                     chr($aead->value),

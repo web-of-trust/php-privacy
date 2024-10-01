@@ -24,8 +24,8 @@ use OpenPGP\Packet\{
     PacketList,
     Padding,
     PublicKeyEncryptedSessionKey,
-    SymmetricallyEncryptedIntegrityProtectedData,
-    SymmetricallyEncryptedSessionKey
+    SymEncryptedIntegrityProtectedData,
+    SymmetricKeyEncryptedSessionKey
 };
 use OpenPGP\Packet\Key\SessionKey;
 use OpenPGP\Type\{
@@ -279,7 +279,7 @@ class LiteralMessage extends AbstractMessage implements
                 ...array_map(
                     static fn(
                         $password
-                    ) => SymmetricallyEncryptedSessionKey::encryptSessionKey(
+                    ) => SymmetricKeyEncryptedSessionKey::encryptSessionKey(
                         $password,
                         $sessionKey,
                         $symmetric ?? Config::getPreferredSymmetric(),
@@ -287,7 +287,7 @@ class LiteralMessage extends AbstractMessage implements
                     ),
                     $passwords
                 ), // skesk packets
-                SymmetricallyEncryptedIntegrityProtectedData::encryptPacketsWithSessionKey(
+                SymEncryptedIntegrityProtectedData::encryptPacketsWithSessionKey(
                     $sessionKey,
                     $packetList,
                     $aead
