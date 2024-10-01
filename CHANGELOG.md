@@ -114,4 +114,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add PHP Privacy Examples.
 
 ## 2.0.0 - released 2024-10-01
-- Release to version 2.0.0
+- Release to major version 2
