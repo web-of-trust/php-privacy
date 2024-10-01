@@ -8,8 +8,8 @@
 
 namespace OpenPGP\Common;
 
-use phpseclib3\Common\Functions\Strings;
 use OpenPGP\Enum\ArmorType;
+use phpseclib3\Common\Functions\Strings;
 
 /**
  * Armor class
@@ -127,13 +127,10 @@ final class Armor
      * Verify the checksum and return the encoded bytes
      *
      * @param string $armoredText
-     * @param bool $checksumRequired
      * @return self
      */
-    public static function decode(
-        string $armoredText,
-        bool $checksumRequired = false
-    ): self {
+    public static function decode(string $armoredText): self
+    {
         $textDone = false;
         $checksum = "";
         $type = null;
@@ -182,7 +179,7 @@ final class Armor
         $data = Strings::base64_decode(implode($dataLines));
         if (
             strcmp($checksum, self::crc24Checksum($data)) !== 0 &&
-            (!empty($checksum) || $checksumRequired)
+            (!empty($checksum) || Config::checksumRequired())
         ) {
             throw new \RuntimeException("Ascii armor integrity check failed!");
         }
@@ -233,7 +230,9 @@ final class Armor
                     self::TRUNK_SIZE,
                     Helper::EOL
                 ),
-                "=" . self::crc24Checksum($data) . Helper::EOL,
+                Config::checksumRequired()
+                    ? "=" . self::crc24Checksum($data) . Helper::EOL
+                    : "",
                 sprintf(
                     self::MULTIPART_SECTION_MESSAGE_END,
                     $partIndex,
@@ -248,7 +247,9 @@ final class Armor
                     self::TRUNK_SIZE,
                     Helper::EOL
                 ),
-                "=" . self::crc24Checksum($data) . Helper::EOL,
+                Config::checksumRequired()
+                    ? "=" . self::crc24Checksum($data) . Helper::EOL
+                    : "",
                 sprintf(self::MULTIPART_LAST_MESSAGE_END, $partIndex),
             ],
             ArmorType::SignedMessage => [
@@ -272,7 +273,9 @@ final class Armor
                     self::TRUNK_SIZE,
                     Helper::EOL
                 ),
-                "=" . self::crc24Checksum($data) . Helper::EOL,
+                Config::checksumRequired()
+                    ? "=" . self::crc24Checksum($data) . Helper::EOL
+                    : "",
                 self::SIGNATURE_END,
             ],
             ArmorType::Message => [
@@ -283,7 +286,9 @@ final class Armor
                     self::TRUNK_SIZE,
                     Helper::EOL
                 ),
-                "=" . self::crc24Checksum($data) . Helper::EOL,
+                Config::checksumRequired()
+                    ? "=" . self::crc24Checksum($data) . Helper::EOL
+                    : "",
                 self::MESSAGE_END,
             ],
             ArmorType::PublicKey => [
@@ -294,7 +299,9 @@ final class Armor
                     self::TRUNK_SIZE,
                     Helper::EOL
                 ),
-                "=" . self::crc24Checksum($data) . Helper::EOL,
+                Config::checksumRequired()
+                    ? "=" . self::crc24Checksum($data) . Helper::EOL
+                    : "",
                 self::PUBLIC_KEY_BLOCK_END,
             ],
             ArmorType::PrivateKey => [
@@ -305,7 +312,9 @@ final class Armor
                     self::TRUNK_SIZE,
                     Helper::EOL
                 ),
-                "=" . self::crc24Checksum($data) . Helper::EOL,
+                Config::checksumRequired()
+                    ? "=" . self::crc24Checksum($data) . Helper::EOL
+                    : "",
                 self::PRIVATE_KEY_BLOCK_END,
             ],
             ArmorType::Signature => [
@@ -316,7 +325,9 @@ final class Armor
                     self::TRUNK_SIZE,
                     Helper::EOL
                 ),
-                "=" . self::crc24Checksum($data) . Helper::EOL,
+                Config::checksumRequired()
+                    ? "=" . self::crc24Checksum($data) . Helper::EOL
+                    : "",
                 self::SIGNATURE_END,
             ],
         };
@@ -331,10 +342,13 @@ final class Armor
      */
     private static function addHeader(string $customComment = ""): string
     {
-        $headers = [
-            "Version: " . Config::VERSION . Helper::EOL,
-            "Comment: " . Config::COMMENT . Helper::EOL,
-        ];
+        $headers = [];
+        if (Config::showVersion()) {
+            $headers[] = "Version: " . Config::VERSION . Helper::EOL;
+        }
+        if (Config::showComment()) {
+            $headers[] = "Comment: " . Config::COMMENT . Helper::EOL;
+        }
         if (!empty($customComment)) {
             $headers[] = "Comment: " . $customComment . Helper::EOL;
         }

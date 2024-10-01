@@ -63,6 +63,12 @@ final class Config
 
     private static bool $allowUnauthenticated = false;
 
+    private static bool $showVersion = true;
+
+    private static bool $showComment = false;
+
+    private static bool $checksumRequired = false;
+
     /**
      * Get preferred hash algorithm.
      *
@@ -315,5 +321,65 @@ final class Config
     public static function setAllowUnauthenticated(bool $allow): void
     {
         self::$allowUnauthenticated = $allow;
+    }
+
+    /**
+     * Whether to include version header in armored messages.
+     *
+     * @return bool
+     */
+    public static function showVersion(): bool
+    {
+        return self::$showVersion;
+    }
+
+    /**
+     * Set show version.
+     *
+     * @param bool $showVersion
+     */
+    public static function setShowVersion(bool $showVersion): void
+    {
+        self::$showVersion = $showVersion;
+    }
+
+    /**
+     * Whether to include comment header in armored messages.
+     *
+     * @return bool
+     */
+    public static function showComment(): bool
+    {
+        return self::$showComment;
+    }
+
+    /**
+     * Set show comment.
+     *
+     * @param bool $showComment
+     */
+    public static function setShowComment(bool $showComment): void
+    {
+        self::$showComment = $showComment;
+    }
+
+    /**
+     * Whether checksum required in armored messages.
+     *
+     * @return bool
+     */
+    public static function checksumRequired(): bool
+    {
+        return self::$checksumRequired;
+    }
+
+    /**
+     * Set checksum required.
+     *
+     * @param bool $checksumRequired
+     */
+    public static function setChecksumRequired(bool $checksumRequired): void
+    {
+        self::$checksumRequired = $checksumRequired;
     }
 }

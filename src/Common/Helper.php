@@ -125,6 +125,11 @@ final class Helper
     public static function stringToKey(
         S2kType $type = S2kType::Iterated
     ): S2KInterface {
+        if ($type === S2kType::Simple) {
+            throw new \RuntimeException(
+                "S2k type {$type->name} is unsupported."
+            );
+        }
         return $type === S2kType::Argon2
             ? new Argon2S2K(
                 self::generatePassword(Argon2S2K::SALT_LENGTH),
