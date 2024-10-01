@@ -19,8 +19,6 @@ use OpenPGP\Enum\{AeadAlgorithm, SymmetricAlgorithm};
  */
 interface AeadEncryptedDataPacketInterface extends EncryptedDataPacketInterface
 {
-    const ZERO_CHAR = "\x00";
-
     const AEAD_ENCRYPT = "encrypt";
     const AEAD_DECRYPT = "decrypt";
 

@@ -170,7 +170,7 @@ class SymEncryptedIntegrityProtectedData
             $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
             $cipher->setKey($key);
             $cipher->setIV(
-                str_repeat(self::ZERO_CHAR, $symmetric->blockSize())
+                str_repeat(Helper::ZERO_CHAR, $symmetric->blockSize())
             );
             $encrypted = $cipher->encrypt($plainText);
         }
@@ -266,7 +266,7 @@ class SymEncryptedIntegrityProtectedData
                 $size = $symmetric->blockSize();
                 $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
                 $cipher->setKey($key);
-                $cipher->setIV(str_repeat(self::ZERO_CHAR, $size));
+                $cipher->setIV(str_repeat(Helper::ZERO_CHAR, $size));
 
                 $decrypted = $cipher->decrypt($this->encrypted);
                 $digestSize =
@@ -335,7 +335,7 @@ class SymEncryptedIntegrityProtectedData
         // The last 8 bytes of HKDF output are unneeded, but this avoids one copy.
         $nonce = substr_replace(
             $nonce,
-            str_repeat(self::ZERO_CHAR, 8),
+            str_repeat(Helper::ZERO_CHAR, 8),
             $ivLength - 8
         );
         $cipher = $this->aead->cipherEngine($kek, $this->symmetric);
@@ -362,7 +362,7 @@ class SymEncryptedIntegrityProtectedData
         $processed = array_sum(
             array_map(static fn($bytes) => strlen($bytes), $crypted)
         );
-        $aDataTag = implode([$aData, str_repeat(self::ZERO_CHAR, 8)]);
+        $aDataTag = implode([$aData, str_repeat(Helper::ZERO_CHAR, 8)]);
         $aDataTag = substr_replace(
             $aDataTag,
             pack("N", $processed),

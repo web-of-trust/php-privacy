@@ -6,8 +6,9 @@
  * file that was distributed with this source code.
  */
 
-namespace OpenPGP\Cryptor\Mac;
+namespace OpenPGP\Cryptor\Aead;
 
+use OpenPGP\Common\Helper;
 use OpenPGP\Enum\SymmetricAlgorithm;
 use OpenPGP\Cryptor\Math\Bitwise;
 use OpenPGP\Cryptor\Symmetric\EcbCipher;
@@ -23,8 +24,6 @@ use OpenPGP\Cryptor\Symmetric\EcbCipher;
  */
 final class CMac
 {
-    const ZERO_CHAR = "\x00";
-
     private readonly EcbCipher $cipher;
 
     private readonly int $blockSize;
@@ -44,7 +43,7 @@ final class CMac
     ) {
         $this->cipher = $symmetric->ecbCipherEngine();
         $this->blockSize = $symmetric->blockSize();
-        $this->zeroBlock = str_repeat(self::ZERO_CHAR, $this->blockSize);
+        $this->zeroBlock = str_repeat(Helper::ZERO_CHAR, $this->blockSize);
 
         if ($this->macSize === 0) {
             $this->macSize = $this->blockSize;
@@ -121,8 +120,8 @@ final class CMac
     protected function getRValue(int $size): string
     {
         return match ($size * 8) {
-            64 => str_repeat(self::ZERO_CHAR, 7) . "\x1B",
-            128 => str_repeat(self::ZERO_CHAR, 15) . "\x87",
+            64 => str_repeat(Helper::ZERO_CHAR, 7) . "\x1B",
+            128 => str_repeat(Helper::ZERO_CHAR, 15) . "\x87",
             default => throw new \LengthException(
                 "Unsupported block size for the cipher."
             ),

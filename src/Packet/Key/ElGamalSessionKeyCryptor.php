@@ -23,8 +23,6 @@ use phpseclib3\Math\BigInteger;
  */
 class ElGamalSessionKeyCryptor extends SessionKeyCryptor
 {
-    const ZERO_CHAR = "\x00";
-
     /**
      * Constructor
      *
@@ -138,7 +136,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
             throw new \RuntimeException("Message too long.");
         }
         $ps = self::pkcs1Padding($keyLength - $mLength - 3);
-        $encoded = str_repeat(self::ZERO_CHAR, $keyLength);
+        $encoded = str_repeat(Helper::ZERO_CHAR, $keyLength);
         $encoded[1] = "\x02";
         $encoded = substr_replace($encoded, $ps, 2, strlen($ps));
         $encoded = substr_replace(
@@ -168,7 +166,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
 
     private static function pkcs1Padding(int $length): string
     {
-        $result = str_repeat(self::ZERO_CHAR, $length);
+        $result = str_repeat(Helper::ZERO_CHAR, $length);
         $count = 0;
         while ($count < $length) {
             $bytes = Random::string($length - $count);

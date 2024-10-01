@@ -27,7 +27,6 @@ class SymmetricKeyEncryptedSessionKey extends AbstractPacket
     const VERSION_4 = 4;
     const VERSION_5 = 5;
     const VERSION_6 = 6;
-    const ZERO_CHAR = "\x00";
 
     /**
      * Constructor
@@ -174,7 +173,7 @@ class SymmetricKeyEncryptedSessionKey extends AbstractPacket
                 $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
                 $cipher->setKey($key);
                 $cipher->setIV(
-                    str_repeat(self::ZERO_CHAR, $symmetric->blockSize())
+                    str_repeat(Helper::ZERO_CHAR, $symmetric->blockSize())
                 );
                 $encrypted = $cipher->encrypt($sessionKey->toBytes());
             }
@@ -311,7 +310,7 @@ class SymmetricKeyEncryptedSessionKey extends AbstractPacket
                     $cipher->setKey($key);
                     $cipher->setIV(
                         str_repeat(
-                            self::ZERO_CHAR,
+                            Helper::ZERO_CHAR,
                             $this->symmetric->blockSize()
                         )
                     );

@@ -26,6 +26,7 @@ final class Helper
     const CRLF = "\r\n";
     const SPACES = " \r\t";
     const EOL_PATTERN = '/\r?\n/m';
+    const ZERO_CHAR = "\x00";
 
     /**
      * Read multiprecision integer (MPI) from binary data

@@ -46,7 +46,6 @@ use phpseclib3\Crypt\Random;
 class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 {
     const HASH_ALGO = "sha1";
-    const ZERO_CHAR = "\x00";
 
     /**
      * Constructor
@@ -616,7 +615,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         }
         $derivedKey =
             $s2k?->produceKey($passphrase, $symmetric->keySizeInByte()) ??
-            str_repeat(self::ZERO_CHAR, $symmetric->keySizeInByte());
+            str_repeat(Helper::ZERO_CHAR, $symmetric->keySizeInByte());
         if ($aead instanceof AeadAlgorithm) {
             return hash_hkdf(
                 Config::HKDF_ALGO,

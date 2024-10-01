@@ -30,8 +30,6 @@ class SymEncryptedData extends AbstractPacket implements
 {
     use EncryptedDataTrait;
 
-    const ZERO_CHAR = "\x00";
-
     /**
      * Constructor
      *
@@ -70,7 +68,7 @@ class SymEncryptedData extends AbstractPacket implements
         Helper::assertSymmetric($symmetric);
         $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
         $cipher->setKey($key);
-        $cipher->setIV(str_repeat(self::ZERO_CHAR, $symmetric->blockSize()));
+        $cipher->setIV(str_repeat(Helper::ZERO_CHAR, $symmetric->blockSize()));
         $prefix = $cipher->encrypt(Helper::generatePrefix($symmetric));
         $cipher->setIV(substr($prefix, 2));
 

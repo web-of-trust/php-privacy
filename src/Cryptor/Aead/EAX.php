@@ -8,7 +8,6 @@
 
 namespace OpenPGP\Cryptor\Aead;
 
-use OpenPGP\Cryptor\Mac\CMac;
 use OpenPGP\Enum\SymmetricAlgorithm;
 use phpseclib3\Crypt\Common\BlockCipher;
 

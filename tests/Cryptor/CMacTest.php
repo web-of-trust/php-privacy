@@ -2,7 +2,7 @@
 
 namespace OpenPGP\Tests\Cryptor;
 
-use OpenPGP\Cryptor\Mac\CMac;
+use OpenPGP\Cryptor\Aead\CMac;
 use OpenPGP\Enum\SymmetricAlgorithm;
 use OpenPGP\Tests\OpenPGPTestCase;
 
