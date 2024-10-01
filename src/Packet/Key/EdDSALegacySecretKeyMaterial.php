@@ -14,7 +14,6 @@ use OpenPGP\Type\{KeyMaterialInterface, SecretKeyMaterialInterface};
 use phpseclib3\Crypt\EC;
 use phpseclib3\Crypt\EC\Curves\Ed25519;
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
-use phpseclib3\File\ASN1;
 
 /**
  * EdDSALegacy secret key material class
@@ -56,7 +55,7 @@ class EdDSALegacySecretKeyMaterial extends ECSecretKeyMaterial implements
         return new self(
             $d,
             new EdDSALegacyPublicKeyMaterial(
-                ASN1::encodeOID($curve->value),
+                $curve->encodeOid(),
                 Helper::bin2BigInt(
                     "\x40" . $privateKey->getEncodedCoordinates()
                 ),

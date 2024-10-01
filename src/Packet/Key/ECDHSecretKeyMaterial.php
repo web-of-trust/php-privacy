@@ -14,7 +14,6 @@ use OpenPGP\Type\KeyMaterialInterface;
 use phpseclib3\Crypt\EC;
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
 use phpseclib3\Crypt\Random;
-use phpseclib3\File\ASN1;
 
 /**
  * ECDH secret key material class
@@ -78,7 +77,7 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
             return new self(
                 $d,
                 new ECDHPublicKeyMaterial(
-                    ASN1::encodeOID($curve->value),
+                    $curve->encodeOid(),
                     $q,
                     $curve->hashAlgorithm(),
                     $curve->symmetricAlgorithm(),

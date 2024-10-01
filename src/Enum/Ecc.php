@@ -46,9 +46,25 @@ enum Ecc: string
 
     case Curve25519 = "1.3.6.1.4.1.3029.1.5.1";
 
+    /**
+     * Get ecc from oid
+     *
+     * @param string $oid
+     * @return self
+     */
     public static function fromOid(string $oid): self
     {
         return self::from(ASN1::decodeOID($oid));
+    }
+
+    /**
+     * Encode the oid
+     *
+     * @return string
+     */
+    public function encodeOid(): string
+    {
+        return ASN1::encodeOID($this->value);
     }
 
     /**

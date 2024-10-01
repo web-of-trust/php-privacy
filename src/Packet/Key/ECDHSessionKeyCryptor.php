@@ -23,7 +23,6 @@ use OpenPGP\Type\{
 };
 use phpseclib3\Crypt\{DH, EC};
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
-use phpseclib3\File\ASN1;
 use phpseclib3\Math\BigInteger;
 
 /**
@@ -233,7 +232,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
         ECDHPublicKeyMaterial $keyMaterial,
         string $fingerprint
     ): string {
-        $oid = ASN1::encodeOID($keyMaterial->getEcc()->value);
+        $oid = $keyMaterial->getEcc()->encodeOid();
         return implode([
             chr(strlen($oid)),
             $oid,
