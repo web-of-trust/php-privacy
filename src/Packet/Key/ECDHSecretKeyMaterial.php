@@ -13,7 +13,6 @@ use OpenPGP\Enum\{Ecc, MontgomeryCurve};
 use OpenPGP\Type\KeyMaterialInterface;
 use phpseclib3\Crypt\EC;
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
-use phpseclib3\Crypt\Random;
 
 /**
  * ECDH secret key material class
@@ -48,21 +47,11 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
     {
         if ($curve !== Ecc::Ed25519) {
             if ($curve === Ecc::Curve25519) {
-                $keyLength = MontgomeryCurve::Curve25519->payloadSize();
-                do {
-                    $secretKey = Random::string($keyLength);
-                    // The highest bit must be 0 & the second highest bit must be 1
-                    $secretKey[0] = ($secretKey[0] & "\x7f") | "\x40";
-                    /// The lowest three bits must be 0
-                    $secretKey[31] = $secretKey[31] & "\xf8";
-                    $d = Helper::bin2BigInt($secretKey);
-                } while (
-                    $d->getLengthInBytes() !== $keyLength
-                );
-
+                $secret = MontgomeryCurve::Curve25519->generateSecretKey();
+                $d = Helper::bin2BigInt(strrev($secret));
                 $privateKey = EC::loadPrivateKeyFormat(
                     "MontgomeryPrivate",
-                    strrev($secretKey)
+                    $secret
                 );
                 $q = Helper::bin2BigInt(
                     "\x40" . $privateKey->getEncodedCoordinates()

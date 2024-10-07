@@ -75,7 +75,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
         $ephemeralKey = $privateKey->getPublicKey()->getEncodedCoordinates();
 
         $kek = hash_hkdf(
-            $curve->hashAlgorithm(),
+            $curve->hkdfHash(),
             implode([
                 $ephemeralKey,
                 $publicKey->getEncodedCoordinates(),
@@ -146,7 +146,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
     private function decrypt(EC $privateKey): string
     {
         $kek = hash_hkdf(
-            $this->curve->hashAlgorithm(),
+            $this->curve->hkdfHash(),
             implode([
                 $this->ephemeralKey,
                 $privateKey->getEncodedCoordinates(),

@@ -81,11 +81,12 @@ class MontgomerySecretKeyMaterial implements
     public static function generate(
         MontgomeryCurve $curve = MontgomeryCurve::Curve25519
     ): self {
-        $size = $curve->payloadSize();
-        do {
-            $privateKey = EC::createKey($curve->name);
-            $secret = $privateKey->toString("MontgomeryPrivate");
-        } while (strlen($secret) !== $size);
+        $secret = $curve->generateSecretKey();
+        $privateKey = EC::loadPrivateKeyFormat(
+            "MontgomeryPrivate",
+            $secret
+        );
+        $secret = $privateKey->toString("MontgomeryPrivate");
         return new self(
             $secret,
             new MontgomeryPublicKeyMaterial(
