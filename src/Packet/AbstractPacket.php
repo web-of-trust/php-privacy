@@ -105,10 +105,11 @@ abstract class AbstractPacket implements PacketInterface
     private function partialEncode(): string
     {
         $data = $this->toBytes();
+        $dataLen = strlen($data);
         $partialData = [];
 
-        while (strlen($data) >= self::PARTIAL_MIN_SIZE) {
-            $maxSize = strlen(substr($data, 0, self::PARTIAL_MAX_SIZE));
+        while ($dataLen >= self::PARTIAL_MIN_SIZE) {
+            $maxSize = min(self::PARTIAL_MAX_SIZE, $dataLen);
             $powerOf2 = min((log($maxSize) / M_LN2) | 0, 30);
             $chunkSize = 1 << $powerOf2;
 
@@ -116,8 +117,9 @@ abstract class AbstractPacket implements PacketInterface
                 chr(224 + $powerOf2),
                 Strings::shift($data, $chunkSize),
             ]);
+            $dataLen = strlen($data);
         }
-        $partialData[] = implode([Helper::simpleLength(strlen($data)), $data]);
+        $partialData[] = implode([Helper::simpleLength($dataLen), $data]);
 
         return implode([$this->getTagByte(), ...$partialData]);
     }
