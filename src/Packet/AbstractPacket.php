@@ -27,19 +27,8 @@ abstract class AbstractPacket implements
 {
     use LoggerAwareTrait;
 
-    /**
-     * Packet tag support partial body length
-     */
-    const PARTIAL_SUPPORTING = [
-        PacketTag::AeadEncryptedData,
-        PacketTag::CompressedData,
-        PacketTag::LiteralData,
-        PacketTag::SymEncryptedData,
-        PacketTag::SymEncryptedIntegrityProtectedData,
-    ];
-
-    const PARTIAL_MAX_SIZE = 1024;
     const PARTIAL_MIN_SIZE = 512;
+    const PARTIAL_MAX_SIZE = 1024;
 
     /**
      * Constructor
@@ -65,16 +54,15 @@ abstract class AbstractPacket implements
      */
     public function encode(): string
     {
-        if (in_array($this->tag, self::PARTIAL_SUPPORTING, true)) {
-            return $this->partialEncode();
-        } else {
-            $bytes = $this->toBytes();
-            return implode([
-                chr(0xc0 | $this->tag->value),
-                self::bodyLength(strlen($bytes)),
-                $bytes,
-            ]);
-        }
+        return match ($this->tag) {
+            PacketTag::AeadEncryptedData,
+            PacketTag::CompressedData,
+            PacketTag::LiteralData,
+            PacketTag::SymEncryptedData,
+            PacketTag::SymEncryptedIntegrityProtectedData
+                => $this->partialEncode(),
+            default => $this->simpleEncode(),
+        };
     }
 
     /**
@@ -99,6 +87,21 @@ abstract class AbstractPacket implements
     abstract public function toBytes(): string;
 
     /**
+     * Encode package to the openpgp body specifier
+     *
+     * @return string
+     */
+    private function simpleEncode(): string
+    {
+        $bytes = $this->toBytes();
+        return implode([
+            chr(0xc0 | $this->tag->value),
+            self::bodyLength(strlen($bytes)),
+            $bytes,
+        ]);
+    }
+
+    /**
      * Encode package to the openpgp partial body specifier
      *
      * @return string
@@ -110,19 +113,19 @@ abstract class AbstractPacket implements
         $partialData = [];
 
         while ($dataLengh >= self::PARTIAL_MIN_SIZE) {
-            $maxSize = strlen(substr($data, 0, self::PARTIAL_MAX_SIZE));
+            $maxSize = min(self::PARTIAL_MAX_SIZE, $dataLengh);
             $powerOf2 = min((log($maxSize) / M_LN2) | 0, 30);
             $chunkSize = 1 << $powerOf2;
 
             $partialData[] = implode([
-                self::partialBodyLength($powerOf2),
+                chr(224 + $powerOf2),
                 substr($data, 0, $chunkSize),
             ]);
 
             $data = substr($data, $chunkSize);
             $dataLengh = strlen($data);
         }
-        $partialData[] = implode([self::bodyLength(strlen($data)), $data]);
+        $partialData[] = implode([self::bodyLength($dataLengh), $data]);
 
         return implode([chr(0xc0 | $this->tag->value), ...$partialData]);
     }
@@ -145,21 +148,5 @@ abstract class AbstractPacket implements
         } else {
             return implode(["\xff", pack("N", $length)]);
         }
-    }
-
-    /**
-     * Encode a given integer of length power to the openpgp partial body length specifier
-     *
-     * @param int $power
-     * @return string
-     */
-    private static function partialBodyLength(int $power): string
-    {
-        if ($power < 0 || $power > 30) {
-            throw new \UnexpectedValueException(
-                "Partial length power must be between 1 and 30"
-            );
-        }
-        return chr(224 + $power);
     }
 }
