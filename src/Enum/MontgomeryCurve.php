@@ -83,19 +83,22 @@ enum MontgomeryCurve
     public function generateSecretKey(): string
     {
         $size = $this->payloadSize();
-        $secret = Random::string($size);
-        if ($this === self::Curve25519) {
-            /// The lowest three bits must be 0
-            $secret[0] = $secret[0] & "\xf8";
-            // The highest bit must be 0 & the second highest bit must be 1
-            $secret[$size - 1] = ($secret[$size - 1] & "\x7f") | "\x40";
-        }
-        else {
-            // The two least significant bits of the first byte to 0
-            $secret[0] = $secret[0] & "\xfc";
-            // The most significant bit of the last byte to 1
-            $secret[$size - 1] = $secret[$size - 1] | "\x80";
-        }
+        do {
+            $secret = Random::string($size);
+            if ($this === self::Curve25519) {
+                /// The lowest three bits must be 0
+                $secret[0] = $secret[0] & "\xf8";
+                // The highest bit must be 0 & the second highest bit must be 1
+                $secret[$size - 1] = ($secret[$size - 1] & "\x7f") | "\x40";
+            }
+            else {
+                // The two least significant bits of the first byte to 0
+                $secret[0] = $secret[0] & "\xfc";
+                // The most significant bit of the last byte to 1
+                $secret[$size - 1] = $secret[$size - 1] | "\x80";
+            }
+            $d = Helper::bin2BigInt($secret);
+        } while ($d->getLengthInBytes() !== $size);
         return $secret;
     }
 }
