@@ -22,17 +22,6 @@ use phpseclib3\Common\Functions\Strings;
  */
 abstract class AbstractPacket implements PacketInterface
 {
-    /**
-     * Packet tag support partial body length
-     */
-    const PARTIAL_SUPPORTING = [
-        PacketTag::AeadEncryptedData,
-        PacketTag::CompressedData,
-        PacketTag::LiteralData,
-        PacketTag::SymEncryptedData,
-        PacketTag::SymEncryptedIntegrityProtectedData,
-    ];
-
     const PARTIAL_MIN_SIZE = 512;
     const PARTIAL_MAX_SIZE = 1024;
 
@@ -59,16 +48,15 @@ abstract class AbstractPacket implements PacketInterface
      */
     public function encode(): string
     {
-        if (in_array($this->tag, self::PARTIAL_SUPPORTING, true)) {
-            return $this->partialEncode();
-        } else {
-            $bytes = $this->toBytes();
-            return implode([
-                $this->getTagByte(),
-                Helper::simpleLength(strlen($bytes)),
-                $bytes,
-            ]);
-        }
+        return match ($this->tag) {
+            PacketTag::AeadEncryptedData,
+            PacketTag::CompressedData,
+            PacketTag::LiteralData,
+            PacketTag::SymEncryptedData,
+            PacketTag::SymEncryptedIntegrityProtectedData
+                => $this->partialEncode(),
+            default => $this->simpleEncode(),
+        };
     }
 
     /**
@@ -92,6 +80,21 @@ abstract class AbstractPacket implements PacketInterface
     protected function getTagByte(): string
     {
         return chr(0xc0 | $this->tag->value);
+    }
+
+    /**
+     * Encode package to the openpgp body specifier
+     *
+     * @return string
+     */
+    private function simpleEncode(): string
+    {
+        $bytes = $this->toBytes();
+        return implode([
+            $this->getTagByte(),
+            Helper::simpleLength(strlen($bytes)),
+            $bytes,
+        ]);
     }
 
     /**
