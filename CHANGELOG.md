@@ -119,3 +119,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## 2.0.0 - released 2024-10-01
 - Release to major version 2
+
+## 2.0.1 - released 2024-10-10
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.0.1...2.0.1)
+- Refactor Montgomery Curve Enum
+- Refactor generate Montgomery secret key
+- Refactor package encode
