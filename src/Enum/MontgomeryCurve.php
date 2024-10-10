@@ -8,6 +8,7 @@
 
 namespace OpenPGP\Enum;
 
+use OpenPGP\Common\Helper;
 use phpseclib3\Crypt\Random;
 
 /**
