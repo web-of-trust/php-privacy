@@ -154,10 +154,9 @@ class GenericS2K implements S2KInterface
             ),
             default => "",
         };
-        $itCount =
-            $type === S2kType::Iterated
-                ? ord($bytes[self::SALT_LENGTH + 2])
-                : 0;
+        $itCount = $type === S2kType::Iterated
+            ? ord($bytes[self::SALT_LENGTH + 2])
+            : 0;
         return new self($salt, $type, $hash, $itCount);
     }
 
