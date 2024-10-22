@@ -168,6 +168,7 @@ class SymEncryptedIntegrityProtectedData
             $plainText = $toHash . hash(self::HASH_ALGO, $toHash, true);
 
             $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
+            $cipher->disablePadding();
             $cipher->setKey($key);
             $cipher->setIV(
                 str_repeat(Helper::ZERO_CHAR, $symmetric->blockSize())
@@ -265,6 +266,7 @@ class SymEncryptedIntegrityProtectedData
                 $symmetric = $this->symmetric ?? $symmetric;
                 $size = $symmetric->blockSize();
                 $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
+                $cipher->disablePadding();
                 $cipher->setKey($key);
                 $cipher->setIV(str_repeat(Helper::ZERO_CHAR, $size));
 

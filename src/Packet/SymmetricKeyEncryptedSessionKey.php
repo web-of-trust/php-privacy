@@ -171,6 +171,7 @@ class SymmetricKeyEncryptedSessionKey extends AbstractPacket
                 );
             } else {
                 $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
+                $cipher->disablePadding();
                 $cipher->setKey($key);
                 $cipher->setIV(
                     str_repeat(Helper::ZERO_CHAR, $symmetric->blockSize())
@@ -307,6 +308,7 @@ class SymmetricKeyEncryptedSessionKey extends AbstractPacket
                     $cipher = $this->symmetric->cipherEngine(
                         Config::CIPHER_MODE
                     );
+                    $cipher->disablePadding();
                     $cipher->setKey($key);
                     $cipher->setIV(
                         str_repeat(

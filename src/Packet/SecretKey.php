@@ -453,6 +453,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 );
             } else {
                 $cipher = $symmetric->cipherEngine(S2kUsage::Cfb->name);
+                $cipher->disablePadding();
                 $cipher->setIV($iv);
                 $cipher->setKey($kek);
 
@@ -505,6 +506,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 );
             } else {
                 $cipher = $this->symmetric->cipherEngine(S2kUsage::Cfb->name);
+                $cipher->disablePadding();
                 $cipher->setIV($this->iv);
                 $cipher->setKey($kek);
                 $decrypted = $cipher->decrypt($this->keyData);

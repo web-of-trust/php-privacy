@@ -67,6 +67,7 @@ class SymEncryptedData extends AbstractPacket implements
     ): self {
         Helper::assertSymmetric($symmetric);
         $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
+        $cipher->disablePadding();
         $cipher->setKey($key);
         $cipher->setIV(str_repeat(Helper::ZERO_CHAR, $symmetric->blockSize()));
         $prefix = $cipher->encrypt(Helper::generatePrefix($symmetric));
@@ -119,6 +120,7 @@ class SymEncryptedData extends AbstractPacket implements
         } else {
             $blockSize = $symmetric->blockSize();
             $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
+            $cipher->disablePadding();
             $cipher->setKey($key);
             $cipher->setIV(substr($this->encrypted, 2, $blockSize));
 
