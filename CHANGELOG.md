@@ -116,3 +116,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 1.2.3 - released 2024-10-10
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.2...1.2.3)
 - Refactor package partial encode.
+
+## 1.2.4 - released 2024-10-22
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.3...1.2.4)
+- Disable symmetric padding.
