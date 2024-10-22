@@ -117,6 +117,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.2...1.2.3)
 - Refactor package partial encode.
 
+## 1.2.4 - released 2024-10-22
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.3...1.2.4)
+- Disable symmetric padding.
+
 ## 2.0.0 - released 2024-10-01
 - Release to major version 2
 
@@ -125,3 +129,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Refactor Montgomery Curve Enum
 - Refactor generate Montgomery secret key
 - Refactor package encode
+
+## 2.0.2 - released 2024-10-22
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.0.1...2.0.2)
+- Disable symmetric padding.
