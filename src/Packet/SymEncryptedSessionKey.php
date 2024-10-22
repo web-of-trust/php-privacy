@@ -140,6 +140,7 @@ class SymEncryptedSessionKey extends AbstractPacket
                 );
             } else {
                 $cipher = $symmetric->cipherEngine(self::CIPHER_MODE);
+                $cipher->disablePadding();
                 $cipher->setKey($key);
                 $cipher->setIV(
                     str_repeat(self::ZERO_CHAR, $symmetric->blockSize())
@@ -271,6 +272,7 @@ class SymEncryptedSessionKey extends AbstractPacket
                     );
                 } else {
                     $cipher = $this->symmetric->cipherEngine(self::CIPHER_MODE);
+                    $cipher->disablePadding();
                     $cipher->setKey($key);
                     $cipher->setIV(
                         str_repeat(

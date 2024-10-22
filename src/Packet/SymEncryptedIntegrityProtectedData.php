@@ -93,6 +93,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
         $plainText = $toHash . hash(self::HASH_ALGO, $toHash, true);
 
         $cipher = $symmetric->cipherEngine(self::CIPHER_MODE);
+        $cipher->disablePadding();
         $cipher->setKey($key);
         $cipher->setIV(str_repeat(self::ZERO_CHAR, $symmetric->blockSize()));
 
@@ -150,6 +151,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
             );
             $size = $symmetric->blockSize();
             $cipher = $symmetric->cipherEngine(self::CIPHER_MODE);
+            $cipher->disablePadding();
             $cipher->setKey($key);
             $cipher->setIV(str_repeat(self::ZERO_CHAR, $size));
 

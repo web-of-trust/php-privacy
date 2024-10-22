@@ -333,6 +333,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             $s2k = Helper::stringToKey();
             $iv = Random::string($symmetric->blockSize());
             $cipher = $symmetric->cipherEngine(self::CIPHER_MODE);
+            $cipher->disablePadding();
             $cipher->setIV($iv);
             $cipher->setKey(
                 $s2k->produceKey($passphrase, $symmetric->keySizeInByte())
@@ -368,9 +369,9 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 "Decrypt secret key material with passphrase."
             );
             $cipher = $this->symmetric->cipherEngine(self::CIPHER_MODE);
+            $cipher->disablePadding();
             $cipher->setIV($this->iv);
-            $key =
-                $this->s2k?->produceKey(
+            $key = $this->s2k?->produceKey(
                     $passphrase,
                     $this->symmetric->keySizeInByte()
                 ) ??
