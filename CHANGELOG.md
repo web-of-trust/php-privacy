@@ -121,6 +121,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.3...1.2.4)
 - Disable symmetric padding.
 
+## 1.2.5 - released 2024-11-05
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.4...1.2.5)
+- Refactor decode public key packet from bytes.
+- Refactor decode secret key packet from bytes.
+- Refactor generate secret key packet.
+- Refactor encrypt secret key packet.
+- Refactor decrypt secret key packet.
+
 ## 2.0.0 - released 2024-10-01
 - Release to major version 2
 
