@@ -9,6 +9,7 @@
 namespace OpenPGP\Packet;
 
 use DateTimeInterface;
+use OpenPGP\Common\Config;
 use OpenPGP\Enum\{
     AeadAlgorithm,
     Ecc,
@@ -70,7 +71,26 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
      */
     public static function fromBytes(string $bytes): self
     {
-        return self::fromSecretKey(SecretKey::fromBytes($bytes));
+        $publicKey = PublicSubkey::fromBytes($bytes);
+        [
+            $s2kUsage,
+            $symmetric,
+            $aead,
+            $s2k,
+            $iv,
+            $keyData,
+            $keyMaterial,
+        ] = self::decode($bytes, $publicKey);
+        return new self(
+            $publicKey,
+            $keyData,
+            $keyMaterial,
+            $s2kUsage,
+            $symmetric,
+            $s2k,
+            $aead,
+            $iv
+        );
     }
 
     /**
@@ -88,8 +108,28 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         Ecc $curve = Ecc::Ed25519,
         ?DateTimeInterface $time = null
     ): self {
-        return self::fromSecretKey(
-            SecretKey::generate($keyAlgorithm, $rsaKeySize, $curve, $time)
+        $keyMaterial = self::generateKeyMaterial(
+            $keyAlgorithm, $rsaKeySize, $curve
+        );
+        $version = match ($keyAlgorithm) {
+            KeyAlgorithm::X25519,
+            KeyAlgorithm::X448,
+            KeyAlgorithm::Ed25519,
+            KeyAlgorithm::Ed448
+                => PublicKey::VERSION_6,
+            default => Config::useV6Key()
+                ? PublicKey::VERSION_6
+                : PublicKey::VERSION_4,
+        };
+        return new self(
+            new PublicSubkey(
+                $version,
+                $time ?? new \DateTime(),
+                $keyAlgorithm,
+                $keyMaterial->getPublicMaterial()
+            ),
+            $keyMaterial->toBytes(),
+            $keyMaterial
         );
     }
 
@@ -101,9 +141,18 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
         ?AeadAlgorithm $aead = null
     ): self {
-        if ($this->getKeyMaterial() instanceof KeyMaterialInterface) {
-            $secretKey = parent::encrypt($passphrase, $symmetric, $aead);
-            return self::fromSecretKey($secretKey);
+        if ($this->isDecrypted()) {
+            [$encrypted, $iv, $s2k] = parent::encryptKeyMaterial($passphrase, $symmetric, $aead);
+            return new self(
+                $this->getPublicKey(),
+                $encrypted,
+                $this->getKeyMaterial(),
+                $aead instanceof AeadAlgorithm ? S2kUsage::AeadProtect : S2kUsage::Cfb,
+                $symmetric,
+                $s2k,
+                $aead,
+                $iv
+            );
         } else {
             return $this;
         }
@@ -114,30 +163,19 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
      */
     public function decrypt(string $passphrase): self
     {
-        if ($this->getKeyMaterial() instanceof KeyMaterialInterface) {
+        if ($this->isDecrypted()) {
             return $this;
         } else {
-            return self::fromSecretKey(parent::decrypt($passphrase));
+            return new self(
+                $this->getPublicKey(),
+                $this->getKeyData(),
+                $this->decryptKeyData($passphrase),
+                $this->getS2kUsage(),
+                $this->getSymmetric(),
+                $this->getS2K(),
+                $this->getAead(),
+                $this->getIV()
+            );
         }
-    }
-
-    private static function fromSecretKey(SecretKey $secretKey): self
-    {
-        $publicKey = $secretKey->getPublicKey();
-        return new self(
-            new PublicSubkey(
-                $publicKey->getVersion(),
-                $publicKey->getCreationTime(),
-                $publicKey->getKeyAlgorithm(),
-                $publicKey->getKeyMaterial()
-            ),
-            $secretKey->getKeyData(),
-            $secretKey->getKeyMaterial(),
-            $secretKey->getS2kUsage(),
-            $secretKey->getSymmetric(),
-            $secretKey->getS2K(),
-            $secretKey->getAead(),
-            $secretKey->getIV()
-        );
     }
 }
