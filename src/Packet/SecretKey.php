@@ -16,6 +16,7 @@ use OpenPGP\Enum\{
     EdDSACurve,
     HashAlgorithm,
     KeyAlgorithm,
+    KeyVersion,
     MontgomeryCurve,
     PacketTag,
     RSAKeySize,
@@ -76,7 +77,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         );
 
         if (
-            $publicKey->getVersion() === PublicKey::VERSION_6 &&
+            $publicKey->getVersion() === KeyVersion::V6->value &&
             $s2kUsage === S2kUsage::MalleableCfb
         ) {
             throw new \InvalidArgumentException(
@@ -137,10 +138,10 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             KeyAlgorithm::X448,
             KeyAlgorithm::Ed25519,
             KeyAlgorithm::Ed448
-                => PublicKey::VERSION_6,
+                => KeyVersion::V6->value,
             default => Config::useV6Key()
-                ? PublicKey::VERSION_6
-                : PublicKey::VERSION_4,
+                ? KeyVersion::V6->value
+                : KeyVersion::V4->value,
         };
         return new self(
             new PublicKey(
@@ -159,7 +160,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
      */
     public function toBytes(): string
     {
-        $isV6 = $this->getVersion() === PublicKey::VERSION_6;
+        $isV6 = $this->getVersion() === KeyVersion::V6->value;
         if ($this->isEncrypted()) {
             $optBytes = implode([
                 chr($this->symmetric->value),
@@ -438,7 +439,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     }
 
     /**
-     * Decode public key packet
+     * Decode secret key packet
      *
      * @param string $bytes
      * @param PublicKeyPacketInterface $publicKey
@@ -449,7 +450,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         PublicKeyPacketInterface $publicKey
     ): array {
         $offset = strlen($publicKey->toBytes());
-        $isV6 = $publicKey->getVersion() === PublicKey::VERSION_6;
+        $isV6 = $publicKey->getVersion() === KeyVersion::V6->value;
         $s2kUsage = S2kUsage::from(ord($bytes[$offset++]));
 
         // Only for a version 6 packet where the secret key material encrypted
@@ -473,19 +474,17 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 
                 // Only for a version 6 packet, and if string-to-key usage
                 // octet was 253 or 254, an one-octet count of the following field.
-                if (
-                    $isV6 &&
-                    ($s2kUsage === S2kUsage::AeadProtect ||
-                        $s2kUsage === S2kUsage::Cfb)
-                ) {
+                if ($isV6 && (
+                    $s2kUsage === S2kUsage::AeadProtect ||
+                    $s2kUsage === S2kUsage::Cfb
+                )) {
                     $offset++;
                 }
 
                 $s2kType = S2kType::from(ord($bytes[$offset]));
-                $s2k =
-                    $s2kType === S2kType::Argon2
-                        ? Argon2S2K::fromBytes(substr($bytes, $offset))
-                        : GenericS2K::fromBytes(substr($bytes, $offset));
+                $s2k = $s2kType === S2kType::Argon2
+                    ? Argon2S2K::fromBytes(substr($bytes, $offset))
+                    : GenericS2K::fromBytes(substr($bytes, $offset));
                 $offset += $s2kType->dataLength();
                 break;
             default:
@@ -582,7 +581,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         Helper::assertSymmetric($symmetric);
 
         $aeadProtect = $aead instanceof AeadAlgorithm;
-        if ($aeadProtect && $this->getVersion() !== PublicKey::VERSION_6) {
+        if ($aeadProtect && $this->getVersion() !== KeyVersion::V6->value) {
             throw new \InvalidArgumentException(
                 "Using AEAD with version {$this->getVersion()} of the key packet is not allowed."
             );
@@ -701,7 +700,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $symmetric->keySizeInByte(),
                 implode([
                     $packetTag,
-                    chr(PublicKey::VERSION_6),
+                    chr(KeyVersion::V6->value),
                     chr($symmetric->value),
                     chr($aead->value),
                 ])

@@ -14,6 +14,7 @@ use OpenPGP\Enum\{
     AeadAlgorithm,
     Ecc,
     KeyAlgorithm,
+    KeyVersion,
     RSAKeySize,
     S2kUsage,
     SymmetricAlgorithm
@@ -116,10 +117,10 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
             KeyAlgorithm::X448,
             KeyAlgorithm::Ed25519,
             KeyAlgorithm::Ed448
-                => PublicKey::VERSION_6,
+                => KeyVersion::V6->value,
             default => Config::useV6Key()
-                ? PublicKey::VERSION_6
-                : PublicKey::VERSION_4,
+                ? KeyVersion::V6->value
+                : KeyVersion::V4->value,
         };
         return new self(
             new PublicSubkey(

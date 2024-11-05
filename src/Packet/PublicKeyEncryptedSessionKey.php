@@ -8,7 +8,7 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Enum\{KeyAlgorithm, MontgomeryCurve, PacketTag};
+use OpenPGP\Enum\{KeyAlgorithm, KeyVersion, MontgomeryCurve, PacketTag};
 use OpenPGP\Type\{
     KeyPacketInterface,
     SecretKeyPacketInterface,
@@ -30,7 +30,6 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
 {
     const VERSION_3 = 3;
     const VERSION_6 = 6;
-    const KEY_ID_SIZE = 8;
 
     /**
      * Constructor
@@ -81,12 +80,12 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
             $keyVersion = ord($bytes[$offset++]);
             $keyFingerprint = substr($bytes, $offset, $length - 1);
             $offset += $length - 1;
-            $keyID = $keyVersion === PublicKey::VERSION_6
-                ? substr($keyFingerprint, 0, self::KEY_ID_SIZE)
-                : substr($keyFingerprint, 12, self::KEY_ID_SIZE);
+            $keyID = $keyVersion === KeyVersion::V6->value
+                ? substr($keyFingerprint, 0, PublicKey::KEY_ID_SIZE)
+                : substr($keyFingerprint, 12, PublicKey::KEY_ID_SIZE);
         } else {
-            $keyID = substr($bytes, $offset, self::KEY_ID_SIZE);
-            $offset += self::KEY_ID_SIZE;
+            $keyID = substr($bytes, $offset, PublicKey::KEY_ID_SIZE);
+            $offset += PublicKey::KEY_ID_SIZE;
             $keyVersion = 0;
             $keyFingerprint = "";
         }

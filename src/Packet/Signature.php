@@ -16,6 +16,7 @@ use OpenPGP\Enum\{
     HashAlgorithm,
     KeyAlgorithm,
     KeyFlag,
+    KeyVersion,
     LiteralFormat,
     PacketTag,
     RevocationReasonTag,
@@ -528,7 +529,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             default => SignatureType::Binary,
         };
         $subpackets = [];
-        if ($signKey->getVersion() === PublicKey::VERSION_6) {
+        if ($signKey->getVersion() === KeyVersion::V6->value) {
             foreach ($recipients as $recipient) {
                 if ($recipient instanceof KeyPacketInterface) {
                     $subpackets[] = Signature\IntendedRecipientFingerprint::fromKeyPacket(

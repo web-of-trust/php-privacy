@@ -15,6 +15,7 @@ use OpenPGP\Enum\{
     EdDSACurve,
     HashAlgorithm,
     KeyAlgorithm,
+    KeyVersion,
     MontgomeryCurve,
     PacketTag
 };
@@ -37,10 +38,6 @@ use phpseclib3\Common\Functions\Strings;
  */
 class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
 {
-    const VERSION_4 = 4;
-    const VERSION_6 = 6;
-    const V4_HASH = "sha1";
-    const V6_HASH = "sha256";
     const KEY_ID_SIZE = 8;
 
     /**
@@ -73,12 +70,12 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
                 ? PacketTag::PublicSubkey
                 : PacketTag::PublicKey
         );
-        if ($version !== self::VERSION_4 && $version !== self::VERSION_6) {
+        if ($version !== KeyVersion::V4->value && $version !== KeyVersion::V6->value) {
             throw new \InvalidArgumentException(
                 "Version {$version} of the key packet is unsupported."
             );
         }
-        $isV6 = $version === self::VERSION_6;
+        $isV6 = $version === KeyVersion::V6->value;
 
         if ($isV6) {
             if ($keyMaterial instanceof Key\ECPublicKeyMaterial) {
@@ -100,8 +97,8 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         }
 
         $this->fingerprint = $isV6
-            ? hash(self::V6_HASH, $this->getSignBytes(), true)
-            : hash(self::V4_HASH, $this->getSignBytes(), true);
+            ? hash(KeyVersion::V6->hashAlgo(), $this->getSignBytes(), true)
+            : hash(KeyVersion::V4->hashAlgo(), $this->getSignBytes(), true);
         $this->keyID = $isV6
             ? substr($this->fingerprint, 0, self::KEY_ID_SIZE)
             : substr($this->fingerprint, 12, self::KEY_ID_SIZE);
@@ -128,7 +125,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
             chr($this->version),
             pack("N", $this->creationTime->getTimestamp()),
             chr($this->keyAlgorithm->value),
-            $this->version === self::VERSION_6
+            $this->version === KeyVersion::V6->value
                 ? pack("N", strlen($kmBytes))
                 : "",
             $kmBytes,
@@ -250,7 +247,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
     public function getSignBytes(): string
     {
         $bytes = $this->toBytes();
-        $format = $this->version === self::VERSION_6 ? "N" : "n";
+        $format = $this->version === KeyVersion::V6->value ? "N" : "n";
         return implode([
             chr(0x95 + $this->version),
             pack($format, strlen($bytes)),
@@ -280,7 +277,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         // A one-octet number denoting the public-key algorithm of this key.
         $keyAlgorithm = KeyAlgorithm::from(ord($bytes[$offset++]));
 
-        if ($version === self::VERSION_6) {
+        if ($version === KeyVersion::V6->value) {
             // - A four-octet scalar octet count for the following key material.
             $offset += 4;
         }
