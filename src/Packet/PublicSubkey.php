@@ -24,34 +24,11 @@ use OpenPGP\Type\{KeyMaterialInterface, SubkeyPacketInterface};
 class PublicSubkey extends PublicKey implements SubkeyPacketInterface
 {
     /**
-     * Constructor
-     *
-     * @param int $version
-     * @param DateTimeInterface $creationTime
-     * @param KeyAlgorithm $algorithm
-     * @param KeyMaterialInterface $keyMaterial
-     * @return self
-     */
-    public function __construct(
-        int $version,
-        DateTimeInterface $creationTime,
-        KeyAlgorithm $algorithm,
-        KeyMaterialInterface $keyMaterial
-    ) {
-        parent::__construct($version, $creationTime, $algorithm, $keyMaterial);
-    }
-
-    /**
      * {@inheritdoc}
      */
     public static function fromBytes(string $bytes): self
     {
-        $publicKey = PublicKey::fromBytes($bytes);
-        return new self(
-            $publicKey->getVersion(),
-            $publicKey->getCreationTime(),
-            $publicKey->getKeyAlgorithm(),
-            $publicKey->getKeyMaterial()
-        );
+        [$version, $creationTime, $keyAlgorithm, $keyMaterial] = self::decode($bytes);
+        return new self($version, $creationTime, $keyAlgorithm, $keyMaterial);
     }
 }
