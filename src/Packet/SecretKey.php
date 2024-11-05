@@ -623,39 +623,41 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
      */
     protected function decryptKeyData(string $passphrase): KeyMaterialInterface
     {
-        $clearText = "";
-        $packetTag = $this->getTagByte();
-        $kek = self::produceEncryptionKey(
-            $passphrase,
-            $this->symmetric,
-            $this->s2k,
-            $this->aead,
-            $packetTag
-        );
-
-        if ($this->aead instanceof AeadAlgorithm) {
-            $cipher = $this->aead->cipherEngine($kek, $this->symmetric);
-            $clearText = $cipher->decrypt(
-                $this->keyData,
-                $this->iv,
-                implode([$packetTag, $this->publicKey->toBytes()])
+        $keyData = $this->keyData;
+        if ($this->isEncrypted()) {
+            $packetTag = $this->getTagByte();
+            $kek = self::produceEncryptionKey(
+                $passphrase,
+                $this->symmetric,
+                $this->s2k,
+                $this->aead,
+                $packetTag
             );
-        } else {
-            $cipher = $this->symmetric->cipherEngine(S2kUsage::Cfb->name);
-            $cipher->disablePadding();
-            $cipher->setIV($this->iv);
-            $cipher->setKey($kek);
-            $decrypted = $cipher->decrypt($this->keyData);
-            $length = strlen($decrypted) - HashAlgorithm::Sha1->digestSize();
-            $clearText = substr($decrypted, 0, $length);
-            $hashText = substr($decrypted, $length);
-            $hashed = hash(self::HASH_ALGO, $clearText, true);
-            if (strcmp($hashed, $hashText) !== 0) {
-                throw new \RuntimeException("Incorrect key passphrase.");
+
+            if ($this->aead instanceof AeadAlgorithm) {
+                $cipher = $this->aead->cipherEngine($kek, $this->symmetric);
+                $keyData = $cipher->decrypt(
+                    $this->keyData,
+                    $this->iv,
+                    implode([$packetTag, $this->publicKey->toBytes()])
+                );
+            } else {
+                $cipher = $this->symmetric->cipherEngine(S2kUsage::Cfb->name);
+                $cipher->disablePadding();
+                $cipher->setIV($this->iv);
+                $cipher->setKey($kek);
+                $decrypted = $cipher->decrypt($this->keyData);
+                $length = strlen($decrypted) - HashAlgorithm::Sha1->digestSize();
+                $keyData = substr($decrypted, 0, $length);
+                $hashText = substr($decrypted, $length);
+                $hashed = hash(self::HASH_ALGO, $keyData, true);
+                if (strcmp($hashed, $hashText) !== 0) {
+                    throw new \RuntimeException("Incorrect key passphrase.");
+                }
             }
         }
 
-        return self::readKeyMaterial($clearText, $this->publicKey);
+        return self::readKeyMaterial($keyData, $this->publicKey);
     }
 
     /**
