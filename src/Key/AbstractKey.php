@@ -888,11 +888,11 @@ abstract class AbstractKey implements KeyInterface
         }
 
         return [
-            $keyPacket,
-            $revocationSignatures,
-            $directSignatures,
-            $users,
-            $subkeys,
+            'keyPacket' => $keyPacket,
+            'revocationSignatures' => $revocationSignatures,
+            'directSignatures' => $directSignatures,
+            'users' => $users,
+            'subkeys' => $subkeys,
         ];
     }
 }
