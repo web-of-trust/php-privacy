@@ -9,7 +9,7 @@
 namespace OpenPGP\Packet;
 
 use DateTimeInterface;
-use OpenPGP\Common\S2K;
+use OpenPGP\Common\{Config, S2K};
 use OpenPGP\Enum\{
     CurveOid,
     DHKeySize,
@@ -66,7 +66,24 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
      */
     public static function fromBytes(string $bytes): self
     {
-        return self::fromSecretKey(SecretKey::fromBytes($bytes));
+        $publicKey = PublicSubkey::fromBytes($bytes);
+        [
+            $s2kUsage,
+            $symmetric,
+            $s2k,
+            $iv,
+            $keyData,
+            $keyMaterial,
+        ] = self::decode($bytes, $publicKey);
+        return new self(
+            $publicKey,
+            $keyData,
+            $keyMaterial,
+            $s2kUsage,
+            $symmetric,
+            $s2k,
+            $iv
+        );
     }
 
     /**
@@ -86,14 +103,20 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         CurveOid $curveOid = CurveOid::Ed25519,
         ?DateTimeInterface $time = null
     ): self {
-        return self::fromSecretKey(
-            SecretKey::generate(
-                $keyAlgorithm,
-                $rsaKeySize,
-                $dhKeySize,
-                $curveOid,
-                $time
-            )
+        $keyMaterial = self::generateKeyMaterial(
+            $keyAlgorithm, $rsaKeySize, $dhKeySize, $curveOid
+        );
+        return new self(
+            new PublicSubkey(
+                Config::useV5Key()
+                    ? PublicKey::VERSION_5
+                    : PublicKey::VERSION_4,
+                $time ?? new \DateTime(),
+                $keyMaterial->getPublicMaterial(),
+                $keyAlgorithm
+            ),
+            $keyMaterial->toBytes(),
+            $keyMaterial
         );
     }
 
@@ -104,9 +127,20 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         string $passphrase,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self {
-        if ($this->getKeyMaterial() instanceof KeyMaterialInterface) {
-            $secretKey = parent::encrypt($passphrase, $symmetric);
-            return self::fromSecretKey($secretKey);
+        if ($this->isDecrypted()) {
+            [$encrypted, $iv, $s2k] = $this->encryptKeyMaterial(
+                $passphrase,
+                $symmetric
+            );
+            return new self(
+                $this->getPublicKey(),
+                $encrypted,
+                $this->getKeyMaterial(),
+                S2kUsage::Sha1,
+                $symmetric,
+                $s2k,
+                $iv
+            );
         } else {
             return $this;
         }
@@ -117,29 +151,18 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
      */
     public function decrypt(string $passphrase): self
     {
-        if ($this->getKeyMaterial() instanceof KeyMaterialInterface) {
+        if ($this->isDecrypted()) {
             return $this;
         } else {
-            return self::fromSecretKey(parent::decrypt($passphrase));
+            return new self(
+                $this->getPublicKey(),
+                $this->getKeyData(),
+                $this->decryptKeyData($passphrase),
+                $this->getS2kUsage(),
+                $this->getSymmetric(),
+                $this->getS2K(),
+                $this->getIV()
+            );
         }
-    }
-
-    private static function fromSecretKey(SecretKey $secretKey): self
-    {
-        $publicKey = $secretKey->getPublicKey();
-        return new self(
-            new PublicSubkey(
-                $publicKey->getVersion(),
-                $publicKey->getCreationTime(),
-                $publicKey->getKeyMaterial(),
-                $publicKey->getKeyAlgorithm()
-            ),
-            $secretKey->getKeyData(),
-            $secretKey->getKeyMaterial(),
-            $secretKey->getS2kUsage(),
-            $secretKey->getSymmetric(),
-            $secretKey->getS2K(),
-            $secretKey->getIV()
-        );
     }
 }
