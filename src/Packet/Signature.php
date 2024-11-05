@@ -51,9 +51,6 @@ use phpseclib3\Crypt\Random;
  */
 class Signature extends AbstractPacket implements SignaturePacketInterface
 {
-    const VERSION_4 = 4;
-    const VERSION_6 = 6;
-
     private readonly array $hashedSubpackets;
 
     private readonly array $unhashedSubpackets;
@@ -86,12 +83,12 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         array $unhashedSubpackets = []
     ) {
         parent::__construct(PacketTag::Signature);
-        if ($version != self::VERSION_4 && $version != self::VERSION_6) {
+        if ($version != KeyVersion::V4->value && $version != KeyVersion::V6->value) {
             throw new \InvalidArgumentException(
                 "Version $version of the signature packet is unsupported."
             );
         }
-        if ($version === self::VERSION_6) {
+        if ($version === KeyVersion::V6->value) {
             Helper::assertHash($hashAlgorithm);
             if ($keyAlgorithm === KeyAlgorithm::Dsa) {
                 throw new \InvalidArgumentException(
@@ -120,7 +117,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             chr($this->hashAlgorithm->value),
             self::subpacketsToBytes(
                 $this->hashedSubpackets,
-                $this->version === self::VERSION_6
+                $this->version === KeyVersion::V6->value
             ),
         ]);
     }
@@ -134,7 +131,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 
         // A one-octet version number.
         $version = ord($bytes[$offset++]);
-        $isV6 = $version === self::VERSION_6;
+        $isV6 = $version === KeyVersion::V6->value;
 
         // One-octet signature type.
         $signatureType = SignatureType::from(ord($bytes[$offset++]));
@@ -223,7 +220,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         ];
 
         $salt = "";
-        $isV6 = $version === self::VERSION_6;
+        $isV6 = $version === KeyVersion::V6->value;
         if ($isV6) {
             $salt = Random::string($hashAlgorithm->saltSize());
         } else {
@@ -303,7 +300,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         int $keyExpiry = 0,
         ?DateTimeInterface $time = null
     ): self {
-        $props = $signKey->getVersion() === self::VERSION_4
+        $props = $signKey->getVersion() === KeyVersion::V4->value
             ? self::keySignatureProperties($signKey->getVersion())
             : [];
         if ($isPrimaryUser) {
@@ -569,11 +566,11 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             $this->signatureData,
             self::subpacketsToBytes(
                 $this->unhashedSubpackets,
-                $this->version === self::VERSION_6
+                $this->version === KeyVersion::V6->value
             ),
             $this->signedHashValue,
         ];
-        if ($this->version === self::VERSION_6) {
+        if ($this->version === KeyVersion::V6->value) {
             $data[] = chr(strlen($this->salt));
             $data[] = $this->salt;
         }
@@ -846,7 +843,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             self::getSubpacket($this->unhashedSubpackets, $type);
         if (!($issuerKeyID instanceof Signature\IssuerKeyID)) {
             $issuerFingerprint = $this->getIssuerFingerprint();
-            $keyID = $this->version === self::VERSION_6
+            $keyID = $this->version === KeyVersion::V6->value
                 ? substr($issuerFingerprint, 0, PublicKey::KEY_ID_SIZE)
                 : substr($issuerFingerprint, 12, PublicKey::KEY_ID_SIZE);
             $issuerKeyID = new Signature\IssuerKeyID($keyID);
@@ -1025,7 +1022,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             return $subpacket->getKeyFingerprint($toHex);
         }
         return Signature\IssuerFingerprint::wildcard(
-            $this->version === self::VERSION_6
+            $this->version === KeyVersion::V6->value
         )->getKeyFingerprint($toHex);
     }
 
@@ -1140,7 +1137,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
                 SupportFeature::Version2SEIPD->value
             ),
         ];
-        if ($version === self::VERSION_6) {
+        if ($version === KeyVersion::V6->value) {
             $props[] = new Signature\PreferredAeadCiphers(
                 implode(
                     array_map(
