@@ -105,7 +105,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
     public static function generate(
         KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
-        Ecc $curve = Ecc::Ed25519,
+        Ecc $curve = Ecc::Secp521r1,
         ?DateTimeInterface $time = null
     ): self {
         $keyMaterial = self::generateKeyMaterial(
