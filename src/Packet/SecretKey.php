@@ -133,19 +133,9 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             $rsaKeySize,
             $curve
         );
-        $version = match ($keyAlgorithm) {
-            KeyAlgorithm::X25519,
-            KeyAlgorithm::X448,
-            KeyAlgorithm::Ed25519,
-            KeyAlgorithm::Ed448
-                => KeyVersion::V6->value,
-            default => Config::useV6Key()
-                ? KeyVersion::V6->value
-                : KeyVersion::V4->value,
-        };
         return new self(
             new PublicKey(
-                $version,
+                $keyAlgorithm->keyVersion(),
                 $time ?? new \DateTime(),
                 $keyAlgorithm,
                 $keyMaterial->getPublicMaterial()

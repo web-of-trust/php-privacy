@@ -8,6 +8,8 @@
 
 namespace OpenPGP\Enum;
 
+use OpenPGP\Common\Config;
+
 /**
  * Key algorithm enum
  *
@@ -137,6 +139,25 @@ enum KeyAlgorithm: int
             self::Ed448
                 => false,
             default => true,
+        };
+    }
+
+    /**
+     * Get key version
+     *
+     * @return int
+     */
+    public function keyVersion(): int
+    {
+        return match ($this) {
+            self::X25519,
+            self::X448,
+            self::Ed25519,
+            self::Ed448
+                => KeyVersion::V6->value,
+            default => Config::useV6Key()
+                ? KeyVersion::V6->value
+                : KeyVersion::V4->value,
         };
     }
 }
