@@ -778,12 +778,12 @@ abstract class AbstractKey implements KeyInterface
     }
 
     /**
-     * Build key map from packet list.
+     * Build key structure from packet list.
      *
      * @param PacketListInterface $packetList
      * @return array
      */
-    protected static function packetListToKeyMap(
+    protected static function keyStructure(
         PacketListInterface $packetList
     ): array {
         $revocationSignatures = $directSignatures = $users = $subkeys = [];
@@ -888,11 +888,11 @@ abstract class AbstractKey implements KeyInterface
         }
 
         return [
-            "keyPacket" => $keyPacket,
-            "revocationSignatures" => $revocationSignatures,
-            "directSignatures" => $directSignatures,
-            "users" => $users,
-            "subkeys" => $subkeys,
+            $keyPacket,
+            $revocationSignatures,
+            $directSignatures,
+            $users,
+            $subkeys,
         ];
     }
 }

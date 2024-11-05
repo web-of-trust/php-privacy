@@ -144,16 +144,22 @@ class PublicKey extends AbstractKey implements PublicKeyInterface
      */
     public static function fromPacketList(PacketListInterface $packetList): self
     {
-        $keyMap = self::packetListToKeyMap($packetList);
-        if (!($keyMap["keyPacket"] instanceof PublicKeyPacketInterface)) {
+        [
+            $keyPacket,
+            $revocationSignatures,
+            $directSignatures,
+            $users,
+            $subkeys,
+        ] = self::keyStructure($packetList);
+        if (!($keyPacket instanceof PublicKeyPacketInterface)) {
             throw new \RuntimeException("Key packet is not public key type.");
         }
         return new self(
-            $keyMap["keyPacket"],
-            $keyMap["revocationSignatures"],
-            $keyMap["directSignatures"],
-            $keyMap["users"],
-            $keyMap["subkeys"]
+            $keyPacket,
+            $revocationSignatures,
+            $directSignatures,
+            $users,
+            $subkeys
         );
     }
 
