@@ -143,7 +143,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         ?AeadAlgorithm $aead = null
     ): self {
         if ($this->isDecrypted()) {
-            [$encrypted, $iv, $s2k] = parent::encryptKeyMaterial($passphrase, $symmetric, $aead);
+            [$encrypted, $iv, $s2k] = $this->encryptKeyMaterial($passphrase, $symmetric, $aead);
             return new self(
                 $this->getPublicKey(),
                 $encrypted,
