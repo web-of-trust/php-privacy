@@ -8,9 +8,7 @@
 
 namespace OpenPGP\Packet;
 
-use DateTimeInterface;
-use OpenPGP\Enum\KeyAlgorithm;
-use OpenPGP\Type\{KeyMaterialInterface, SubkeyPacketInterface};
+use OpenPGP\Type\SubkeyPacketInterface;
 
 /**
  * Implementation an OpenPGP sub public key packet (Tag 14).
@@ -28,7 +26,9 @@ class PublicSubkey extends PublicKey implements SubkeyPacketInterface
      */
     public static function fromBytes(string $bytes): self
     {
-        [$version, $creationTime, $keyAlgorithm, $keyMaterial] = self::decode($bytes);
+        [$version, $creationTime, $keyAlgorithm, $keyMaterial] = self::decode(
+            $bytes
+        );
         return new self($version, $creationTime, $keyAlgorithm, $keyMaterial);
     }
 }

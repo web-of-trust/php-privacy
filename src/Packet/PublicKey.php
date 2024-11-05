@@ -83,10 +83,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         if ($isV6) {
             if ($keyMaterial instanceof Key\ECPublicKeyMaterial) {
                 $curve = $keyMaterial->getEcc();
-                if (
-                    $curve === Ecc::Ed25519 ||
-                    $curve === Ecc::Curve25519
-                ) {
+                if ($curve === Ecc::Ed25519 || $curve === Ecc::Curve25519) {
                     throw new \InvalidArgumentException(
                         "Legacy curve {$curve->name} cannot be used with v{$version} key packet."
                     );
@@ -115,7 +112,9 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
      */
     public static function fromBytes(string $bytes): self
     {
-        [$version, $creationTime, $keyAlgorithm, $keyMaterial] = self::decode($bytes);
+        [$version, $creationTime, $keyAlgorithm, $keyMaterial] = self::decode(
+            $bytes
+        );
         return new self($version, $creationTime, $keyAlgorithm, $keyMaterial);
     }
 
@@ -259,6 +258,12 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         ]);
     }
 
+    /**
+     * Decode public key packet
+     *
+     * @param string $bytes
+     * @return array
+     */
     protected static function decode(string $bytes): array
     {
         $offset = 0;
@@ -286,12 +291,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
             $keyAlgorithm
         );
 
-        return [
-            $version,
-            $creationTime,
-            $keyAlgorithm,
-            $keyMaterial,
-        ];
+        return [$version, $creationTime, $keyAlgorithm, $keyMaterial];
     }
 
     private static function readKeyMaterial(
