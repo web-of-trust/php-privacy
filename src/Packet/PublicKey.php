@@ -70,7 +70,10 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
                 ? PacketTag::PublicSubkey
                 : PacketTag::PublicKey
         );
-        if ($version !== KeyVersion::V4->value && $version !== KeyVersion::V6->value) {
+        if (
+            $version !== KeyVersion::V4->value &&
+            $version !== KeyVersion::V6->value
+        ) {
             throw new \InvalidArgumentException(
                 "Version {$version} of the key packet is unsupported."
             );

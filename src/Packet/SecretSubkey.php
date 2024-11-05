@@ -109,7 +109,9 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         ?DateTimeInterface $time = null
     ): self {
         $keyMaterial = self::generateKeyMaterial(
-            $keyAlgorithm, $rsaKeySize, $curve
+            $keyAlgorithm,
+            $rsaKeySize,
+            $curve
         );
         return new self(
             new PublicSubkey(
@@ -132,12 +134,18 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         ?AeadAlgorithm $aead = null
     ): self {
         if ($this->isDecrypted()) {
-            [$encrypted, $iv, $s2k] = $this->encryptKeyMaterial($passphrase, $symmetric, $aead);
+            [$encrypted, $iv, $s2k] = $this->encryptKeyMaterial(
+                $passphrase,
+                $symmetric,
+                $aead
+            );
             return new self(
                 $this->getPublicKey(),
                 $encrypted,
                 $this->getKeyMaterial(),
-                $aead instanceof AeadAlgorithm ? S2kUsage::AeadProtect : S2kUsage::Cfb,
+                $aead instanceof AeadAlgorithm
+                    ? S2kUsage::AeadProtect
+                    : S2kUsage::Cfb,
                 $symmetric,
                 $s2k,
                 $aead,

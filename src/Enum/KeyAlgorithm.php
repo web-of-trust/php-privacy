@@ -150,11 +150,8 @@ enum KeyAlgorithm: int
     public function keyVersion(): int
     {
         return match ($this) {
-            self::X25519,
-            self::X448,
-            self::Ed25519,
-            self::Ed448
-                => KeyVersion::V6->value,
+            self::X25519, self::X448, self::Ed25519, self::Ed448 => KeyVersion
+                ::V6->value,
             default => Config::useV6Key()
                 ? KeyVersion::V6->value
                 : KeyVersion::V4->value,
