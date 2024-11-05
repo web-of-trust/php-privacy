@@ -77,37 +77,9 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
      */
     public static function fromBytes(string $bytes): self
     {
-        $offset = 0;
-
-        // A one-octet version number.
-        $version = ord($bytes[$offset++]);
-        if ($version !== self::VERSION_4 && $version !== self::VERSION_5) {
-            throw new \UnexpectedValueException(
-                "Version $version of the key packet is unsupported."
-            );
-        }
-
-        // A four-octet number denoting the time that the key was created.
-        $creationTime = (new \DateTime())->setTimestamp(
-            Helper::bytesToLong($bytes, $offset)
+        [$version, $creationTime, $keyAlgorithm, $keyMaterial] = self::decode(
+            $bytes
         );
-        $offset += 4;
-
-        // A one-octet number denoting the public-key algorithm of this key.
-        $keyAlgorithm = KeyAlgorithm::from(ord($bytes[$offset++]));
-
-        if ($version === self::VERSION_5) {
-            // - A four-octet scalar octet count for the following key material.
-            $offset += 4;
-        }
-
-        // A series of values comprising the key material.
-        // This is algorithm-specific and described in section XXXX.
-        $keyMaterial = self::readKeyMaterial(
-            substr($bytes, $offset),
-            $keyAlgorithm
-        );
-
         return new self($version, $creationTime, $keyMaterial, $keyAlgorithm);
     }
 
@@ -235,6 +207,47 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
             $isV5 ? pack("N", strlen($bytes)) : pack("n", strlen($bytes)),
             $bytes,
         ]);
+    }
+
+    /**
+     * Decode public key packet
+     *
+     * @param string $bytes
+     * @return array
+     */
+    protected static function decode(string $bytes): array
+    {
+        $offset = 0;
+
+        // A one-octet version number.
+        $version = ord($bytes[$offset++]);
+        if ($version !== self::VERSION_4 && $version !== self::VERSION_5) {
+            throw new \UnexpectedValueException(
+                "Version $version of the key packet is unsupported."
+            );
+        }
+
+        // A four-octet number denoting the time that the key was created.
+        $creationTime = (new \DateTime())->setTimestamp(
+            Helper::bytesToLong($bytes, $offset)
+        );
+        $offset += 4;
+
+        // A one-octet number denoting the public-key algorithm of this key.
+        $keyAlgorithm = KeyAlgorithm::from(ord($bytes[$offset++]));
+
+        if ($version === self::VERSION_5) {
+            // - A four-octet scalar octet count for the following key material.
+            $offset += 4;
+        }
+
+        // A series of values comprising the key material.
+        // This is algorithm-specific and described in section XXXX.
+        $keyMaterial = self::readKeyMaterial(
+            substr($bytes, $offset),
+            $keyAlgorithm
+        );
+        return [$version, $creationTime, $keyAlgorithm, $keyMaterial];
     }
 
     private static function readKeyMaterial(

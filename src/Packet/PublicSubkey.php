@@ -8,9 +8,7 @@
 
 namespace OpenPGP\Packet;
 
-use DateTimeInterface;
-use OpenPGP\Enum\KeyAlgorithm;
-use OpenPGP\Type\{KeyMaterialInterface, SubkeyPacketInterface};
+use OpenPGP\Type\SubkeyPacketInterface;
 
 /**
  * Public sub key packet class
@@ -22,34 +20,13 @@ use OpenPGP\Type\{KeyMaterialInterface, SubkeyPacketInterface};
 class PublicSubkey extends PublicKey implements SubkeyPacketInterface
 {
     /**
-     * Constructor
-     *
-     * @param int $version
-     * @param DateTimeInterface $creationTime
-     * @param KeyMaterialInterface $keyMaterial
-     * @param KeyAlgorithm $algorithm
-     * @return self
-     */
-    public function __construct(
-        int $version,
-        DateTimeInterface $creationTime,
-        KeyMaterialInterface $keyMaterial,
-        KeyAlgorithm $algorithm = KeyAlgorithm::RsaEncryptSign
-    ) {
-        parent::__construct($version, $creationTime, $keyMaterial, $algorithm);
-    }
-
-    /**
      * {@inheritdoc}
      */
     public static function fromBytes(string $bytes): self
     {
-        $publicKey = PublicKey::fromBytes($bytes);
-        return new self(
-            $publicKey->getVersion(),
-            $publicKey->getCreationTime(),
-            $publicKey->getKeyMaterial(),
-            $publicKey->getKeyAlgorithm()
+        [$version, $creationTime, $keyAlgorithm, $keyMaterial] = self::decode(
+            $bytes
         );
+        return new self($version, $creationTime, $keyMaterial, $keyAlgorithm);
     }
 }
