@@ -588,10 +588,9 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             );
         }
 
-        $s2k =
-            $aeadProtect && Argon2S2K::argon2Supported()
-                ? Helper::stringToKey(S2kType::Argon2)
-                : Helper::stringToKey(S2kType::Iterated);
+        $s2k = $aeadProtect && Argon2S2K::argon2Supported()
+            ? Helper::stringToKey(S2kType::Argon2)
+            : Helper::stringToKey(S2kType::Iterated);
 
         $iv = $aeadProtect
             ? Random::string($aead->ivLength())
