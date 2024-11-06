@@ -25,15 +25,10 @@ use OpenPGP\Enum\{
 final class Config
 {
     const VERSION = "PHP Privacy v2";
-    const COMMENT = "https://github.com/web-of-trust/php-privacy";
+    const COMMENT = "The PHP OpenPGP library";
 
     const CIPHER_MODE = "cfb";
     const HKDF_ALGO = "sha256";
-
-    const PADDING_MIN = 16;
-    const PADDING_MAX = 32;
-
-    const SALT_NOTATION = "salt@openpgp.org";
 
     const AEAD_SUPPORTED = true;
     const AEAD_CHUNK_SIZE_MIN = 10;

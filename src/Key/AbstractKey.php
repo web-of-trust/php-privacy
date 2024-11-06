@@ -9,7 +9,6 @@
 namespace OpenPGP\Key;
 
 use DateTimeInterface;
-use OpenPGP\Common\Config;
 use OpenPGP\Enum\{KeyAlgorithm, PacketTag, RevocationReasonTag, SignatureType};
 use OpenPGP\Packet\{PacketList, Padding, Signature};
 use OpenPGP\Packet\Signature\{
@@ -119,7 +118,7 @@ abstract class AbstractKey implements KeyInterface
         ];
         if ($this->getVersion() === 6) {
             $packets[] = Padding::createPadding(
-                random_int(Config::PADDING_MIN, Config::PADDING_MAX)
+                random_int(Padding::PADDING_MIN, Padding::PADDING_MAX)
             );
         }
 

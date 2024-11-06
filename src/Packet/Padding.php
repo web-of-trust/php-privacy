@@ -23,6 +23,9 @@ use phpseclib3\Crypt\Random;
  */
 class Padding extends AbstractPacket
 {
+    const PADDING_MIN = 16;
+    const PADDING_MAX = 32;
+
     /**
      * Constructor
      *
