@@ -225,7 +225,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             $salt = Random::string($hashAlgorithm->saltSize());
         } else {
             $hashedSubpackets[] = Signature\NotationData::fromNotation(
-                NotationData::SALT_NOTATION,
+                Signature\NotationData::SALT_NOTATION,
                 Random::string($hashAlgorithm->saltSize())
             );
         }
