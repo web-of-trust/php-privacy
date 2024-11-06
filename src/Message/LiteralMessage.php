@@ -260,7 +260,7 @@ class LiteralMessage extends AbstractMessage implements
             ? new PacketList([
                 ...$this->getPackets(),
                 Padding::createPadding(
-                    random_int(Config::PADDING_MIN, Config::PADDING_MAX)
+                    random_int(Padding::PADDING_MIN, Padding::PADDING_MAX)
                 ),
             ])
             : $this->getPacketList();
