@@ -26,9 +26,7 @@ use Psr\Log\{LoggerInterface, NullLogger};
 final class Config
 {
     const VERSION = "PHP Privacy v1";
-    const COMMENT = "https://github.com/web-of-trust/php-privacy";
-
-    const SALT_NOTATION = "salt@openpgp.org";
+    const COMMENT = "The PHP OpenPGP library";
 
     private static HashAlgorithm $preferredHash = HashAlgorithm::Sha256;
 
