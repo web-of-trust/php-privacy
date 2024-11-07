@@ -9,7 +9,6 @@
 namespace OpenPGP\Packet;
 
 use DateTimeInterface;
-use OpenPGP\Common\Config;
 use OpenPGP\Enum\{
     AeadAlgorithm,
     Ecc,
