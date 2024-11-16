@@ -150,3 +150,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Refactor encrypt secret key packet.
 - Refactor decrypt secret key packet.
 - Add key version enum.
+
+## 2.0.4 - released 2024-11-16
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.0.3...2.0.4)
+- Refactor AEAD crypt.
