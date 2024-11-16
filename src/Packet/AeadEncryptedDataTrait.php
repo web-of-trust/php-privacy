@@ -50,21 +50,4 @@ trait AeadEncryptedDataTrait
     {
         return $this->chunkSize;
     }
-
-    /**
-     * Get associated data
-     *
-     * @param string $tagByte
-     * @return string
-     */
-    private function getAData(string $tagByte): string
-    {
-        return implode([
-            $tagByte,
-            chr($this->version),
-            chr($this->symmetric->value),
-            chr($this->aead->value),
-            chr($this->chunkSize),
-        ]);
-    }
 }

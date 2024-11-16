@@ -146,18 +146,15 @@ class SymEncryptedIntegrityProtectedData
         if ($aeadProtect) {
             $salt = Random::string(self::SALT_SIZE);
             $chunkSize = Config::getAeadChunkSize();
-            $cryptor = new self(
-                $version,
+            $encrypted = self::aeadCrypt(
+                self::AEAD_ENCRYPT,
+                $key,
+                $packetList->encode(),
                 "",
                 $symmetric,
                 $aead,
                 $chunkSize,
                 $salt
-            );
-            $encrypted = $cryptor->aeadCrypt(
-                self::AEAD_ENCRYPT,
-                $key,
-                $packetList->encode()
             );
         } else {
             $toHash = implode([
@@ -256,11 +253,15 @@ class SymEncryptedIntegrityProtectedData
                     $this->encrypted,
                     $length - $this->aead->tagLength()
                 );
-                $packetBytes = $this->aeadCrypt(
+                $packetBytes = self::aeadCrypt(
                     self::AEAD_DECRYPT,
                     $key,
                     $data,
-                    $authTag
+                    $authTag,
+                    $this->symmetric,
+                    $this->aead,
+                    $this->chunkSize,
+                    $this->salt,
                 );
             } else {
                 $symmetric = $this->symmetric ?? $symmetric;
@@ -308,29 +309,45 @@ class SymEncryptedIntegrityProtectedData
      * @param string $key
      * @param string $data
      * @param string $finalChunk
+     * @param SymmetricAlgorithm $symmetric
+     * @param AeadAlgorithm $aead
+     * @param int $chunkSizeByte
+     * @param string $salt
      * @return string
      */
-    private function aeadCrypt(
+    private static function aeadCrypt(
         string $fn,
         string $key,
         string $data,
-        string $finalChunk = ""
+        string $finalChunk = "",
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        AeadAlgorithm $aead = AeadAlgorithm::Gcm,
+        int $chunkSizeByte = 12,
+        string $salt = ""
     ): string {
-        $chunkSize = 1 << $this->chunkSize + 6;
+        $chunkSize = 1 << $chunkSizeByte + 6;
         if ($fn === self::AEAD_DECRYPT) {
-            $chunkSize += $this->aead->tagLength();
+            $chunkSize += $aead->tagLength();
         }
 
-        $aData = $this->getAData($this->getTagByte());
+        $aData = implode([
+            chr(
+                0xc0 | PacketTag::SymEncryptedIntegrityProtectedData->value
+            ),
+            chr(self::VERSION_2),
+            chr($symmetric->value),
+            chr($aead->value),
+            chr($chunkSizeByte),
+        ]);
 
-        $keySize = $this->symmetric->keySizeInByte();
-        $ivLength = $this->aead->ivLength();
+        $keySize = $symmetric->keySizeInByte();
+        $ivLength = $aead->ivLength();
         $derivedKey = hash_hkdf(
             Config::HKDF_ALGO,
             $key,
             $keySize + $ivLength,
             $aData,
-            $this->salt
+            $salt
         );
         $kek = substr($derivedKey, 0, $keySize);
         $nonce = substr($derivedKey, $keySize, $ivLength);
@@ -340,7 +357,7 @@ class SymEncryptedIntegrityProtectedData
             str_repeat(Helper::ZERO_CHAR, 8),
             $ivLength - 8
         );
-        $cipher = $this->aead->cipherEngine($kek, $this->symmetric);
+        $cipher = $aead->cipherEngine($kek, $symmetric);
 
         $crypted = [];
         for ($index = 0; $index === 0 || strlen($data); ) {
