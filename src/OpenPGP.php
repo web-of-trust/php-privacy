@@ -297,7 +297,7 @@ final class OpenPGP
 
     /**
      * Sign a cleartext message.
-     * Return a signed message object
+     * Return a signed message object.
      *
      * @param string $text
      * @param array $signingKeys
@@ -482,7 +482,7 @@ final class OpenPGP
 
     /**
      * Decrypt a message with the user's private keys, or passwords.
-     * One of `decryptionKeys` or `passwords` must be specified
+     * One of `decryptionKeys` or `passwords` must be specified.
      *
      * @param Type\EncryptedMessageInterface $message
      * @param array $decryptionKeys
@@ -501,7 +501,7 @@ final class OpenPGP
     /**
      * Decrypt a armored/binary encrypted string with
      * the user's private keys, or passwords.
-     * One of `decryptionKeys` or `passwords` must be specified
+     * One of `decryptionKeys` or `passwords` must be specified.
      *
      * @param string $messageData
      * @param array $decryptionKeys
