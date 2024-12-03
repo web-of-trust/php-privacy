@@ -41,21 +41,21 @@ interface SecretKeyPacketInterface extends KeyPacketInterface
     function getAead(): ?AeadAlgorithm;
 
     /**
-     * Return secret key packed is encrypted
+     * Return secret key packet is encrypted
      *
      * @return bool
      */
     function isEncrypted(): bool;
 
     /**
-     * Return secret key packed is decrypted
+     * Return secret key packet is decrypted
      *
      * @return bool
      */
     function isDecrypted(): bool;
 
     /**
-     * Encrypt secret key with passphrase
+     * Encrypt secret key packet with passphrase
      *
      * @param string $passphrase
      * @param SymmetricAlgorithm $symmetric
@@ -69,7 +69,7 @@ interface SecretKeyPacketInterface extends KeyPacketInterface
     ): self;
 
     /**
-     * Decrypt secret key with passphrase
+     * Decrypt secret key packet with passphrase
      *
      * @param string $passphrase
      * @return self
