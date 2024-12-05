@@ -73,7 +73,7 @@ class CleartextMessage implements CleartextMessageInterface
     ): SignedMessageInterface {
         return new SignedMessage(
             $this->getText(),
-            $this->createSignature(
+            $this->signDetached(
                 $signingKeys,
                 $recipients,
                 $notationData,
@@ -86,40 +86,6 @@ class CleartextMessage implements CleartextMessageInterface
      * {@inheritdoc}
      */
     public function signDetached(
-        array $signingKeys,
-        array $recipients = [],
-        ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null
-    ): SignatureInterface {
-        return $this->createSignature(
-            $signingKeys,
-            $recipients,
-            $notationData,
-            $time
-        );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function verifyDetached(
-        array $verificationKeys,
-        SignatureInterface $signature,
-        ?DateTimeInterface $time = null
-    ): array {
-        return $signature->verifyCleartext($verificationKeys, $this, $time);
-    }
-
-    /**
-     * Create literal data signature.
-     *
-     * @param array $signingKeys
-     * @param array $recipients
-     * @param NotationDataInterface $notationData
-     * @param DateTimeInterface $time
-     * @return SignatureInterface
-     */
-    private function createSignature(
         array $signingKeys,
         array $recipients = [],
         ?NotationDataInterface $notationData = null,
@@ -146,5 +112,16 @@ class CleartextMessage implements CleartextMessageInterface
                 )
             )
         );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function verifyDetached(
+        array $verificationKeys,
+        SignatureInterface $signature,
+        ?DateTimeInterface $time = null
+    ): array {
+        return $signature->verifyCleartext($verificationKeys, $this, $time);
     }
 }
