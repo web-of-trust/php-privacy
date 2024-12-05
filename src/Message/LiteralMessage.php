@@ -148,7 +148,7 @@ class LiteralMessage extends AbstractMessage implements
                 static fn($packet) => $packet instanceof
                     SignaturePacketInterface
             ),
-            ...$this->createSignature(
+            ...$this->signDetached(
                 $signingKeys,
                 $recipients,
                 $notationData,
@@ -184,11 +184,26 @@ class LiteralMessage extends AbstractMessage implements
         ?NotationDataInterface $notationData = null,
         ?DateTimeInterface $time = null
     ): SignatureInterface {
-        return $this->createSignature(
+        $signingKeys = array_filter(
             $signingKeys,
-            $recipients,
-            $notationData,
-            $time
+            static fn($key) => $key instanceof PrivateKeyInterface
+        );
+        if (empty($signingKeys)) {
+            throw new \InvalidArgumentException("No signing keys provided.");
+        }
+        return new Signature(
+            new PacketList(
+                array_map(
+                    fn($key) => SignaturePacket::createLiteralData(
+                        $key->getSecretKeyPacket(),
+                        $this->getLiteralData(),
+                        $recipients,
+                        $notationData,
+                        $time
+                    ),
+                    $signingKeys
+                )
+            )
         );
     }
 
@@ -313,44 +328,6 @@ class LiteralMessage extends AbstractMessage implements
             );
         }
         return $this;
-    }
-
-    /**
-     * Create literal signature.
-     *
-     * @param array $signingKeys
-     * @param array $recipients
-     * @param NotationDataInterface $notationData
-     * @param DateTimeInterface $time
-     * @return SignatureInterface
-     */
-    private function createSignature(
-        array $signingKeys,
-        array $recipients = [],
-        ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null
-    ): SignatureInterface {
-        $signingKeys = array_filter(
-            $signingKeys,
-            static fn($key) => $key instanceof PrivateKeyInterface
-        );
-        if (empty($signingKeys)) {
-            throw new \InvalidArgumentException("No signing keys provided.");
-        }
-        return new Signature(
-            new PacketList(
-                array_map(
-                    fn($key) => SignaturePacket::createLiteralData(
-                        $key->getSecretKeyPacket(),
-                        $this->getLiteralData(),
-                        $recipients,
-                        $notationData,
-                        $time
-                    ),
-                    $signingKeys
-                )
-            )
-        );
     }
 
     /**
