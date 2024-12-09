@@ -6,7 +6,7 @@ use OpenPGP\OpenPGP;
 use OpenPGP\Common\Config;
 use OpenPGP\Enum\SymmetricAlgorithm;
 
-$passphase = "NU=WM<;ev3(^^M@)dIt,O|9k*<xLpv7v";
+$passphrase = "NU=WM<;ev3(^^M@)dIt,O|9k*<xLpv7v";
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -69,7 +69,7 @@ mNqrM25q1P8rBo69xZErGjQ/nFY=
 =HDCL
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-$rsaPrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
+$rsaPrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphrase);
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -102,7 +102,7 @@ xkqGItNj3gs=
 =pP8r
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-$eccPrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
+$eccPrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphrase);
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -130,7 +130,7 @@ VS4W
 =oH6u
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-$curve25519PrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
+$curve25519PrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphrase);
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -166,7 +166,7 @@ dYZIvg0A1SCEq4w8mfkSbFRJrixxFabTL7COFHgvL25joDV8UIvxYg==
 =aUu5
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-$curve448PrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
+$curve448PrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphrase);
 
 echo "Sign & encrypt literal data message with AES128 cipher:" .
     PHP_EOL .
@@ -178,13 +178,13 @@ $encryptedMessage = OpenPGP::encrypt(
         $rsaPrivateKey->toPublic(),
         $eccPrivateKey->toPublic(),
     ],
-    [$passphase],
+    [$passphrase],
     [$rsaPrivateKey, $eccPrivateKey, $curve25519PrivateKey, $curve448PrivateKey]
 );
 echo $armored = $encryptedMessage->armor() . PHP_EOL;
 
-echo "Decrypt with passphase & verify signatures:" . PHP_EOL . PHP_EOL;
-$literalMessage = OpenPGP::decryptMessage($armored, passwords: [$passphase]);
+echo "Decrypt with passphrase & verify signatures:" . PHP_EOL . PHP_EOL;
+$literalMessage = OpenPGP::decryptMessage($armored, passwords: [$passphrase]);
 $verifications = $literalMessage->verify([
     $rsaPrivateKey->toPublic(),
     $eccPrivateKey->toPublic(),
@@ -243,7 +243,7 @@ $encryptedMessage = OpenPGP::encrypt(
         $curve25519PrivateKey->toPublic(),
         $curve448PrivateKey->toPublic(),
     ],
-    [$passphase],
+    [$passphrase],
     [$rsaPrivateKey, $eccPrivateKey, $curve25519PrivateKey, $curve448PrivateKey]
 );
 echo $armored = $encryptedMessage->armor() . PHP_EOL;
