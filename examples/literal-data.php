@@ -134,8 +134,6 @@ $curve25519PrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphrase);
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
-Version: PHP Privacy v2
-Comment: https://github.com/web-of-trust/php-privacy
 
 xa8GZvOWNRwAAAA5EN1vmT1zBRrWb3u7WplWBLMom6ou9KLfVMa+qHNqAEGlyiBr3ik4wD8UOO8t
 ETP76oGUaeS5PXaA/h0HCwMI7kHpr3/alWrgIY5ni6U2mqvWywD89BwZpx+Npit0FTmE/XzIxX+Z
