@@ -8,8 +8,6 @@ $publicKeys = [];
 
 $keyData = <<<EOT
 -----BEGIN PGP PUBLIC KEY BLOCK-----
-Version: PHP Privacy v2
-Comment: https://github.com/web-of-trust/php-privacy
 
 xsBNBGbzbxEBCADJmISfDnVztCfrvKfr6rn4faGVReCPWET+ZDQBzjCieqGikm2dHFYZXkU2Mp5g
 h+hOx0YZylAI1sOBxf6AxbPysiT5AIllV3fXghSXoj7TqVuzk3pVmyajhPgmUlaPQbhWH4BdCUD7
@@ -53,8 +51,6 @@ echo "User ID: {$publicKey->getPrimaryUser()->getUserID()}" . PHP_EOL . PHP_EOL;
 
 $keyData = <<<EOT
 -----BEGIN PGP PUBLIC KEY BLOCK-----
-Version: PHP Privacy v2
-Comment: https://github.com/web-of-trust/php-privacy
 
 xpMEZvNvEhMFK4EEACMEIwQAhYLZkwYSvw0U+DPzSGOQybF7GZ3OoZpk6kXgyn2CJEk8jLAdvnNG
 2lZPHgCbm7PCMorp+lDpwQgRlGOPAWTkoa8Ao6CC/WPqEgu8c9YbWKrMaB1MTqlzsKrpbuOQC1mS
@@ -89,8 +85,6 @@ echo "User ID: {$publicKey->getPrimaryUser()->getUserID()}" . PHP_EOL . PHP_EOL;
 
 $keyData = <<<EOT
 -----BEGIN PGP PUBLIC KEY BLOCK-----
-Version: PHP Privacy v2
-Comment: https://github.com/web-of-trust/php-privacy
 
 xioGZvNvEhsAAAAgHVrZBj0nDKrbf0Tu8fWOjRiPaMulfxm1Mt7lEkY4gZzCuwYfGwgAAABcBQJm
 828SIiEGoLT+uXrwY1ghIpvsuo3SXJzh9HEg0y3OT6Vr6OoCSYMJEKC0/rl68GNYAhsDAwsHCQQi
@@ -121,8 +115,6 @@ echo "User ID: {$publicKey->getPrimaryUser()->getUserID()}" . PHP_EOL . PHP_EOL;
 
 $keyData = <<<EOT
 -----BEGIN PGP PUBLIC KEY BLOCK-----
-Version: PHP Privacy v2
-Comment: https://github.com/web-of-trust/php-privacy
 
 xkMGZvNvExwAAAA5yWvpY7TWFFw8urr787Qb4cDyF9X59bJ6PjDvL2PoibX1jmU6Fuf30HSZnSLq
 CAkvFx//A+rAbeEAwsA9Bh8cCgAAAFwFAmbzbxMiIQYwBf+MyThKw0UAWILFQZ6Yjv387mZGsM5P

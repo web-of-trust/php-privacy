@@ -10,8 +10,6 @@ $passphase = "NU=WM<;ev3(^^M@)dIt,O|9k*<xLpv7v";
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
-Version: PHP Privacy v2
-Comment: https://github.com/web-of-trust/php-privacy
 
 xcMFBGbzljMBCADB4KjKfIR4GshZ3cBQAXCZgKgGKl9p313/K88LjDEJ3MWUCx07ww+fZzmOXh2V
 vIGPt/QwDuoHmFX3B/HCesK5aIbda9CuWZrt2srRBxO33PKYVbY/Fh3Z4OU/xOacB3mHEq/C/+H9
@@ -75,8 +73,6 @@ $rsaPrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
-Version: PHP Privacy v2
-Comment: https://github.com/web-of-trust/php-privacy
 
 xcBHBGbzljQTBSuBBAAjBCMEAbbJmwFEE6Mwhn/S9gFoSwnY2vj9iPDA9ooNtKdg5BqL0A3fQ0y+
 +zG4pu/YtGiQwjbrZiyWqAipcPH7w/3q88RkADcqkIjBreSHhVspX5CiL3RBmrqBXzo4L+xZ1ejj
@@ -110,8 +106,6 @@ $eccPrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
-Version: PHP Privacy v2
-Comment: https://github.com/web-of-trust/php-privacy
 
 xX0GZvOWNBsAAAAgsDfIqP0lv8+V4Eaj0omfm+FPDcMeVeEak7qabHd/pcn+HQcLAwhRaGxMbGEj
 KeAjp9Kh/3vzuZ8Xfdj8w8je6o5USELRl4rD0RO3MDrppA2pfRbSp1kn/Xvfuzggou+s4l++cR37
