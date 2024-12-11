@@ -65,7 +65,7 @@ class EncryptedMessage extends AbstractMessage implements
     }
 
     /**
-     * Decrypt symmetric session keys.
+     * Decrypt encrypted session keys.
      * Using private keys or passwords (not both).
      *
      * @param PacketListInterface $packetList

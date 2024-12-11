@@ -561,7 +561,7 @@ final class OpenPGP
     }
 
     /**
-     * Decrypt symmetric session keys.
+     * Decrypt encrypted session keys.
      * Using private keys or passwords (not both).
      *
      * @param Type\PacketListInterface $packetList
