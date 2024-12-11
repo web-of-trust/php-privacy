@@ -522,4 +522,61 @@ final class OpenPGP
             $passwords
         );
     }
+
+    /**
+     * Generate a new session key object.
+     * Taking the algorithm preferences of the passed encryption keys, if any.
+     *
+     * @param array $encryptionKeys
+     * @param Enum\SymmetricAlgorithm $symmetric
+     * @return Type\SessionKeyInterface
+     */
+    public static function generateSessionKey(
+        array $encryptionKeys,
+        Enum\SymmetricAlgorithm symmetric = Enum\SymmetricAlgorithm::Aes128
+    ): Type\SessionKeyInterface
+    {
+        return Message\LiteralMessage::generateSessionKey(
+            $encryptionKeys, symmetric
+        );
+    }
+
+    /**
+     * Encrypt a session key either with public keys, passwords, or both at once.
+     *
+     * @param Type\SessionKeyInterface $sessionKey
+     * @param array $encryptionKeys
+     * @param array $passwords
+     * @return array
+     */
+    public static function encryptSessionKey(
+        Type\SessionKeyInterface $sessionKey,
+        array $encryptionKeys = [],
+        array $passwords = []
+    ): array
+    {
+        return Message\LiteralMessage::encryptSessionKey(
+            $sessionKey, $encryptionKeys, $passwords
+        );
+    }
+
+    /**
+     * Decrypt symmetric session keys.
+     * Using private keys or passwords (not both).
+     *
+     * @param Type\PacketListInterface $packetList
+     * @param array $decryptionKeys
+     * @param array $passwords
+     * @return Type\SessionKeyInterface
+     */
+    private function decryptSessionKey(
+        Type\PacketListInterface $packetList,
+        array $decryptionKeys = [],
+        array $passwords = []
+    ): Type\SessionKeyInterface
+    {
+        return Message\EncryptedMessage::decryptSessionKey(
+            $packetList, $decryptionKeys, $passwords
+        );
+    }
 }

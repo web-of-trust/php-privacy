@@ -40,7 +40,7 @@ final class Config
 
     private static CompressionAlgorithm $preferredCompression = CompressionAlgorithm::Uncompressed;
 
-    private static AeadAlgorithm $preferredAead = AeadAlgorithm::Gcm;
+    private static AeadAlgorithm $preferredAead = AeadAlgorithm::Ocb;
 
     private static int $s2kItCount = 224;
 

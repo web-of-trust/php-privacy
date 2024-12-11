@@ -211,9 +211,6 @@ class User implements UserInterface
         ?SignaturePacketInterface $certificate = null,
         ?DateTimeInterface $time = null
     ): bool {
-        if ($this->isRevoked($verifyKey, time: $time)) {
-            return false;
-        }
         $keyID = $certificate?->getIssuerKeyID();
         $keyPacket =
             $verifyKey?->toPublic()->getSigningKeyPacket() ??
@@ -243,9 +240,6 @@ class User implements UserInterface
      */
     public function verify(?DateTimeInterface $time = null): bool
     {
-        if ($this->isRevoked(time: $time)) {
-            return false;
-        }
         $keyPacket = $this->mainKey->toPublic()->getSigningKeyPacket();
         foreach ($this->selfCertifications as $signature) {
             if (!$signature->verify(

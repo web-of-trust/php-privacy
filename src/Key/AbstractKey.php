@@ -9,7 +9,13 @@
 namespace OpenPGP\Key;
 
 use DateTimeInterface;
-use OpenPGP\Enum\{KeyAlgorithm, PacketTag, RevocationReasonTag, SignatureType};
+use OpenPGP\Enum\{
+    KeyAlgorithm,
+    PacketTag,
+    RevocationReasonTag,
+    SignatureType,
+    SymmetricAlgorithm
+};
 use OpenPGP\Packet\{PacketList, Padding, Signature};
 use OpenPGP\Packet\Signature\{
     EmbeddedSignature,
@@ -363,6 +369,28 @@ abstract class AbstractKey implements KeyInterface
     public function isPrivate(): bool
     {
         return $this->keyPacket->getTag() === PacketTag::SecretKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPreferredSymmetrics(): array
+    {
+        $preferred = $this->getLatestDirectSignature()?->getPreferredSymmetricAlgorithms();
+        if (empty($preferred)) {
+            $user = $this->getPrimaryUser();
+            $preferred = $user?->getLatestSelfCertification()?->getPreferredSymmetricAlgorithms();
+        }
+        return $preferred?->getPreferences() ?? [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPreferredAeads(SymmetricAlgorithm $symmetric): array
+    {
+        $preferred = $this->getLatestDirectSignature()?->getPreferredAeadCiphers();
+        return $preferred?->getPreferredAeads($symmetric) ?? [];
     }
 
     /**

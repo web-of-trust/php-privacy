@@ -258,9 +258,6 @@ class Subkey implements SubkeyInterface
      */
     public function verify(?DateTimeInterface $time = null): bool
     {
-        if ($this->isRevoked(time: $time)) {
-            return false;
-        }
         $keyPacket = $this->mainKey->toPublic()->getSigningKeyPacket();
         foreach ($this->bindingSignatures as $signature) {
             if (!$signature->verify(

@@ -65,6 +65,73 @@ class EncryptedMessage extends AbstractMessage implements
     }
 
     /**
+     * Decrypt symmetric session keys.
+     * Using private keys or passwords (not both).
+     *
+     * @param PacketListInterface $packetList
+     * @param array $decryptionKeys
+     * @param array $passwords
+     * @return SessionKeyInterface
+     */
+    public static function decryptSessionKey(
+        PacketListInterface $packetList,
+        array $decryptionKeys,
+        array $passwords
+    ): SessionKeyInterface {
+        $errors = [];
+        $sessionKeys = [];
+        if (!empty($passwords)) {
+            $skeskPackets = $packetList->whereType(
+                SymmetricKeyEncryptedSessionKey::class
+            );
+            foreach ($skeskPackets as $skesk) {
+                foreach ($passwords as $password) {
+                    try {
+                        $sessionKeys[] = $skesk
+                            ->decrypt($password)
+                            ->getSessionKey();
+                        break;
+                    } catch (\Throwable $e) {
+                        $errors[] = $e->getMessage();
+                    }
+                }
+            }
+        }
+        if (empty($sessionKeys) && !empty($decryptionKeys)) {
+            $pkeskPackets = $packetList->whereType(
+                PublicKeyEncryptedSessionKey::class
+            );
+            foreach ($pkeskPackets as $pkesk) {
+                foreach ($decryptionKeys as $key) {
+                    $keyPacket = $key->getEncryptionKeyPacket();
+                    if (
+                        $pkesk->getKeyAlgorithm() ===
+                            $keyPacket->getKeyAlgorithm() &&
+                        strcmp($pkesk->getKeyID(), $keyPacket->getKeyID()) === 0
+                    ) {
+                        try {
+                            $sessionKeys[] = $pkesk
+                                ->decrypt($keyPacket)
+                                ->getSessionKey();
+                            break;
+                        } catch (\Throwable $e) {
+                            $errors[] = $e->getMessage();
+                        }
+                    }
+                }
+            }
+        }
+
+        if (empty($sessionKeys)) {
+            throw new \RuntimeException(
+                implode(PHP_EOL, ["Session key decryption failed.", ...$errors])
+            );
+        }
+
+        return array_pop($sessionKeys);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getEncryptedPacket(): EncryptedDataPacketInterface
@@ -100,77 +167,14 @@ class EncryptedMessage extends AbstractMessage implements
         return new LiteralMessage(
             $this->getEncryptedPacket()
                 ->decryptWithSessionKey(
-                    $this->sessionKey = $this->decryptSessionKey(
+                    $this->sessionKey = self::decryptSessionKey(
+                        $this->getPacketList(),
                         $decryptionKeys,
                         $passwords
                     )
                 )
                 ->getPacketList()
         );
-    }
-
-    /**
-     * Decrypt session key.
-     *
-     * @param array $decryptionKeys
-     * @param array $passwords
-     * @return SessionKeyInterface
-     */
-    private function decryptSessionKey(
-        array $decryptionKeys,
-        array $passwords
-    ): SessionKeyInterface {
-        $errors = [];
-        $sessionKeys = [];
-        if (!empty($passwords)) {
-            $skeskPacketList = $this->getPacketList()->whereType(
-                SymmetricKeyEncryptedSessionKey::class
-            );
-            foreach ($skeskPacketList as $skesk) {
-                foreach ($passwords as $password) {
-                    try {
-                        $sessionKeys[] = $skesk
-                            ->decrypt($password)
-                            ->getSessionKey();
-                        break;
-                    } catch (\Throwable $e) {
-                        $errors[] = $e->getMessage();
-                    }
-                }
-            }
-        }
-        if (empty($sessionKeys) && !empty($decryptionKeys)) {
-            $pkeskPacketList = $this->getPacketList()->whereType(
-                PublicKeyEncryptedSessionKey::class
-            );
-            foreach ($pkeskPacketList as $pkesk) {
-                foreach ($decryptionKeys as $key) {
-                    $keyPacket = $key->getEncryptionKeyPacket();
-                    if (
-                        $pkesk->getKeyAlgorithm() ===
-                            $keyPacket->getKeyAlgorithm() &&
-                        strcmp($pkesk->getKeyID(), $keyPacket->getKeyID()) === 0
-                    ) {
-                        try {
-                            $sessionKeys[] = $pkesk
-                                ->decrypt($keyPacket)
-                                ->getSessionKey();
-                            break;
-                        } catch (\Throwable $e) {
-                            $errors[] = $e->getMessage();
-                        }
-                    }
-                }
-            }
-        }
-
-        if (empty($sessionKeys)) {
-            throw new \RuntimeException(
-                implode(PHP_EOL, ["Session key decryption failed.", ...$errors])
-            );
-        }
-
-        return array_pop($sessionKeys);
     }
 
     /**

@@ -8,8 +8,9 @@
 
 namespace OpenPGP\Packet\Signature;
 
-use OpenPGP\Enum\{AeadAlgorithm, SignatureSubpacketType};
+use OpenPGP\Enum\{AeadAlgorithm, SignatureSubpacketType, SymmetricAlgorithm};
 use OpenPGP\Packet\SignatureSubpacket;
+use phpseclib3\Common\Functions\Strings;
 
 /**
  * PreferredAeadCiphers sub-packet class
@@ -39,5 +40,28 @@ class PreferredAeadCiphers extends SignatureSubpacket
             $critical,
             $isLong
         );
+    }
+
+    /**
+     * Get preferred aeads by given symmetric
+     *
+     * @param SymmetricAlgorithm $symmetric
+     * @return array
+     */
+    public function getPreferredAeads(SymmetricAlgorithm $symmetric): array
+    {
+        $aeads = [];
+        $data = $this->getData();
+        while (strlen($data) > 0) {
+            $ciphers = str_split(Strings::shift($data, 2));
+            if (count($ciphers) == 2) {
+                $preferred = SymmetricAlgorithm::from(ord($ciphers[0]));
+                if ($symmetric == $preferred) {
+                    $aeads[] = AeadAlgorithm::from(ord($ciphers[1]));
+                }
+            }
+        }
+
+        return $aeads;
     }
 }

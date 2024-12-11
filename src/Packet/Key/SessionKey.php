@@ -9,7 +9,7 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
-use OpenPGP\Enum\SymmetricAlgorithm as Symmetric;
+use OpenPGP\Enum\{AeadAlgorithm, SymmetricAlgorithm};
 use OpenPGP\Type\SessionKeyInterface;
 use phpseclib3\Crypt\Random;
 
@@ -26,12 +26,14 @@ class SessionKey implements SessionKeyInterface
      * Constructor
      *
      * @param string $encryptionKey
-     * @param Symmetric $symmetric
+     * @param SymmetricAlgorithm $symmetric
+     * @param AeadAlgorithm $aead
      * @return self
      */
     public function __construct(
         private readonly string $encryptionKey,
-        private readonly Symmetric $symmetric = Symmetric::Aes128
+        private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        private readonly ?AeadAlgorithm $aead = null
     ) {
     }
 
@@ -45,7 +47,7 @@ class SessionKey implements SessionKeyInterface
     {
         $sessionKey = new self(
             substr($bytes, 1, strlen($bytes) - 3),
-            Symmetric::from(ord($bytes[0]))
+            SymmetricAlgorithm::from(ord($bytes[0]))
         );
         return $sessionKey->checksum(substr($bytes, strlen($bytes) - 2));
     }
@@ -53,15 +55,18 @@ class SessionKey implements SessionKeyInterface
     /**
      * Produce session key specify by symmetric algorithm
      *
-     * @param Symmetric $symmetric
+     * @param SymmetricAlgorithm $symmetric
+     * @param AeadAlgorithm $aead
      * @return self
      */
     public static function produceKey(
-        Symmetric $symmetric = Symmetric::Aes128
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        ?AeadAlgorithm $aead = null
     ): self {
         return new self(
             Random::string($symmetric->keySizeInByte()),
-            $symmetric
+            $symmetric,
+            $aead
         );
     }
 
@@ -76,9 +81,17 @@ class SessionKey implements SessionKeyInterface
     /**
      * {@inheritdoc}
      */
-    public function getSymmetric(): Symmetric
+    public function getSymmetric(): SymmetricAlgorithm
     {
         return $this->symmetric;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAead(): ?AeadAlgorithm
+    {
+        return $this->aead;
     }
 
     /**

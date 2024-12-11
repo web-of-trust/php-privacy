@@ -8,7 +8,7 @@
 
 namespace OpenPGP\Type;
 
-use OpenPGP\Enum\SymmetricAlgorithm;
+use OpenPGP\Enum\{AeadAlgorithm, SymmetricAlgorithm};
 
 /**
  * Session key interface
@@ -27,11 +27,18 @@ interface SessionKeyInterface
     function getEncryptionKey(): string;
 
     /**
-     * Get algorithm to encrypt the message with
+     * Get symmetric algorithm to encrypt the message with
      *
      * @return SymmetricAlgorithm
      */
     function getSymmetric(): SymmetricAlgorithm;
+
+    /**
+     * Get AEAD algorithm to encrypt the message with
+     *
+     * @return AeadAlgorithm
+     */
+    function getAead(): ?AeadAlgorithm;
 
     /**
      * Checksum the encryption key
