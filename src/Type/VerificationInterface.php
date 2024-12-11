@@ -45,4 +45,11 @@ interface VerificationInterface
      * @return bool
      */
     function isVerified(): bool;
+
+    /**
+     * Get verification user IDs
+     *
+     * @return array
+     */
+    function getUserIDs(): array;
 }
