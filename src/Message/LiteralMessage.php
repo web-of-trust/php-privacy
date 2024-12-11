@@ -266,14 +266,21 @@ class LiteralMessage extends AbstractMessage implements
         ];
 
         $index = 0;
+        // $opsPackets = array_reverse(
+        //     array_map(static function($signature) use (&$index) {
+        //         return OnePassSignature::fromSignature(
+        //             $signature,
+        //             $index++ === 0 ? 1 : 0
+        //         );
+        //     }, $signaturePackets)
+        // );
         $opsPackets = array_reverse(
-            array_map(static function ($signature) use (&$index) {
-                return OnePassSignature::fromSignature(
-                    $signature,
-                    $index++ === 0 ? 1 : 0
-                );
-            }, $signaturePackets)
-        ); // innermost OPS refers to the first signature packet
+            array_map(static fn($packet) => OnePassSignature::fromSignature(
+                $packet,
+                (0 == $index++) ? 1 : 0
+            ), $signaturePackets)
+        );
+        // innermost OPS refers to the first signature packet
 
         return new self(
             new PacketList([
