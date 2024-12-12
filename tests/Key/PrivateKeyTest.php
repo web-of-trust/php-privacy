@@ -4,8 +4,8 @@ namespace OpenPGP\Tests\Key;
 
 use OpenPGP\Common\Config;
 use OpenPGP\Enum\{Ecc, KeyAlgorithm, KeyType, PacketTag};
-use OpenPGP\Key\{PrivateKey, PublicKey};
-use OpenPGP\Type\SecretKeyPacketInterface;
+use OpenPGP\Type\{PublicKeyInterface, SecretKeyPacketInterface};
+use OpenPGP\OpenPGP;
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
@@ -17,7 +17,7 @@ class PrivateKeyTest extends OpenPGPTestCase
 
     public function testReadRsaPrivateKey()
     {
-        $privateKey = PrivateKey::fromArmored(
+        $privateKey = OpenPGP::readPrivateKey(
             file_get_contents("tests/Data/RsaPrivateKey.asc")
         );
         $this->assertTrue($privateKey->isPrivate());
@@ -73,7 +73,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         );
 
         $publicKey = $privateKey->toPublic();
-        $this->assertTrue($publicKey instanceof PublicKey);
+        $this->assertTrue($publicKey instanceof PublicKeyInterface);
         $this->assertSame(
             $publicKey->getFingerprint(true),
             $privateKey->getFingerprint(true)
@@ -82,13 +82,13 @@ class PrivateKeyTest extends OpenPGPTestCase
         $passphrase = $this->faker->unique()->password();
         $this->assertEquals(
             $privateKey->getFingerprint(true),
-            PrivateKey::fromArmored($privateKey->armor())
+            OpenPGP::readPrivateKey($privateKey->armor())
                 ->decrypt(self::PASSPHRASE)
                 ->getFingerprint(true)
         );
         $this->assertEquals(
             $privateKey->getFingerprint(true),
-            PrivateKey::fromArmored($privateKey->encrypt($passphrase)->armor())
+            OpenPGP::readPrivateKey($privateKey->encrypt($passphrase)->armor())
                 ->decrypt($passphrase)
                 ->getFingerprint(true)
         );
@@ -96,7 +96,7 @@ class PrivateKeyTest extends OpenPGPTestCase
 
     public function testReadDsaPrivateKey()
     {
-        $privateKey = PrivateKey::fromArmored(
+        $privateKey = OpenPGP::readPrivateKey(
             file_get_contents("tests/Data/DsaPrivateKey.asc")
         );
         $this->assertTrue($privateKey->isPrivate());
@@ -152,7 +152,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         );
 
         $publicKey = $privateKey->toPublic();
-        $this->assertTrue($publicKey instanceof PublicKey);
+        $this->assertTrue($publicKey instanceof PublicKeyInterface);
         $this->assertSame(
             $publicKey->getFingerprint(true),
             $privateKey->getFingerprint(true)
@@ -161,13 +161,13 @@ class PrivateKeyTest extends OpenPGPTestCase
         $passphrase = $this->faker->unique()->password();
         $this->assertEquals(
             $privateKey->getFingerprint(true),
-            PrivateKey::fromArmored($privateKey->armor())
+            OpenPGP::readPrivateKey($privateKey->armor())
                 ->decrypt(self::PASSPHRASE)
                 ->getFingerprint(true)
         );
         $this->assertEquals(
             $privateKey->getFingerprint(true),
-            PrivateKey::fromArmored($privateKey->encrypt($passphrase)->armor())
+            OpenPGP::readPrivateKey($privateKey->encrypt($passphrase)->armor())
                 ->decrypt($passphrase)
                 ->getFingerprint(true)
         );
@@ -175,7 +175,7 @@ class PrivateKeyTest extends OpenPGPTestCase
 
     public function testReadEcP384PrivateKey()
     {
-        $privateKey = PrivateKey::fromArmored(
+        $privateKey = OpenPGP::readPrivateKey(
             file_get_contents("tests/Data/EcP384PrivateKey.asc")
         );
         $this->assertTrue($privateKey->isPrivate());
@@ -231,7 +231,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         );
 
         $publicKey = $privateKey->toPublic();
-        $this->assertTrue($publicKey instanceof PublicKey);
+        $this->assertTrue($publicKey instanceof PublicKeyInterface);
         $this->assertSame(
             $publicKey->getFingerprint(true),
             $privateKey->getFingerprint(true)
@@ -240,13 +240,13 @@ class PrivateKeyTest extends OpenPGPTestCase
         $passphrase = $this->faker->unique()->password();
         $this->assertEquals(
             $privateKey->getFingerprint(true),
-            PrivateKey::fromArmored($privateKey->armor())
+            OpenPGP::readPrivateKey($privateKey->armor())
                 ->decrypt(self::PASSPHRASE)
                 ->getFingerprint(true)
         );
         $this->assertEquals(
             $privateKey->getFingerprint(true),
-            PrivateKey::fromArmored($privateKey->encrypt($passphrase)->armor())
+            OpenPGP::readPrivateKey($privateKey->encrypt($passphrase)->armor())
                 ->decrypt($passphrase)
                 ->getFingerprint(true)
         );
@@ -254,7 +254,7 @@ class PrivateKeyTest extends OpenPGPTestCase
 
     public function testReadEcBrainpoolPrivateKey()
     {
-        $privateKey = PrivateKey::fromArmored(
+        $privateKey = OpenPGP::readPrivateKey(
             file_get_contents("tests/Data/EcBrainpoolPrivateKey.asc")
         );
         $this->assertTrue($privateKey->isPrivate());
@@ -310,7 +310,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         );
 
         $publicKey = $privateKey->toPublic();
-        $this->assertTrue($publicKey instanceof PublicKey);
+        $this->assertTrue($publicKey instanceof PublicKeyInterface);
         $this->assertSame(
             $publicKey->getFingerprint(true),
             $privateKey->getFingerprint(true)
@@ -319,13 +319,13 @@ class PrivateKeyTest extends OpenPGPTestCase
         $passphrase = $this->faker->unique()->password();
         $this->assertEquals(
             $privateKey->getFingerprint(true),
-            PrivateKey::fromArmored($privateKey->armor())
+            OpenPGP::readPrivateKey($privateKey->armor())
                 ->decrypt(self::PASSPHRASE)
                 ->getFingerprint(true)
         );
         $this->assertEquals(
             $privateKey->getFingerprint(true),
-            PrivateKey::fromArmored($privateKey->encrypt($passphrase)->armor())
+            OpenPGP::readPrivateKey($privateKey->encrypt($passphrase)->armor())
                 ->decrypt($passphrase)
                 ->getFingerprint(true)
         );
@@ -333,7 +333,7 @@ class PrivateKeyTest extends OpenPGPTestCase
 
     public function testReadEcCurve25519PrivateKey()
     {
-        $privateKey = PrivateKey::fromArmored(
+        $privateKey = OpenPGP::readPrivateKey(
             file_get_contents("tests/Data/EcCurve25519PrivateKey.asc")
         );
         $this->assertTrue($privateKey->isPrivate());
@@ -389,7 +389,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         );
 
         $publicKey = $privateKey->toPublic();
-        $this->assertTrue($publicKey instanceof PublicKey);
+        $this->assertTrue($publicKey instanceof PublicKeyInterface);
         $this->assertSame(
             $publicKey->getFingerprint(true),
             $privateKey->getFingerprint(true)
@@ -398,13 +398,13 @@ class PrivateKeyTest extends OpenPGPTestCase
         $passphrase = $this->faker->unique()->password();
         $this->assertEquals(
             $privateKey->getFingerprint(true),
-            PrivateKey::fromArmored($privateKey->armor())
+            OpenPGP::readPrivateKey($privateKey->armor())
                 ->decrypt(self::PASSPHRASE)
                 ->getFingerprint(true)
         );
         $this->assertEquals(
             $privateKey->getFingerprint(true),
-            PrivateKey::fromArmored($privateKey->encrypt($passphrase)->armor())
+            OpenPGP::readPrivateKey($privateKey->encrypt($passphrase)->armor())
                 ->decrypt($passphrase)
                 ->getFingerprint(true)
         );
@@ -420,7 +420,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         $now = new \DateTime();
         $userID = implode([$name, "($comment)", "<$email>"]);
 
-        $privateKey = PrivateKey::generate(
+        $privateKey = OpenPGP::generateKey(
             [$userID],
             $passphrase,
             KeyType::Rsa
@@ -441,13 +441,13 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertSame($userID, $primaryUser->getUserID());
 
         $publicKey = $privateKey->toPublic();
-        $this->assertTrue($publicKey instanceof PublicKey);
+        $this->assertTrue($publicKey instanceof PublicKeyInterface);
         $this->assertSame(
             $publicKey->getFingerprint(true),
             $privateKey->getFingerprint(true)
         );
 
-        $privateKey = PrivateKey::fromArmored($privateKey->armor());
+        $privateKey = OpenPGP::readPrivateKey($privateKey->armor());
         $this->assertTrue($privateKey->isEncrypted());
         $this->assertFalse($privateKey->isDecrypted());
         $privateKey = $privateKey->decrypt($passphrase);
@@ -485,7 +485,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         $now = new \DateTime();
         $userID = implode([$name, "($comment)", "<$email>"]);
 
-        $privateKey = PrivateKey::generate(
+        $privateKey = OpenPGP::generateKey(
             [$userID],
             $passphrase,
             KeyType::Ecc,
@@ -507,13 +507,13 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertSame($userID, $primaryUser->getUserID());
 
         $publicKey = $privateKey->toPublic();
-        $this->assertTrue($publicKey instanceof PublicKey);
+        $this->assertTrue($publicKey instanceof PublicKeyInterface);
         $this->assertSame(
             $publicKey->getFingerprint(true),
             $privateKey->getFingerprint(true)
         );
 
-        $privateKey = PrivateKey::fromArmored($privateKey->armor());
+        $privateKey = OpenPGP::readPrivateKey($privateKey->armor());
         $this->assertTrue($privateKey->isEncrypted());
         $this->assertFalse($privateKey->isDecrypted());
         $privateKey = $privateKey->decrypt($passphrase);
@@ -552,7 +552,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         $now = new \DateTime();
         $userID = implode([$name, "($comment)", "<$email>"]);
 
-        $privateKey = PrivateKey::generate(
+        $privateKey = OpenPGP::generateKey(
             [$userID],
             $passphrase,
             KeyType::Ecc,
@@ -574,13 +574,13 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertSame($userID, $primaryUser->getUserID());
 
         $publicKey = $privateKey->toPublic();
-        $this->assertTrue($publicKey instanceof PublicKey);
+        $this->assertTrue($publicKey instanceof PublicKeyInterface);
         $this->assertSame(
             $publicKey->getFingerprint(true),
             $privateKey->getFingerprint(true)
         );
 
-        $privateKey = PrivateKey::fromArmored($privateKey->armor());
+        $privateKey = OpenPGP::readPrivateKey($privateKey->armor());
         $this->assertTrue($privateKey->isEncrypted());
         $this->assertFalse($privateKey->isDecrypted());
         $privateKey = $privateKey->decrypt($passphrase);
@@ -619,7 +619,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         $now = new \DateTime();
         $userID = implode([$name, "($comment)", "<$email>"]);
 
-        $privateKey = PrivateKey::generate(
+        $privateKey = OpenPGP::generateKey(
             [$userID],
             $passphrase,
             KeyType::Ecc,
@@ -641,13 +641,13 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertSame($userID, $primaryUser->getUserID());
 
         $publicKey = $privateKey->toPublic();
-        $this->assertTrue($publicKey instanceof PublicKey);
+        $this->assertTrue($publicKey instanceof PublicKeyInterface);
         $this->assertSame(
             $publicKey->getFingerprint(true),
             $privateKey->getFingerprint(true)
         );
 
-        $privateKey = PrivateKey::fromArmored($privateKey->armor());
+        $privateKey = OpenPGP::readPrivateKey($privateKey->armor());
         $this->assertTrue($privateKey->isEncrypted());
         $this->assertFalse($privateKey->isDecrypted());
         $privateKey = $privateKey->decrypt($passphrase);
@@ -687,7 +687,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         $passphrase = $this->faker->unique()->password();
         $userID = implode([$name, "($comment)", "<$email>"]);
 
-        $privateKey = PrivateKey::generate(
+        $privateKey = OpenPGP::generateKey(
             [$userID],
             $passphrase,
             KeyType::Rsa
@@ -731,7 +731,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         $passphrase = $this->faker->unique()->password();
         $userID = implode([$name, "($comment)", "<$email>"]);
 
-        $privateKey = PrivateKey::generate(
+        $privateKey = OpenPGP::generateKey(
             [$userID],
             $passphrase,
             KeyType::Ecc,
@@ -772,7 +772,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         $passphrase = $this->faker->unique()->password();
         $userID = implode([$name, "($comment)", "<$email>"]);
 
-        $privateKey = PrivateKey::generate(
+        $privateKey = OpenPGP::generateKey(
             [$userID],
             $passphrase,
             KeyType::Curve25519
@@ -815,7 +815,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         $passphrase = $this->faker->unique()->password();
         $userID = implode([$name, "($comment)", "<$email>"]);
 
-        $privateKey = PrivateKey::generate(
+        $privateKey = OpenPGP::generateKey(
             [$userID],
             $passphrase,
             KeyType::Curve448
@@ -846,10 +846,10 @@ class PrivateKeyTest extends OpenPGPTestCase
 
     public function testCertifyKey()
     {
-        $privateKey = PrivateKey::fromArmored(
+        $privateKey = OpenPGP::readPrivateKey(
             file_get_contents("tests/Data/RsaPrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/DsaPublicKey.asc")
         );
 
@@ -864,10 +864,10 @@ class PrivateKeyTest extends OpenPGPTestCase
 
     public function testRevokeKey()
     {
-        $privateKey = PrivateKey::fromArmored(
+        $privateKey = OpenPGP::readPrivateKey(
             file_get_contents("tests/Data/RsaPrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/DsaPublicKey.asc")
         );
 
@@ -899,7 +899,7 @@ k0mXubZvyl4GBg==
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
 
-        $privateKey = PrivateKey::fromArmored($keyData);
+        $privateKey = OpenPGP::readPrivateKey($keyData);
         $this->assertSame(6, $privateKey->getVersion());
         $this->assertSame(
             KeyAlgorithm::Ed25519,
@@ -962,7 +962,7 @@ ruh8m7Xo2ehSSFyWRSuTSZe5tm/KXgYG
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
 
-        $privateKey = PrivateKey::fromArmored($keyData);
+        $privateKey = OpenPGP::readPrivateKey($keyData);
         $this->assertSame(6, $privateKey->getVersion());
         $this->assertSame(
             KeyAlgorithm::Ed25519,
