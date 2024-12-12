@@ -232,10 +232,8 @@ class AeadEncryptedData extends AbstractPacket implements
         int $chunkSizeByte = 12,
         string $iv = ""
     ): string {
-        $dataLength = strlen($data);
         $tagLength = $fn === self::AEAD_ENCRYPT ? 0 : $aead->tagLength();
         $chunkSize = (1 << $chunkSizeByte + 6) + $tagLength;
-        $chunkSize = 1 << $chunkSizeByte + 6;
 
         $aData = substr_replace(
             str_repeat(Helper::ZERO_CHAR, 13),
@@ -252,18 +250,21 @@ class AeadEncryptedData extends AbstractPacket implements
         $ciData = substr($aData, 5, 8);
         $cipher = $aead->cipherEngine($key, $symmetric);
 
+        $processed = 0;
         $crypted = [];
         for ($index = 0; $index === 0 || strlen($data) > 0; ) {
             // Take a chunk of `data`, en/decrypt it,
             // and shift `data` to the next chunk.
+            $chunkData = Strings::shift($data, $chunkSize);
             $crypted[] = $cipher->$fn(
-                Strings::shift($data, $chunkSize),
+                $chunkData,
                 $cipher->getNonce($iv, $ciData),
                 $aData
             );
 
             $aData = substr_replace($aData, pack("N", ++$index), 9, 4);
             $ciData = substr($aData, 5, 8);
+            $processed += strlen($chunkData) - $tagLength;
         }
 
         // For encryption: empty final chunk
@@ -274,7 +275,6 @@ class AeadEncryptedData extends AbstractPacket implements
             0,
             13
         );
-        $processed = intval($dataLength - $tagLength * ceil($tagLength / $chunkSize));
         $aDataTag = substr_replace($aDataTag, pack("N", $processed), 17, 4);
         $crypted[] = $cipher->$fn(
             $finalChunk,
