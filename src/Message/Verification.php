@@ -74,7 +74,7 @@ class Verification implements VerificationInterface
     /**
      * {@inheritdoc}
      */
-    public function getUserIDs(): string
+    public function getUserIDs(): array
     {
         return $this->userIDs;
     }
