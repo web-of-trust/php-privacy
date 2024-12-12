@@ -3,8 +3,8 @@
 namespace OpenPGP\Tests\Message;
 
 use OpenPGP\Key\{PrivateKey, PublicKey};
-use OpenPGP\Packet\AeadEncryptedData;
-use OpenPGP\Message\EncryptedMessage;
+use OpenPGP\Type\AeadEncryptedDataPacketInterface as AeadEncryptedData;
+use OpenPGP\OpenPGP;
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
@@ -52,7 +52,7 @@ EOT;
 
     public function testDecryptEncryptedMessage()
     {
-        $encryptedMessage = EncryptedMessage::fromArmored(
+        $encryptedMessage = OpenPGP::readEncryptedMessage(
             self::$encryptedMessageData
         );
 
@@ -122,7 +122,7 @@ cTHw+kww2UtrXVkeUDQI1EwBBwIQtSJxPQCq1Mg7/Ashm2BQxiCRO1DtO6TN/+sy
 -----END PGP MESSAGE-----
 EOT;
 
-        $encryptedMessage = EncryptedMessage::fromArmored(
+        $encryptedMessage = OpenPGP::readEncryptedMessage(
             $encryptedMessageData
         );
         $this->assertTrue(
@@ -169,7 +169,7 @@ bhF30A+IitsxxA==
 EOT;
 
         $privateKey = PrivateKey::fromArmored($privatekeyData);
-        $encryptedMessage = EncryptedMessage::fromArmored($messageData);
+        $encryptedMessage = OpenPGP::readEncryptedMessage($messageData);
         $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
         $this->assertSame(
             "Hello, world!",
@@ -189,7 +189,7 @@ QCWKt5Wala0FHdqW6xVDHf719eIlXKeCYVRuM5o=
 -----END PGP MESSAGE-----
 EOT;
 
-        $encryptedMessage = EncryptedMessage::fromArmored($messageData);
+        $encryptedMessage = OpenPGP::readEncryptedMessage($messageData);
         $decryptedMessage = $encryptedMessage->decrypt(
             passwords: [self::PASSPHRASE]
         );
@@ -215,7 +215,7 @@ K82nyM6dZeIS8wHLzZj9yt5pSod61CRzI/boVw==
 -----END PGP MESSAGE-----
 EOT;
 
-        $encryptedMessage = EncryptedMessage::fromArmored($messageData);
+        $encryptedMessage = OpenPGP::readEncryptedMessage($messageData);
         $decryptedMessage = $encryptedMessage->decrypt(
             passwords: [self::PASSPHRASE]
         );
@@ -241,7 +241,7 @@ Ae0Pn/xvxtZbv9JNzQeQlm5tHoWjAFN4TLHYtqBpnvEhVaeyrWJYUxtXZR/Xd3kS
 -----END PGP MESSAGE-----
 EOT;
 
-        $encryptedMessage = EncryptedMessage::fromArmored($messageData);
+        $encryptedMessage = OpenPGP::readEncryptedMessage($messageData);
         $decryptedMessage = $encryptedMessage->decrypt(
             passwords: [self::PASSPHRASE]
         );
@@ -268,7 +268,7 @@ XfA3pqV4mTzF
 -----END PGP MESSAGE-----
 EOT;
 
-        $encryptedMessage = EncryptedMessage::fromArmored($messageData);
+        $encryptedMessage = OpenPGP::readEncryptedMessage($messageData);
         $decryptedMessage = $encryptedMessage->decrypt(
             passwords: [self::PASSPHRASE]
         );
@@ -293,7 +293,7 @@ LVg77Mwwfgl2n/d572WciAM=
 -----END PGP MESSAGE-----
 EOT;
 
-        $encryptedMessage = EncryptedMessage::fromArmored($messageData);
+        $encryptedMessage = OpenPGP::readEncryptedMessage($messageData);
         $decryptedMessage = $encryptedMessage->decrypt(
             passwords: [self::PASSPHRASE]
         );
@@ -318,7 +318,7 @@ wzcECQS4eJUgIG/3mcaILEJFpmJ8AQQVnZ9l7KtagdClm9UaQ/Z6M/5roklSGpGu
 -----END PGP MESSAGE-----
 EOT;
 
-        $encryptedMessage = EncryptedMessage::fromArmored($messageData);
+        $encryptedMessage = OpenPGP::readEncryptedMessage($messageData);
         $decryptedMessage = $encryptedMessage->decrypt(
             passwords: [self::PASSPHRASE]
         );
