@@ -306,5 +306,9 @@ class SKESKTest extends OpenPGPTestCase
             $sessionKey->getEncryptionKey(),
             $skesk->getSessionKey()->getEncryptionKey()
         );
+        $this->assertEquals(
+            $sessionKey->getSymmetric(),
+            $skesk->getSessionKey()->getSymmetric()
+        );
     }
 }
