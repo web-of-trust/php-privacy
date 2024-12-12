@@ -604,7 +604,7 @@ EOT;
         $userID = implode([$name, "($comment)", "<$email>"]);
         $literalData = Random::string(10000);
 
-        $privateKey = PrivateKey::generate(
+        $privateKey = OpenPGP::generateKey(
             [$userID],
             $passphrase,
             KeyType::Curve25519
