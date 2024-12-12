@@ -533,11 +533,11 @@ final class OpenPGP
      */
     public static function generateSessionKey(
         array $encryptionKeys,
-        Enum\SymmetricAlgorithm symmetric = Enum\SymmetricAlgorithm::Aes128
+        Enum\SymmetricAlgorithm $symmetric = Enum\SymmetricAlgorithm::Aes128
     ): Type\SessionKeyInterface
     {
         return Message\LiteralMessage::generateSessionKey(
-            $encryptionKeys, symmetric
+            $encryptionKeys, $symmetric
         );
     }
 
