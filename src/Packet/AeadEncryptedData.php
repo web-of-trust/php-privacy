@@ -232,6 +232,7 @@ class AeadEncryptedData extends AbstractPacket implements
         int $chunkSizeByte = 12,
         string $iv = ""
     ): string {
+        $dataLength = strlen($data);
         $tagLength = $fn === self::AEAD_ENCRYPT ? 0 : $aead->tagLength();
         $chunkSize = (1 << $chunkSizeByte + 6) + $tagLength;
 
@@ -250,8 +251,6 @@ class AeadEncryptedData extends AbstractPacket implements
         $ciData = substr($aData, 5, 8);
         $cipher = $aead->cipherEngine($key, $symmetric);
 
-        $dataLength = strlen($data);
-        $processed = $dataLength - $tagLength * ceil($dataLength / $chunkSize);
         $crypted = [];
         for ($index = 0; $index === 0 || strlen($data) > 0; ) {
             // Take a chunk of `data`, en/decrypt it,
@@ -268,6 +267,7 @@ class AeadEncryptedData extends AbstractPacket implements
 
         // For encryption: empty final chunk
         // For decryption: final authentication tag
+        $processed = $dataLength - $tagLength * ceil($dataLength / $chunkSize);
         $aDataTag = substr_replace(
             str_repeat(Helper::ZERO_CHAR, 21),
             $aData,
