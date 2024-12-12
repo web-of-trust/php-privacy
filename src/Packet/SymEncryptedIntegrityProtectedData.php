@@ -381,6 +381,9 @@ class SymEncryptedIntegrityProtectedData
         $processed = array_sum(
             array_map(static fn ($bytes) => strlen($bytes), $crypted)
         );
+        if ($fn === self::AEAD_DECRYPT) {
+            $processed += $aead->tagLength();
+        }
         $aDataTag = implode([$aData, str_repeat(Helper::ZERO_CHAR, 8)]);
         $aDataTag = substr_replace(
             $aDataTag,
