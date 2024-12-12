@@ -325,10 +325,9 @@ class SymEncryptedIntegrityProtectedData
         int $chunkSizeByte = 12,
         string $salt = ""
     ): string {
-        $chunkSize = 1 << $chunkSizeByte + 6;
-        if ($fn === self::AEAD_DECRYPT) {
-            $chunkSize += $aead->tagLength();
-        }
+        $dataLength = strlen($data);
+        $tagLength = $fn === self::AEAD_ENCRYPT ? 0 : $aead->tagLength();
+        $chunkSize = (1 << $chunkSizeByte + 6) + $tagLength;
 
         $aData = implode([
             chr(
@@ -378,12 +377,7 @@ class SymEncryptedIntegrityProtectedData
 
         // For encryption: empty final chunk
         // For decryption: final authentication tag
-        $processed = array_sum(
-            array_map(static fn ($bytes) => strlen($bytes), $crypted)
-        );
-        if ($fn === self::AEAD_DECRYPT) {
-            $processed += $aead->tagLength();
-        }
+        $processed = intval($dataLength - $tagLength * ceil($tagLength / $chunkSize));
         $aDataTag = implode([$aData, str_repeat(Helper::ZERO_CHAR, 8)]);
         $aDataTag = substr_replace(
             $aDataTag,

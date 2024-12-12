@@ -302,6 +302,9 @@ class SKESKTest extends OpenPGPTestCase
             $skesk->getVersion()
         );
         $this->assertSame(self::LITERAL_TEXT, trim($literalData->getData()));
-        $this->assertEquals($sessionKey, $skesk->getSessionKey());
+        $this->assertEquals(
+            $sessionKey->getEncryptionKey(),
+            $skesk->getSessionKey()->getEncryptionKey()
+        );
     }
 }
