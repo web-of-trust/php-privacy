@@ -62,7 +62,7 @@ class AEPDTest extends OpenPGPTestCase
             new PacketList([LiteralData::fromText(self::LITERAL_TEXT)])
         );
         $this->assertEquals($aepd->getSymmetric(), SymmetricAlgorithm::Aes128);
-        $this->assertEquals($aepd->getAead(), AeadAlgorithm::Gcm);
+        $this->assertEquals($aepd->getAead(), AeadAlgorithm::Ocb);
         $this->assertTrue(!empty($aepd->getEncrypted()));
 
         $aepd = $aepd->decrypt($sessionKey->getEncryptionKey());
