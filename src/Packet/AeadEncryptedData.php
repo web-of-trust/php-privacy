@@ -250,21 +250,20 @@ class AeadEncryptedData extends AbstractPacket implements
         $ciData = substr($aData, 5, 8);
         $cipher = $aead->cipherEngine($key, $symmetric);
 
-        $processed = 0;
+        $dataLength = strlen($data);
+        $processed = $dataLength - $tagLength * ceil($dataLength / $chunkSize);
         $crypted = [];
         for ($index = 0; $index === 0 || strlen($data) > 0; ) {
             // Take a chunk of `data`, en/decrypt it,
             // and shift `data` to the next chunk.
-            $chunkData = Strings::shift($data, $chunkSize);
             $crypted[] = $cipher->$fn(
-                $chunkData,
+                Strings::shift($data, $chunkSize),
                 $cipher->getNonce($iv, $ciData),
                 $aData
             );
 
             $aData = substr_replace($aData, pack("N", ++$index), 9, 4);
             $ciData = substr($aData, 5, 8);
-            $processed += strlen($chunkData) - $tagLength;
         }
 
         // For encryption: empty final chunk
