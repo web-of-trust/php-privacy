@@ -154,7 +154,7 @@ final class Helper
     public static function computeChecksum(string $text): string
     {
         $sum = array_sum(
-            array_map(static fn($char) => ord($char), str_split($text))
+            array_map(static fn ($char) => ord($char), str_split($text))
         );
         return pack("n", $sum & 0xffff);
     }
@@ -169,7 +169,7 @@ final class Helper
     {
         return preg_replace_callback(
             "/\*/u",
-            static fn() => chr(random_int(40, 126)),
+            static fn () => chr(random_int(40, 126)),
             str_repeat("*", $length)
         );
     }
@@ -184,7 +184,7 @@ final class Helper
     {
         $lines = explode(self::EOL, $text);
         $lines = array_map(
-            static fn($line) => rtrim($line, self::SPACES),
+            static fn ($line) => rtrim($line, self::SPACES),
             $lines
         );
         return implode(self::EOL, $lines);

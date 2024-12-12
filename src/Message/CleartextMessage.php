@@ -93,7 +93,7 @@ class CleartextMessage implements CleartextMessageInterface
     ): SignatureInterface {
         $signingKeys = array_filter(
             $signingKeys,
-            static fn($key) => $key instanceof PrivateKeyInterface
+            static fn ($key) => $key instanceof PrivateKeyInterface
         );
         if (empty($signingKeys)) {
             throw new \InvalidArgumentException("No signing keys provided.");
@@ -101,7 +101,7 @@ class CleartextMessage implements CleartextMessageInterface
         return new Signature(
             new PacketList(
                 array_map(
-                    fn($key) => SignaturePacket::createLiteralData(
+                    fn ($key) => SignaturePacket::createLiteralData(
                         $key->getSecretKeyPacket(),
                         LiteralData::fromText($this->getText()),
                         $recipients,

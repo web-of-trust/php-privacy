@@ -98,10 +98,10 @@ class PublicKey extends AbstractKey implements PublicKeyInterface
     {
         $keyData = implode(
             array_map(
-                static fn($key) => $key->toPublic()->getPacketList()->encode(),
+                static fn ($key) => $key->toPublic()->getPacketList()->encode(),
                 array_filter(
                     $keys,
-                    static fn($key) => $key instanceof KeyInterface
+                    static fn ($key) => $key instanceof KeyInterface
                 )
             )
         );

@@ -70,21 +70,21 @@ class User implements UserInterface
         $this->revocationSignatures = array_values(
             array_filter(
                 $revocationSignatures,
-                static fn($signature) => $signature instanceof
+                static fn ($signature) => $signature instanceof
                     SignaturePacketInterface && $signature->isCertRevocation()
             )
         );
         $this->selfCertifications = array_values(
             array_filter(
                 $selfCertifications,
-                static fn($signature) => $signature instanceof
+                static fn ($signature) => $signature instanceof
                     SignaturePacketInterface && $signature->isCertification()
             )
         );
         $this->otherCertifications = array_values(
             array_filter(
                 $otherCertifications,
-                static fn($signature) => $signature instanceof
+                static fn ($signature) => $signature instanceof
                     SignaturePacketInterface && $signature->isCertification()
             )
         );
@@ -137,7 +137,7 @@ class User implements UserInterface
     {
         if (!empty($this->selfCertifications)) {
             $signatures = $this->selfCertifications;
-            usort($signatures, static function ($a, $b): int {
+            usort($signatures, static function ($a, $b) {
                 $aTime = $a->getCreationTime() ?? new \DateTime();
                 $bTime = $b->getCreationTime() ?? new \DateTime();
                 return $aTime->getTimestamp() - $bTime->getTimestamp();

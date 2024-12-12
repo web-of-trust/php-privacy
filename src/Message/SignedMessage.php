@@ -73,7 +73,7 @@ class SignedMessage extends CleartextMessage implements SignedMessageInterface
             $this->signature->getPacketList()->encode(),
             $this->getText(),
             array_map(
-                static fn($packet) => strtoupper(
+                static fn ($packet) => strtoupper(
                     str_replace("_", "-", $packet->getHashAlgorithm()->name)
                 ),
                 $this->signature->getPackets()

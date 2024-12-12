@@ -258,7 +258,7 @@ final class Armor
                     ? implode(
                             Helper::EOL,
                             array_map(
-                                static fn($hashAlgo) => "Hash: $hashAlgo",
+                                static fn ($hash) => "Hash: $hash",
                                 $hashAlgos
                             )
                         ) .

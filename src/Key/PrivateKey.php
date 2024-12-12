@@ -308,7 +308,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         $subkeys = $this->getSubkeys();
         usort(
             $subkeys,
-            static fn($a, $b): int =>
+            static fn ($a, $b) =>
                 (int) $b->getCreationTime()?->getTimestamp() -
                 (int) $a->getCreationTime()?->getTimestamp()
         );
@@ -364,7 +364,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         );
         $privateKey->setUsers(
             array_map(
-                static fn($user) => new User(
+                static fn ($user) => new User(
                     $privateKey,
                     $user->getUserIDPacket(),
                     $user->getRevocationCertifications(),
@@ -416,7 +416,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         );
         $privateKey->setUsers(
             array_map(
-                static fn($user) => new User(
+                static fn ($user) => new User(
                     $privateKey,
                     $user->getUserIDPacket(),
                     $user->getRevocationCertifications(),

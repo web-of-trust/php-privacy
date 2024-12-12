@@ -275,7 +275,7 @@ class AeadEncryptedData extends AbstractPacket implements
             13
         );
         $processed = array_sum(
-            array_map(static fn($bytes) => strlen($bytes), $crypted)
+            array_map(static fn ($bytes) => strlen($bytes), $crypted)
         );
         $aDataTag = substr_replace($aDataTag, pack("N", $processed), 17, 4);
         $crypted[] = $cipher->$fn(

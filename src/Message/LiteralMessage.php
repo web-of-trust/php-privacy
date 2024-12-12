@@ -126,7 +126,7 @@ class LiteralMessage extends AbstractMessage implements
             foreach ($encryptionKeys as $key) {
                 $preferredSymmetrics = array_filter(
                     $preferredSymmetrics,
-                    static fn($symmetric) => in_array(
+                    static fn ($symmetric) => in_array(
                         $symmetric,
                         $key->getPreferredSymmetrics(),
                         true
@@ -148,7 +148,7 @@ class LiteralMessage extends AbstractMessage implements
             if ($key->aeadSupported()) {
                 $preferredAeads = array_filter(
                     $preferredAeads,
-                    static fn($aead) => in_array(
+                    static fn ($aead) => in_array(
                         $aead,
                         $key->getPreferredAeads($symmetric),
                         true
@@ -189,7 +189,7 @@ class LiteralMessage extends AbstractMessage implements
         }
         return [
             ...array_map(
-                static fn(
+                static fn (
                     $key
                 ) => PublicKeyEncryptedSessionKey::encryptSessionKey(
                     $key->toPublic()->getEncryptionKeyPacket(),
@@ -198,7 +198,7 @@ class LiteralMessage extends AbstractMessage implements
                 $encryptionKeys
             ), // pkesk packets
             ...array_map(
-                static fn(
+                static fn (
                     $password
                 ) => SymmetricKeyEncryptedSessionKey::encryptSessionKey(
                     $password,
@@ -218,7 +218,7 @@ class LiteralMessage extends AbstractMessage implements
     {
         $packets = array_filter(
             self::unwrapCompressed($this->getPackets()),
-            static fn($packet) => $packet instanceof LiteralDataInterface
+            static fn ($packet) => $packet instanceof LiteralDataInterface
         );
         if (empty($packets)) {
             throw new \RuntimeException("No literal data in packet list.");
@@ -235,7 +235,7 @@ class LiteralMessage extends AbstractMessage implements
             new PacketList(
                 array_filter(
                     self::unwrapCompressed($this->getPackets()),
-                    static fn($packet) => $packet instanceof
+                    static fn ($packet) => $packet instanceof
                         SignaturePacketInterface
                 )
             )
@@ -254,7 +254,7 @@ class LiteralMessage extends AbstractMessage implements
         $signaturePackets = [
             ...array_filter(
                 self::unwrapCompressed($this->getPackets()),
-                static fn($packet) => $packet instanceof
+                static fn ($packet) => $packet instanceof
                     SignaturePacketInterface
             ),
             ...$this->signDetached(
@@ -265,20 +265,11 @@ class LiteralMessage extends AbstractMessage implements
             )->getPackets(),
         ];
 
-        $index = 0;
-        // $opsPackets = array_reverse(
-        //     array_map(static function($signature) use (&$index) {
-        //         return OnePassSignature::fromSignature(
-        //             $signature,
-        //             $index++ === 0 ? 1 : 0
-        //         );
-        //     }, $signaturePackets)
-        // );
         $opsPackets = array_reverse(
-            array_map(static fn($packet) => OnePassSignature::fromSignature(
+            array_map(static fn ($index, $packet) => OnePassSignature::fromSignature(
                 $packet,
-                (0 == $index++) ? 1 : 0
-            ), $signaturePackets)
+                ($index == 0) ? 1 : 0
+            ), array_keys($signaturePackets), $signaturePackets)
         );
         // innermost OPS refers to the first signature packet
 
@@ -302,7 +293,7 @@ class LiteralMessage extends AbstractMessage implements
     ): SignatureInterface {
         $signingKeys = array_filter(
             $signingKeys,
-            static fn($key) => $key instanceof PrivateKeyInterface
+            static fn ($key) => $key instanceof PrivateKeyInterface
         );
         if (empty($signingKeys)) {
             throw new \InvalidArgumentException("No signing keys provided.");
@@ -362,7 +353,7 @@ class LiteralMessage extends AbstractMessage implements
     ): EncryptedMessageInterface {
         $encryptionKeys = array_filter(
             $encryptionKeys,
-            static fn($key) => $key instanceof KeyInterface
+            static fn ($key) => $key instanceof KeyInterface
         );
         $sessionKey = self::generateSessionKey($encryptionKeys, $symmetric);
         $addPadding = !empty($sessionKey->getAead());
@@ -426,7 +417,7 @@ class LiteralMessage extends AbstractMessage implements
     {
         $compressedPackets = array_filter(
             $packets,
-            static fn($packet) => $packet instanceof CompressedData
+            static fn ($packet) => $packet instanceof CompressedData
         );
         return array_pop($compressedPackets)?->getPacketList()?->getPackets() ??
             $packets;

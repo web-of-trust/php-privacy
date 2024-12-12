@@ -104,11 +104,11 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 
         $this->hashedSubpackets = array_filter(
             $hashedSubpackets,
-            static fn($subpacket) => $subpacket instanceof SignatureSubpacket
+            static fn ($subpacket) => $subpacket instanceof SignatureSubpacket
         );
         $this->unhashedSubpackets = array_filter(
             $unhashedSubpackets,
-            static fn($subpacket) => $subpacket instanceof SignatureSubpacket
+            static fn ($subpacket) => $subpacket instanceof SignatureSubpacket
         );
         $this->signatureData = implode([
             chr($this->version),
@@ -858,7 +858,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     {
         return array_filter(
             $this->hashedSubpackets,
-            static fn($subpacket) => $subpacket->getType() ===
+            static fn ($subpacket) => $subpacket->getType() ===
                 SignatureSubpacketType::NotationData->value
         );
     }
@@ -1033,7 +1033,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     {
         return array_filter(
             $this->hashedSubpackets,
-            static fn($subpacket) => $subpacket->getType() ===
+            static fn ($subpacket) => $subpacket->getType() ===
                 SignatureSubpacketType::IntendedRecipientFingerprint->value
         );
     }
@@ -1106,7 +1106,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             chr(SymmetricAlgorithm::Aes256->value),
         ];
         $aeads = array_map(
-            static fn($algo) => chr($algo->value),
+            static fn ($algo) => chr($algo->value),
             AeadAlgorithm::cases()
         );
         $props = [
@@ -1141,7 +1141,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             $props[] = new Signature\PreferredAeadCiphers(
                 implode(
                     array_map(
-                        static fn($aead) => implode([
+                        static fn ($aead) => implode([
                             $symmetrics[0],
                             $aead,
                             $symmetrics[1],
@@ -1212,7 +1212,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     ): string {
         $bytes = implode(
             array_map(
-                static fn($subpacket): string => $subpacket->toBytes(),
+                static fn ($subpacket) => $subpacket->toBytes(),
                 $subpackets
             )
         );
@@ -1232,7 +1232,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     ): ?SubpacketInterface {
         $subpackets = array_filter(
             $subpackets,
-            static fn($subpacket) => $subpacket->getType() === $type->value
+            static fn ($subpacket) => $subpacket->getType() === $type->value
         );
         return array_pop($subpackets);
     }

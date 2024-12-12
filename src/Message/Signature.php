@@ -82,7 +82,7 @@ class Signature implements SignatureInterface
     public function getSigningKeyIDs(bool $toHex = false): array
     {
         return array_map(
-            static fn($packet) => $packet->getIssuerKeyID($toHex),
+            static fn ($packet) => $packet->getIssuerKeyID($toHex),
             $this->getPackets()
         );
     }
@@ -105,7 +105,7 @@ class Signature implements SignatureInterface
     ): array {
         $verificationKeys = array_filter(
             $verificationKeys,
-            static fn($key) => $key instanceof KeyInterface
+            static fn ($key) => $key instanceof KeyInterface
         );
         if (empty($verificationKeys)) {
             throw new \InvalidArgumentException(
@@ -143,10 +143,10 @@ class Signature implements SignatureInterface
                         $isVerified,
                         $verificationError,
                         array_map(
-                            static fn($user) => $user->getUserID(),
+                            static fn ($user) => $user->getUserID(),
                             array_filter(
                                 $key->getUsers(),
-                                static fn($user) => !empty($user->getUserID())
+                                static fn ($user) => !empty($user->getUserID())
                             )
                         )
                     );

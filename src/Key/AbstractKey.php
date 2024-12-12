@@ -214,7 +214,7 @@ abstract class AbstractKey implements KeyInterface
         $subkeys = $this->subkeys;
         usort(
             $subkeys,
-            static fn($a, $b): int =>
+            static fn ($a, $b) =>
                 (int) $b->getCreationTime()?->getTimestamp() -
                 (int) $a->getCreationTime()?->getTimestamp()
         );
@@ -269,7 +269,7 @@ abstract class AbstractKey implements KeyInterface
         $subkeys = $this->subkeys;
         usort(
             $subkeys,
-            static fn($a, $b): int =>
+            static fn ($a, $b) =>
                 (int) $b->getCreationTime()?->getTimestamp() -
                 (int) $a->getCreationTime()?->getTimestamp()
         );
@@ -503,7 +503,7 @@ abstract class AbstractKey implements KeyInterface
     ): ?UserInterface {
         $users = array_filter(
             $this->getSortedPrimaryUsers(),
-            static fn($user) => $user->verify($time)
+            static fn ($user) => $user->verify($time)
         );
         return array_pop($users);
     }
@@ -613,7 +613,7 @@ abstract class AbstractKey implements KeyInterface
         $this->revocationSignatures = array_values(
             array_filter(
                 $revocationSignatures,
-                static fn($signature) => $signature instanceof
+                static fn ($signature) => $signature instanceof
                     SignaturePacketInterface && $signature->isKeyRevocation()
             )
         );
@@ -631,7 +631,7 @@ abstract class AbstractKey implements KeyInterface
         $this->directSignatures = array_values(
             array_filter(
                 $directSignatures,
-                static fn($signature) => $signature instanceof
+                static fn ($signature) => $signature instanceof
                     SignaturePacketInterface && $signature->isDirectKey()
             )
         );
@@ -781,7 +781,7 @@ abstract class AbstractKey implements KeyInterface
         return $self
             ->setUsers(
                 array_map(
-                    static fn($user) => new User(
+                    static fn ($user) => new User(
                         $self,
                         $user->getUserIDPacket(),
                         $user->getRevocationCertifications(),
@@ -793,7 +793,7 @@ abstract class AbstractKey implements KeyInterface
             )
             ->setSubkeys(
                 array_map(
-                    static fn($subkey) => new Subkey(
+                    static fn ($subkey) => new Subkey(
                         $self,
                         $subkey->getKeyPacket(),
                         $subkey->getRevocationSignatures(),
