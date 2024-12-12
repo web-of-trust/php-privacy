@@ -1101,20 +1101,22 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
      */
     private static function keySignatureProperties(int $version): array
     {
-        $symmetrics = [
-            chr(SymmetricAlgorithm::Aes128->value),
-            chr(SymmetricAlgorithm::Aes256->value),
-        ];
-        $aeads = array_map(
-            static fn ($algo) => chr($algo->value),
-            AeadAlgorithm::cases()
-        );
         $props = [
             Signature\KeyFlags::fromFlags(
                 KeyFlag::CertifyKeys->value | KeyFlag::SignData->value
             ),
-            new Signature\PreferredSymmetricAlgorithms(implode($symmetrics)),
-            new Signature\PreferredAeadAlgorithms(implode($aeads)),
+            new Signature\PreferredSymmetricAlgorithms(
+                implode(array_map(
+                    static fn ($algo) => chr($algo->value),
+                    SymmetricAlgorithm::preferredSymmetrics()
+                ))
+            ),
+            new Signature\PreferredAeadAlgorithms(
+                implode(array_map(
+                    static fn ($algo) => chr($algo->value),
+                    AeadAlgorithm::preferredAead()
+                ))
+            ),
             new Signature\PreferredHashAlgorithms(
                 implode([
                     chr(HashAlgorithm::Sha256->value),
@@ -1139,17 +1141,18 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         ];
         if ($version === KeyVersion::V6->value) {
             $props[] = new Signature\PreferredAeadCiphers(
-                implode(
-                    array_map(
-                        static fn ($aead) => implode([
-                            $symmetrics[0],
-                            $aead,
-                            $symmetrics[1],
-                            $aead,
-                        ]),
-                        $aeads
-                    )
-                )
+                implode([
+                    chr(SymmetricAlgorithm::Aes128->value),
+                    chr(AeadAlgorithm::Ocb->value),
+                    chr(SymmetricAlgorithm::Aes128->value),
+                    chr(AeadAlgorithm::Gcm->value),
+                    chr(SymmetricAlgorithm::Aes128->value),
+                    chr(AeadAlgorithm::Eax->value),
+                    chr(SymmetricAlgorithm::Aes256->value),
+                    chr(AeadAlgorithm::Ocb->value),
+                    chr(SymmetricAlgorithm::Aes256->value),
+                    chr(AeadAlgorithm::Gcm->value),
+                ])
             );
         }
         return $props;

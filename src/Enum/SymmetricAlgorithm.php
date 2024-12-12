@@ -209,4 +209,21 @@ enum SymmetricAlgorithm: int
             },
         };
     }
+
+    /**
+     * Get preferred symmetrics
+     *
+     * @return array
+     */
+    static public function preferredSymmetrics(): array
+    {
+        return [
+            self::Aes128,
+            self::Aes192,
+            self::Aes256,
+            self::Camellia128,
+            self::Camellia192,
+            self::Camellia256,
+        ];
+    }
 }
