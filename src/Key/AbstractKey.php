@@ -476,9 +476,6 @@ abstract class AbstractKey implements KeyInterface
         string $userID = "",
         ?DateTimeInterface $time = null
     ): bool {
-        if ($this->isRevoked(time: $time)) {
-            return false;
-        }
         foreach ($this->directSignatures as $signature) {
             if (!$signature->verify(
                 $this->toPublic()->getKeyPacket(),
