@@ -301,7 +301,7 @@ class LiteralMessage extends AbstractMessage implements
         return new Signature(
             new PacketList(
                 array_map(
-                    fn($key) => SignaturePacket::createLiteralData(
+                    fn ($key) => SignaturePacket::createLiteralData(
                         $key->getSecretKeyPacket(),
                         $this->getLiteralData(),
                         $recipients,

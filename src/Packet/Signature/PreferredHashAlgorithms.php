@@ -49,7 +49,7 @@ class PreferredHashAlgorithms extends SignatureSubpacket
     public function getPreferences(): array
     {
         return array_map(
-            fn($pref) => HashAlgorithm::from(ord($pref)),
+            static fn ($pref) => HashAlgorithm::from(ord($pref)),
             str_split($this->getData())
         );
     }
