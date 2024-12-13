@@ -154,3 +154,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 2.0.4 - released 2024-11-16
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.0.3...2.0.4)
 - Refactor AEAD crypt.
+
+## 2.0.5 - released 2024-12-13
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.0.4...2.0.5)
+- Fix calculate number of byte processed of AeadEncryptedData.
