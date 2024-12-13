@@ -124,15 +124,21 @@ final class OpenPGP
      * @param Type\PrivateKeyInterface $privateKey
      * @param string $passphrase
      * @param array $subkeyPassphrases
+     * @param Enum\SymmetricAlgorithm $symmetric
      * @return Type\PrivateKeyInterface
      */
     public static function encryptPrivateKey(
         Type\PrivateKeyInterface $privateKey,
         string $passphrase,
-        array $subkeyPassphrases = []
+        array $subkeyPassphrases = [],
+        ?Enum\SymmetricAlgorithm $symmetric = null
     ): Type\PrivateKeyInterface
     {
-        return $privateKey->encrypt($passphrase, $subkeyPassphrases);
+        return $privateKey->encrypt(
+            $passphrase,
+            $subkeyPassphrases,
+            $symmetric ?? Common\Config::getPreferredSymmetric()
+        );
     }
 
     /**
@@ -462,7 +468,9 @@ final class OpenPGP
     {
         return empty($signingKeys) ?
             $message->compress($compression)->encrypt(
-                $encryptionKeys, $passwords, $symmetric
+                $encryptionKeys,
+                $passwords,
+                $symmetric ?? Common\Config::getPreferredSymmetric()
             ) :
             $message->sign(
                 $signingKeys,
@@ -476,7 +484,9 @@ final class OpenPGP
                 $notationData,
                 $time
             )->compress($compression)->encrypt(
-                $encryptionKeys, $passwords, $symmetric
+                $encryptionKeys,
+                $passwords,
+                $symmetric ?? Common\Config::getPreferredSymmetric()
             );
     }
 
@@ -533,11 +543,12 @@ final class OpenPGP
      */
     public static function generateSessionKey(
         array $encryptionKeys,
-        Enum\SymmetricAlgorithm $symmetric = Enum\SymmetricAlgorithm::Aes128
+        ?Enum\SymmetricAlgorithm $symmetric = null
     ): Type\SessionKeyInterface
     {
         return Message\LiteralMessage::generateSessionKey(
-            $encryptionKeys, $symmetric
+            $encryptionKeys,
+            $symmetric ?? Common\Config::getPreferredSymmetric()
         );
     }
 
