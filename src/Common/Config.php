@@ -12,6 +12,7 @@ use OpenPGP\Enum\{
     AeadAlgorithm,
     CompressionAlgorithm,
     HashAlgorithm,
+    PresetRFC,
     SymmetricAlgorithm
 };
 
@@ -42,6 +43,8 @@ final class Config
 
     private static AeadAlgorithm $preferredAead = AeadAlgorithm::Ocb;
 
+    private static bool $PresetRFC = PresetRFC::RFC4880;
+
     private static int $s2kItCount = 224;
 
     private static int $argon2Iteration = 3;
@@ -53,8 +56,6 @@ final class Config
     private static int $aeadChunkSize = 12;
 
     private static bool $aeadProtect = false;
-
-    private static bool $useV6Key = false;
 
     private static bool $allowUnauthenticated = false;
 
@@ -146,6 +147,26 @@ final class Config
     public static function setPreferredAead(AeadAlgorithm $algo): void
     {
         self::$preferredAead = $algo;
+    }
+
+    /**
+     * Get preset RFC.
+     *
+     * @return PresetRFC
+     */
+    public static function presetRFC(): PresetRFC
+    {
+        return self::$presetRFC;
+    }
+
+    /**
+     * Set preset RFC.
+     *
+     * @param PresetRFC $preset
+     */
+    public static function setPresetRFC(PresetRFC $preset): void
+    {
+        self::$presetRFC = $preset;
     }
 
     /**
@@ -276,26 +297,6 @@ final class Config
     public static function setAeadProtect(bool $protect): void
     {
         self::$aeadProtect = $protect;
-    }
-
-    /**
-     * Get use V6 key.
-     *
-     * @return bool
-     */
-    public static function useV6Key(): bool
-    {
-        return self::$useV6Key;
-    }
-
-    /**
-     * Set use V6 key.
-     *
-     * @param bool $useV6Key
-     */
-    public static function setUseV6Key(bool $useV6Key): void
-    {
-        self::$useV6Key = $useV6Key;
     }
 
     /**
