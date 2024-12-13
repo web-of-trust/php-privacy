@@ -28,6 +28,7 @@ use OpenPGP\Type\{
     KeyPacketInterface,
     PacketListInterface,
     PrivateKeyInterface,
+    SecretKeyPacketInterface,
     SignaturePacketInterface,
     SubkeyInterface,
     SubkeyPacketInterface,
@@ -836,15 +837,53 @@ abstract class AbstractKey implements KeyInterface
         }
 
         if (empty($keyPacket)) {
-            throw new \RuntimeException("Key packet not found in packet list.");
+            throw new \RuntimeException(
+                "Key packet not found in packet list."
+            );
         }
+
+        $verifyKey = $keyPacket instanceof SecretKeyPacketInterface ?
+            $keyPacket->getPublicKey() : $keyPacket;
 
         return [
             $keyPacket,
             $revocationSignatures,
-            $directSignatures,
-            $users,
-            $subkeys,
+            array_filter(
+                $directSignatures,
+                static fn ($signature) => $signature->verify(
+                    $verifyKey, $verifyKey->getSignBytes()
+                )
+            ),
+            array_filter(
+                $users, 
+                static function ($user) use ($verifyKey) {
+                    foreach ($user['selfCertifications'] as $signature) {
+                        $dataToVerify = implode([
+                            $verifyKey->getSignBytes(),
+                            $user['userIDPacket']->getSignBytes(),
+                        ]);
+                        if ($signature->verify($verifyKey, $dataToVerify)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            ),
+            array_filter(
+                $subkeys,
+                static function ($subkey) use ($verifyKey) {
+                    foreach ($subkey['bindingSignatures'] as $signature) {
+                        $dataToVerify = implode([
+                            $verifyKey->getSignBytes(),
+                            $subkey['keyPacket']->getSignBytes(),
+                        ]);
+                        if ($signature->verify($verifyKey, $dataToVerify)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            ),
         ];
     }
 }
