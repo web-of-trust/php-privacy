@@ -242,7 +242,7 @@ class User implements UserInterface
     {
         $keyPacket = $this->mainKey->toPublic()->getSigningKeyPacket();
         foreach ($this->selfCertifications as $signature) {
-            if (!$signature->verify(
+            if ($signature->verify(
                 $keyPacket,
                 implode([
                     $this->mainKey->getKeyPacket()->getSignBytes(),
@@ -250,10 +250,10 @@ class User implements UserInterface
                 ]),
                 $time
             )) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     /**

@@ -477,18 +477,18 @@ abstract class AbstractKey implements KeyInterface
         ?DateTimeInterface $time = null
     ): bool {
         foreach ($this->directSignatures as $signature) {
-            if (!$signature->verify(
+            if ($signature->verify(
                 $this->toPublic()->getKeyPacket(),
                 $this->keyPacket->getSignBytes(),
                 $time
             )) {
-                return false;
+                return true;
             }
         }
         foreach ($this->users as $user) {
             if (empty($userID) || strcmp($user->getUserID(), $userID) === 0) {
-                if (!$user->verify($time)) {
-                    return false;
+                if ($user->verify($time)) {
+                    return true;
                 }
             }
         }
@@ -501,7 +501,7 @@ abstract class AbstractKey implements KeyInterface
                 "Primary key is expired."
             );
         }
-        return true;
+        return false;
     }
 
     /**

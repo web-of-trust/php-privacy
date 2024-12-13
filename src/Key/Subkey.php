@@ -260,7 +260,7 @@ class Subkey implements SubkeyInterface
     {
         $keyPacket = $this->mainKey->toPublic()->getSigningKeyPacket();
         foreach ($this->bindingSignatures as $signature) {
-            if (!$signature->verify(
+            if ($signature->verify(
                 $keyPacket,
                 implode([
                     $this->mainKey->getKeyPacket()->getSignBytes(),
@@ -268,10 +268,10 @@ class Subkey implements SubkeyInterface
                 ]),
                 $time
             )) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     /**
