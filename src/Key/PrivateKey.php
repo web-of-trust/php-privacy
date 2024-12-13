@@ -541,7 +541,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         foreach ($subkeys as $key => $subkey) {
             if (strcmp($subkey->getKeyID(), $keyID) === 0) {
                 $subkeys[$key] = $subkey->revokeBy(
-                    $self,
+                    $this,
                     $revocationReason,
                     $reasonTag,
                     $time

@@ -525,7 +525,7 @@ abstract class AbstractKey implements KeyInterface
     public function certifyBy(
         PrivateKeyInterface $signKey,
         ?DateTimeInterface $time = null
-    ): self {
+    ): static {
         $users = $this->getUsers();
         foreach ($users as $key => $user) {
             if ($user->isPrimary()) {
@@ -541,7 +541,7 @@ abstract class AbstractKey implements KeyInterface
             ];
         }
 
-        return new self(new PacketList([
+        return new static(new PacketList([
             $this->getKeyPacket(),
             ...$this->getRevocationSignatures(),
             ...$this->getDirectSignatures(),
@@ -558,8 +558,8 @@ abstract class AbstractKey implements KeyInterface
         string $revocationReason = "",
         ?RevocationReasonTag $reasonTag = null,
         ?DateTimeInterface $time = null
-    ): self {
-        return new self(new PacketList([
+    ): static {
+        return new static(new PacketList([
             $this->getKeyPacket(),
             ...[
                 Signature::createKeyRevocation(
@@ -657,98 +657,6 @@ abstract class AbstractKey implements KeyInterface
             ];
         }
         return $packets;
-    }
-
-    /**
-     * Set revocation signatures
-     *
-     * @param array $revocationSignatures
-     * @return static
-     */
-    protected function setRevocationSignatures(
-        array $revocationSignatures
-    ): static {
-        $this->revocationSignatures = array_values(
-            array_filter(
-                $revocationSignatures,
-                static fn ($signature) => $signature instanceof
-                    SignaturePacketInterface && $signature->isKeyRevocation()
-            )
-        );
-        return $this;
-    }
-
-    /**
-     * Set direct signatures
-     *
-     * @param array $directSignatures
-     * @return static
-     */
-    protected function setDirectSignatures(array $directSignatures): static
-    {
-        $this->directSignatures = array_values(
-            array_filter(
-                $directSignatures,
-                static fn ($signature) => $signature instanceof
-                    SignaturePacketInterface && $signature->isDirectKey()
-            )
-        );
-        return $this;
-    }
-
-    /**
-     * Set users
-     *
-     * @param array $users
-     * @return static
-     */
-    protected function setUsers(array $users): static
-    {
-        $this->users = [];
-        foreach ($users as $user) {
-            if (
-                $user instanceof UserInterface &&
-                $user->getMainKey() === $this
-            ) {
-                $this->users[] = $user;
-            } elseif (is_array($user)) {
-                $this->users[] = new User(
-                    $this,
-                    $user["userIDPacket"],
-                    $user["revocationSignatures"],
-                    $user["selfCertifications"],
-                    $user["otherCertifications"]
-                );
-            }
-        }
-        return $this;
-    }
-
-    /**
-     * Set subkeys
-     *
-     * @param array $subkeys
-     * @return static
-     */
-    protected function setSubkeys(array $subkeys): static
-    {
-        $this->subkeys = [];
-        foreach ($subkeys as $subkey) {
-            if (
-                $subkey instanceof SubkeyInterface &&
-                $subkey->getMainKey() === $this
-            ) {
-                $this->subkeys[] = $subkey;
-            } elseif (is_array($subkey)) {
-                $this->subkeys[] = new Subkey(
-                    $this,
-                    $subkey["keyPacket"],
-                    $subkey["revocationSignatures"],
-                    $subkey["bindingSignatures"]
-                );
-            }
-        }
-        return $this;
     }
 
     /**

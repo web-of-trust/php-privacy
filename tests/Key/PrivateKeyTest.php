@@ -459,7 +459,7 @@ class PrivateKeyTest extends OpenPGPTestCase
             keyExpiry: $keyExpiry,
             time: $now
         );
-        $subkey = $privateKey->getSubKeys()[1];
+        $subkey = $privateKey->getSubKeys()[0];
         $this->assertTrue($subkey->verify());
         $expirationTime = $subkey->getExpirationTime();
         $this->assertSame(
@@ -469,7 +469,7 @@ class PrivateKeyTest extends OpenPGPTestCase
 
         $subkey = $privateKey
             ->revokeSubkey($subkey->getKeyID())
-            ->getSubKeys()[1];
+            ->getSubKeys()[0];
         $this->assertTrue($subkey->isRevoked());
         $user = $privateKey->revokeUser($userID)->getUsers()[0];
         $this->assertTrue($user->isRevoked());
@@ -526,7 +526,7 @@ class PrivateKeyTest extends OpenPGPTestCase
             keyExpiry: $keyExpiry,
             time: $now
         );
-        $subkey = $privateKey->getSubKeys()[1];
+        $subkey = $privateKey->getSubKeys()[0];
         $this->assertTrue($subkey->verify());
         $expirationTime = $subkey->getExpirationTime();
         $this->assertSame(
@@ -536,7 +536,7 @@ class PrivateKeyTest extends OpenPGPTestCase
 
         $subkey = $privateKey
             ->revokeSubkey($subkey->getKeyID())
-            ->getSubKeys()[1];
+            ->getSubKeys()[0];
         $this->assertTrue($subkey->isRevoked());
         $user = $privateKey->revokeUser($userID)->getUsers()[0];
         $this->assertTrue($user->isRevoked());
@@ -593,7 +593,7 @@ class PrivateKeyTest extends OpenPGPTestCase
             keyExpiry: $keyExpiry,
             time: $now
         );
-        $subkey = $privateKey->getSubKeys()[1];
+        $subkey = $privateKey->getSubKeys()[0];
         $this->assertTrue($subkey->verify());
         $expirationTime = $subkey->getExpirationTime();
         $this->assertSame(
@@ -603,7 +603,7 @@ class PrivateKeyTest extends OpenPGPTestCase
 
         $subkey = $privateKey
             ->revokeSubkey($subkey->getKeyID())
-            ->getSubKeys()[1];
+            ->getSubKeys()[0];
         $this->assertTrue($subkey->isRevoked());
         $user = $privateKey->revokeUser($userID)->getUsers()[0];
         $this->assertTrue($user->isRevoked());
@@ -660,7 +660,7 @@ class PrivateKeyTest extends OpenPGPTestCase
             keyExpiry: $keyExpiry,
             time: $now
         );
-        $subkey = $privateKey->getSubKeys()[1];
+        $subkey = $privateKey->getSubKeys()[0];
         $this->assertTrue($subkey->verify());
         $expirationTime = $subkey->getExpirationTime();
         $this->assertSame(
@@ -670,7 +670,7 @@ class PrivateKeyTest extends OpenPGPTestCase
 
         $subkey = $privateKey
             ->revokeSubkey($subkey->getKeyID())
-            ->getSubKeys()[1];
+            ->getSubKeys()[0];
         $this->assertTrue($subkey->isRevoked());
         $user = $privateKey->revokeUser($userID)->getUsers()[0];
         $this->assertTrue($user->isRevoked());
