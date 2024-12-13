@@ -594,7 +594,7 @@ EOT;
 
     public function testSignAeadEncryptMessageWithV6Key()
     {
-        Config::setUseV6Key(true);
+        Config::presetRFC9580();
         Config::setAeadProtect(true);
 
         $name = $this->faker->unique()->name();
@@ -642,6 +642,6 @@ EOT;
         $this->assertSame(PacketTag::Padding, $padding->getTag());
 
         Config::setAeadProtect(false);
-        Config::setUseV6Key(false);
+        Config::presetRFC4880();
     }
 }

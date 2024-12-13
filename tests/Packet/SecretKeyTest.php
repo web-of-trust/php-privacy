@@ -557,7 +557,7 @@ EOT;
 
     public function testGenerateV6RsaKey()
     {
-        Config::setUseV6Key(true);
+        Config::presetRFC9580();
 
         $secretKey = SecretKey::generate(KeyAlgorithm::RsaEncryptSign);
         $this->assertFalse($secretKey->isEncrypted());
@@ -576,12 +576,12 @@ EOT;
             $decryptedSecretKey->getFingerprint()
         );
 
-        Config::setUseV6Key(false);
+        Config::presetRFC4880();
     }
 
     public function testGenerateV6EcDsaKey()
     {
-        Config::setUseV6Key(true);
+        Config::presetRFC9580();
 
         $secretKey = SecretKey::generate(KeyAlgorithm::EcDsa);
         $this->assertFalse($secretKey->isEncrypted());
@@ -600,12 +600,12 @@ EOT;
             $decryptedSecretKey->getFingerprint()
         );
 
-        Config::setUseV6Key(false);
+        Config::presetRFC4880();
     }
 
     public function testGenerateV6EcdhKey()
     {
-        Config::setUseV6Key(true);
+        Config::presetRFC9580();
 
         $secretKey = SecretKey::generate(KeyAlgorithm::Ecdh);
         $this->assertFalse($secretKey->isEncrypted());
@@ -624,7 +624,7 @@ EOT;
             $decryptedSecretKey->getFingerprint()
         );
 
-        Config::setUseV6Key(false);
+        Config::presetRFC4880();
     }
 
     public function testGenerateX25519Key()

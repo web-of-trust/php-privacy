@@ -43,7 +43,7 @@ final class Config
 
     private static AeadAlgorithm $preferredAead = AeadAlgorithm::Ocb;
 
-    private static bool $PresetRFC = PresetRFC::RFC4880;
+    private static PresetRFC $presetRFC = PresetRFC::RFC4880;
 
     private static int $s2kItCount = 224;
 
@@ -160,13 +160,19 @@ final class Config
     }
 
     /**
-     * Set preset RFC.
-     *
-     * @param PresetRFC $preset
+     * Preset RFC4880.
      */
-    public static function setPresetRFC(PresetRFC $preset): void
+    public static function presetRFC4880(): void
     {
-        self::$presetRFC = $preset;
+        self::$presetRFC = PresetRFC::RFC4880;
+    }
+
+    /**
+     * Preset RFC9580.
+     */
+    public static function presetRFC9580(): void
+    {
+        self::$presetRFC = PresetRFC::RFC9580;
     }
 
     /**

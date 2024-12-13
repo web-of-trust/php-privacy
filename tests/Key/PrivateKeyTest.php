@@ -678,7 +678,7 @@ class PrivateKeyTest extends OpenPGPTestCase
 
     public function testGenerateV6RsaKeyWithAeadProtect()
     {
-        Config::setUseV6Key(true);
+        Config::presetRFC9580();
         Config::setAeadProtect(true);
 
         $name = $this->faker->unique()->name();
@@ -717,12 +717,12 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertSame($userID, $user->getUserID());
 
         Config::setAeadProtect(false);
-        Config::setUseV6Key(false);
+        Config::presetRFC4880();
     }
 
     public function testGenerateV6EccKeyWithAeadProtect()
     {
-        Config::setUseV6Key(true);
+        Config::presetRFC9580();
         Config::setAeadProtect(true);
 
         $name = $this->faker->unique()->name();
@@ -758,12 +758,12 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertSame($userID, $user->getUserID());
 
         Config::setAeadProtect(false);
-        Config::setUseV6Key(false);
+        Config::presetRFC4880();
     }
 
     public function testGenerateV6Curve25519KeyWithAeadProtect()
     {
-        Config::setUseV6Key(true);
+        Config::presetRFC9580();
         Config::setAeadProtect(true);
 
         $name = $this->faker->unique()->name();
@@ -801,12 +801,12 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertSame($userID, $user->getUserID());
 
         Config::setAeadProtect(false);
-        Config::setUseV6Key(false);
+        Config::presetRFC4880();
     }
 
     public function testGenerateV6Curve448KeyWithAeadProtect()
     {
-        Config::setUseV6Key(true);
+        Config::presetRFC9580();
         Config::setAeadProtect(true);
 
         $name = $this->faker->unique()->name();
@@ -841,7 +841,7 @@ class PrivateKeyTest extends OpenPGPTestCase
         $this->assertSame($userID, $user->getUserID());
 
         Config::setAeadProtect(false);
-        Config::setUseV6Key(false);
+        Config::presetRFC4880();
     }
 
     public function testCertifyKey()
