@@ -10,6 +10,7 @@ namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\{KeyAlgorithm, KeyVersion, MontgomeryCurve, PacketTag};
 use OpenPGP\Type\{
+    EncryptedSessionKeyInterface,
     KeyPacketInterface,
     SecretKeyPacketInterface,
     SessionKeyCryptorInterface,
@@ -26,7 +27,8 @@ use phpseclib3\Common\Functions\Strings;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class PublicKeyEncryptedSessionKey extends AbstractPacket
+class PublicKeyEncryptedSessionKey extends AbstractPacket implements
+    EncryptedSessionKeyInterface
 {
     const VERSION_3 = 3;
     const VERSION_6 = 6;
@@ -209,9 +211,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket
     }
 
     /**
-     * Get session key
-     *
-     * @return SessionKeyInterface
+     * {@inheritdoc}
      */
     public function getSessionKey(): ?SessionKeyInterface
     {

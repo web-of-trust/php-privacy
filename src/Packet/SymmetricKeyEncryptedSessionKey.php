@@ -10,7 +10,11 @@ namespace OpenPGP\Packet;
 
 use OpenPGP\Common\{Argon2S2K, Config, GenericS2K, Helper};
 use OpenPGP\Enum\{AeadAlgorithm, PacketTag, S2kType, SymmetricAlgorithm};
-use OpenPGP\Type\{S2KInterface, SessionKeyInterface};
+use OpenPGP\Type\{
+    EncryptedSessionKeyInterface,
+    S2KInterface,
+    SessionKeyInterface
+};
 use phpseclib3\Crypt\Random;
 
 /**
@@ -22,7 +26,8 @@ use phpseclib3\Crypt\Random;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class SymmetricKeyEncryptedSessionKey extends AbstractPacket
+class SymmetricKeyEncryptedSessionKey extends AbstractPacket implements
+    EncryptedSessionKeyInterface
 {
     const VERSION_4 = 4;
     const VERSION_5 = 5;
@@ -254,9 +259,7 @@ class SymmetricKeyEncryptedSessionKey extends AbstractPacket
     }
 
     /**
-     * Get session key
-     *
-     * @return SessionKeyInterface
+     * {@inheritdoc}
      */
     public function getSessionKey(): ?SessionKeyInterface
     {

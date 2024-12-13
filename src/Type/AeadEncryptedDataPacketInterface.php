@@ -11,7 +11,7 @@ namespace OpenPGP\Type;
 use OpenPGP\Enum\{AeadAlgorithm, SymmetricAlgorithm};
 
 /**
- * Aead encrypted data packet packet interface
+ * Aead encrypted data packet interface
  *
  * @package  OpenPGP
  * @category Type
