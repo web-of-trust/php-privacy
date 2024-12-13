@@ -9,5 +9,5 @@
 /phpunit.xml.dist   export-ignore
 /psalm.xml          export-ignore
 /docs               export-ignore
-/examples               export-ignore
+/examples           export-ignore
 /tests              export-ignore
