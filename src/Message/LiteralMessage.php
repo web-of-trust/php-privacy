@@ -358,7 +358,7 @@ class LiteralMessage extends AbstractMessage implements
             static fn ($key) => $key instanceof KeyInterface
         );
         $sessionKey = self::generateSessionKey($encryptionKeys, $symmetric);
-        $addPadding = !empty($sessionKey->getAead());
+        $addPadding = $sessionKey->getAead() instanceof AeadAlgorithm;
         foreach ($encryptionKeys as $key) {
             if ($key->getVersion() !== 6) {
                 $addPadding = false;
