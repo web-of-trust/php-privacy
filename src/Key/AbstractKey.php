@@ -232,7 +232,10 @@ abstract class AbstractKey implements KeyInterface
         );
         foreach ($subkeys as $subkey) {
             if (empty($keyID) || strcmp($keyID, $subkey->getKeyID()) === 0) {
-                if (!$subkey->isSigningKey() || !$subkey->verify($time)) {
+                if (
+                    !$subkey->isSigningKey() ||
+                    $subkey->isRevoked(time: $time)
+                ) {
                     continue;
                 }
                 $signature = $subkey
@@ -287,7 +290,10 @@ abstract class AbstractKey implements KeyInterface
         );
         foreach ($subkeys as $subkey) {
             if (empty($keyID) || strcmp($keyID, $subkey->getKeyID()) === 0) {
-                if (!$subkey->isEncryptionKey() || !$subkey->verify($time)) {
+                if (
+                    !$subkey->isEncryptionKey() ||
+                    $subkey->isRevoked(time: $time)
+                ) {
                     continue;
                 }
                 return $subkey->getKeyPacket();
@@ -388,10 +394,12 @@ abstract class AbstractKey implements KeyInterface
      */
     public function getPreferredSymmetrics(): array
     {
-        $preferred = $this->getLatestDirectSignature()?->getPreferredSymmetricAlgorithms();
+        $preferred = $this->getLatestDirectSignature()
+                         ?->getPreferredSymmetricAlgorithms();
         if (empty($preferred)) {
             $user = $this->getPrimaryUser();
-            $preferred = $user?->getLatestSelfCertification()?->getPreferredSymmetricAlgorithms();
+            $preferred = $user?->getLatestSelfCertification()
+                              ?->getPreferredSymmetricAlgorithms();
         }
         return $preferred?->getPreferences() ?? [];
     }
@@ -401,7 +409,8 @@ abstract class AbstractKey implements KeyInterface
      */
     public function getPreferredAeads(SymmetricAlgorithm $symmetric): array
     {
-        $preferred = $this->getLatestDirectSignature()?->getPreferredAeadCiphers();
+        $preferred = $this->getLatestDirectSignature()
+                         ?->getPreferredAeadCiphers();
         return $preferred?->getPreferredAeads($symmetric) ?? [];
     }
 
@@ -512,7 +521,7 @@ abstract class AbstractKey implements KeyInterface
     ): ?UserInterface {
         $users = array_filter(
             $this->getSortedPrimaryUsers(),
-            static fn ($user) => $user->verify($time)
+            static fn($user) => !$user->isRevoked(time: $time)
         );
         return array_pop($users);
     }

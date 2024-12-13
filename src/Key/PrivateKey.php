@@ -278,9 +278,6 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         string $keyID = "",
         ?DateTimeInterface $time = null
     ): array {
-        if (!$this->verify(time: $time)) {
-            throw new \RuntimeException("Primary key is invalid.");
-        }
         $subkeys = $this->getSubkeys();
         usort(
             $subkeys,
@@ -292,7 +289,10 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         $keyPackets = [];
         foreach ($subkeys as $subkey) {
             if (empty($keyID) || strcmp($keyID, $subkey->getKeyID()) === 0) {
-                if (!$subkey->isEncryptionKey() || !$subkey->verify($time)) {
+                if (
+                    !$subkey->isEncryptionKey() ||
+                    $subkey->isRevoked(time: $time)
+                ) {
                     continue;
                 }
                 $keyPackets[] = $subkey->getKeyPacket();
