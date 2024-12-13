@@ -116,7 +116,7 @@ class EncryptedMessage extends AbstractMessage implements
                     $keyPacket = $key->getEncryptionKeyPacket();
                     if (
                         $pkesk->getKeyAlgorithm() ===
-                            $keyPacket->getKeyAlgorithm() &&
+                        $keyPacket->getKeyAlgorithm() &&
                         strcmp($pkesk->getKeyID(), $keyPacket->getKeyID()) === 0
                     ) {
                         try {
@@ -135,7 +135,10 @@ class EncryptedMessage extends AbstractMessage implements
         if (empty($sessionKeys)) {
             throw new \RuntimeException(implode(
                 PHP_EOL,
-                ["Session key decryption failed.", ...$errors]
+                [
+                    "Session key decryption failed.",
+                    ...$errors,
+                ]
             ));
         }
 
@@ -201,7 +204,9 @@ class EncryptedMessage extends AbstractMessage implements
             ->whereType(EncryptedDataPacketInterface::class)
             ->getPackets();
         if (empty($encryptedPackets)) {
-            throw new \RuntimeException("No encrypted data packets found.");
+            throw new \RuntimeException(
+                "No encrypted data packet in packet list."
+            );
         }
         return array_pop($encryptedPackets);
     }
