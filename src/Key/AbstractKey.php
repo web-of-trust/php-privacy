@@ -95,10 +95,11 @@ abstract class AbstractKey implements KeyInterface
             $subkeys,
         ] = self::keyStructure($packetList);
 
+        $this->keyPacket = $keyPacket;
         $this->revocationSignatures = $revocationSignatures;
         $this->directSignatures = $directSignatures;
 
-        $users = array_map(
+        $this->users = array_map(
             fn ($user) => new User(
                 $this,
                 $user["userIDPacket"],
@@ -108,11 +109,8 @@ abstract class AbstractKey implements KeyInterface
             ),
             $users
         );
-        $this->users = array_filter(
-            $users, static fn ($user) => $user->verify()
-        );
 
-        $subkeys = array_map(
+        $this->subkeys = array_map(
             fn ($subkey) => new Subkey(
                 $this,
                 $subkey["keyPacket"],
@@ -121,23 +119,7 @@ abstract class AbstractKey implements KeyInterface
             ),
             $subkeys
         );
-        $this->subkeys = array_filter(
-            $subkeys, static fn ($subkey) => $subkey->verify()
-        );
     }
-
-    // protected function __construct(
-    //     private readonly KeyPacketInterface $keyPacket,
-    //     array $revocationSignatures = [],
-    //     array $directSignatures = [],
-    //     array $users = [],
-    //     array $subkeys = []
-    // ) {
-    //     $this->setRevocationSignatures($revocationSignatures)
-    //         ->setDirectSignatures($directSignatures)
-    //         ->setUsers($users)
-    //         ->setSubkeys($subkeys);
-    // }
 
     /**
      * {@inheritdoc}
@@ -586,7 +568,7 @@ abstract class AbstractKey implements KeyInterface
                     $revocationReason,
                     $reasonTag,
                     $time
-                ),,
+                ),
                 ...$this->getRevocationSignatures(),
             ],
             ...$this->getDirectSignatures(),
@@ -654,7 +636,7 @@ abstract class AbstractKey implements KeyInterface
         foreach ($this->users as $user) {
             $packets = [
                 ...$packets,
-                $user->getPacketList()->getPackets(),
+                ...$user->getPacketList()->getPackets(),
             ];
         }
         return $packets;
@@ -672,7 +654,7 @@ abstract class AbstractKey implements KeyInterface
             $packets = [
                 ...$packets,
                 ...$subkey->getPacketList()->getPackets(),
-            ],
+            ];
         }
         return $packets;
     }

@@ -17,7 +17,8 @@ use OpenPGP\Enum\{
     KeyAlgorithm,
     KeyType,
     RevocationReasonTag,
-    RSAKeySize
+    RSAKeySize,
+    SymmetricAlgorithm
 };
 use OpenPGP\Packet\{PacketList, SecretKey, SecretSubkey, Signature, UserID};
 use OpenPGP\Type\{
@@ -372,6 +373,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 $subkeyPackets[$key] = $packet->decrypt($subkeyPassphrase);
             }
         }
+
         return new self(new PacketList([
             $this->secretKeyPacket->decrypt($passphrase),
             ...$this->getRevocationSignatures(),
