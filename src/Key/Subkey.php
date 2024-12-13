@@ -62,14 +62,14 @@ class Subkey implements SubkeyInterface
         $this->revocationSignatures = array_values(
             array_filter(
                 $revocationSignatures,
-                static fn($signature) => $signature instanceof
+                static fn ($signature) => $signature instanceof
                     SignaturePacketInterface && $signature->isSubkeyRevocation()
             )
         );
         $this->bindingSignatures = array_values(
             array_filter(
                 $bindingSignatures,
-                static fn($signature) => $signature instanceof
+                static fn ($signature) => $signature instanceof
                     SignaturePacketInterface && $signature->isSubkeyBinding()
             )
         );
@@ -106,7 +106,7 @@ class Subkey implements SubkeyInterface
     {
         if (!empty($this->bindingSignatures)) {
             $signatures = $this->bindingSignatures;
-            usort($signatures, static function ($a, $b): int {
+            usort($signatures, static function ($a, $b) {
                 $aTime = $a->getCreationTime() ?? new \DateTime();
                 $bTime = $b->getCreationTime() ?? new \DateTime();
                 return $aTime->getTimestamp() - $bTime->getTimestamp();
@@ -258,12 +258,9 @@ class Subkey implements SubkeyInterface
      */
     public function verify(?DateTimeInterface $time = null): bool
     {
-        if ($this->isRevoked(time: $time)) {
-            return false;
-        }
         $keyPacket = $this->mainKey->toPublic()->getSigningKeyPacket();
         foreach ($this->bindingSignatures as $signature) {
-            if (!$signature->verify(
+            if ($signature->verify(
                 $keyPacket,
                 implode([
                     $this->mainKey->getKeyPacket()->getSignBytes(),
@@ -271,10 +268,10 @@ class Subkey implements SubkeyInterface
                 ]),
                 $time
             )) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     /**
@@ -290,7 +287,6 @@ class Subkey implements SubkeyInterface
             $this->mainKey,
             $this->keyPacket,
             [
-                ...$this->revocationSignatures,
                 Signature::createSubkeyRevocation(
                     $signKey->getSecretKeyPacket(),
                     $this->mainKey->getKeyPacket(),
@@ -299,6 +295,7 @@ class Subkey implements SubkeyInterface
                     $reasonTag,
                     $time
                 ),
+                ...$this->revocationSignatures,
             ],
             $this->bindingSignatures
         );

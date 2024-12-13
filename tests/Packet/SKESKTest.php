@@ -259,12 +259,15 @@ class SKESKTest extends OpenPGPTestCase
 
     public function testAeadEncryptSessionKey()
     {
-        $sessionKey = SessionKey::produceKey(Config::getPreferredSymmetric());
+        $sessionKey = SessionKey::produceKey(
+            Config::getPreferredSymmetric(),
+            Config::getPreferredAead()
+        );
         $skesk = SymmetricKeyEncryptedSessionKey::encryptSessionKey(
             self::PASSPHRASE,
             $sessionKey,
-            Config::getPreferredSymmetric(),
-            Config::getPreferredAead()
+            $sessionKey->getSymmetric(),
+            $sessionKey->getAead()
         );
         $this->assertSame(
             SymmetricKeyEncryptedSessionKey::VERSION_6,
@@ -275,7 +278,7 @@ class SKESKTest extends OpenPGPTestCase
         $seipd = SymEncryptedIntegrityProtectedData::encryptPacketsWithSessionKey(
             $skesk->getSessionKey(),
             new PacketList([LiteralData::fromText(self::LITERAL_TEXT)]),
-            Config::getPreferredAead()
+            $sessionKey->getAead()
         );
         $this->assertSame(
             SymEncryptedIntegrityProtectedData::VERSION_2,
@@ -299,6 +302,13 @@ class SKESKTest extends OpenPGPTestCase
             $skesk->getVersion()
         );
         $this->assertSame(self::LITERAL_TEXT, trim($literalData->getData()));
-        $this->assertEquals($sessionKey, $skesk->getSessionKey());
+        $this->assertEquals(
+            $sessionKey->getEncryptionKey(),
+            $skesk->getSessionKey()->getEncryptionKey()
+        );
+        $this->assertEquals(
+            $sessionKey->getSymmetric(),
+            $skesk->getSessionKey()->getSymmetric()
+        );
     }
 }

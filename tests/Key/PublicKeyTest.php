@@ -4,7 +4,7 @@ namespace OpenPGP\Tests\Key;
 
 use OpenPGP\Enum\KeyAlgorithm;
 use OpenPGP\Enum\PacketTag;
-use OpenPGP\Key\PublicKey;
+use OpenPGP\OpenPGP;
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
@@ -16,7 +16,7 @@ class PublicKeyTest extends OpenPGPTestCase
 
     public function testReadRSAPublicKey()
     {
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/RsaPublicKey.asc")
         );
         $this->assertSame(
@@ -61,13 +61,13 @@ class PublicKeyTest extends OpenPGPTestCase
 
         $this->assertEquals(
             $publicKey,
-            PublicKey::fromArmored($publicKey->armor())
+            OpenPGP::readPublicKey($publicKey->armor())
         );
     }
 
     public function testReadDSAPublicKey()
     {
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/DsaPublicKey.asc")
         );
         $this->assertSame(
@@ -112,13 +112,13 @@ class PublicKeyTest extends OpenPGPTestCase
 
         $this->assertEquals(
             $publicKey,
-            PublicKey::fromArmored($publicKey->armor())
+            OpenPGP::readPublicKey($publicKey->armor())
         );
     }
 
     public function testReadEcP384PublicKey()
     {
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcP384PublicKey.asc")
         );
         $this->assertSame(
@@ -164,7 +164,7 @@ class PublicKeyTest extends OpenPGPTestCase
 
     public function testReadEcBrainpoolPublicKey()
     {
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcBrainpoolPublicKey.asc")
         );
         $this->assertSame(
@@ -210,7 +210,7 @@ class PublicKeyTest extends OpenPGPTestCase
 
     public function testReadEcCurve25519PublicKey()
     {
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcCurve25519PublicKey.asc")
         );
         $this->assertSame(
@@ -278,10 +278,10 @@ T3ryNIYca7l/BO+m8zgP
 =N4j9
 -----END PGP PUBLIC KEY BLOCK-----
 EOT;
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/RsaPublicKey.asc")
         );
-        $certifiedKey = PublicKey::fromArmored($keyData);
+        $certifiedKey = OpenPGP::readPublicKey($keyData);
         $this->assertTrue($certifiedKey->isCertified($publicKey));
     }
 
@@ -294,7 +294,7 @@ xjMEU/NfCxYJKwYBBAHaRw8BAQdAPwmJlL3ZFu1AUxl5NOSofIBzOhKA1i+AEJku
 Q+47JAY=
 -----END PGP PUBLIC KEY BLOCK-----
 EOT;
-        $publicKey = PublicKey::fromArmored($keyData);
+        $publicKey = OpenPGP::readPublicKey($keyData);
         $this->assertSame(4, $publicKey->getVersion());
         $this->assertSame(
             "c959bdbafa32a2f89a153b678cfde12197965a9a",
@@ -318,7 +318,7 @@ j+VjFM21J0hqWlEg+bdiojWnKfA5AQpWUWtnNwDEM0g12vYxoWM8Y81W+bHBw805
 I8kWVkXU6vFOi+HWvv/ira7ofJu16NnoUkhclkUrk0mXubZvyl4GBg==
 -----END PGP PUBLIC KEY BLOCK-----
 EOT;
-        $publicKey = PublicKey::fromArmored($keyData);
+        $publicKey = OpenPGP::readPublicKey($keyData);
         $this->assertSame(6, $publicKey->getVersion());
         $this->assertSame(KeyAlgorithm::Ed25519, $publicKey->getKeyAlgorithm());
         $this->assertSame(

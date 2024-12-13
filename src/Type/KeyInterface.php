@@ -9,7 +9,7 @@
 namespace OpenPGP\Type;
 
 use DateTimeInterface;
-use OpenPGP\Enum\{KeyAlgorithm, RevocationReasonTag};
+use OpenPGP\Enum\{KeyAlgorithm, RevocationReasonTag, SymmetricAlgorithm};
 
 /**
  * Key interface
@@ -162,6 +162,21 @@ interface KeyInterface extends
      * @return bool
      */
     function isPrivate(): bool;
+
+    /**
+     * Return preferred symmetrics
+     *
+     * @return array
+     */
+    function getPreferredSymmetrics(): array;
+
+    /**
+     * Return preferred aeads by given symmetric
+     *
+     * @param SymmetricAlgorithm $symmetric
+     * @return array
+     */
+    function getPreferredAeads(SymmetricAlgorithm $symmetric): array;
 
     /**
      * Return AEAD supported

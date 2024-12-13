@@ -124,15 +124,21 @@ final class OpenPGP
      * @param Type\PrivateKeyInterface $privateKey
      * @param string $passphrase
      * @param array $subkeyPassphrases
+     * @param Enum\SymmetricAlgorithm $symmetric
      * @return Type\PrivateKeyInterface
      */
     public static function encryptPrivateKey(
         Type\PrivateKeyInterface $privateKey,
         string $passphrase,
-        array $subkeyPassphrases = []
+        array $subkeyPassphrases = [],
+        ?Enum\SymmetricAlgorithm $symmetric = null
     ): Type\PrivateKeyInterface
     {
-        return $privateKey->encrypt($passphrase, $subkeyPassphrases);
+        return $privateKey->encrypt(
+            $passphrase,
+            $subkeyPassphrases,
+            $symmetric ?? Common\Config::getPreferredSymmetric()
+        );
     }
 
     /**
@@ -297,7 +303,7 @@ final class OpenPGP
 
     /**
      * Sign a cleartext message.
-     * Return a signed message object
+     * Return a signed message object.
      *
      * @param string $text
      * @param array $signingKeys
@@ -462,7 +468,9 @@ final class OpenPGP
     {
         return empty($signingKeys) ?
             $message->compress($compression)->encrypt(
-                $encryptionKeys, $passwords, $symmetric
+                $encryptionKeys,
+                $passwords,
+                $symmetric ?? Common\Config::getPreferredSymmetric()
             ) :
             $message->sign(
                 $signingKeys,
@@ -476,13 +484,15 @@ final class OpenPGP
                 $notationData,
                 $time
             )->compress($compression)->encrypt(
-                $encryptionKeys, $passwords, $symmetric
+                $encryptionKeys,
+                $passwords,
+                $symmetric ?? Common\Config::getPreferredSymmetric()
             );
     }
 
     /**
      * Decrypt a message with the user's private keys, or passwords.
-     * One of `decryptionKeys` or `passwords` must be specified
+     * One of `decryptionKeys` or `passwords` must be specified.
      *
      * @param Type\EncryptedMessageInterface $message
      * @param array $decryptionKeys
@@ -501,7 +511,7 @@ final class OpenPGP
     /**
      * Decrypt a armored/binary encrypted string with
      * the user's private keys, or passwords.
-     * One of `decryptionKeys` or `passwords` must be specified
+     * One of `decryptionKeys` or `passwords` must be specified.
      *
      * @param string $messageData
      * @param array $decryptionKeys
@@ -520,6 +530,64 @@ final class OpenPGP
             self::readEncryptedMessage($messageData, $armored),
             $decryptionKeys,
             $passwords
+        );
+    }
+
+    /**
+     * Generate a new session key object.
+     * Taking the algorithm preferences of the passed encryption keys, if any.
+     *
+     * @param array $encryptionKeys
+     * @param Enum\SymmetricAlgorithm $symmetric
+     * @return Type\SessionKeyInterface
+     */
+    public static function generateSessionKey(
+        array $encryptionKeys,
+        ?Enum\SymmetricAlgorithm $symmetric = null
+    ): Type\SessionKeyInterface
+    {
+        return Message\LiteralMessage::generateSessionKey(
+            $encryptionKeys,
+            $symmetric ?? Common\Config::getPreferredSymmetric()
+        );
+    }
+
+    /**
+     * Encrypt a session key either with public keys, passwords, or both at once.
+     *
+     * @param Type\SessionKeyInterface $sessionKey
+     * @param array $encryptionKeys
+     * @param array $passwords
+     * @return array
+     */
+    public static function encryptSessionKey(
+        Type\SessionKeyInterface $sessionKey,
+        array $encryptionKeys = [],
+        array $passwords = []
+    ): array
+    {
+        return Message\LiteralMessage::encryptSessionKey(
+            $sessionKey, $encryptionKeys, $passwords
+        );
+    }
+
+    /**
+     * Decrypt encrypted session keys.
+     * Using private keys or passwords (not both).
+     *
+     * @param Type\PacketListInterface $packetList
+     * @param array $decryptionKeys
+     * @param array $passwords
+     * @return Type\SessionKeyInterface
+     */
+    private function decryptSessionKey(
+        Type\PacketListInterface $packetList,
+        array $decryptionKeys = [],
+        array $passwords = []
+    ): Type\SessionKeyInterface
+    {
+        return Message\EncryptedMessage::decryptSessionKey(
+            $packetList, $decryptionKeys, $passwords
         );
     }
 }

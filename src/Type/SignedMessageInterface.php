@@ -27,7 +27,7 @@ interface SignedMessageInterface extends ArmorableInterface
     function getSignature(): SignatureInterface;
 
     /**
-     * Verify signatures of signed message
+     * Verify signature of signed message
      * Return verification array
      *
      * @param array $verificationKeys

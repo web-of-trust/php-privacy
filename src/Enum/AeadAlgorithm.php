@@ -89,4 +89,18 @@ enum AeadAlgorithm: int
             self::Gcm => new GCM($key, $symmetric),
         };
     }
+
+    /**
+     * Get preferred aeads
+     *
+     * @return array
+     */
+    static public function preferredAead(): array
+    {
+        return [
+            self::Ocb,
+            self::Gcm,
+            self::Eax,
+        ];
+    }
 }

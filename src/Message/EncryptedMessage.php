@@ -65,68 +65,26 @@ class EncryptedMessage extends AbstractMessage implements
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getEncryptedPacket(): EncryptedDataPacketInterface
-    {
-        return self::assertEncryptedPacket($this->getPacketList());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSessionKey(): ?SessionKeyInterface
-    {
-        return $this->sessionKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function decrypt(
-        array $decryptionKeys = [],
-        array $passwords = []
-    ): LiteralMessageInterface {
-        $decryptionKeys = array_filter(
-            $decryptionKeys,
-            static fn($key) => $key instanceof PrivateKeyInterface
-        );
-        if (empty($decryptionKeys) && empty($passwords)) {
-            throw new \InvalidArgumentException(
-                "No decryption keys or passwords provided."
-            );
-        }
-
-        return new LiteralMessage(
-            $this->getEncryptedPacket()
-                ->decryptWithSessionKey(
-                    $this->sessionKey = $this->decryptSessionKey(
-                        $decryptionKeys,
-                        $passwords
-                    )
-                )
-                ->getPacketList()
-        );
-    }
-
-    /**
-     * Decrypt session key.
+     * Decrypt encrypted session keys.
+     * Using private keys or passwords (not both).
      *
+     * @param PacketListInterface $packetList
      * @param array $decryptionKeys
      * @param array $passwords
      * @return SessionKeyInterface
      */
-    private function decryptSessionKey(
+    public static function decryptSessionKey(
+        PacketListInterface $packetList,
         array $decryptionKeys,
         array $passwords
     ): SessionKeyInterface {
         $errors = [];
         $sessionKeys = [];
         if (!empty($passwords)) {
-            $skeskPacketList = $this->getPacketList()->whereType(
+            $skeskPackets = $packetList->whereType(
                 SymmetricKeyEncryptedSessionKey::class
             );
-            foreach ($skeskPacketList as $skesk) {
+            foreach ($skeskPackets as $skesk) {
                 foreach ($passwords as $password) {
                     try {
                         $sessionKeys[] = $skesk
@@ -140,10 +98,10 @@ class EncryptedMessage extends AbstractMessage implements
             }
         }
         if (empty($sessionKeys) && !empty($decryptionKeys)) {
-            $pkeskPacketList = $this->getPacketList()->whereType(
+            $pkeskPackets = $packetList->whereType(
                 PublicKeyEncryptedSessionKey::class
             );
-            foreach ($pkeskPacketList as $pkesk) {
+            foreach ($pkeskPackets as $pkesk) {
                 foreach ($decryptionKeys as $key) {
                     $keyPacket = $key->getEncryptionKeyPacket();
                     if (
@@ -171,6 +129,52 @@ class EncryptedMessage extends AbstractMessage implements
         }
 
         return array_pop($sessionKeys);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getEncryptedPacket(): EncryptedDataPacketInterface
+    {
+        return self::assertEncryptedPacket($this->getPacketList());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSessionKey(): ?SessionKeyInterface
+    {
+        return $this->sessionKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function decrypt(
+        array $decryptionKeys = [],
+        array $passwords = []
+    ): LiteralMessageInterface {
+        $decryptionKeys = array_filter(
+            $decryptionKeys,
+            static fn ($key) => $key instanceof PrivateKeyInterface
+        );
+        if (empty($decryptionKeys) && empty($passwords)) {
+            throw new \InvalidArgumentException(
+                "No decryption keys or passwords provided."
+            );
+        }
+
+        return new LiteralMessage(
+            $this->getEncryptedPacket()
+                ->decryptWithSessionKey(
+                    $this->sessionKey = self::decryptSessionKey(
+                        $this->getPacketList(),
+                        $decryptionKeys,
+                        $passwords
+                    )
+                )
+                ->getPacketList()
+        );
     }
 
     /**

@@ -13,6 +13,7 @@ use OpenPGP\Enum\{
     AeadAlgorithm,
     HashAlgorithm,
     PacketTag,
+    PresetRFC,
     SymmetricAlgorithm
 };
 use OpenPGP\Type\{
@@ -143,7 +144,7 @@ class SymEncryptedIntegrityProtectedData
     ): self {
         Helper::assertSymmetric($symmetric);
         $aeadProtect = $aead instanceof AeadAlgorithm;
-        $version = $aeadProtect || Config::useV6Key()
+        $version = $aeadProtect || Config::presetRFC() == PresetRFC::RFC9580
             ? self::VERSION_2 : self::VERSION_1;
 
         $salt = "";

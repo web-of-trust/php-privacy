@@ -70,21 +70,21 @@ class User implements UserInterface
         $this->revocationSignatures = array_values(
             array_filter(
                 $revocationSignatures,
-                static fn($signature) => $signature instanceof
+                static fn ($signature) => $signature instanceof
                     SignaturePacketInterface && $signature->isCertRevocation()
             )
         );
         $this->selfCertifications = array_values(
             array_filter(
                 $selfCertifications,
-                static fn($signature) => $signature instanceof
+                static fn ($signature) => $signature instanceof
                     SignaturePacketInterface && $signature->isCertification()
             )
         );
         $this->otherCertifications = array_values(
             array_filter(
                 $otherCertifications,
-                static fn($signature) => $signature instanceof
+                static fn ($signature) => $signature instanceof
                     SignaturePacketInterface && $signature->isCertification()
             )
         );
@@ -137,7 +137,7 @@ class User implements UserInterface
     {
         if (!empty($this->selfCertifications)) {
             $signatures = $this->selfCertifications;
-            usort($signatures, static function ($a, $b): int {
+            usort($signatures, static function ($a, $b) {
                 $aTime = $a->getCreationTime() ?? new \DateTime();
                 $bTime = $b->getCreationTime() ?? new \DateTime();
                 return $aTime->getTimestamp() - $bTime->getTimestamp();
@@ -211,9 +211,6 @@ class User implements UserInterface
         ?SignaturePacketInterface $certificate = null,
         ?DateTimeInterface $time = null
     ): bool {
-        if ($this->isRevoked($verifyKey, time: $time)) {
-            return false;
-        }
         $keyID = $certificate?->getIssuerKeyID();
         $keyPacket =
             $verifyKey?->toPublic()->getSigningKeyPacket() ??
@@ -243,12 +240,9 @@ class User implements UserInterface
      */
     public function verify(?DateTimeInterface $time = null): bool
     {
-        if ($this->isRevoked(time: $time)) {
-            return false;
-        }
         $keyPacket = $this->mainKey->toPublic()->getSigningKeyPacket();
         foreach ($this->selfCertifications as $signature) {
-            if (!$signature->verify(
+            if ($signature->verify(
                 $keyPacket,
                 implode([
                     $this->mainKey->getKeyPacket()->getSignBytes(),
@@ -256,10 +250,10 @@ class User implements UserInterface
                 ]),
                 $time
             )) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     /**
@@ -309,7 +303,6 @@ class User implements UserInterface
             $this->mainKey,
             $this->userIDPacket,
             [
-                ...$this->revocationSignatures,
                 Signature::createCertRevocation(
                     $signKey->getSecretKeyPacket(),
                     $this->mainKey->getKeyPacket(),
@@ -318,6 +311,7 @@ class User implements UserInterface
                     $reasonTag,
                     $time
                 ),
+                ...$this->revocationSignatures,
             ],
             $this->selfCertifications,
             $this->otherCertifications

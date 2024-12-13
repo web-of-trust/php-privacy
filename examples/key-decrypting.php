@@ -4,12 +4,10 @@ require_once dirname(__DIR__) . "/vendor/autoload.php";
 
 use OpenPGP\OpenPGP;
 
-$passphase = 'Ax@2bGh;SxD&"A_;El%mPIvLx_!#3Aik';
+$passphrase = 'Ax@2bGh;SxD&"A_;El%mPIvLx_!#3Aik';
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
-Version: PHP Privacy v2
-Comment: https://github.com/web-of-trust/php-privacy
 
 xcMGBGbzftYBCADjibutkEy7HZgEPkJHzQuY3OLDTviCJABAm7BUAx0qeVIWJT7+53P1g/3vRr1q
 rVBbQxrLBvS8Haij+SStqhTiYkjWmV5OTwY46uSd65cIuJUardzojbRDSLaODSn7c8J2yVLRlkls
@@ -70,7 +68,7 @@ qy6toPKEKnsoCZVMlS/fSSTONakq
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
 echo "Decrypt RSA private key" . PHP_EOL;
-$privateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
+$privateKey = OpenPGP::decryptPrivateKey($keyData, $passphrase);
 echo "Key algorithm: {$privateKey->getKeyAlgorithm()->name}" . PHP_EOL;
 echo "Key version: {$privateKey->getVersion()}" . PHP_EOL;
 echo "Key fingerprint: {$privateKey->getFingerprint(true)}" . PHP_EOL;
@@ -81,8 +79,6 @@ echo "User ID: {$privateKey->getPrimaryUser()->getUserID()}" .
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
-Version: PHP Privacy v2
-Comment: https://github.com/web-of-trust/php-privacy
 
 xcBIBGbzftYTBSuBBAAjBCMEAWHmrzLEzuTRVDQQTvCZdm/RnY/M9rzN8qzpp4lBAFSDhYY118hv
 Jp2Ax0rsD5Qi8tMeTAdFef08HqzP4eeNSHu1AZi518zPlyv3ADpZ3jQ89Sw+WwR17a7+0ZuEV8Jd
@@ -113,7 +109,7 @@ h2en6HvwU70R0BQ=
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
 echo "Decrypt Ecc private key" . PHP_EOL;
-$privateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
+$privateKey = OpenPGP::decryptPrivateKey($keyData, $passphrase);
 echo "Key algorithm: {$privateKey->getKeyAlgorithm()->name}" . PHP_EOL;
 echo "Key version: {$privateKey->getVersion()}" . PHP_EOL;
 echo "Key fingerprint: {$privateKey->getFingerprint(true)}" . PHP_EOL;
@@ -124,8 +120,6 @@ echo "User ID: {$privateKey->getPrimaryUser()->getUserID()}" .
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
-Version: PHP Privacy v2
-Comment: https://github.com/web-of-trust/php-privacy
 
 xX0GZvN+1xsAAAAgMtES26hjSSQoUx6STK6IMe64fLvldCRkg7w50pfRxqD+HQcLAwjPsmWimBb8
 n+B+mPc9X1kryrwErHX2103ACvuNq1yGPKvU6q3HygdPL8n7DHv/U5S88R6KQnNQfaIRGsYRpye+
@@ -151,7 +145,7 @@ iifJtGDxIsDjLBx8u9lEBTPFPKQbMrh4Gx7OL87S2a3yKJlkdsoJ1RexF+OhHlcTHORBJRF1UMiY
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
 echo "Decrypt Curve25519 private key" . PHP_EOL;
-$privateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
+$privateKey = OpenPGP::decryptPrivateKey($keyData, $passphrase);
 echo "Key algorithm: {$privateKey->getKeyAlgorithm()->name}" . PHP_EOL;
 echo "Key version: {$privateKey->getVersion()}" . PHP_EOL;
 echo "Key fingerprint: {$privateKey->getFingerprint(true)}" . PHP_EOL;
@@ -162,8 +156,6 @@ echo "User ID: {$privateKey->getPrimaryUser()->getUserID()}" .
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
-Version: PHP Privacy v2
-Comment: https://github.com/web-of-trust/php-privacy
 
 xa8GZvN+1xwAAAA5Hf47PIbsLCoImil+MuXWGvUvzElvjIiq3fJrRIf+k1cXre22GEKF01R2q1Ma
 mkSDoofsPPeNeUUA/h0HCwMITySmmq2jzrTgYtxFzyFzKGtQNbFTZXcTXmmxqT4UjfG+S5s5tFYy
@@ -195,7 +187,7 @@ nWWFLDsA1Ri3Rbu551qo3Xk4o5gVhSC0J+7ZMZyQq2g=
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
 echo "Decrypt Curve448 private key" . PHP_EOL;
-$privateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
+$privateKey = OpenPGP::decryptPrivateKey($keyData, $passphrase);
 echo "Key algorithm: {$privateKey->getKeyAlgorithm()->name}" . PHP_EOL;
 echo "Key version: {$privateKey->getVersion()}" . PHP_EOL;
 echo "Key fingerprint: {$privateKey->getFingerprint(true)}" . PHP_EOL;

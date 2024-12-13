@@ -7,12 +7,10 @@ use OpenPGP\Enum\{
     AeadAlgorithm,
     CompressionAlgorithm,
     KeyType,
-    LiteralFormat,
     PacketTag
 };
-use OpenPGP\Key\{PrivateKey, PublicKey};
-use OpenPGP\Message\{LiteralMessage, Signature};
-use OpenPGP\Packet\{LiteralData, PacketList};
+use OpenPGP\Type\SignatureInterface;
+use OpenPGP\OpenPGP;
 use OpenPGP\Tests\OpenPGPTestCase;
 use phpseclib3\Crypt\Random;
 
@@ -76,15 +74,15 @@ koIAxNXOxaRF4vybpbI7FWQ=
 -----END PGP MESSAGE-----
 EOT;
 
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/RsaPublicKey.asc")
         );
-        $message = LiteralMessage::fromArmored($messageData);
+        $message = OpenPGP::readLiteralMessage($messageData);
         $this->assertSame(
             self::LITERAL_DATA,
             $message->getLiteralData()->getData()
         );
-        $this->assertTrue($message->getSignature() instanceof Signature);
+        $this->assertTrue($message->getSignature() instanceof SignatureInterface);
 
         $verification = $message->verify([$publicKey])[0];
         $this->assertSame("184d0dc4f5c532b2", $verification->getKeyID(true));
@@ -104,15 +102,15 @@ FFnswifaxuecvj1B6fs9mCZWJpAOBi5OAZjIy3UM/+M4F12pX+B0JoE/qqiBM697
 -----END PGP MESSAGE-----
 EOT;
 
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/DsaPublicKey.asc")
         );
-        $message = LiteralMessage::fromArmored($messageData);
+        $message = OpenPGP::readLiteralMessage($messageData);
         $this->assertSame(
             self::LITERAL_DATA,
             $message->getLiteralData()->getData()
         );
-        $this->assertTrue($message->getSignature() instanceof Signature);
+        $this->assertTrue($message->getSignature() instanceof SignatureInterface);
 
         $verification = $message->verify([$publicKey])[0];
         $this->assertSame("e3b11d642248a092", $verification->getKeyID(true));
@@ -132,15 +130,15 @@ olN2PbFm8ibP8kmmPQc+OM3z+u23f89FNfb9Lxr1/As0POP/HcoBAA==
 -----END PGP MESSAGE-----
 EOT;
 
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcP384PublicKey.asc")
         );
-        $message = LiteralMessage::fromArmored($messageData);
+        $message = OpenPGP::readLiteralMessage($messageData);
         $this->assertSame(
             self::LITERAL_DATA,
             $message->getLiteralData()->getData()
         );
-        $this->assertTrue($message->getSignature() instanceof Signature);
+        $this->assertTrue($message->getSignature() instanceof SignatureInterface);
 
         $verification = $message->verify([$publicKey])[0];
         $this->assertSame("b202d9e2eada440c", $verification->getKeyID(true));
@@ -160,15 +158,15 @@ v2OXGRgB
 -----END PGP MESSAGE-----
 EOT;
 
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcBrainpoolPublicKey.asc")
         );
-        $message = LiteralMessage::fromArmored($messageData);
+        $message = OpenPGP::readLiteralMessage($messageData);
         $this->assertSame(
             self::LITERAL_DATA,
             $message->getLiteralData()->getData()
         );
-        $this->assertTrue($message->getSignature() instanceof Signature);
+        $this->assertTrue($message->getSignature() instanceof SignatureInterface);
 
         $verification = $message->verify([$publicKey])[0];
         $this->assertSame("1cbcd043db44c5d6", $verification->getKeyID(true));
@@ -188,15 +186,15 @@ fB/SzQ4A
 -----END PGP MESSAGE-----
 EOT;
 
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcCurve25519PublicKey.asc")
         );
-        $message = LiteralMessage::fromArmored($messageData);
+        $message = OpenPGP::readLiteralMessage($messageData);
         $this->assertSame(
             self::LITERAL_DATA,
             $message->getLiteralData()->getData()
         );
-        $this->assertTrue($message->getSignature() instanceof Signature);
+        $this->assertTrue($message->getSignature() instanceof SignatureInterface);
 
         $verification = $message->verify([$publicKey])[0];
         $this->assertSame("bdff135160c56a0b", $verification->getKeyID(true));
@@ -219,15 +217,11 @@ Mz4sU7yMAc9UOEiLw0lCVD21um9QaA==
 -----END PGP SIGNATURE-----
 EOT;
 
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/RsaPublicKey.asc")
         );
-        $message = new LiteralMessage(
-            new PacketList([
-                new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary),
-            ])
-        );
-        $signature = Signature::fromArmored($signatureData);
+        $message = OpenPGP::createLiteralMessage(self::LITERAL_DATA);
+        $signature = OpenPGP::readSignature($signatureData);
 
         $verification = $message->verifyDetached([$publicKey], $signature)[0];
         $this->assertSame("184d0dc4f5c532b2", $verification->getKeyID(true));
@@ -246,15 +240,11 @@ p4iTK8BfckODOHP9MPV3+gOunYR+sYs=
 -----END PGP SIGNATURE-----
 EOT;
 
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/DsaPublicKey.asc")
         );
-        $message = new LiteralMessage(
-            new PacketList([
-                new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary),
-            ])
-        );
-        $signature = Signature::fromArmored($signatureData);
+        $message = OpenPGP::createLiteralMessage(self::LITERAL_DATA);
+        $signature = OpenPGP::readSignature($signatureData);
 
         $verification = $message->verifyDetached([$publicKey], $signature)[0];
         $this->assertSame("e3b11d642248a092", $verification->getKeyID(true));
@@ -274,15 +264,11 @@ yvVtUIpkjw==
 -----END PGP SIGNATURE-----
 EOT;
 
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcP384PublicKey.asc")
         );
-        $message = new LiteralMessage(
-            new PacketList([
-                new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary),
-            ])
-        );
-        $signature = Signature::fromArmored($signatureData);
+        $message = OpenPGP::createLiteralMessage(self::LITERAL_DATA);
+        $signature = OpenPGP::readSignature($signatureData);
 
         $verification = $message->verifyDetached([$publicKey], $signature)[0];
         $this->assertSame("b202d9e2eada440c", $verification->getKeyID(true));
@@ -301,15 +287,11 @@ K1rxwEcNf7raFJ8qt0SLehSchqD5YGQ=
 -----END PGP SIGNATURE-----
 EOT;
 
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcBrainpoolPublicKey.asc")
         );
-        $message = new LiteralMessage(
-            new PacketList([
-                new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary),
-            ])
-        );
-        $signature = Signature::fromArmored($signatureData);
+        $message = OpenPGP::createLiteralMessage(self::LITERAL_DATA);
+        $signature = OpenPGP::readSignature($signatureData);
 
         $verification = $message->verifyDetached([$publicKey], $signature)[0];
         $this->assertSame("1cbcd043db44c5d6", $verification->getKeyID(true));
@@ -328,15 +310,11 @@ G5C7hirK1TGRFNn21JYEMGe8v1WCBwg=
 -----END PGP SIGNATURE-----
 EOT;
 
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcCurve25519PublicKey.asc")
         );
-        $message = new LiteralMessage(
-            new PacketList([
-                new LiteralData(self::LITERAL_DATA, LiteralFormat::Binary),
-            ])
-        );
-        $signature = Signature::fromArmored($signatureData);
+        $message = OpenPGP::createLiteralMessage(self::LITERAL_DATA);
+        $signature = OpenPGP::readSignature($signatureData);
 
         $verification = $message->verifyDetached([$publicKey], $signature)[0];
         $this->assertSame("bdff135160c56a0b", $verification->getKeyID(true));
@@ -345,30 +323,26 @@ EOT;
 
     public function testSignRsaMessage()
     {
-        $privateKey = PrivateKey::fromArmored(
+        $privateKey = OpenPGP::readPrivateKey(
             file_get_contents("tests/Data/RsaPrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/RsaPublicKey.asc")
         );
         $literalData = Random::string(10000);
-        $literalMessage = new LiteralMessage(
-            new PacketList([
-                new LiteralData($literalData, LiteralFormat::Binary),
-            ])
-        );
+        $literalMessage = OpenPGP::createLiteralMessage($literalData);
 
         $signedMessage = $literalMessage->sign([$privateKey]);
         $verification = $signedMessage->verify([$publicKey])[0];
         $this->assertSame("184d0dc4f5c532b2", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
 
-        $signedMessage = LiteralMessage::fromArmored($signedMessage->armor());
+        $signedMessage = OpenPGP::readLiteralMessage($signedMessage->armor());
         $this->assertSame(
             $literalData,
             $signedMessage->getLiteralData()->getData()
         );
-        $this->assertTrue($signedMessage->getSignature() instanceof Signature);
+        $this->assertTrue($signedMessage->getSignature() instanceof SignatureInterface);
 
         $signature = $literalMessage->signDetached([$privateKey]);
         $verification = $literalMessage->verifyDetached(
@@ -381,30 +355,26 @@ EOT;
 
     public function testSignEcP384Message()
     {
-        $privateKey = PrivateKey::fromArmored(
+        $privateKey = OpenPGP::readPrivateKey(
             file_get_contents("tests/Data/EcP384PrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcP384PublicKey.asc")
         );
         $literalData = Random::string(10000);
-        $literalMessage = new LiteralMessage(
-            new PacketList([
-                new LiteralData($literalData, LiteralFormat::Binary),
-            ])
-        );
+        $literalMessage = OpenPGP::createLiteralMessage($literalData);
 
         $signedMessage = $literalMessage->sign([$privateKey]);
         $verification = $signedMessage->verify([$publicKey])[0];
         $this->assertSame("b202d9e2eada440c", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
 
-        $signedMessage = LiteralMessage::fromArmored($signedMessage->armor());
+        $signedMessage = OpenPGP::readLiteralMessage($signedMessage->armor());
         $this->assertSame(
             $literalData,
             $signedMessage->getLiteralData()->getData()
         );
-        $this->assertTrue($signedMessage->getSignature() instanceof Signature);
+        $this->assertTrue($signedMessage->getSignature() instanceof SignatureInterface);
 
         $signature = $literalMessage->signDetached([$privateKey]);
         $verification = $literalMessage->verifyDetached(
@@ -417,30 +387,26 @@ EOT;
 
     public function testSignEcBrainpoolMessage()
     {
-        $privateKey = PrivateKey::fromArmored(
+        $privateKey = OpenPGP::readPrivateKey(
             file_get_contents("tests/Data/EcBrainpoolPrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcBrainpoolPublicKey.asc")
         );
         $literalData = Random::string(10000);
-        $literalMessage = new LiteralMessage(
-            new PacketList([
-                new LiteralData($literalData, LiteralFormat::Binary),
-            ])
-        );
+        $literalMessage = OpenPGP::createLiteralMessage($literalData);
 
         $signedMessage = $literalMessage->sign([$privateKey]);
         $verification = $signedMessage->verify([$publicKey])[0];
         $this->assertSame("1cbcd043db44c5d6", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
 
-        $signedMessage = LiteralMessage::fromArmored($signedMessage->armor());
+        $signedMessage = OpenPGP::readLiteralMessage($signedMessage->armor());
         $this->assertSame(
             $literalData,
             $signedMessage->getLiteralData()->getData()
         );
-        $this->assertTrue($signedMessage->getSignature() instanceof Signature);
+        $this->assertTrue($signedMessage->getSignature() instanceof SignatureInterface);
 
         $signature = $literalMessage->signDetached([$privateKey]);
         $verification = $literalMessage->verifyDetached(
@@ -453,30 +419,26 @@ EOT;
 
     public function testSignEcCurve25519Message()
     {
-        $privateKey = PrivateKey::fromArmored(
+        $privateKey = OpenPGP::readPrivateKey(
             file_get_contents("tests/Data/EcCurve25519PrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcCurve25519PublicKey.asc")
         );
         $literalData = Random::string(10000);
-        $literalMessage = new LiteralMessage(
-            new PacketList([
-                new LiteralData($literalData, LiteralFormat::Binary),
-            ])
-        );
+        $literalMessage = OpenPGP::createLiteralMessage($literalData);
 
         $signedMessage = $literalMessage->sign([$privateKey]);
         $verification = $signedMessage->verify([$publicKey])[0];
         $this->assertSame("bdff135160c56a0b", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
 
-        $signedMessage = LiteralMessage::fromArmored($signedMessage->armor());
+        $signedMessage = OpenPGP::readLiteralMessage($signedMessage->armor());
         $this->assertSame(
             $literalData,
             $signedMessage->getLiteralData()->getData()
         );
-        $this->assertTrue($signedMessage->getSignature() instanceof Signature);
+        $this->assertTrue($signedMessage->getSignature() instanceof SignatureInterface);
 
         $signature = $literalMessage->signDetached([$privateKey]);
         $verification = $literalMessage->verifyDetached(
@@ -489,25 +451,21 @@ EOT;
 
     public function testEncryptWithCompressMessage()
     {
-        $rsaPublicKey = PublicKey::fromArmored(
+        $rsaPublicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/RsaPublicKey.asc")
         );
-        $ecP384PublicKey = PublicKey::fromArmored(
+        $ecP384PublicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcP384PublicKey.asc")
         );
-        $ecBrainpoolPublicKey = PublicKey::fromArmored(
+        $ecBrainpoolPublicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcBrainpoolPublicKey.asc")
         );
-        $ecCurve25519PublicKey = PublicKey::fromArmored(
+        $ecCurve25519PublicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcCurve25519PublicKey.asc")
         );
 
         $literalData = Random::string(10000);
-        $message = new LiteralMessage(
-            new PacketList([
-                new LiteralData($literalData, LiteralFormat::Binary),
-            ])
-        );
+        $message = OpenPGP::createLiteralMessage($literalData);
         $encryptedMessage = $message
             ->compress(CompressionAlgorithm::BZip2)
             ->encrypt(
@@ -528,7 +486,7 @@ EOT;
             $decryptedMessage->getLiteralData()->getData()
         );
 
-        $privateKey = PrivateKey::fromArmored(
+        $privateKey = OpenPGP::readPrivateKey(
             file_get_contents("tests/Data/RsaPrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
         $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
@@ -537,7 +495,7 @@ EOT;
             $decryptedMessage->getLiteralData()->getData()
         );
 
-        $privateKey = PrivateKey::fromArmored(
+        $privateKey = OpenPGP::readPrivateKey(
             file_get_contents("tests/Data/EcP384PrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
         $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
@@ -546,7 +504,7 @@ EOT;
             $decryptedMessage->getLiteralData()->getData()
         );
 
-        $privateKey = PrivateKey::fromArmored(
+        $privateKey = OpenPGP::readPrivateKey(
             file_get_contents("tests/Data/EcBrainpoolPrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
         $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
@@ -555,7 +513,7 @@ EOT;
             $decryptedMessage->getLiteralData()->getData()
         );
 
-        $privateKey = PrivateKey::fromArmored(
+        $privateKey = OpenPGP::readPrivateKey(
             file_get_contents("tests/Data/EcCurve25519PrivateKey.asc")
         )->decrypt(self::PASSPHRASE);
         $decryptedMessage = $encryptedMessage->decrypt([$privateKey]);
@@ -596,8 +554,8 @@ FtCgazStmsuOXF9SFQE=
 -----END PGP MESSAGE-----
 EOT;
 
-        $publicKey = PublicKey::fromArmored($publicKeyData);
-        $message = LiteralMessage::fromArmored($messageData);
+        $publicKey = OpenPGP::readPublicKey($publicKeyData);
+        $message = OpenPGP::readLiteralMessage($messageData);
         $verification = $message->verify([$publicKey])[0];
         $this->assertSame(
             $publicKey->getKeyID(true),
@@ -611,11 +569,7 @@ EOT;
         Config::setAeadProtect(true);
 
         $literalData = Random::string(10000);
-        $message = new LiteralMessage(
-            new PacketList([
-                new LiteralData($literalData, LiteralFormat::Binary),
-            ])
-        );
+        $message = OpenPGP::createLiteralMessage($literalData);
         $encryptedMessage = $message
             ->compress(CompressionAlgorithm::BZip2)
             ->encrypt(passwords: [self::PASSPHRASE]);
@@ -640,7 +594,7 @@ EOT;
 
     public function testSignAeadEncryptMessageWithV6Key()
     {
-        Config::setUseV6Key(true);
+        Config::presetRFC9580();
         Config::setAeadProtect(true);
 
         $name = $this->faker->unique()->name();
@@ -650,17 +604,13 @@ EOT;
         $userID = implode([$name, "($comment)", "<$email>"]);
         $literalData = Random::string(10000);
 
-        $privateKey = PrivateKey::generate(
+        $privateKey = OpenPGP::generateKey(
             [$userID],
             $passphrase,
             KeyType::Curve25519
         );
         $publicKey = $privateKey->toPublic();
-        $message = new LiteralMessage(
-            new PacketList([
-                new LiteralData($literalData, LiteralFormat::Binary),
-            ])
-        );
+        $message = OpenPGP::createLiteralMessage($literalData);
 
         $signedMessage = $message->sign([$privateKey]);
         $this->assertSame(
@@ -692,6 +642,6 @@ EOT;
         $this->assertSame(PacketTag::Padding, $padding->getTag());
 
         Config::setAeadProtect(false);
-        Config::setUseV6Key(false);
+        Config::presetRFC4880();
     }
 }

@@ -85,7 +85,7 @@ interface SignaturePacketInterface extends PacketInterface
     function getSalt(bool $toHex = false): string;
 
     /**
-     * Get signature data
+     * Get signature
      *
      * @param bool $toHex
      * @return string

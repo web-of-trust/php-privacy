@@ -2,9 +2,8 @@
 
 namespace OpenPGP\Tests\Message;
 
-use OpenPGP\Key\PublicKey;
-use OpenPGP\Message\Signature;
 use OpenPGP\Packet\LiteralData;
+use OpenPGP\OpenPGP;
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
@@ -16,7 +15,7 @@ class SignatureTest extends OpenPGPTestCase
 
     public function testVerifyRsaDetachedSignature()
     {
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/RsaPublicKey.asc")
         );
 
@@ -34,7 +33,7 @@ LUtBiGHLj5wItiAhT3QpbcjkInIK3S4qLHXWBStzWnkNImtxEspJBTzVpGdi5E1x
 -----END PGP SIGNATURE-----
 EOT;
 
-        $signature = Signature::fromArmored($signatureData);
+        $signature = OpenPGP::readSignature($signatureData);
         $verification = $signature->verify(
             [$publicKey],
             LiteralData::fromText(self::LITERAL_TEXT)
@@ -45,7 +44,7 @@ EOT;
 
     public function testVerifyDsaDetachedSignature()
     {
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/DsaPublicKey.asc")
         );
 
@@ -59,7 +58,7 @@ Y3EO7nnFH11dL7kVBegzI7sgpUCU3tM=
 -----END PGP SIGNATURE-----
 EOT;
 
-        $signature = Signature::fromArmored($signatureData);
+        $signature = OpenPGP::readSignature($signatureData);
         $verification = $signature->verify(
             [$publicKey],
             LiteralData::fromText(self::LITERAL_TEXT)
@@ -70,7 +69,7 @@ EOT;
 
     public function testVerifyEcP384DetachedSignature()
     {
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcP384PublicKey.asc")
         );
 
@@ -85,7 +84,7 @@ xRtw3Ue2xQ==
 -----END PGP SIGNATURE-----
 EOT;
 
-        $signature = Signature::fromArmored($signatureData);
+        $signature = OpenPGP::readSignature($signatureData);
         $verification = $signature->verify(
             [$publicKey],
             LiteralData::fromText(self::LITERAL_TEXT)
@@ -96,7 +95,7 @@ EOT;
 
     public function testVerifyEcBrainpoolDetachedSignature()
     {
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcBrainpoolPublicKey.asc")
         );
 
@@ -110,7 +109,7 @@ d9EnxROMwB49IamBzqeeTtdcY7yzAPY=
 -----END PGP SIGNATURE-----
 EOT;
 
-        $signature = Signature::fromArmored($signatureData);
+        $signature = OpenPGP::readSignature($signatureData);
         $verification = $signature->verify(
             [$publicKey],
             LiteralData::fromText(self::LITERAL_TEXT)
@@ -121,7 +120,7 @@ EOT;
 
     public function testVerifyEcCurve25519DetachedSignature()
     {
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcCurve25519PublicKey.asc")
         );
 
@@ -135,7 +134,7 @@ CyoSAQDLIMzAp/WoKxBnKAa0iejLSGFFoxeDvRyPNX+Et8OffwD/ePQeePF9ECRZ
 -----END PGP SIGNATURE-----
 EOT;
 
-        $signature = Signature::fromArmored($signatureData);
+        $signature = OpenPGP::readSignature($signatureData);
         $verification = $signature->verify(
             [$publicKey],
             LiteralData::fromText(self::LITERAL_TEXT)

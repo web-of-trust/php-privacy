@@ -9,7 +9,13 @@
 namespace OpenPGP\Type;
 
 use DateTimeInterface;
-use OpenPGP\Enum\{Ecc, KeyAlgorithm, RevocationReasonTag, RSAKeySize};
+use OpenPGP\Enum\{
+    Ecc,
+    KeyAlgorithm,
+    RevocationReasonTag,
+    RSAKeySize,
+    SymmetricAlgorithm
+};
 
 /**
  * Private key interface
@@ -66,9 +72,14 @@ interface PrivateKeyInterface extends KeyInterface
      *
      * @param string $passphrase
      * @param array $subkeyPassphrases
+     * @param SymmetricAlgorithm $symmetric
      * @return self
      */
-    function encrypt(string $passphrase, array $subkeyPassphrases = []): self;
+    function encrypt(
+        string $passphrase,
+        array $subkeyPassphrases = [],
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+    ): self;
 
     /**
      * Unlock a private key with the given passphrase.

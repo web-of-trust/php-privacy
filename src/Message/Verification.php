@@ -27,13 +27,15 @@ class Verification implements VerificationInterface
      * @param SignaturePacketInterface $signaturePacket
      * @param bool $isVerified
      * @param string $verificationError
+     * @param array $userIDs
      * @return self
      */
     public function __construct(
         private readonly string $keyID,
         private readonly SignaturePacketInterface $signaturePacket,
         private readonly bool $isVerified = false,
-        private readonly string $verificationError = ""
+        private readonly string $verificationError = "",
+        private readonly array $userIDs = []
     ) {
     }
 
@@ -67,5 +69,13 @@ class Verification implements VerificationInterface
     public function isVerified(): bool
     {
         return $this->isVerified;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getUserIDs(): array
+    {
+        return $this->userIDs;
     }
 }

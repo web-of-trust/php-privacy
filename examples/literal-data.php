@@ -6,12 +6,10 @@ use OpenPGP\OpenPGP;
 use OpenPGP\Common\Config;
 use OpenPGP\Enum\SymmetricAlgorithm;
 
-$passphase = "NU=WM<;ev3(^^M@)dIt,O|9k*<xLpv7v";
+$passphrase = "NU=WM<;ev3(^^M@)dIt,O|9k*<xLpv7v";
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
-Version: PHP Privacy v2
-Comment: https://github.com/web-of-trust/php-privacy
 
 xcMFBGbzljMBCADB4KjKfIR4GshZ3cBQAXCZgKgGKl9p313/K88LjDEJ3MWUCx07ww+fZzmOXh2V
 vIGPt/QwDuoHmFX3B/HCesK5aIbda9CuWZrt2srRBxO33PKYVbY/Fh3Z4OU/xOacB3mHEq/C/+H9
@@ -71,12 +69,10 @@ mNqrM25q1P8rBo69xZErGjQ/nFY=
 =HDCL
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-$rsaPrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
+$rsaPrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphrase);
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
-Version: PHP Privacy v2
-Comment: https://github.com/web-of-trust/php-privacy
 
 xcBHBGbzljQTBSuBBAAjBCMEAbbJmwFEE6Mwhn/S9gFoSwnY2vj9iPDA9ooNtKdg5BqL0A3fQ0y+
 +zG4pu/YtGiQwjbrZiyWqAipcPH7w/3q88RkADcqkIjBreSHhVspX5CiL3RBmrqBXzo4L+xZ1ejj
@@ -106,12 +102,10 @@ xkqGItNj3gs=
 =pP8r
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-$eccPrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
+$eccPrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphrase);
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
-Version: PHP Privacy v2
-Comment: https://github.com/web-of-trust/php-privacy
 
 xX0GZvOWNBsAAAAgsDfIqP0lv8+V4Eaj0omfm+FPDcMeVeEak7qabHd/pcn+HQcLAwhRaGxMbGEj
 KeAjp9Kh/3vzuZ8Xfdj8w8je6o5USELRl4rD0RO3MDrppA2pfRbSp1kn/Xvfuzggou+s4l++cR37
@@ -136,12 +130,10 @@ VS4W
 =oH6u
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-$curve25519PrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
+$curve25519PrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphrase);
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
-Version: PHP Privacy v2
-Comment: https://github.com/web-of-trust/php-privacy
 
 xa8GZvOWNRwAAAA5EN1vmT1zBRrWb3u7WplWBLMom6ou9KLfVMa+qHNqAEGlyiBr3ik4wD8UOO8t
 ETP76oGUaeS5PXaA/h0HCwMI7kHpr3/alWrgIY5ni6U2mqvWywD89BwZpx+Npit0FTmE/XzIxX+Z
@@ -172,7 +164,7 @@ dYZIvg0A1SCEq4w8mfkSbFRJrixxFabTL7COFHgvL25joDV8UIvxYg==
 =aUu5
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-$curve448PrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
+$curve448PrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphrase);
 
 echo "Sign & encrypt literal data message with AES128 cipher:" .
     PHP_EOL .
@@ -184,13 +176,13 @@ $encryptedMessage = OpenPGP::encrypt(
         $rsaPrivateKey->toPublic(),
         $eccPrivateKey->toPublic(),
     ],
-    [$passphase],
+    [$passphrase],
     [$rsaPrivateKey, $eccPrivateKey, $curve25519PrivateKey, $curve448PrivateKey]
 );
 echo $armored = $encryptedMessage->armor() . PHP_EOL;
 
-echo "Decrypt with passphase & verify signatures:" . PHP_EOL . PHP_EOL;
-$literalMessage = OpenPGP::decryptMessage($armored, passwords: [$passphase]);
+echo "Decrypt with passphrase & verify signatures:" . PHP_EOL . PHP_EOL;
+$literalMessage = OpenPGP::decryptMessage($armored, passwords: [$passphrase]);
 $verifications = $literalMessage->verify([
     $rsaPrivateKey->toPublic(),
     $eccPrivateKey->toPublic(),
@@ -249,7 +241,7 @@ $encryptedMessage = OpenPGP::encrypt(
         $curve25519PrivateKey->toPublic(),
         $curve448PrivateKey->toPublic(),
     ],
-    [$passphase],
+    [$passphrase],
     [$rsaPrivateKey, $eccPrivateKey, $curve25519PrivateKey, $curve448PrivateKey]
 );
 echo $armored = $encryptedMessage->armor() . PHP_EOL;

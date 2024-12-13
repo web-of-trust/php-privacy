@@ -1743,7 +1743,7 @@ class Camellia extends BlockCipher
         $out = self::int2Bytes($this->state[0], $out, 8);
         $out = self::int2Bytes($this->state[1], $out, 12);
 
-        return implode(array_map(static fn(int $byte) => chr($byte), $out));
+        return implode(array_map(static fn ($byte) => chr($byte), $out));
     }
 
     private function processBlock192or256(
@@ -1782,6 +1782,6 @@ class Camellia extends BlockCipher
         $out = self::int2Bytes($this->state[0], $out, 8);
         $out = self::int2Bytes($this->state[1], $out, 12);
 
-        return implode(array_map(static fn(int $byte) => chr($byte), $out));
+        return implode(array_map(static fn ($byte) => chr($byte), $out));
     }
 }

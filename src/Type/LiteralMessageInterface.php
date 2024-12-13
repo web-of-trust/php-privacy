@@ -101,7 +101,7 @@ interface LiteralMessageInterface extends
     function encrypt(
         array $encryptionKeys = [],
         array $passwords = [],
-        ?SymmetricAlgorithm $symmetric = null
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): EncryptedMessageInterface;
 
     /**
@@ -111,5 +111,7 @@ interface LiteralMessageInterface extends
      * @param CompressionAlgorithm $algorithm
      * @return self
      */
-    function compress(?CompressionAlgorithm $algorithm = null): self;
+    function compress(
+        CompressionAlgorithm $algorithm = CompressionAlgorithm::Uncompressed
+    ): self;
 }

@@ -49,7 +49,7 @@ class PreferredCompressionAlgorithms extends SignatureSubpacket
     public function getPreferences(): array
     {
         return array_map(
-            fn($pref) => CompressionAlgorithm::from(ord($pref)),
+            static fn ($pref) => CompressionAlgorithm::from(ord($pref)),
             str_split($this->getData())
         );
     }

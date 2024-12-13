@@ -9,7 +9,12 @@
 namespace OpenPGP\Key;
 
 use DateTimeInterface;
-use OpenPGP\Enum\{KeyAlgorithm, PacketTag, RevocationReasonTag, SignatureType};
+use OpenPGP\Enum\{
+    KeyAlgorithm,
+    PacketTag,
+    RevocationReasonTag,
+    SymmetricAlgorithm
+};
 use OpenPGP\Packet\{PacketList, Padding, Signature};
 use OpenPGP\Packet\Signature\{
     EmbeddedSignature,
@@ -22,10 +27,8 @@ use OpenPGP\Type\{
     KeyPacketInterface,
     PacketListInterface,
     PrivateKeyInterface,
+    SecretKeyPacketInterface,
     SignaturePacketInterface,
-    SubkeyInterface,
-    SubkeyPacketInterface,
-    UserIDPacketInterface,
     UserInterface
 };
 
@@ -39,54 +42,80 @@ use OpenPGP\Type\{
 abstract class AbstractKey implements KeyInterface
 {
     /**
+     * Key packet
+     *
+     * @var KeyPacketInterface
+     */
+    private readonly KeyPacketInterface $keyPacket;
+
+    /**
      * Revocation signature packets
      *
      * @var array
      */
-    private array $revocationSignatures = [];
+    private readonly array $revocationSignatures;
 
     /**
      * Direct signature packets
      *
      * @var array
      */
-    private array $directSignatures = [];
+    private readonly array $directSignatures;
 
     /**
      * Users of the key
      *
      * @var array
      */
-    private array $users = [];
+    private readonly array $users;
 
     /**
      * Subkeys of the key
      *
      * @var array
      */
-    private array $subkeys = [];
+    private readonly array $subkeys;
 
     /**
      * Constructor
      *
-     * @param KeyPacketInterface $keyPacket
-     * @param array $revocationSignatures
-     * @param array $directSignatures
-     * @param array $users
-     * @param array $subkeys
+     * @param PacketListInterface $packetList
      * @return self
      */
-    protected function __construct(
-        private readonly KeyPacketInterface $keyPacket,
-        array $revocationSignatures = [],
-        array $directSignatures = [],
-        array $users = [],
-        array $subkeys = []
-    ) {
-        $this->setRevocationSignatures($revocationSignatures)
-            ->setDirectSignatures($directSignatures)
-            ->setUsers($users)
-            ->setSubkeys($subkeys);
+    protected function __construct(PacketListInterface $packetList)
+    {
+        [
+            $keyPacket,
+            $revocationSignatures,
+            $directSignatures,
+            $users,
+            $subkeys,
+        ] = self::keyStructure($packetList);
+
+        $this->keyPacket = $keyPacket;
+        $this->revocationSignatures = $revocationSignatures;
+        $this->directSignatures = $directSignatures;
+
+        $this->users = array_map(
+            fn ($user) => new User(
+                $this,
+                $user["userIDPacket"],
+                $user["revocationSignatures"],
+                $user["selfCertifications"],
+                $user["otherCertifications"]
+            ),
+            $users
+        );
+
+        $this->subkeys = array_map(
+            fn ($subkey) => new Subkey(
+                $this,
+                $subkey["keyPacket"],
+                $subkey["revocationSignatures"],
+                $subkey["bindingSignatures"]
+            ),
+            $subkeys
+        );
     }
 
     /**
@@ -94,27 +123,12 @@ abstract class AbstractKey implements KeyInterface
      */
     public function getPacketList(): PacketListInterface
     {
-        $userPackets = [];
-        foreach ($this->users as $user) {
-            $userPackets = array_merge(
-                $userPackets,
-                $user->getPacketList()->getPackets()
-            );
-        }
-        $subkeyPackets = [];
-        foreach ($this->subkeys as $subkey) {
-            $subkeyPackets = array_merge(
-                $subkeyPackets,
-                $subkey->getPacketList()->getPackets()
-            );
-        }
-
         $packets = [
             $this->keyPacket,
             ...$this->revocationSignatures,
             ...$this->directSignatures,
-            ...$userPackets,
-            ...$subkeyPackets,
+            ...$this->getUserPackets(),
+            ...$this->getSubkeyPackets(),
         ];
         if ($this->getVersion() === 6) {
             $packets[] = Padding::createPadding(
@@ -172,7 +186,7 @@ abstract class AbstractKey implements KeyInterface
     {
         if (!empty($this->directSignatures)) {
             $signatures = $this->directSignatures;
-            usort($signatures, static function ($a, $b): int {
+            usort($signatures, static function ($a, $b) {
                 $aTime = $a->getCreationTime() ?? new \DateTime();
                 $bTime = $b->getCreationTime() ?? new \DateTime();
                 return $aTime->getTimestamp() - $bTime->getTimestamp();
@@ -208,13 +222,15 @@ abstract class AbstractKey implements KeyInterface
         $subkeys = $this->subkeys;
         usort(
             $subkeys,
-            static fn($a, $b): int =>
-                (int) $b->getCreationTime()?->getTimestamp() -
+            static fn ($a, $b) => (int) $b->getCreationTime()?->getTimestamp() -
                 (int) $a->getCreationTime()?->getTimestamp()
         );
         foreach ($subkeys as $subkey) {
             if (empty($keyID) || strcmp($keyID, $subkey->getKeyID()) === 0) {
-                if (!$subkey->isSigningKey() || !$subkey->verify($time)) {
+                if (
+                    !$subkey->isSigningKey() ||
+                    $subkey->isRevoked(time: $time)
+                ) {
                     continue;
                 }
                 $signature = $subkey
@@ -222,16 +238,17 @@ abstract class AbstractKey implements KeyInterface
                     ?->getEmbeddedSignature();
                 if ($signature instanceof EmbeddedSignature) {
                     // verify embedded signature
-                    if ($signature
-                        ->getSignature()
-                        ->verify(
-                            $subkey->getKeyPacket(),
-                            implode([
-                                $this->getKeyPacket()->getSignBytes(),
-                                $subkey->getKeyPacket()->getSignBytes(),
-                            ]),
-                            $time
-                        )
+                    if (
+                        $signature
+                            ->getSignature()
+                            ->verify(
+                                $subkey->getKeyPacket(),
+                                implode([
+                                    $this->getKeyPacket()->getSignBytes(),
+                                    $subkey->getKeyPacket()->getSignBytes(),
+                                ]),
+                                $time
+                            )
                     ) {
                         return $subkey->getKeyPacket();
                     }
@@ -263,13 +280,15 @@ abstract class AbstractKey implements KeyInterface
         $subkeys = $this->subkeys;
         usort(
             $subkeys,
-            static fn($a, $b): int =>
-                (int) $b->getCreationTime()?->getTimestamp() -
+            static fn ($a, $b) => (int) $b->getCreationTime()?->getTimestamp() -
                 (int) $a->getCreationTime()?->getTimestamp()
         );
         foreach ($subkeys as $subkey) {
             if (empty($keyID) || strcmp($keyID, $subkey->getKeyID()) === 0) {
-                if (!$subkey->isEncryptionKey() || !$subkey->verify($time)) {
+                if (
+                    !$subkey->isEncryptionKey() ||
+                    $subkey->isRevoked(time: $time)
+                ) {
                     continue;
                 }
                 return $subkey->getKeyPacket();
@@ -297,10 +316,10 @@ abstract class AbstractKey implements KeyInterface
         if (empty($expirationTime)) {
             $selfCertifications = [];
             foreach ($this->users as $user) {
-                $selfCertifications = array_merge(
-                    $selfCertifications,
-                    $user->getSelfCertifications()
-                );
+                $selfCertifications = [
+                    ...$selfCertifications,
+                    ...$user->getSelfCertifications(),
+                ];
             }
             if (!empty($selfCertifications)) {
                 $expirationTime = self::getKeyExpiration($selfCertifications);
@@ -368,6 +387,30 @@ abstract class AbstractKey implements KeyInterface
     /**
      * {@inheritdoc}
      */
+    public function getPreferredSymmetrics(): array
+    {
+        $preferred = $this->getLatestDirectSignature()?->getPreferredSymmetricAlgorithms();
+        if (empty($preferred)) {
+            $user = $this->getPrimaryUser();
+            $preferred = $user
+                ?->getLatestSelfCertification()
+                ?->getPreferredSymmetricAlgorithms();
+        }
+        return $preferred?->getPreferences() ?? [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPreferredAeads(SymmetricAlgorithm $symmetric): array
+    {
+        $preferred = $this->getLatestDirectSignature()?->getPreferredAeadCiphers();
+        return $preferred?->getPreferredAeads($symmetric) ?? [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function aeadSupported(): bool
     {
         $features = $this->getLatestDirectSignature()?->getFeatures();
@@ -399,11 +442,13 @@ abstract class AbstractKey implements KeyInterface
                     empty($keyID) ||
                     strcmp($keyID, $signature->getIssuerKeyID()) === 0
                 ) {
-                    if ($signature->verify(
-                        $keyPacket,
-                        $this->keyPacket->getSignBytes(),
-                        $time
-                    )) {
+                    if (
+                        $signature->verify(
+                            $keyPacket,
+                            $this->keyPacket->getSignBytes(),
+                            $time
+                        )
+                    ) {
                         return true;
                     }
                 }
@@ -436,22 +481,21 @@ abstract class AbstractKey implements KeyInterface
         string $userID = "",
         ?DateTimeInterface $time = null
     ): bool {
-        if ($this->isRevoked(time: $time)) {
-            return false;
-        }
         foreach ($this->directSignatures as $signature) {
-            if (!$signature->verify(
-                $this->toPublic()->getKeyPacket(),
-                $this->keyPacket->getSignBytes(),
-                $time
-            )) {
-                return false;
+            if (
+                $signature->verify(
+                    $this->toPublic()->getKeyPacket(),
+                    $this->keyPacket->getSignBytes(),
+                    $time
+                )
+            ) {
+                return true;
             }
         }
         foreach ($this->users as $user) {
             if (empty($userID) || strcmp($user->getUserID(), $userID) === 0) {
-                if (!$user->verify($time)) {
-                    return false;
+                if ($user->verify($time)) {
+                    return true;
                 }
             }
         }
@@ -460,11 +504,9 @@ abstract class AbstractKey implements KeyInterface
             $expirationTime instanceof DateTimeInterface &&
             $expirationTime->getTimestamp() < time()
         ) {
-            throw new \RuntimeException(
-                "Primary key is expired."
-            );
+            throw new \RuntimeException("Primary key is expired.");
         }
-        return true;
+        return false;
     }
 
     /**
@@ -475,7 +517,7 @@ abstract class AbstractKey implements KeyInterface
     ): ?UserInterface {
         $users = array_filter(
             $this->getSortedPrimaryUsers(),
-            static fn($user) => $user->verify($time)
+            static fn ($user) => !$user->isRevoked(time: $time)
         );
         return array_pop($users);
     }
@@ -489,19 +531,35 @@ abstract class AbstractKey implements KeyInterface
     ): self {
         $users = [];
         $certifedUserID = "";
-        $self = $this->clone();
-        $primaryUser = $self->getPrimaryUser();
+        $primaryUser = $this->getPrimaryUser();
         if ($primaryUser instanceof UserInterface) {
             $certifedUser = $primaryUser->certifyBy($signKey, $time);
             $certifedUserID = $certifedUser->getUserID();
             $users[] = $certifedUser;
         }
-        foreach ($self->getUsers() as $user) {
+        foreach ($this->getUsers() as $user) {
             if (strcmp($user->getUserID(), $certifedUserID) !== 0) {
                 $users[] = $user;
             }
         }
-        return $self->setUsers($users);
+
+        $userPackets = [];
+        foreach ($users as $user) {
+            $userPackets = [
+                ...$userPackets,
+                ...$user->getPacketList()->getPackets(),
+            ];
+        }
+
+        return new static(
+            new PacketList([
+                $this->getKeyPacket(),
+                ...$this->getRevocationSignatures(),
+                ...$this->getDirectSignatures(),
+                ...$userPackets,
+                ...$this->getSubkeyPackets(),
+            ])
+        );
     }
 
     /**
@@ -513,16 +571,24 @@ abstract class AbstractKey implements KeyInterface
         ?RevocationReasonTag $reasonTag = null,
         ?DateTimeInterface $time = null
     ): self {
-        return $this->clone()->setRevocationSignatures([
-            ...$this->getRevocationSignatures(),
-            Signature::createKeyRevocation(
-                $signKey->getSecretKeyPacket(),
+        return new static(
+            new PacketList([
                 $this->getKeyPacket(),
-                $revocationReason,
-                $reasonTag,
-                $time
-            ),
-        ]);
+                ...[
+                    Signature::createKeyRevocation(
+                        $signKey->getSecretKeyPacket(),
+                        $this->getKeyPacket(),
+                        $revocationReason,
+                        $reasonTag,
+                        $time
+                    ),
+                    ...$this->getRevocationSignatures(),
+                ],
+                ...$this->getDirectSignatures(),
+                ...$this->getUserPackets(),
+                ...$this->getSubkeyPackets(),
+            ])
+        );
     }
 
     /**
@@ -534,7 +600,7 @@ abstract class AbstractKey implements KeyInterface
     public static function getKeyExpiration(
         array $signatures
     ): ?DateTimeInterface {
-        usort($signatures, static function ($a, $b): int {
+        usort($signatures, static function ($a, $b) {
             $aTime = $a->getCreationTime() ?? new \DateTime();
             $bTime = $b->getCreationTime() ?? new \DateTime();
             return $bTime->getTimestamp() - $aTime->getTimestamp();
@@ -574,95 +640,31 @@ abstract class AbstractKey implements KeyInterface
     abstract public function armor(): string;
 
     /**
-     * Set revocation signatures
+     * Get user packets
      *
-     * @param array $revocationSignatures
-     * @return static
+     * @return array
      */
-    protected function setRevocationSignatures(
-        array $revocationSignatures
-    ): static {
-        $this->revocationSignatures = array_values(
-            array_filter(
-                $revocationSignatures,
-                static fn($signature) => $signature instanceof
-                    SignaturePacketInterface && $signature->isKeyRevocation()
-            )
-        );
-        return $this;
-    }
-
-    /**
-     * Set direct signatures
-     *
-     * @param array $directSignatures
-     * @return static
-     */
-    protected function setDirectSignatures(array $directSignatures): static
+    protected function getUserPackets(): array
     {
-        $this->directSignatures = array_values(
-            array_filter(
-                $directSignatures,
-                static fn($signature) => $signature instanceof
-                    SignaturePacketInterface && $signature->isDirectKey()
-            )
-        );
-        return $this;
-    }
-
-    /**
-     * Set users
-     *
-     * @param array $users
-     * @return static
-     */
-    protected function setUsers(array $users): static
-    {
-        $this->users = [];
-        foreach ($users as $user) {
-            if (
-                $user instanceof UserInterface &&
-                $user->getMainKey() === $this
-            ) {
-                $this->users[] = $user;
-            } elseif (is_array($user)) {
-                $this->users[] = new User(
-                    $this,
-                    $user["userIDPacket"],
-                    $user["revocationSignatures"],
-                    $user["selfCertifications"],
-                    $user["otherCertifications"]
-                );
-            }
+        $packets = [];
+        foreach ($this->users as $user) {
+            $packets = [...$packets, ...$user->getPacketList()->getPackets()];
         }
-        return $this;
+        return $packets;
     }
 
     /**
-     * Set subkeys
+     * Get subkey packets
      *
-     * @param array $subkeys
-     * @return static
+     * @return array
      */
-    protected function setSubkeys(array $subkeys): static
+    protected function getSubkeyPackets(): array
     {
-        $this->subkeys = [];
-        foreach ($subkeys as $subkey) {
-            if (
-                $subkey instanceof SubkeyInterface &&
-                $subkey->getMainKey() === $this
-            ) {
-                $this->subkeys[] = $subkey;
-            } elseif (is_array($subkey)) {
-                $this->subkeys[] = new Subkey(
-                    $this,
-                    $subkey["keyPacket"],
-                    $subkey["revocationSignatures"],
-                    $subkey["bindingSignatures"]
-                );
-            }
+        $packets = [];
+        foreach ($this->subkeys as $subkey) {
+            $packets = [...$packets, ...$subkey->getPacketList()->getPackets()];
         }
-        return $this;
+        return $packets;
     }
 
     /**
@@ -742,49 +744,13 @@ abstract class AbstractKey implements KeyInterface
     }
 
     /**
-     * Clone key.
-     *
-     * @return static
-     */
-    protected function clone(): static
-    {
-        $self = clone $this;
-
-        return $self
-            ->setUsers(
-                array_map(
-                    static fn($user) => new User(
-                        $self,
-                        $user->getUserIDPacket(),
-                        $user->getRevocationCertifications(),
-                        $user->getSelfCertifications(),
-                        $user->getOtherCertifications()
-                    ),
-                    $this->users
-                )
-            )
-            ->setSubkeys(
-                array_map(
-                    static fn($subkey) => new Subkey(
-                        $self,
-                        $subkey->getKeyPacket(),
-                        $subkey->getRevocationSignatures(),
-                        $subkey->getBindingSignatures()
-                    ),
-                    $this->subkeys
-                )
-            );
-    }
-
-    /**
      * Build key structure from packet list.
      *
      * @param PacketListInterface $packetList
      * @return array
      */
-    protected static function keyStructure(
-        PacketListInterface $packetList
-    ): array {
+    private static function keyStructure(PacketListInterface $packetList): array
+    {
         $revocationSignatures = $directSignatures = $users = $subkeys = [];
         $keyPacket = $primaryKeyID = null;
 
@@ -797,85 +763,70 @@ abstract class AbstractKey implements KeyInterface
                             "Key block contains multiple keys."
                         );
                     }
-                    if ($packet instanceof KeyPacketInterface) {
-                        $keyPacket = $packet;
-                        $primaryKeyID = $packet->getKeyID();
-                    }
+                    $keyPacket = $packet;
+                    $primaryKeyID = $packet->getKeyID();
                     break;
                 case PacketTag::PublicSubkey:
                 case PacketTag::SecretSubkey:
-                    if ($packet instanceof SubkeyPacketInterface) {
-                        $subkeys[] = [
-                            "keyPacket" => $packet,
-                            "revocationSignatures" => [],
-                            "bindingSignatures" => [],
-                        ];
-                    }
+                    $subkeys[] = [
+                        "keyPacket" => $packet,
+                        "revocationSignatures" => [],
+                        "bindingSignatures" => [],
+                    ];
                     break;
                 case PacketTag::UserID:
                 case PacketTag::UserAttribute:
-                    if ($packet instanceof UserIDPacketInterface) {
-                        $users[] = [
-                            "userIDPacket" => $packet,
-                            "revocationSignatures" => [],
-                            "selfCertifications" => [],
-                            "otherCertifications" => [],
-                        ];
-                    }
+                    $users[] = [
+                        "userIDPacket" => $packet,
+                        "revocationSignatures" => [],
+                        "selfCertifications" => [],
+                        "otherCertifications" => [],
+                    ];
                     break;
                 case PacketTag::Signature:
                     if ($packet instanceof SignaturePacketInterface) {
-                        switch ($packet->getSignatureType()) {
-                            case SignatureType::CertGeneric:
-                            case SignatureType::CertPersona:
-                            case SignatureType::CertCasual:
-                            case SignatureType::CertPositive:
-                                $user = array_pop($users);
-                                if (!empty($user)) {
-                                    if (
-                                        strcmp(
-                                            $packet->getIssuerKeyID(),
-                                            $primaryKeyID
-                                        ) === 0
-                                    ) {
-                                        $user["selfCertifications"][] = $packet;
-                                    } else {
-                                        $user[
-                                            "otherCertifications"
-                                        ][] = $packet;
-                                    }
-                                    $users[] = $user;
-                                }
-                                break;
-                            case SignatureType::CertRevocation:
-                                $user = array_pop($users);
-                                if (!empty($user)) {
-                                    $user["revocationSignatures"][] = $packet;
-                                    $users[] = $user;
+                        if ($packet->isKeyRevocation()) {
+                            $revocationSignatures[] = $packet;
+                        }
+                        if ($packet->isDirectKey()) {
+                            $directSignatures[] = $packet;
+                        }
+                        if ($packet->isCertification()) {
+                            $user = array_pop($users);
+                            if (!empty($user)) {
+                                if (
+                                    strcmp(
+                                        $packet->getIssuerKeyID(),
+                                        $primaryKeyID
+                                    ) === 0
+                                ) {
+                                    $user["selfCertifications"][] = $packet;
                                 } else {
-                                    $directSignatures[] = $packet;
+                                    $user["otherCertifications"][] = $packet;
                                 }
-                                break;
-                            case SignatureType::SubkeyBinding:
-                                $subkey = array_pop($subkeys);
-                                if (!empty($subkey)) {
-                                    $subkey["bindingSignatures"][] = $packet;
-                                    $subkeys[] = $subkey;
-                                }
-                                break;
-                            case SignatureType::SubkeyRevocation:
-                                $subkey = array_pop($subkeys);
-                                if (!empty($subkey)) {
-                                    $subkey["revocationSignatures"][] = $packet;
-                                    $subkeys[] = $subkey;
-                                }
-                                break;
-                            case SignatureType::DirectKey:
-                                $directSignatures[] = $packet;
-                                break;
-                            case SignatureType::KeyRevocation:
-                                $revocationSignatures[] = $packet;
-                                break;
+                                $users[] = $user;
+                            }
+                        }
+                        if ($packet->isCertRevocation()) {
+                            $user = array_pop($users);
+                            if (!empty($user)) {
+                                $user["revocationSignatures"][] = $packet;
+                                $users[] = $user;
+                            }
+                        }
+                        if ($packet->isSubkeyRevocation()) {
+                            $subkey = array_pop($subkeys);
+                            if (!empty($subkey)) {
+                                $subkey["revocationSignatures"][] = $packet;
+                                $subkeys[] = $subkey;
+                            }
+                        }
+                        if ($packet->isSubkeyBinding()) {
+                            $subkey = array_pop($subkeys);
+                            if (!empty($subkey)) {
+                                $subkey["bindingSignatures"][] = $packet;
+                                $subkeys[] = $subkey;
+                            }
                         }
                     }
                     break;
@@ -886,12 +837,45 @@ abstract class AbstractKey implements KeyInterface
             throw new \RuntimeException("Key packet not found in packet list.");
         }
 
+        $verifyKey =
+            $keyPacket instanceof SecretKeyPacketInterface
+                ? $keyPacket->getPublicKey()
+                : $keyPacket;
+
         return [
             $keyPacket,
             $revocationSignatures,
-            $directSignatures,
-            $users,
-            $subkeys,
+            array_filter(
+                $directSignatures,
+                static fn ($signature) => $signature->verify(
+                    $verifyKey,
+                    $verifyKey->getSignBytes()
+                )
+            ),
+            array_filter($users, static function ($user) use ($verifyKey) {
+                foreach ($user["selfCertifications"] as $signature) {
+                    $dataToVerify = implode([
+                        $verifyKey->getSignBytes(),
+                        $user["userIDPacket"]->getSignBytes(),
+                    ]);
+                    if ($signature->verify($verifyKey, $dataToVerify)) {
+                        return true;
+                    }
+                }
+                return false;
+            }),
+            array_filter($subkeys, static function ($subkey) use ($verifyKey) {
+                foreach ($subkey["bindingSignatures"] as $signature) {
+                    $dataToVerify = implode([
+                        $verifyKey->getSignBytes(),
+                        $subkey["keyPacket"]->getSignBytes(),
+                    ]);
+                    if ($signature->verify($verifyKey, $dataToVerify)) {
+                        return true;
+                    }
+                }
+                return false;
+            }),
         ];
     }
 }

@@ -73,7 +73,7 @@ class CleartextMessage implements CleartextMessageInterface
     ): SignedMessageInterface {
         return new SignedMessage(
             $this->getText(),
-            $this->createSignature(
+            $this->signDetached(
                 $signingKeys,
                 $recipients,
                 $notationData,
@@ -91,11 +91,26 @@ class CleartextMessage implements CleartextMessageInterface
         ?NotationDataInterface $notationData = null,
         ?DateTimeInterface $time = null
     ): SignatureInterface {
-        return $this->createSignature(
+        $signingKeys = array_filter(
             $signingKeys,
-            $recipients,
-            $notationData,
-            $time
+            static fn ($key) => $key instanceof PrivateKeyInterface
+        );
+        if (empty($signingKeys)) {
+            throw new \InvalidArgumentException("No signing keys provided.");
+        }
+        return new Signature(
+            new PacketList(
+                array_map(
+                    fn ($key) => SignaturePacket::createLiteralData(
+                        $key->getSecretKeyPacket(),
+                        LiteralData::fromText($this->getText()),
+                        $recipients,
+                        $notationData,
+                        $time
+                    ),
+                    $signingKeys
+                )
+            )
         );
     }
 
@@ -108,43 +123,5 @@ class CleartextMessage implements CleartextMessageInterface
         ?DateTimeInterface $time = null
     ): array {
         return $signature->verifyCleartext($verificationKeys, $this, $time);
-    }
-
-    /**
-     * Create literal data signature.
-     *
-     * @param array $signingKeys
-     * @param array $recipients
-     * @param NotationDataInterface $notationData
-     * @param DateTimeInterface $time
-     * @return SignatureInterface
-     */
-    private function createSignature(
-        array $signingKeys,
-        array $recipients = [],
-        ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null
-    ): SignatureInterface {
-        $signingKeys = array_filter(
-            $signingKeys,
-            static fn($key) => $key instanceof PrivateKeyInterface
-        );
-        if (empty($signingKeys)) {
-            throw new \InvalidArgumentException("No signing keys provided.");
-        }
-        return new Signature(
-            new PacketList(
-                array_map(
-                    fn($key) => SignaturePacket::createLiteralData(
-                        $key->getSecretKeyPacket(),
-                        LiteralData::fromText($this->getText()),
-                        $recipients,
-                        $notationData,
-                        $time
-                    ),
-                    $signingKeys
-                )
-            )
-        );
     }
 }

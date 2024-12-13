@@ -39,7 +39,7 @@ class PacketList implements PacketListInterface
         $this->packets = array_values(
             array_filter(
                 $packets,
-                static fn($packet) => $packet instanceof PacketInterface
+                static fn ($packet) => $packet instanceof PacketInterface
             )
         );
     }
@@ -125,7 +125,7 @@ class PacketList implements PacketListInterface
     {
         return implode(
             array_map(
-                static fn($packet): string => $packet->encode(),
+                static fn ($packet) => $packet->encode(),
                 $this->packets
             )
         );
@@ -155,7 +155,7 @@ class PacketList implements PacketListInterface
         $packets = array_values(
             array_filter(
                 $this->packets,
-                static fn($packet) => $packet->getTag() === $tag
+                static fn ($packet) => $packet->getTag() === $tag
             )
         );
         return new self($packets);
@@ -169,7 +169,7 @@ class PacketList implements PacketListInterface
         $packets = array_values(
             array_filter(
                 $this->packets,
-                static fn($packet) => $packet instanceof $type
+                static fn ($packet) => $packet instanceof $type
             )
         );
         return new self($packets);

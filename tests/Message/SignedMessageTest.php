@@ -2,9 +2,8 @@
 
 namespace OpenPGP\Tests\Message;
 
-use OpenPGP\Key\PublicKey;
-use OpenPGP\Message\SignedMessage;
-use OpenPGP\Message\Signature;
+use OpenPGP\Type\SignatureInterface;
+use OpenPGP\OpenPGP;
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
@@ -34,12 +33,12 @@ S24+wSO6Xx66VDS05uBQu811U5Bk2w==
 -----END PGP SIGNATURE-----
 EOT;
 
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/RsaPublicKey.asc")
         );
-        $signedMessage = SignedMessage::fromArmored($signedMessageData);
+        $signedMessage = OpenPGP::readSignedMessage($signedMessageData);
         $this->assertSame(self::LITERAL_TEXT, $signedMessage->getText());
-        $this->assertTrue($signedMessage->getSignature() instanceof Signature);
+        $this->assertTrue($signedMessage->getSignature() instanceof SignatureInterface);
 
         $verification = $signedMessage->verify([$publicKey])[0];
         $this->assertSame("184d0dc4f5c532b2", $verification->getKeyID(true));
@@ -62,12 +61,12 @@ zbJZjjdJXXhZunt1ntsp4MZeozbu5AM=
 -----END PGP SIGNATURE-----
 EOT;
 
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/DsaPublicKey.asc")
         );
-        $signedMessage = SignedMessage::fromArmored($signedMessageData);
+        $signedMessage = OpenPGP::readSignedMessage($signedMessageData);
         $this->assertSame(self::LITERAL_TEXT, $signedMessage->getText());
-        $this->assertTrue($signedMessage->getSignature() instanceof Signature);
+        $this->assertTrue($signedMessage->getSignature() instanceof SignatureInterface);
 
         $verification = $signedMessage->verify([$publicKey])[0];
         $this->assertSame("e3b11d642248a092", $verification->getKeyID(true));
@@ -91,12 +90,12 @@ GZs1GNJDIQ==
 -----END PGP SIGNATURE-----
 EOT;
 
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcP384PublicKey.asc")
         );
-        $signedMessage = SignedMessage::fromArmored($signedMessageData);
+        $signedMessage = OpenPGP::readSignedMessage($signedMessageData);
         $this->assertSame(self::LITERAL_TEXT, $signedMessage->getText());
-        $this->assertTrue($signedMessage->getSignature() instanceof Signature);
+        $this->assertTrue($signedMessage->getSignature() instanceof SignatureInterface);
 
         $verification = $signedMessage->verify([$publicKey])[0];
         $this->assertSame("b202d9e2eada440c", $verification->getKeyID(true));
@@ -119,12 +118,12 @@ QB/txJeN666mOiOXxJyyrNTOBoq+JUo=
 -----END PGP SIGNATURE-----
 EOT;
 
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcBrainpoolPublicKey.asc")
         );
-        $signedMessage = SignedMessage::fromArmored($signedMessageData);
+        $signedMessage = OpenPGP::readSignedMessage($signedMessageData);
         $this->assertSame(self::LITERAL_TEXT, $signedMessage->getText());
-        $this->assertTrue($signedMessage->getSignature() instanceof Signature);
+        $this->assertTrue($signedMessage->getSignature() instanceof SignatureInterface);
 
         $verification = $signedMessage->verify([$publicKey])[0];
         $this->assertSame("1cbcd043db44c5d6", $verification->getKeyID(true));
@@ -147,12 +146,12 @@ C2zZAQC61SUhiU0zqHIz+s+tIWgZ+778TctqowYuKAcwbbab2AEAixR9ANSI7CVV
 -----END PGP SIGNATURE-----
 EOT;
 
-        $publicKey = PublicKey::fromArmored(
+        $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcCurve25519PublicKey.asc")
         );
-        $signedMessage = SignedMessage::fromArmored($signedMessageData);
+        $signedMessage = OpenPGP::readSignedMessage($signedMessageData);
         $this->assertSame(self::LITERAL_TEXT, $signedMessage->getText());
-        $this->assertTrue($signedMessage->getSignature() instanceof Signature);
+        $this->assertTrue($signedMessage->getSignature() instanceof SignatureInterface);
 
         $verification = $signedMessage->verify([$publicKey])[0];
         $this->assertSame("bdff135160c56a0b", $verification->getKeyID(true));
@@ -195,8 +194,8 @@ NK2ay45cX1IVAQ==
 -----END PGP SIGNATURE-----
 EOT;
 
-        $publicKey = PublicKey::fromArmored($publicKeyData);
-        $signedMessage = SignedMessage::fromArmored($signedMessageData);
+        $publicKey = OpenPGP::readPublicKey($publicKeyData);
+        $signedMessage = OpenPGP::readSignedMessage($signedMessageData);
         $verification = $signedMessage->verify([$publicKey])[0];
         $this->assertSame(
             $publicKey->getKeyID(true),

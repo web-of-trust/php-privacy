@@ -290,7 +290,9 @@ EOT;
     {
         $passphrase = "correct horse battery staple";
         $data = <<<EOT
-BmOHf+MbAAAAIPlNp7tI1gph5WdwamWH0DMZmbudiRoIJC6thFQ9+JWj/SYJAhQEXW/XHJ4JbR62kXtubh7srgEEFbSoqSdPq+Yy+HWnBlkgIXglj6SE2Isn8iDj0t4CA8oPH+7La3dTgePi2bFIXCIzjKVR4JomPyLrSZLpZ3qAWA==
+BmOHf+MbAAAAIPlNp7tI1gph5WdwamWH0DMZmbudiRoIJC6thFQ9+JWj/SYJAhQEXW/XHJ4JbR62
+kXtubh7srgEEFbSoqSdPq+Yy+HWnBlkgIXglj6SE2Isn8iDj0t4CA8oPH+7La3dTgePi2bFIXCIz
+jKVR4JomPyLrSZLpZ3qAWA==
 EOT;
         $secretKey = SecretKey::fromBytes(base64_decode($data))->decrypt(
             $passphrase
@@ -314,7 +316,9 @@ EOT;
         );
 
         $data = <<<EOT
-BmOHf+MZAAAAIIaTJINn+eUBXbki+PSAld2nhJh/LVmFsS+60WyvXkQ1/SYJAhQEDmGEaCnahpq+DqYVRdwUzAEEFS4Typ/05yT7HC6x34YCCUGvktXKv+W6nfHFC8dcVKOMDaFpd+g3rFQZF0MQcjr6568qNVG/mgDGC7t4mlpc2A==
+BmOHf+MZAAAAIIaTJINn+eUBXbki+PSAld2nhJh/LVmFsS+60WyvXkQ1/SYJAhQEDmGEaCnahpq+
+DqYVRdwUzAEEFS4Typ/05yT7HC6x34YCCUGvktXKv+W6nfHFC8dcVKOMDaFpd+g3rFQZF0MQcjr6
+568qNVG/mgDGC7t4mlpc2A==
 EOT;
         $secretSubkey = SecretSubkey::fromBytes(base64_decode($data))->decrypt(
             $passphrase
@@ -553,7 +557,7 @@ EOT;
 
     public function testGenerateV6RsaKey()
     {
-        Config::setUseV6Key(true);
+        Config::presetRFC9580();
 
         $secretKey = SecretKey::generate(KeyAlgorithm::RsaEncryptSign);
         $this->assertFalse($secretKey->isEncrypted());
@@ -572,12 +576,12 @@ EOT;
             $decryptedSecretKey->getFingerprint()
         );
 
-        Config::setUseV6Key(false);
+        Config::presetRFC4880();
     }
 
     public function testGenerateV6EcDsaKey()
     {
-        Config::setUseV6Key(true);
+        Config::presetRFC9580();
 
         $secretKey = SecretKey::generate(KeyAlgorithm::EcDsa);
         $this->assertFalse($secretKey->isEncrypted());
@@ -596,12 +600,12 @@ EOT;
             $decryptedSecretKey->getFingerprint()
         );
 
-        Config::setUseV6Key(false);
+        Config::presetRFC4880();
     }
 
     public function testGenerateV6EcdhKey()
     {
-        Config::setUseV6Key(true);
+        Config::presetRFC9580();
 
         $secretKey = SecretKey::generate(KeyAlgorithm::Ecdh);
         $this->assertFalse($secretKey->isEncrypted());
@@ -620,7 +624,7 @@ EOT;
             $decryptedSecretKey->getFingerprint()
         );
 
-        Config::setUseV6Key(false);
+        Config::presetRFC4880();
     }
 
     public function testGenerateX25519Key()
