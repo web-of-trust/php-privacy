@@ -525,11 +525,18 @@ abstract class AbstractKey implements KeyInterface
     public function certifyBy(
         PrivateKeyInterface $signKey,
         ?DateTimeInterface $time = null
-    ): static {
-        $users = $this->getUsers();
-        foreach ($users as $key => $user) {
-            if ($user->isPrimary()) {
-                $users[$key] = $user->certifyBy($signKey, $time);
+    ): self {
+        $users = [];
+        $certifedUserID = "";
+        $primaryUser = $this->getPrimaryUser();
+        if ($primaryUser instanceof UserInterface) {
+            $certifedUser = $primaryUser->certifyBy($signKey, $time);
+            $certifedUserID = $certifedUser->getUserID();
+            $users[] = $certifedUser;
+        }
+        foreach ($this->getUsers() as $user) {
+            if (strcmp($user->getUserID(), $certifedUserID) !== 0) {
+                $users[] = $user;
             }
         }
 
@@ -558,7 +565,7 @@ abstract class AbstractKey implements KeyInterface
         string $revocationReason = "",
         ?RevocationReasonTag $reasonTag = null,
         ?DateTimeInterface $time = null
-    ): static {
+    ): self {
         return new static(new PacketList([
             $this->getKeyPacket(),
             ...[
