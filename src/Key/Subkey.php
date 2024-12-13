@@ -287,7 +287,6 @@ class Subkey implements SubkeyInterface
             $this->mainKey,
             $this->keyPacket,
             [
-                ...$this->revocationSignatures,
                 Signature::createSubkeyRevocation(
                     $signKey->getSecretKeyPacket(),
                     $this->mainKey->getKeyPacket(),
@@ -296,6 +295,7 @@ class Subkey implements SubkeyInterface
                     $reasonTag,
                     $time
                 ),
+                ...$this->revocationSignatures,
             ],
             $this->bindingSignatures
         );

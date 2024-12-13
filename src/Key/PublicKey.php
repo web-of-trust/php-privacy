@@ -28,29 +28,27 @@ use OpenPGP\Type\{
 class PublicKey extends AbstractKey implements PublicKeyInterface
 {
     /**
+     * Public key packet
+     *
+     * @var PublicKeyPacketInterface
+     */
+    private readonly PublicKeyPacketInterface $publicKeyPacket;
+
+    /**
      * Constructor
      *
-     * @param PublicKeyPacketInterface $publicKeyPacket
-     * @param array $revocationSignatures
-     * @param array $directSignatures
-     * @param array $users
-     * @param array $subkeys
+     * @param PacketListInterface $packetList
      * @return self
      */
-    public function __construct(
-        private readonly PublicKeyPacketInterface $publicKeyPacket,
-        array $revocationSignatures = [],
-        array $directSignatures = [],
-        array $users = [],
-        array $subkeys = []
-    ) {
-        parent::__construct(
-            $publicKeyPacket,
-            $revocationSignatures,
-            $directSignatures,
-            $users,
-            $subkeys
-        );
+    public function __construct(PacketListInterface $packetList)
+    {
+        parent::__construct($packetList);
+        if ($this->getKeyPacket() instanceof PublicKeyPacketInterface) {
+            $this->publicKeyPacket = $this->getKeyPacket();
+        }
+        else {
+            throw new \RuntimeException("Key packet is not public key type.");
+        }
     }
 
     /**
@@ -76,11 +74,11 @@ class PublicKey extends AbstractKey implements PublicKeyInterface
         for ($i = 0, $count = count($indexes); $i < $count; $i++) {
             if (!empty($indexes[$i + 1])) {
                 $length = $indexes[$i + 1] - $indexes[$i];
-                $publicKeys[] = self::fromPacketList(
+                $publicKeys[] = new self(
                     $packetList->slice($indexes[$i], $length)
                 );
             } else {
-                $publicKeys[] = self::fromPacketList(
+                $publicKeys[] = new self(
                     $packetList->slice($indexes[$i])
                 );
             }
@@ -96,15 +94,13 @@ class PublicKey extends AbstractKey implements PublicKeyInterface
      */
     public static function armorPublicKeys(array $keys): string
     {
-        $keyData = implode(
-            array_map(
-                static fn ($key) => $key->toPublic()->getPacketList()->encode(),
-                array_filter(
-                    $keys,
-                    static fn ($key) => $key instanceof KeyInterface
-                )
+        $keyData = implode(array_map(
+            static fn ($key) => $key->toPublic()->getPacketList()->encode(),
+            array_filter(
+                $keys,
+                static fn ($key) => $key instanceof KeyInterface
             )
-        );
+        ));
         return empty($keyData)
             ? ""
             : Armor::encode(ArmorType::PublicKey, $keyData);
@@ -133,34 +129,7 @@ class PublicKey extends AbstractKey implements PublicKeyInterface
      */
     public static function fromBytes(string $bytes): self
     {
-        return self::fromPacketList(PacketList::decode($bytes));
-    }
-
-    /**
-     * Read public key from packet list
-     *
-     * @param PacketListInterface $packetList
-     * @return self
-     */
-    public static function fromPacketList(PacketListInterface $packetList): self
-    {
-        [
-            $keyPacket,
-            $revocationSignatures,
-            $directSignatures,
-            $users,
-            $subkeys,
-        ] = self::keyStructure($packetList);
-        if (!($keyPacket instanceof PublicKeyPacketInterface)) {
-            throw new \RuntimeException("Key packet is not public key type.");
-        }
-        return new self(
-            $keyPacket,
-            $revocationSignatures,
-            $directSignatures,
-            $users,
-            $subkeys
-        );
+        return new self(PacketList::decode($bytes));
     }
 
     /**

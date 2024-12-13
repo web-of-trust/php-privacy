@@ -24,7 +24,9 @@ use OpenPGP\Type\{
     KeyInterface,
     PacketListInterface,
     PrivateKeyInterface,
-    SecretKeyPacketInterface
+    SecretKeyPacketInterface,
+    SubkeyPacketInterface,
+    UserIDPacketInterface
 };
 
 /**
@@ -37,29 +39,29 @@ use OpenPGP\Type\{
 class PrivateKey extends AbstractKey implements PrivateKeyInterface
 {
     /**
+     * Secret key packet
+     *
+     * @var SecretKeyPacketInterface
+     */
+    private readonly SecretKeyPacketInterface $secretKeyPacket;
+
+    /**
      * Constructor
      *
-     * @param SecretKeyPacketInterface $secretKeyPacket
-     * @param array $revocationSignatures
-     * @param array $directSignatures
-     * @param array $users
-     * @param array $subkeys
+     * @param PacketListInterface $packetList
      * @return self
      */
     public function __construct(
-        private readonly SecretKeyPacketInterface $secretKeyPacket,
-        array $revocationSignatures = [],
-        array $directSignatures = [],
-        array $users = [],
-        array $subkeys = []
+        PacketListInterface $packetList
     ) {
-        parent::__construct(
-            $secretKeyPacket,
-            $revocationSignatures,
-            $directSignatures,
-            $users,
-            $subkeys
-        );
+        parent::__construct($packetList);
+        if ($this->getKeyPacket() instanceof SecretKeyPacketInterface) {
+            $this->secretKeyPacket = $this->getKeyPacket();
+        }
+        else {
+            throw new \RuntimeException("Key packet is not secret key type.");
+
+        }
     }
 
     /**
@@ -85,34 +87,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
      */
     public static function fromBytes(string $bytes): self
     {
-        return self::fromPacketList(PacketList::decode($bytes));
-    }
-
-    /**
-     * Read private key from packet list
-     *
-     * @param PacketListInterface $packetList
-     * @return self
-     */
-    public static function fromPacketList(PacketListInterface $packetList): self
-    {
-        [
-            $keyPacket,
-            $revocationSignatures,
-            $directSignatures,
-            $users,
-            $subkeys,
-        ] = self::keyStructure($packetList);
-        if (!($keyPacket instanceof SecretKeyPacketInterface)) {
-            throw new \RuntimeException("Key packet is not secret key type.");
-        }
-        return new self(
-            $keyPacket,
-            $revocationSignatures,
-            $directSignatures,
-            $users,
-            $subkeys
-        );
+        return new self(PacketList::decode($bytes));
     }
 
     /**
@@ -233,7 +208,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             );
         }
 
-        return self::fromPacketList(new PacketList($packets));
+        return new self(new PacketList($packets));
     }
 
     /**
@@ -260,7 +235,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 $packets[] = $packet;
             }
         }
-        return PublicKey::fromPacketList(new PacketList($packets));
+        return new PublicKey(new PacketList($packets));
     }
 
     /**
@@ -335,7 +310,8 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
      */
     public function encrypt(
         string $passphrase,
-        array $subkeyPassphrases = []
+        array $subkeyPassphrases = [],
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
     ): self {
         if (empty($passphrase)) {
             throw new \InvalidArgumentException(
@@ -352,48 +328,29 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         if ($this->getVersion() === 6 && Config::aeadProtect()) {
             $aead = Config::getPreferredAead();
         }
-
-        $privateKey = new self(
-            $this->secretKeyPacket->encrypt(
-                $passphrase,
-                Config::getPreferredSymmetric(),
-                $aead
-            ),
-            $this->getRevocationSignatures(),
-            $this->getDirectSignatures()
-        );
-        $privateKey->setUsers(
-            array_map(
-                static fn ($user) => new User(
-                    $privateKey,
-                    $user->getUserIDPacket(),
-                    $user->getRevocationCertifications(),
-                    $user->getSelfCertifications(),
-                    $user->getOtherCertifications()
-                ),
-                $this->getUsers()
-            )
-        );
-
-        $subkeys = [];
-        foreach ($this->getSubkeys() as $key => $subkey) {
-            $keyPacket = $subkey->getKeyPacket();
-            if ($keyPacket instanceof SecretKeyPacketInterface) {
+        $subkeyPackets = $this->getSubkeyPackets();
+        foreach ($subkeyPackets as $key => $packet) {
+            if ($packet instanceof SecretKeyPacketInterface) {
                 $subkeyPassphrase = $subkeyPassphrases[$key] ?? $passphrase;
-                $keyPacket = $keyPacket->encrypt(
+                $subkeyPackets[$key] = $packet->encrypt(
                     $subkeyPassphrase,
-                    Config::getPreferredSymmetric(),
+                    $symmetric,
                     $aead
                 );
             }
-            $subkeys[] = new Subkey(
-                $privateKey,
-                $keyPacket,
-                $subkey->getRevocationSignatures(),
-                $subkey->getBindingSignatures()
-            );
         }
-        return $privateKey->setSubkeys($subkeys);
+
+        return new self(new PacketList([
+            $this->secretKeyPacket->encrypt(
+                $passphrase,
+                $symmetric,
+                $aead
+            ),
+            ...$this->getRevocationSignatures(),
+            ...$this->getDirectSignatures(),
+            ...$this->getUserPackets(),
+            ...$subkeyPackets,
+        ]));
     }
 
     /**
@@ -408,40 +365,20 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 "Passphrase is required for key decryption."
             );
         }
-        $secretKey = $this->secretKeyPacket->decrypt($passphrase);
-        $privateKey = new self(
-            $secretKey,
-            $this->getRevocationSignatures(),
-            $this->getDirectSignatures()
-        );
-        $privateKey->setUsers(
-            array_map(
-                static fn ($user) => new User(
-                    $privateKey,
-                    $user->getUserIDPacket(),
-                    $user->getRevocationCertifications(),
-                    $user->getSelfCertifications(),
-                    $user->getOtherCertifications()
-                ),
-                $this->getUsers()
-            )
-        );
-
-        $subkeys = [];
-        foreach ($this->getSubkeys() as $key => $subkey) {
-            $keyPacket = $subkey->getKeyPacket();
-            if ($keyPacket instanceof SecretKeyPacketInterface) {
+        $subkeyPackets = $this->getSubkeyPackets();
+        foreach ($subkeyPackets as $key => $packet) {
+            if ($packet instanceof SecretKeyPacketInterface) {
                 $subkeyPassphrase = $subkeyPassphrases[$key] ?? $passphrase;
-                $keyPacket = $keyPacket->decrypt($subkeyPassphrase);
+                $subkeyPackets[$key] = $packet->decrypt($subkeyPassphrase);
             }
-            $subkeys[] = new Subkey(
-                $privateKey,
-                $keyPacket,
-                $subkey->getRevocationSignatures(),
-                $subkey->getBindingSignatures()
-            );
         }
-        return $privateKey->setSubkeys($subkeys);
+        return new self(new PacketList([
+            $this->secretKeyPacket->decrypt($passphrase),
+            ...$this->getRevocationSignatures(),
+            ...$this->getDirectSignatures(),
+            ...$this->getUserPackets(),
+            ...$subkeyPackets,
+        ]));
     }
 
     /**
@@ -453,22 +390,28 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             throw new \InvalidArgumentException("User IDs are required.");
         }
 
-        $self = $this->clone();
-        $users = $self->getUsers();
+        $userPackets = $this->getUserPackets();
         foreach ($userIDs as $userID) {
             $packet = new UserID($userID);
-            $users[] = new User(
-                $self,
-                $packet,
-                selfCertifications: [
+            $userPackets = [
+                ...[
+                    $packet,
                     Signature::createSelfCertificate(
-                        $self->getSecretKeyPacket(),
+                        $this->secretKeyPacket,
                         $packet
                     ),
-                ]
-            );
+                ],
+                ...$userPackets,
+            ];
         }
-        return $self->setUsers($users);
+
+        return new self(new PacketList([
+            $this->secretKeyPacket,
+            ...$this->getRevocationSignatures(),
+            ...$this->getDirectSignatures(),
+            ...$userPackets,
+            ...$this->getSubkeyPackets(),
+        ]));
     }
 
     /**
@@ -494,28 +437,33 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
             $aead = Config::getPreferredAead();
         }
 
-        $self = $this->clone();
-        $subkeys = $self->getSubkeys();
         $secretSubkey = SecretSubkey::generate(
             $keyAlgorithm,
             $rsaKeySize,
             $curve,
             $time
         )->encrypt($passphrase, Config::getPreferredSymmetric(), $aead);
-        $subkeys[] = new Subkey(
-            $self,
-            $secretSubkey,
-            bindingSignatures: [
+        $subkeyPackets = [
+            ...[
+                $secretSubkey,
                 Signature::createSubkeyBinding(
-                    $self->getSecretKeyPacket(),
+                    $this->secretKeyPacket,
                     $secretSubkey,
                     $keyExpiry,
                     $forSigning,
                     $time
                 ),
-            ]
-        );
-        return $self->setSubkeys($subkeys);
+            ],
+            ...$this->getSubkeyPackets(),
+        ];
+
+        return new self(new PacketList([
+            $this->secretKeyPacket,
+            ...$this->getRevocationSignatures(),
+            ...$this->getDirectSignatures(),
+            ...$this->getUserPackets(),
+            ...$subkeyPackets,
+        ]));
     }
 
     /**
@@ -549,20 +497,33 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         ?RevocationReasonTag $reasonTag = null,
         ?DateTimeInterface $time = null
     ): self {
-        $self = $this->clone();
-
-        $users = $self->getUsers();
+        $users = $this->getUsers();
         foreach ($users as $key => $user) {
             if (strcmp($user->getUserID(), $userID) === 0) {
                 $users[$key] = $user->revokeBy(
-                    $self,
+                    $this,
                     $revocationReason,
                     $reasonTag,
                     $time
                 );
             }
         }
-        return $self->setUsers($users);
+
+        $userPackets = [];
+        foreach ($users as $user) {
+            $userPackets = [
+                ...$userPackets,
+                ...$user->getPacketList()->getPackets(),
+            ];
+        }
+
+        return new self(new PacketList([
+            $this->secretKeyPacket,
+            ...$this->getRevocationSignatures(),
+            ...$this->getDirectSignatures(),
+            ...$userPackets,
+            ...$this->getSubkeyPackets(),
+        ]));
     }
 
     /**
@@ -574,8 +535,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
         ?RevocationReasonTag $reasonTag = null,
         ?DateTimeInterface $time = null
     ): self {
-        $self = $this->clone();
-        $subkeys = $self->getSubkeys();
+        $subkeys = $this->getSubkeys();
         foreach ($subkeys as $key => $subkey) {
             if (strcmp($subkey->getKeyID(), $keyID) === 0) {
                 $subkeys[$key] = $subkey->revokeBy(
@@ -586,6 +546,20 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
                 );
             }
         }
-        return $self->setSubkeys($subkeys);
+        $subkeyPackets = [];
+        foreach ($subkeys as $subkey) {
+            $subkeyPackets = [
+                ...$subkeyPackets,
+                ...$subkey->getPacketList()->getPackets(),
+            ];
+        }
+
+        return new self(new PacketList([
+            $this->secretKeyPacket,
+            ...$this->getRevocationSignatures(),
+            ...$this->getDirectSignatures(),
+            ...$this->getUserPackets(),
+            ...$subkeyPackets,
+        ]));
     }
 }
