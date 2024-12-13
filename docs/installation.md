@@ -45,6 +45,6 @@ Config::setPreferredCompression($compression);
 // Set AEAD protection.
 Config::setAeadProtect($protect);
 
-// Set use V6 key.
-Config::setUseV6Key($useV6Key);
+// Preset RFC9580.
+Config::presetRFC9580();
 ```
