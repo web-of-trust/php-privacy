@@ -117,28 +117,24 @@ class LiteralMessage extends AbstractMessage implements
         array $encryptionKeys,
         SymmetricAlgorithm $defaultSymmetric = SymmetricAlgorithm::Aes128
     ): SessionKeyInterface {
-        $symmetric = $defaultSymmetric;
-        if (count($encryptionKeys) > 0) {
-            $preferredSymmetrics = [];
-            foreach ($encryptionKeys as $key) {
-                if (empty($preferredSymmetrics)) {
-                    $preferredSymmetrics = $key->getPreferredSymmetrics();
-                }
-                else {
-                    $preferredSymmetrics = array_filter(
-                        $preferredSymmetrics,
-                        static fn ($symmetric) => in_array(
-                            $symmetric,
-                            $key->getPreferredSymmetrics(),
-                            true
-                        )
-                    );
-                }
+        $preferredSymmetrics = [];
+        foreach ($encryptionKeys as $key) {
+            if (empty($preferredSymmetrics)) {
+                $preferredSymmetrics = $key->getPreferredSymmetrics();
             }
-            if (count($encryptionKeys) > 0) {
-                $symmetric = reset($preferredSymmetrics);
+            else {
+                $preferredSymmetrics = array_filter(
+                    $preferredSymmetrics,
+                    static fn ($symmetric) => in_array(
+                        $symmetric,
+                        $key->getPreferredSymmetrics(),
+                        true
+                    )
+                );
             }
         }
+        $symmetric = empty($preferredSymmetrics) ?
+            $defaultSymmetric : reset($preferredSymmetrics);
 
         $preferredAeads = [
             AeadAlgorithm::Ocb,
@@ -162,11 +158,8 @@ class LiteralMessage extends AbstractMessage implements
                 break;
             }
         }
-        if (count($preferredAeads) > 0) {
-            $aead = reset($preferredAeads);
-        } else {
-            $aead = Config::getPreferredAead();
-        }
+        $aead = empty($preferredAeads) ?
+            Config::getPreferredAead() : reset($preferredAeads);
 
         return SessionKey::produceKey($symmetric, $aeadProtect ? $aead : null);
     }
