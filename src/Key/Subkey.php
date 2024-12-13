@@ -106,7 +106,7 @@ class Subkey implements SubkeyInterface
     {
         if (!empty($this->bindingSignatures)) {
             $signatures = $this->bindingSignatures;
-            usort($signatures, static function ($a, $b): int {
+            usort($signatures, static function ($a, $b) {
                 $aTime = $a->getCreationTime() ?? new \DateTime();
                 $bTime = $b->getCreationTime() ?? new \DateTime();
                 return $aTime->getTimestamp() - $bTime->getTimestamp();

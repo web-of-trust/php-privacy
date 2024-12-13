@@ -189,7 +189,7 @@ abstract class AbstractKey implements KeyInterface
     {
         if (!empty($this->directSignatures)) {
             $signatures = $this->directSignatures;
-            usort($signatures, static function ($a, $b): int {
+            usort($signatures, static function ($a, $b) {
                 $aTime = $a->getCreationTime() ?? new \DateTime();
                 $bTime = $b->getCreationTime() ?? new \DateTime();
                 return $aTime->getTimestamp() - $bTime->getTimestamp();
@@ -593,7 +593,7 @@ abstract class AbstractKey implements KeyInterface
     public static function getKeyExpiration(
         array $signatures
     ): ?DateTimeInterface {
-        usort($signatures, static function ($a, $b): int {
+        usort($signatures, static function ($a, $b) {
             $aTime = $a->getCreationTime() ?? new \DateTime();
             $bTime = $b->getCreationTime() ?? new \DateTime();
             return $bTime->getTimestamp() - $aTime->getTimestamp();
