@@ -18,6 +18,7 @@ use OpenPGP\Packet\{
 use OpenPGP\Type\{
     EncryptedDataPacketInterface,
     EncryptedMessageInterface,
+    EncryptedSessionKeyInterface,
     LiteralMessageInterface,
     PacketListInterface,
     PrivateKeyInterface,
@@ -78,10 +79,19 @@ class EncryptedMessage extends AbstractMessage implements
         array $decryptionKeys,
         array $passwords
     ): SessionKeyInterface {
+        $eskPackets = $packetList->whereType(
+            EncryptedSessionKeyInterface::class
+        );
+        if (count($eskPackets) == 0) {
+            throw new \RuntimeException(
+                "No encrypted session key in packet list."
+            );
+        }
+
         $errors = [];
         $sessionKeys = [];
         if (!empty($passwords)) {
-            $skeskPackets = $packetList->whereType(
+            $skeskPackets = $eskPackets->whereType(
                 SymmetricKeyEncryptedSessionKey::class
             );
             foreach ($skeskPackets as $skesk) {
@@ -98,7 +108,7 @@ class EncryptedMessage extends AbstractMessage implements
             }
         }
         if (empty($sessionKeys) && !empty($decryptionKeys)) {
-            $pkeskPackets = $packetList->whereType(
+            $pkeskPackets = $eskPackets->whereType(
                 PublicKeyEncryptedSessionKey::class
             );
             foreach ($pkeskPackets as $pkesk) {
@@ -123,9 +133,10 @@ class EncryptedMessage extends AbstractMessage implements
         }
 
         if (empty($sessionKeys)) {
-            throw new \RuntimeException(
-                implode(PHP_EOL, ["Session key decryption failed.", ...$errors])
-            );
+            throw new \RuntimeException(implode(
+                PHP_EOL,
+                ["Session key decryption failed.", ...$errors]
+            ));
         }
 
         return array_pop($sessionKeys);
