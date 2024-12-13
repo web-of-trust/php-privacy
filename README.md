@@ -44,7 +44,7 @@ or just add it to your `composer.json` file directly.
 ```javascript
 {
     "require": {
-        "php-privacy/openpgp": "^2.0"
+        "php-privacy/openpgp": "^2.1"
     }
 }
 ```
