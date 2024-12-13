@@ -558,13 +558,13 @@ final class OpenPGP
      * @param Type\SessionKeyInterface $sessionKey
      * @param array $encryptionKeys
      * @param array $passwords
-     * @return array
+     * @return Type\PacketListInterface
      */
     public static function encryptSessionKey(
         Type\SessionKeyInterface $sessionKey,
         array $encryptionKeys = [],
         array $passwords = []
-    ): array
+    ): Type\PacketListInterface
     {
         return Message\LiteralMessage::encryptSessionKey(
             $sessionKey, $encryptionKeys, $passwords
@@ -580,7 +580,7 @@ final class OpenPGP
      * @param array $passwords
      * @return Type\SessionKeyInterface
      */
-    private function decryptSessionKey(
+    public static function decryptSessionKey(
         Type\PacketListInterface $packetList,
         array $decryptionKeys = [],
         array $passwords = []

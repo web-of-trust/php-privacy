@@ -35,6 +35,7 @@ use OpenPGP\Type\{
     LiteralDataInterface,
     LiteralMessageInterface,
     NotationDataInterface,
+    PacketListInterface,
     PrivateKeyInterface,
     SessionKeyInterface,
     SignatureInterface,
@@ -118,20 +119,21 @@ class LiteralMessage extends AbstractMessage implements
     ): SessionKeyInterface {
         $symmetric = $defaultSymmetric;
         if (count($encryptionKeys) > 0) {
-            $preferredSymmetrics = [
-                SymmetricAlgorithm::Aes128,
-                SymmetricAlgorithm::Aes192,
-                SymmetricAlgorithm::Aes256,
-            ];
+            $preferredSymmetrics = [];
             foreach ($encryptionKeys as $key) {
-                $preferredSymmetrics = array_filter(
-                    $preferredSymmetrics,
-                    static fn ($symmetric) => in_array(
-                        $symmetric,
-                        $key->getPreferredSymmetrics(),
-                        true
-                    )
-                );
+                if (empty($preferredSymmetrics)) {
+                    $preferredSymmetrics = $key->getPreferredSymmetrics();
+                }
+                else {
+                    $preferredSymmetrics = array_filter(
+                        $preferredSymmetrics,
+                        static fn ($symmetric) => in_array(
+                            $symmetric,
+                            $key->getPreferredSymmetrics(),
+                            true
+                        )
+                    );
+                }
             }
             if (count($encryptionKeys) > 0) {
                 $symmetric = reset($preferredSymmetrics);
@@ -175,19 +177,19 @@ class LiteralMessage extends AbstractMessage implements
      * @param SessionKeyInterface $sessionKey
      * @param array $encryptionKeys
      * @param array $passwords
-     * @return array
+     * @return PacketListInterface
      */
     public static function encryptSessionKey(
         SessionKeyInterface $sessionKey,
         array $encryptionKeys = [],
         array $passwords = []
-    ): array {
+    ): PacketListInterface {
         if (empty($encryptionKeys) && empty($passwords)) {
             throw new \InvalidArgumentException(
                 "No encryption keys or passwords provided."
             );
         }
-        return [
+        return new PacketList([
             ...array_map(
                 static fn (
                     $key
@@ -208,7 +210,7 @@ class LiteralMessage extends AbstractMessage implements
                 ),
                 $passwords
             ), // skesk packets
-        ];
+        ]);
     }
 
     /**
@@ -378,7 +380,7 @@ class LiteralMessage extends AbstractMessage implements
                     $sessionKey,
                     $encryptionKeys,
                     $passwords
-                ),
+                )->getPackets(),
                 SymEncryptedIntegrityProtectedData::encryptPacketsWithSessionKey(
                     $sessionKey,
                     $packetList,
