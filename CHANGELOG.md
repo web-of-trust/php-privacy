@@ -158,3 +158,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 2.0.5 - released 2024-12-13
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.0.4...2.0.5)
 - Fix calculate number of byte processed of AeadEncryptedData.
+
+## 2.1.0 - released 2024-12-14
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.0.4...2.0.5)
+- Add `generateSessionKey`, `encryptSessionKey`, `decryptSessionKey` methods to high level API.
+- Refactor OpenPGP key classes.
+- Add preset RFC enum: RFC4880, RFC9580
+- Remove `useV6Key` config.
