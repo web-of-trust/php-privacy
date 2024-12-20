@@ -78,7 +78,7 @@ interface PrivateKeyInterface extends KeyInterface
     function encrypt(
         string $passphrase,
         array $subkeyPassphrases = [],
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
     ): self;
 
     /**

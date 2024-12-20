@@ -323,7 +323,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
      */
     public function encrypt(
         string $passphrase,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
         ?AeadAlgorithm $aead = null
     ): self {
         if ($this->isDecrypted()) {
@@ -565,7 +565,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
      */
     protected function encryptKeyMaterial(
         string $passphrase,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
         ?AeadAlgorithm $aead = null
     ): array {
         Helper::assertSymmetric($symmetric);

@@ -139,7 +139,7 @@ class SymEncryptedIntegrityProtectedData
     public static function encryptPackets(
         string $key,
         PacketListInterface $packetList,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
         ?AeadAlgorithm $aead = null
     ): self {
         Helper::assertSymmetric($symmetric);
@@ -243,7 +243,7 @@ class SymEncryptedIntegrityProtectedData
      */
     public function decrypt(
         string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
     ): self {
         if ($this->packetList instanceof PacketListInterface) {
             return $this;
@@ -326,7 +326,7 @@ class SymEncryptedIntegrityProtectedData
         string $key,
         string $data,
         string $finalChunk = "",
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
         AeadAlgorithm $aead = AeadAlgorithm::Gcm,
         int $chunkSizeByte = 12,
         string $salt = ""

@@ -96,7 +96,7 @@ class AeadEncryptedData extends AbstractPacket implements
     public static function encryptPackets(
         string $key,
         PacketListInterface $packetList,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
     ): self {
         Helper::assertSymmetric($symmetric);
 
@@ -171,7 +171,7 @@ class AeadEncryptedData extends AbstractPacket implements
      */
     public function decrypt(
         string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
     ): self {
         if ($this->packetList instanceof PacketListInterface) {
             return $this;
@@ -227,7 +227,7 @@ class AeadEncryptedData extends AbstractPacket implements
         string $key,
         string $data,
         string $finalChunk = "",
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
         AeadAlgorithm $aead = AeadAlgorithm::Ocb,
         int $chunkSizeByte = 12,
         string $iv = ""

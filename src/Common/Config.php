@@ -37,7 +37,7 @@ final class Config
 
     private static HashAlgorithm $preferredHash = HashAlgorithm::Sha256;
 
-    private static SymmetricAlgorithm $preferredSymmetric = SymmetricAlgorithm::Aes128;
+    private static SymmetricAlgorithm $preferredSymmetric = SymmetricAlgorithm::Aes256;
 
     private static CompressionAlgorithm $preferredCompression = CompressionAlgorithm::Uncompressed;
 

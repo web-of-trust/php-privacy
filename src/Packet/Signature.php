@@ -1142,16 +1142,16 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         if ($version === KeyVersion::V6->value) {
             $props[] = new Signature\PreferredAeadCiphers(
                 implode([
+                    chr(SymmetricAlgorithm::Aes256->value),
+                    chr(AeadAlgorithm::Ocb->value),
+                    chr(SymmetricAlgorithm::Aes256->value),
+                    chr(AeadAlgorithm::Gcm->value),
                     chr(SymmetricAlgorithm::Aes128->value),
                     chr(AeadAlgorithm::Ocb->value),
                     chr(SymmetricAlgorithm::Aes128->value),
                     chr(AeadAlgorithm::Gcm->value),
                     chr(SymmetricAlgorithm::Aes128->value),
                     chr(AeadAlgorithm::Eax->value),
-                    chr(SymmetricAlgorithm::Aes256->value),
-                    chr(AeadAlgorithm::Ocb->value),
-                    chr(SymmetricAlgorithm::Aes256->value),
-                    chr(AeadAlgorithm::Gcm->value),
                 ])
             );
         }

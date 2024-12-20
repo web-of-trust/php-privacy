@@ -53,7 +53,7 @@ final class OCB implements AeadCipher
      */
     public function __construct(
         string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
     ) {
         if ($symmetric->blockSize() !== self::BLOCK_LENGTH) {
             throw new \InvalidArgumentException(

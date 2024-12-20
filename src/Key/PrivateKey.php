@@ -312,7 +312,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     public function encrypt(
         string $passphrase,
         array $subkeyPassphrases = [],
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
     ): self {
         if (empty($passphrase)) {
             throw new \InvalidArgumentException(

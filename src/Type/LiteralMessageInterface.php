@@ -101,7 +101,7 @@ interface LiteralMessageInterface extends
     function encrypt(
         array $encryptionKeys = [],
         array $passwords = [],
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
     ): EncryptedMessageInterface;
 
     /**

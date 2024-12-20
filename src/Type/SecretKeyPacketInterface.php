@@ -64,7 +64,7 @@ interface SecretKeyPacketInterface extends KeyPacketInterface
      */
     function encrypt(
         string $passphrase,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
         ?AeadAlgorithm $aead = null
     ): self;
 

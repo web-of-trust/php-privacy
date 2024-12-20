@@ -63,7 +63,7 @@ class SymEncryptedData extends AbstractPacket implements
     public static function encryptPackets(
         string $key,
         PacketListInterface $packetList,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
     ): self {
         Helper::assertSymmetric($symmetric);
         $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
@@ -110,7 +110,7 @@ class SymEncryptedData extends AbstractPacket implements
      */
     public function decrypt(
         string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
     ): self {
         if (!Config::allowUnauthenticated()) {
             throw new \RuntimeException("Message is not authenticated.");

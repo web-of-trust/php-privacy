@@ -32,7 +32,7 @@ class SessionKey implements SessionKeyInterface
      */
     public function __construct(
         private readonly string $encryptionKey,
-        private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
         private readonly ?AeadAlgorithm $aead = null
     ) {
     }
@@ -60,7 +60,7 @@ class SessionKey implements SessionKeyInterface
      * @return self
      */
     public static function produceKey(
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
         ?AeadAlgorithm $aead = null
     ): self {
         return new self(

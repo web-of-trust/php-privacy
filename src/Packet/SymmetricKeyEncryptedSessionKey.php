@@ -48,7 +48,7 @@ class SymmetricKeyEncryptedSessionKey extends AbstractPacket implements
     public function __construct(
         private readonly int $version,
         private readonly S2KInterface $s2k,
-        private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
         private readonly ?AeadAlgorithm $aead = null,
         private readonly string $iv = "",
         private readonly string $encrypted = "",
@@ -138,7 +138,7 @@ class SymmetricKeyEncryptedSessionKey extends AbstractPacket implements
     public static function encryptSessionKey(
         string $password,
         ?SessionKeyInterface $sessionKey = null,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
         ?AeadAlgorithm $aead = null
     ): self {
         $aeadProtect = $aead instanceof AeadAlgorithm;

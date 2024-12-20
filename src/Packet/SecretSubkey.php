@@ -48,7 +48,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         string $keyData = "",
         ?KeyMaterialInterface $keyMaterial = null,
         S2kUsage $s2kUsage = S2kUsage::None,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
         ?S2KInterface $s2k = null,
         ?AeadAlgorithm $aead = null,
         string $iv = ""
@@ -129,7 +129,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
      */
     public function encrypt(
         string $passphrase,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
         ?AeadAlgorithm $aead = null
     ): self {
         if ($this->isDecrypted()) {

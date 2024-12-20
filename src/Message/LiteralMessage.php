@@ -115,7 +115,7 @@ class LiteralMessage extends AbstractMessage implements
      */
     public static function generateSessionKey(
         array $encryptionKeys,
-        SymmetricAlgorithm $defaultSymmetric = SymmetricAlgorithm::Aes128
+        SymmetricAlgorithm $defaultSymmetric = SymmetricAlgorithm::Aes256
     ): SessionKeyInterface {
         $preferredSymmetrics = [];
         foreach ($encryptionKeys as $key) {
@@ -344,7 +344,7 @@ class LiteralMessage extends AbstractMessage implements
     public function encrypt(
         array $encryptionKeys = [],
         array $passwords = [],
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
     ): EncryptedMessageInterface {
         $encryptionKeys = array_filter(
             $encryptionKeys,
