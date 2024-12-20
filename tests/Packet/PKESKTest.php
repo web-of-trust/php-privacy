@@ -290,7 +290,7 @@ EOT;
 
     public function testX25519Encryption()
     {
-        $sessionKey = SessionKey::produceKey(SymmetricAlgorithm::Aes128);
+        $sessionKey = SessionKey::produceKey(SymmetricAlgorithm::Aes256);
         $secretSubkey = SecretSubkey::generate(KeyAlgorithm::X25519);
         $pkesk = PublicKeyEncryptedSessionKey::encryptSessionKey(
             $secretSubkey->getPublicKey(),
