@@ -25,7 +25,7 @@ class AEPDTest extends OpenPGPTestCase
         );
 
         $aepd = AeadEncryptedData::fromBytes($bytes);
-        $this->assertEquals($aepd->getSymmetric(), SymmetricAlgorithm::Aes256);
+        $this->assertEquals($aepd->getSymmetric(), SymmetricAlgorithm::Aes128);
         $this->assertEquals($aepd->getAead(), AeadAlgorithm::Eax);
         $this->assertSame($aepd->getChunkSize(), 14);
         $this->assertSame($aepd->getIV(), $iv);
@@ -44,7 +44,7 @@ class AEPDTest extends OpenPGPTestCase
         );
 
         $aepd = AeadEncryptedData::fromBytes($bytes);
-        $this->assertEquals($aepd->getSymmetric(), SymmetricAlgorithm::Aes256);
+        $this->assertEquals($aepd->getSymmetric(), SymmetricAlgorithm::Aes128);
         $this->assertEquals($aepd->getAead(), AeadAlgorithm::Ocb);
         $this->assertSame($aepd->getChunkSize(), 14);
         $this->assertSame($aepd->getIV(), $iv);
@@ -56,7 +56,9 @@ class AEPDTest extends OpenPGPTestCase
 
     public function testAeadEncrypt()
     {
-        $sessionKey = SessionKey::produceKey();
+        $sessionKey = SessionKey::produceKey(
+            SymmetricAlgorithm::Aes256
+        );
         $aepd = AeadEncryptedData::encryptPacketsWithSessionKey(
             $sessionKey,
             new PacketList([LiteralData::fromText(self::LITERAL_TEXT)])
