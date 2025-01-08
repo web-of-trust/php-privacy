@@ -49,12 +49,12 @@ enum SymmetricAlgorithm: int
     case Blowfish = 4;
 
     /**
-     * AES with 256-bit key
+     * AES with 128-bit key
      */
     case Aes128 = 7;
 
     /**
-     * AES with 256-bit key
+     * AES with 192-bit key
      */
     case Aes192 = 8;
 

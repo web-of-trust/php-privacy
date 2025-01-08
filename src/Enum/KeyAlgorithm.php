@@ -58,7 +58,7 @@ enum KeyAlgorithm: int
     case EcDsa = 19;
 
     /**
-     * ECDSA (Sign only) [RFC6637]
+     * ElGamal encrypt & sign
      */
     case ElGamalEncryptSign = 20;
 
