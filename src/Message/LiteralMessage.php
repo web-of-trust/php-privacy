@@ -393,7 +393,7 @@ class LiteralMessage extends AbstractMessage implements
             return new self(
                 new PacketList([
                     CompressedData::fromPackets(
-                        $this->getPackets(),
+                        self::unwrapCompressed($this->getPackets()),
                         $algorithm
                     ),
                 ])
