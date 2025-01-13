@@ -467,7 +467,9 @@ final class OpenPGP
     ): Type\EncryptedMessageInterface
     {
         return empty($signingKeys) ?
-            $message->compress($compression)->encrypt(
+            $message->compress(
+                $compression ?? Common\Config::getPreferredCompression()
+            )->encrypt(
                 $encryptionKeys,
                 $passwords,
                 $symmetric ?? Common\Config::getPreferredSymmetric()
@@ -483,7 +485,9 @@ final class OpenPGP
                 ),
                 $notationData,
                 $time
-            )->compress($compression)->encrypt(
+            )->compress(
+                $compression ?? Common\Config::getPreferredCompression()
+            )->encrypt(
                 $encryptionKeys,
                 $passwords,
                 $symmetric ?? Common\Config::getPreferredSymmetric()
