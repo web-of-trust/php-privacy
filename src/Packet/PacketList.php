@@ -39,8 +39,8 @@ class PacketList implements PacketListInterface
         $this->packets = array_values(
             array_filter(
                 $packets,
-                static fn ($packet) => $packet instanceof PacketInterface
-            )
+                static fn($packet) => $packet instanceof PacketInterface,
+            ),
         );
     }
 
@@ -59,49 +59,51 @@ class PacketList implements PacketListInterface
             $packets[] = match ($reader->getTag()) {
                 PacketTag::PublicKeyEncryptedSessionKey
                     => PublicKeyEncryptedSessionKey::fromBytes(
-                    $reader->getData()
+                    $reader->getData(),
                 ),
                 PacketTag::Signature => Signature::fromBytes(
-                    $reader->getData()
+                    $reader->getData(),
                 ),
                 PacketTag::SymmetricKeyEncryptedSessionKey
-                    => SymmetricKeyEncryptedSessionKey::fromBytes($reader->getData()),
+                    => SymmetricKeyEncryptedSessionKey::fromBytes(
+                    $reader->getData(),
+                ),
                 PacketTag::OnePassSignature => OnePassSignature::fromBytes(
-                    $reader->getData()
+                    $reader->getData(),
                 ),
                 PacketTag::SecretKey => SecretKey::fromBytes(
-                    $reader->getData()
+                    $reader->getData(),
                 ),
                 PacketTag::PublicKey => PublicKey::fromBytes(
-                    $reader->getData()
+                    $reader->getData(),
                 ),
                 PacketTag::SecretSubkey => SecretSubkey::fromBytes(
-                    $reader->getData()
+                    $reader->getData(),
                 ),
                 PacketTag::CompressedData => CompressedData::fromBytes(
-                    $reader->getData()
+                    $reader->getData(),
                 ),
                 PacketTag::SymEncryptedData => SymEncryptedData::fromBytes(
-                    $reader->getData()
+                    $reader->getData(),
                 ),
                 PacketTag::Marker => new Marker(),
                 PacketTag::LiteralData => LiteralData::fromBytes(
-                    $reader->getData()
+                    $reader->getData(),
                 ),
                 PacketTag::Trust => Trust::fromBytes($reader->getData()),
                 PacketTag::UserID => UserID::fromBytes($reader->getData()),
                 PacketTag::PublicSubkey => PublicSubkey::fromBytes(
-                    $reader->getData()
+                    $reader->getData(),
                 ),
                 PacketTag::UserAttribute => UserAttribute::fromBytes(
-                    $reader->getData()
+                    $reader->getData(),
                 ),
                 PacketTag::SymEncryptedIntegrityProtectedData
                     => SymEncryptedIntegrityProtectedData::fromBytes(
-                    $reader->getData()
+                    $reader->getData(),
                 ),
                 PacketTag::AeadEncryptedData => AeadEncryptedData::fromBytes(
-                    $reader->getData()
+                    $reader->getData(),
                 ),
                 PacketTag::Padding => Padding::fromBytes($reader->getData()),
                 default => null,
@@ -124,10 +126,7 @@ class PacketList implements PacketListInterface
     public function encode(): string
     {
         return implode(
-            array_map(
-                static fn ($packet) => $packet->encode(),
-                $this->packets
-            )
+            array_map(static fn($packet) => $packet->encode(), $this->packets),
         );
     }
 
@@ -155,8 +154,8 @@ class PacketList implements PacketListInterface
         $packets = array_values(
             array_filter(
                 $this->packets,
-                static fn ($packet) => $packet->getTag() === $tag
-            )
+                static fn($packet) => $packet->getTag() === $tag,
+            ),
         );
         return new self($packets);
     }
@@ -169,8 +168,8 @@ class PacketList implements PacketListInterface
         $packets = array_values(
             array_filter(
                 $this->packets,
-                static fn ($packet) => $packet instanceof $type
-            )
+                static fn($packet) => $packet instanceof $type,
+            ),
         );
         return new self($packets);
     }
@@ -216,14 +215,10 @@ class PacketList implements PacketListInterface
     /**
      * {@inheritdoc}
      */
-    public function offsetSet(mixed $offset, mixed $value): void
-    {
-    }
+    public function offsetSet(mixed $offset, mixed $value): void {}
 
     /**
      * {@inheritdoc}
      */
-    public function offsetUnset(mixed $offset): void
-    {
-    }
+    public function offsetUnset(mixed $offset): void {}
 }

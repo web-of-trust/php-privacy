@@ -13,7 +13,7 @@ use OpenPGP\Enum\ArmorType;
 use OpenPGP\Type\{
     ArmorableInterface,
     PacketContainerInterface,
-    PacketListInterface
+    PacketListInterface,
 };
 
 /**
@@ -34,9 +34,8 @@ abstract class AbstractMessage implements
      * @return self
      */
     public function __construct(
-        private readonly PacketListInterface $packetList
-    ) {
-    }
+        private readonly PacketListInterface $packetList,
+    ) {}
 
     /**
      * {@inheritdoc}
@@ -45,7 +44,7 @@ abstract class AbstractMessage implements
     {
         return Armor::encode(
             ArmorType::Message,
-            $this->getPacketList()->encode()
+            $this->getPacketList()->encode(),
         );
     }
 

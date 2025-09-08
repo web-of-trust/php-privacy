@@ -12,7 +12,7 @@ use OpenPGP\Enum\{EdDSACurve, HashAlgorithm};
 use OpenPGP\Type\{
     ECKeyMaterialInterface,
     KeyMaterialInterface,
-    PublicKeyMaterialInterface
+    PublicKeyMaterialInterface,
 };
 use phpseclib3\Crypt\Common\{AsymmetricKey, PublicKey};
 use phpseclib3\Crypt\EC;
@@ -47,7 +47,7 @@ class EdDSAPublicKeyMaterial implements
     public function __construct(
         private readonly string $public,
         TwistedEdwards $curve,
-        ?ECPublicKey $publicKey = null
+        ?ECPublicKey $publicKey = null,
     ) {
         if ($publicKey instanceof ECPublicKey) {
             $this->publicKey = $publicKey;
@@ -56,8 +56,8 @@ class EdDSAPublicKeyMaterial implements
                 "PKCS8",
                 PKCS8::savePublicKey(
                     $curve,
-                    PKCS8::extractPoint($public, $curve)
-                )
+                    PKCS8::extractPoint($public, $curve),
+                ),
             );
         }
     }
@@ -71,11 +71,11 @@ class EdDSAPublicKeyMaterial implements
      */
     public static function fromBytes(
         string $bytes,
-        EdDSACurve $curve = EdDSACurve::Ed25519
+        EdDSACurve $curve = EdDSACurve::Ed25519,
     ): self {
         return new self(
             substr($bytes, 0, $curve->payloadSize()),
-            $curve->getCurve()
+            $curve->getCurve(),
         );
     }
 
@@ -149,7 +149,7 @@ class EdDSAPublicKeyMaterial implements
     public function verify(
         HashAlgorithm $hash,
         string $message,
-        string $signature
+        string $signature,
     ): bool {
         return $this->publicKey->verify($hash->hash($message), $signature);
     }

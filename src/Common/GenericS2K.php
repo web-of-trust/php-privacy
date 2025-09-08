@@ -32,17 +32,17 @@ class GenericS2K implements S2KInterface
     /**
      * Default salt length
      */
-    const SALT_LENGTH = 8;
+    const int SALT_LENGTH = 8;
 
     /**
      * Exponent bias, defined in RFC4880
      */
-    const EXPBIAS = 6;
+    const int EXPBIAS = 6;
 
     /**
      * Default iteration count byte
      */
-    const DEFAULT_IT_COUNT = 224;
+    const int DEFAULT_IT_COUNT = 224;
 
     /**
      * The number of resulting count
@@ -62,11 +62,11 @@ class GenericS2K implements S2KInterface
         private readonly string $salt,
         private readonly S2kType $type = S2kType::Iterated,
         private readonly HashAlgorithm $hash = HashAlgorithm::Sha256,
-        private readonly int $itCount = self::DEFAULT_IT_COUNT
+        private readonly int $itCount = self::DEFAULT_IT_COUNT,
     ) {
         if ($type === S2kType::Argon2) {
             throw new \InvalidArgumentException(
-                "S2k type {$type->name} is invalid argument."
+                "S2k type {$type->name} is invalid argument.",
             );
         }
         $this->count = 16 + ($itCount & 15) << ($itCount >> 4) + self::EXPBIAS;
@@ -108,7 +108,7 @@ class GenericS2K implements S2KInterface
             S2kType::Salted => $this->hash($this->salt . $passphrase, $length),
             S2kType::Iterated => $this->hash(
                 $this->iterate($this->salt . $passphrase),
-                $length
+                $length,
             ),
             S2kType::GNU => $this->hash($passphrase, $length),
             default => "",
@@ -150,13 +150,14 @@ class GenericS2K implements S2KInterface
             S2kType::Salted, S2kType::Iterated => substr(
                 $bytes,
                 2,
-                self::SALT_LENGTH
+                self::SALT_LENGTH,
             ),
             default => "",
         };
-        $itCount = $type === S2kType::Iterated
-            ? ord($bytes[self::SALT_LENGTH + 2])
-            : 0;
+        $itCount =
+            $type === S2kType::Iterated
+                ? ord($bytes[self::SALT_LENGTH + 2])
+                : 0;
         return new self($salt, $type, $hash, $itCount);
     }
 

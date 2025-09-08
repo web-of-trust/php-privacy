@@ -106,6 +106,6 @@ interface KeyPacketInterface extends ForSigningInterface, PacketInterface
      * @return HashAlgorithm
      */
     function getPreferredHash(
-        ?HashAlgorithm $preferredHash = null
+        ?HashAlgorithm $preferredHash = null,
     ): HashAlgorithm;
 }

@@ -33,7 +33,7 @@ class ECDSASecretKeyMaterial extends ECSecretKeyMaterial implements
      */
     public static function fromBytes(
         string $bytes,
-        KeyMaterialInterface $publicMaterial
+        KeyMaterialInterface $publicMaterial,
     ): self {
         return new self(Helper::readMPI($bytes), $publicMaterial);
     }
@@ -50,7 +50,7 @@ class ECDSASecretKeyMaterial extends ECSecretKeyMaterial implements
             case Ecc::Ed25519:
             case Ecc::Curve25519:
                 throw new \InvalidArgumentException(
-                    "Curve {$curve->name} is not supported for ECDSA key generation."
+                    "Curve {$curve->name} is not supported for ECDSA key generation.",
                 );
             default:
                 $privateKey = EC::createKey($curve->name);
@@ -60,11 +60,11 @@ class ECDSASecretKeyMaterial extends ECSecretKeyMaterial implements
                     new ECDSAPublicKeyMaterial(
                         $curve->encodeOid(),
                         Helper::bin2BigInt(
-                            $privateKey->getEncodedCoordinates()
+                            $privateKey->getEncodedCoordinates(),
                         ),
-                        $privateKey->getPublicKey()
+                        $privateKey->getPublicKey(),
                     ),
-                    $privateKey
+                    $privateKey,
                 );
         }
     }

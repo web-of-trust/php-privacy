@@ -14,7 +14,7 @@ use OpenPGP\Enum\{
     KeyAlgorithm,
     RevocationReasonTag,
     RSAKeySize,
-    SymmetricAlgorithm
+    SymmetricAlgorithm,
 };
 
 /**
@@ -63,7 +63,7 @@ interface PrivateKeyInterface extends KeyInterface
      */
     function getDecryptionKeyPackets(
         string $keyID = "",
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): array;
 
     /**
@@ -78,7 +78,7 @@ interface PrivateKeyInterface extends KeyInterface
     function encrypt(
         string $passphrase,
         array $subkeyPassphrases = [],
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
     ): self;
 
     /**
@@ -120,7 +120,7 @@ interface PrivateKeyInterface extends KeyInterface
         Ecc $curve = Ecc::Secp521r1,
         int $keyExpiry = 0,
         bool $forSigning = false,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self;
 
     /**
@@ -133,7 +133,7 @@ interface PrivateKeyInterface extends KeyInterface
      */
     function certifyKey(
         KeyInterface $key,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): KeyInterface;
 
     /**
@@ -150,7 +150,7 @@ interface PrivateKeyInterface extends KeyInterface
         KeyInterface $key,
         string $revocationReason = "",
         ?RevocationReasonTag $reasonTag = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): KeyInterface;
 
     /**
@@ -166,7 +166,7 @@ interface PrivateKeyInterface extends KeyInterface
         string $userID,
         string $revocationReason = "",
         ?RevocationReasonTag $reasonTag = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self;
 
     /**
@@ -182,6 +182,6 @@ interface PrivateKeyInterface extends KeyInterface
         string $keyID,
         string $revocationReason = "",
         ?RevocationReasonTag $reasonTag = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self;
 }

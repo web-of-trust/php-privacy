@@ -42,6 +42,6 @@ interface EncryptedMessageInterface extends ArmorableInterface
      */
     function decrypt(
         array $decryptionKeys = [],
-        array $passwords = []
+        array $passwords = [],
     ): LiteralMessageInterface;
 }

@@ -48,7 +48,7 @@ interface SignatureInterface extends
     function verify(
         array $verificationKeys,
         LiteralDataInterface $literalData,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): array;
 
     /**
@@ -63,6 +63,6 @@ interface SignatureInterface extends
     function verifyCleartext(
         array $verificationKeys,
         CleartextMessageInterface $cleartext,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): array;
 }

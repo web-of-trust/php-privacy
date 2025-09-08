@@ -23,9 +23,7 @@ interface SessionKeyCryptorInterface
      * @param SecretKeyPacketInterface $secretKey
      * @return string
      */
-    function decryptSessionKey(
-        SecretKeyPacketInterface $secretKey
-    ): string;
+    function decryptSessionKey(SecretKeyPacketInterface $secretKey): string;
 
     /**
      * Serialize session key cryptor to bytes

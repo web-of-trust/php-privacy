@@ -32,9 +32,8 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
     public function __construct(
         private readonly string $ephemeralKey,
         private readonly string $wrappedKey,
-        private readonly MontgomeryCurve $curve = MontgomeryCurve::Curve25519
-    ) {
-    }
+        private readonly MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
+    ) {}
 
     /**
      * Read encrypted session key from byte string
@@ -45,16 +44,16 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
      */
     public static function fromBytes(
         string $bytes,
-        MontgomeryCurve $curve = MontgomeryCurve::Curve25519
+        MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
     ): self {
         return new self(
             substr($bytes, 0, $curve->payloadSize()),
             substr(
                 $bytes,
                 $curve->payloadSize() + 1,
-                ord($bytes[$curve->payloadSize()])
+                ord($bytes[$curve->payloadSize()]),
             ),
-            $curve
+            $curve,
         );
     }
 
@@ -69,7 +68,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
     public static function encryptSessionKey(
         string $sessionKey,
         EC $publicKey,
-        MontgomeryCurve $curve = MontgomeryCurve::Curve25519
+        MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
     ): self {
         $privateKey = EC::createKey($publicKey->getCurve());
         $ephemeralKey = $privateKey->getPublicKey()->getEncodedCoordinates();
@@ -81,18 +80,18 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
                 $publicKey->getEncodedCoordinates(),
                 DH::computeSecret(
                     $privateKey,
-                    $publicKey->getEncodedCoordinates()
+                    $publicKey->getEncodedCoordinates(),
                 ),
             ]),
             $curve->kekSize()->value,
-            $curve->hkdfInfo()
+            $curve->hkdfInfo(),
         );
         $keyWrapper = new AesKeyWrapper($curve->kekSize());
 
         return new self(
             $ephemeralKey,
             $keyWrapper->wrap($kek, $sessionKey),
-            $curve
+            $curve,
         );
     }
 
@@ -132,7 +131,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
      * {@inheritdoc}
      */
     public function decryptSessionKey(
-        SecretKeyPacketInterface $secretKey
+        SecretKeyPacketInterface $secretKey,
     ): string {
         return $this->decrypt($secretKey->getECKeyMaterial()->getECKey());
     }
@@ -154,12 +153,12 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
                     $privateKey,
                     EC::loadFormat(
                         "MontgomeryPublic",
-                        $this->ephemeralKey
-                    )->getEncodedCoordinates()
+                        $this->ephemeralKey,
+                    )->getEncodedCoordinates(),
                 ),
             ]),
             $this->curve->kekSize()->value,
-            $this->curve->hkdfInfo()
+            $this->curve->hkdfInfo(),
         );
         $keyWrapper = new AesKeyWrapper($this->curve->kekSize());
         return $keyWrapper->unwrap($kek, $this->wrappedKey);

@@ -112,7 +112,7 @@ interface SignaturePacketInterface extends PacketInterface
     function verify(
         KeyPacketInterface $verifyKey,
         string $dataToVerify,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): bool;
 
     /**

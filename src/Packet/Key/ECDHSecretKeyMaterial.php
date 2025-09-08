@@ -32,7 +32,7 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
      */
     public static function fromBytes(
         string $bytes,
-        KeyMaterialInterface $publicMaterial
+        KeyMaterialInterface $publicMaterial,
     ): self {
         return new self(Helper::readMPI($bytes), $publicMaterial);
     }
@@ -51,10 +51,10 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
                 $d = Helper::bin2BigInt(strrev($secret));
                 $privateKey = EC::loadPrivateKeyFormat(
                     "MontgomeryPrivate",
-                    $secret
+                    $secret,
                 );
                 $q = Helper::bin2BigInt(
-                    "\x40" . $privateKey->getEncodedCoordinates()
+                    "\x40" . $privateKey->getEncodedCoordinates(),
                 );
             } else {
                 $privateKey = EC::createKey($curve->name);
@@ -70,13 +70,13 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
                     $curve->hashAlgorithm(),
                     $curve->symmetricAlgorithm(),
                     ECDHPublicKeyMaterial::DEFAULT_RESERVED,
-                    $privateKey->getPublicKey()
+                    $privateKey->getPublicKey(),
                 ),
-                $privateKey
+                $privateKey,
             );
         } else {
             throw new \InvalidArgumentException(
-                "Curve {$curve->name} is not supported for ECDH key generation."
+                "Curve {$curve->name} is not supported for ECDH key generation.",
             );
         }
     }

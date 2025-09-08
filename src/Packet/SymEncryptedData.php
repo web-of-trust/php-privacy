@@ -13,7 +13,7 @@ use OpenPGP\Enum\{PacketTag, SymmetricAlgorithm};
 use OpenPGP\Type\{
     EncryptedDataPacketInterface,
     PacketListInterface,
-    SessionKeyInterface
+    SessionKeyInterface,
 };
 
 /**
@@ -39,7 +39,7 @@ class SymEncryptedData extends AbstractPacket implements
      */
     public function __construct(
         private readonly string $encrypted,
-        private readonly ?PacketListInterface $packetList = null
+        private readonly ?PacketListInterface $packetList = null,
     ) {
         parent::__construct(PacketTag::SymEncryptedData);
     }
@@ -63,7 +63,7 @@ class SymEncryptedData extends AbstractPacket implements
     public static function encryptPackets(
         string $key,
         PacketListInterface $packetList,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
     ): self {
         Helper::assertSymmetric($symmetric);
         $cipher = $symmetric->cipherEngine(Config::CIPHER_MODE);
@@ -75,7 +75,7 @@ class SymEncryptedData extends AbstractPacket implements
 
         return new self(
             $prefix . $cipher->encrypt($packetList->encode()),
-            $packetList
+            $packetList,
         );
     }
 
@@ -88,12 +88,12 @@ class SymEncryptedData extends AbstractPacket implements
      */
     public static function encryptPacketsWithSessionKey(
         SessionKeyInterface $sessionKey,
-        PacketListInterface $packetList
+        PacketListInterface $packetList,
     ): self {
         return self::encryptPackets(
             $sessionKey->getEncryptionKey(),
             $packetList,
-            $sessionKey->getSymmetric()
+            $sessionKey->getSymmetric(),
         );
     }
 
@@ -110,7 +110,7 @@ class SymEncryptedData extends AbstractPacket implements
      */
     public function decrypt(
         string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
     ): self {
         if (!Config::allowUnauthenticated()) {
             throw new \RuntimeException("Message is not authenticated.");
@@ -127,8 +127,8 @@ class SymEncryptedData extends AbstractPacket implements
             return new self(
                 $this->encrypted,
                 PacketList::decode(
-                    $cipher->decrypt(substr($this->encrypted, $blockSize + 2))
-                )
+                    $cipher->decrypt(substr($this->encrypted, $blockSize + 2)),
+                ),
             );
         }
     }

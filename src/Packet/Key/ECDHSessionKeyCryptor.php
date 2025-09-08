@@ -14,12 +14,12 @@ use OpenPGP\Enum\{
     HashAlgorithm,
     KeyAlgorithm,
     KekSize,
-    SymmetricAlgorithm
+    SymmetricAlgorithm,
 };
 use OpenPGP\Type\{
     KeyPacketInterface,
     SecretKeyPacketInterface,
-    SessionKeyCryptorInterface
+    SessionKeyCryptorInterface,
 };
 use phpseclib3\Crypt\{DH, EC};
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
@@ -34,8 +34,8 @@ use phpseclib3\Math\BigInteger;
  */
 class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
 {
-    const ANONYMOUS_SENDER = "Anonymous Sender    ";
-    const PKCS5_BLOCK_SIZE = 8;
+    const string ANONYMOUS_SENDER = "Anonymous Sender    ";
+    const int PKCS5_BLOCK_SIZE = 8;
 
     /**
      * Constructor
@@ -46,9 +46,8 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
      */
     public function __construct(
         private readonly BigInteger $ephemeralKey,
-        private readonly string $wrappedKey
-    ) {
-    }
+        private readonly string $wrappedKey,
+    ) {}
 
     /**
      * Read encrypted session key from byte string
@@ -73,7 +72,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
      */
     public static function encryptSessionKey(
         string $sessionKey,
-        KeyPacketInterface $keyPacket
+        KeyPacketInterface $keyPacket,
     ): self {
         $keyMaterial = $keyPacket->getKeyMaterial();
         if ($keyMaterial instanceof ECDHPublicKeyMaterial) {
@@ -83,25 +82,25 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
                 $keyMaterial->getKdfHash(),
                 DH::computeSecret(
                     $privateKey,
-                    $keyMaterial->getECKey()->getEncodedCoordinates()
+                    $keyMaterial->getECKey()->getEncodedCoordinates(),
                 ),
                 self::kdfParameter($keyMaterial, $keyPacket->getFingerprint()),
-                $keyMaterial->getKdfSymmetric()->keySizeInByte()
+                $keyMaterial->getKdfSymmetric()->keySizeInByte(),
             );
             $keyWrapper = self::selectKeyWrapper(
-                $keyMaterial->getKdfSymmetric()
+                $keyMaterial->getKdfSymmetric(),
             );
             $wrappedKey = $keyWrapper->wrap(
                 $kek,
-                self::pkcs5Encode($sessionKey)
+                self::pkcs5Encode($sessionKey),
             );
 
             $ephemeralKey = match ($keyMaterial->getEcc()) {
                 Ecc::Curve25519 => Helper::bin2BigInt(
-                    "\x40" . $privateKey->getEncodedCoordinates()
+                    "\x40" . $privateKey->getEncodedCoordinates(),
                 ),
                 default => Helper::bin2BigInt(
-                    $privateKey->getEncodedCoordinates()
+                    $privateKey->getEncodedCoordinates(),
                 ),
             };
 
@@ -148,7 +147,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
      * {@inheritdoc}
      */
     public function decryptSessionKey(
-        SecretKeyPacketInterface $secretKey
+        SecretKeyPacketInterface $secretKey,
     ): string {
         return $this->decrypt($secretKey);
     }
@@ -177,8 +176,8 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
                     $curve,
                     PKCS8::extractPoint(
                         "\x00" . $this->ephemeralKey->toBytes(),
-                        $curve
-                    )
+                        $curve,
+                    ),
                 );
             }
 
@@ -186,19 +185,19 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
                 $publicMaterial->getKdfHash(),
                 DH::computeSecret(
                     $keyMaterial->getECKey(),
-                    EC::loadFormat($format, $key)->getEncodedCoordinates()
+                    EC::loadFormat($format, $key)->getEncodedCoordinates(),
                 ),
                 self::kdfParameter(
                     $publicMaterial,
-                    $secretKey->getFingerprint()
+                    $secretKey->getFingerprint(),
                 ),
-                $publicMaterial->getKdfSymmetric()->keySizeInByte()
+                $publicMaterial->getKdfSymmetric()->keySizeInByte(),
             );
             $keyWrapper = self::selectKeyWrapper(
-                $publicMaterial->getKdfSymmetric()
+                $publicMaterial->getKdfSymmetric(),
             );
             return self::pkcs5Decode(
-                $keyWrapper->unwrap($kek, $this->wrappedKey)
+                $keyWrapper->unwrap($kek, $this->wrappedKey),
             );
         } else {
             throw new \RuntimeException("Key material is not ECDH key.");
@@ -214,12 +213,12 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
         HashAlgorithm $hash,
         string $sharedSecret,
         string $param,
-        int $keySize
+        int $keySize,
     ): string {
         return substr(
             $hash->hash(implode([pack("N", 1), $sharedSecret, $param])),
             0,
-            $keySize
+            $keySize,
         );
     }
 
@@ -230,7 +229,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
      */
     private static function kdfParameter(
         ECDHPublicKeyMaterial $keyMaterial,
-        string $fingerprint
+        string $fingerprint,
     ): string {
         $oid = $keyMaterial->getEcc()->encodeOid();
         return implode([
@@ -259,7 +258,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
             str_repeat(chr($n), $length + $n),
             $message,
             0,
-            $length
+            $length,
         );
     }
 
@@ -283,7 +282,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
     }
 
     private static function selectKeyWrapper(
-        SymmetricAlgorithm $symmetric
+        SymmetricAlgorithm $symmetric,
     ): KeyWrapper {
         $keySize = KekSize::from($symmetric->keySizeInByte());
         return match ($symmetric) {

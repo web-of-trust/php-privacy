@@ -34,7 +34,7 @@ class EdDSALegacySecretKeyMaterial extends ECSecretKeyMaterial implements
      */
     public static function fromBytes(
         string $bytes,
-        KeyMaterialInterface $publicMaterial
+        KeyMaterialInterface $publicMaterial,
     ): self {
         return new self(Helper::readMPI($bytes), $publicMaterial);
     }
@@ -57,11 +57,11 @@ class EdDSALegacySecretKeyMaterial extends ECSecretKeyMaterial implements
             new EdDSALegacyPublicKeyMaterial(
                 $curve->encodeOid(),
                 Helper::bin2BigInt(
-                    "\x40" . $privateKey->getEncodedCoordinates()
+                    "\x40" . $privateKey->getEncodedCoordinates(),
                 ),
-                $privateKey->getPublicKey()
+                $privateKey->getPublicKey(),
             ),
-            $privateKey
+            $privateKey,
         );
     }
 

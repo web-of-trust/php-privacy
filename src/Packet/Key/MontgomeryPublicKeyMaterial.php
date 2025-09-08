@@ -39,14 +39,14 @@ class MontgomeryPublicKeyMaterial implements
      */
     public function __construct(
         private readonly string $public,
-        ?ECPublicKey $publicKey = null
+        ?ECPublicKey $publicKey = null,
     ) {
         if ($publicKey instanceof ECPublicKey) {
             $this->publicKey = $publicKey;
         } else {
             $this->publicKey = EC::loadPublicKeyFormat(
                 "MontgomeryPublic",
-                $public
+                $public,
             );
         }
     }
@@ -108,7 +108,7 @@ class MontgomeryPublicKeyMaterial implements
     public function getParameters(): array
     {
         return MontgomeryPublic::load(
-            $this->publicKey->toString("MontgomeryPublic")
+            $this->publicKey->toString("MontgomeryPublic"),
         );
     }
 

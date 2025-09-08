@@ -23,31 +23,31 @@ use phpseclib3\Common\Functions\Strings;
  */
 final class Armor
 {
-    const MESSAGE_BEGIN = "-----BEGIN PGP MESSAGE-----\n";
-    const SIGNED_MESSAGE_BEGIN = "-----BEGIN PGP SIGNED MESSAGE-----\n";
-    const MESSAGE_END = "-----END PGP MESSAGE-----\n";
+    const string MESSAGE_BEGIN = "-----BEGIN PGP MESSAGE-----\n";
+    const string SIGNED_MESSAGE_BEGIN = "-----BEGIN PGP SIGNED MESSAGE-----\n";
+    const string MESSAGE_END = "-----END PGP MESSAGE-----\n";
 
-    const MULTIPART_SECTION_MESSAGE_BEGIN = "-----BEGIN PGP MESSAGE, PART %u/%u-----\n";
-    const MULTIPART_SECTION_MESSAGE_END = "-----END PGP MESSAGE, PART %u/%u-----\n";
+    const string MULTIPART_SECTION_MESSAGE_BEGIN = "-----BEGIN PGP MESSAGE, PART %u/%u-----\n";
+    const string MULTIPART_SECTION_MESSAGE_END = "-----END PGP MESSAGE, PART %u/%u-----\n";
 
-    const MULTIPART_LAST_MESSAGE_BEGIN = "-----BEGIN PGP MESSAGE, PART %u-----\n";
-    const MULTIPART_LAST_MESSAGE_END = "-----END PGP MESSAGE, PART %u-----\n";
+    const string MULTIPART_LAST_MESSAGE_BEGIN = "-----BEGIN PGP MESSAGE, PART %u-----\n";
+    const string MULTIPART_LAST_MESSAGE_END = "-----END PGP MESSAGE, PART %u-----\n";
 
-    const PUBLIC_KEY_BLOCK_BEGIN = "-----BEGIN PGP PUBLIC KEY BLOCK-----\n";
-    const PUBLIC_KEY_BLOCK_END = "-----END PGP PUBLIC KEY BLOCK-----\n";
+    const string PUBLIC_KEY_BLOCK_BEGIN = "-----BEGIN PGP PUBLIC KEY BLOCK-----\n";
+    const string PUBLIC_KEY_BLOCK_END = "-----END PGP PUBLIC KEY BLOCK-----\n";
 
-    const PRIVATE_KEY_BLOCK_BEGIN = "-----BEGIN PGP PRIVATE KEY BLOCK-----\n";
-    const PRIVATE_KEY_BLOCK_END = "-----END PGP PRIVATE KEY BLOCK-----\n";
+    const string PRIVATE_KEY_BLOCK_BEGIN = "-----BEGIN PGP PRIVATE KEY BLOCK-----\n";
+    const string PRIVATE_KEY_BLOCK_END = "-----END PGP PRIVATE KEY BLOCK-----\n";
 
-    const SIGNATURE_BEGIN = "-----BEGIN PGP SIGNATURE-----\n";
-    const SIGNATURE_END = "-----END PGP SIGNATURE-----\n";
+    const string SIGNATURE_BEGIN = "-----BEGIN PGP SIGNATURE-----\n";
+    const string SIGNATURE_END = "-----END PGP SIGNATURE-----\n";
 
-    const DASH_PATTERN = "/^- /m";
-    const EMPTY_PATTERN = '/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/';
-    const HEADER_PATTERN = '/^([^\s:]|[^\s:][^:]*[^\s:]): .+$/';
-    const SPLIT_PATTERN = '/^-----[^-]+-----$/';
+    const string DASH_PATTERN = "/^- /m";
+    const string EMPTY_PATTERN = '/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/';
+    const string HEADER_PATTERN = '/^([^\s:]|[^\s:][^:]*[^\s:]): .+$/';
+    const string SPLIT_PATTERN = '/^-----[^-]+-----$/';
 
-    const TRUNK_SIZE = 76;
+    const int TRUNK_SIZE = 76;
 
     /**
      * Constructor
@@ -62,9 +62,8 @@ final class Armor
         private ArmorType $type,
         private array $headers = [],
         private string $data = "",
-        private string $text = ""
-    ) {
-    }
+        private string $text = "",
+    ) {}
 
     /**
      * Get armor type
@@ -116,7 +115,7 @@ final class Armor
     {
         if ($this->type !== $type) {
             throw new \UnexpectedValueException(
-                "Armored text not of {$type->name} type."
+                "Armored text not of {$type->name} type.",
             );
         }
         return $this;
@@ -191,8 +190,8 @@ final class Armor
             preg_replace(
                 self::DASH_PATTERN,
                 "",
-                implode(Helper::CRLF, $textLines)
-            ) // Reverse dash-escaped text
+                implode(Helper::CRLF, $textLines),
+            ), // Reverse dash-escaped text
         );
     }
 
@@ -215,20 +214,20 @@ final class Armor
         array $hashAlgos = [],
         int $partIndex = 0,
         int $partTotal = 0,
-        string $customComment = ""
+        string $customComment = "",
     ): string {
         $result = match ($type) {
             ArmorType::MultipartSection => [
                 sprintf(
                     self::MULTIPART_SECTION_MESSAGE_BEGIN,
                     $partIndex,
-                    $partTotal
+                    $partTotal,
                 ),
                 self::addHeader($customComment) . Helper::EOL,
                 chunk_split(
                     Strings::base64_encode($data),
                     self::TRUNK_SIZE,
-                    Helper::EOL
+                    Helper::EOL,
                 ),
                 Config::checksumRequired()
                     ? "=" . self::crc24Checksum($data) . Helper::EOL
@@ -236,7 +235,7 @@ final class Armor
                 sprintf(
                     self::MULTIPART_SECTION_MESSAGE_END,
                     $partIndex,
-                    $partTotal
+                    $partTotal,
                 ),
             ],
             ArmorType::MultipartLast => [
@@ -245,7 +244,7 @@ final class Armor
                 chunk_split(
                     Strings::base64_encode($data),
                     self::TRUNK_SIZE,
-                    Helper::EOL
+                    Helper::EOL,
                 ),
                 Config::checksumRequired()
                     ? "=" . self::crc24Checksum($data) . Helper::EOL
@@ -258,9 +257,9 @@ final class Armor
                     ? implode(
                             Helper::EOL,
                             array_map(
-                                static fn ($hash) => "Hash: $hash",
-                                $hashAlgos
-                            )
+                                static fn($hash) => "Hash: $hash",
+                                $hashAlgos,
+                            ),
                         ) .
                         Helper::EOL .
                         Helper::EOL
@@ -271,7 +270,7 @@ final class Armor
                 chunk_split(
                     Strings::base64_encode($data),
                     self::TRUNK_SIZE,
-                    Helper::EOL
+                    Helper::EOL,
                 ),
                 Config::checksumRequired()
                     ? "=" . self::crc24Checksum($data) . Helper::EOL
@@ -284,7 +283,7 @@ final class Armor
                 chunk_split(
                     Strings::base64_encode($data),
                     self::TRUNK_SIZE,
-                    Helper::EOL
+                    Helper::EOL,
                 ),
                 Config::checksumRequired()
                     ? "=" . self::crc24Checksum($data) . Helper::EOL
@@ -297,7 +296,7 @@ final class Armor
                 chunk_split(
                     Strings::base64_encode($data),
                     self::TRUNK_SIZE,
-                    Helper::EOL
+                    Helper::EOL,
                 ),
                 Config::checksumRequired()
                     ? "=" . self::crc24Checksum($data) . Helper::EOL
@@ -310,7 +309,7 @@ final class Armor
                 chunk_split(
                     Strings::base64_encode($data),
                     self::TRUNK_SIZE,
-                    Helper::EOL
+                    Helper::EOL,
                 ),
                 Config::checksumRequired()
                     ? "=" . self::crc24Checksum($data) . Helper::EOL
@@ -323,7 +322,7 @@ final class Armor
                 chunk_split(
                     Strings::base64_encode($data),
                     self::TRUNK_SIZE,
-                    Helper::EOL
+                    Helper::EOL,
                 ),
                 Config::checksumRequired()
                     ? "=" . self::crc24Checksum($data) . Helper::EOL

@@ -13,7 +13,7 @@ use OpenPGP\Enum\{
     CompressionAlgorithm,
     HashAlgorithm,
     PresetRFC,
-    SymmetricAlgorithm
+    SymmetricAlgorithm,
 };
 
 /**
@@ -25,15 +25,15 @@ use OpenPGP\Enum\{
  */
 final class Config
 {
-    const VERSION = "PHP Privacy v2";
-    const COMMENT = "The PHP OpenPGP library";
+    const string VERSION = "PHP Privacy v2";
+    const string COMMENT = "The PHP OpenPGP library";
 
-    const CIPHER_MODE = "cfb";
-    const HKDF_ALGO = "sha256";
+    const string CIPHER_MODE = "cfb";
+    const string HKDF_ALGO = "sha256";
 
-    const AEAD_SUPPORTED = true;
-    const AEAD_CHUNK_SIZE_MIN = 10;
-    const AEAD_CHUNK_SIZE_MAX = 16;
+    const bool AEAD_SUPPORTED = true;
+    const int AEAD_CHUNK_SIZE_MIN = 10;
+    const int AEAD_CHUNK_SIZE_MAX = 16;
 
     private static HashAlgorithm $preferredHash = HashAlgorithm::Sha256;
 
@@ -102,7 +102,7 @@ final class Config
      * @param SymmetricAlgorithm $symmetric
      */
     public static function setPreferredSymmetric(
-        SymmetricAlgorithm $symmetric
+        SymmetricAlgorithm $symmetric,
     ): void {
         Helper::assertSymmetric($symmetric);
         self::$preferredSymmetric = $symmetric;
@@ -124,7 +124,7 @@ final class Config
      * @param CompressionAlgorithm $compression
      */
     public static function setPreferredCompression(
-        CompressionAlgorithm $compression
+        CompressionAlgorithm $compression,
     ): void {
         self::$preferredCompression = $compression;
     }
@@ -251,7 +251,7 @@ final class Config
      * @param int $argon2MemoryExponent
      */
     public static function setArgon2MemoryExponent(
-        int $argon2MemoryExponent
+        int $argon2MemoryExponent,
     ): void {
         self::$argon2MemoryExponent = $argon2MemoryExponent;
     }
@@ -265,7 +265,7 @@ final class Config
     {
         return min(
             max(self::$aeadChunkSize, self::AEAD_CHUNK_SIZE_MIN),
-            self::AEAD_CHUNK_SIZE_MAX
+            self::AEAD_CHUNK_SIZE_MAX,
         );
     }
 
@@ -279,7 +279,7 @@ final class Config
     {
         self::$aeadChunkSize = min(
             max($aeadChunkSize, self::AEAD_CHUNK_SIZE_MIN),
-            self::AEAD_CHUNK_SIZE_MAX
+            self::AEAD_CHUNK_SIZE_MAX,
         );
     }
 

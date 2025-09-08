@@ -42,7 +42,7 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
     public function __construct(
         private readonly BigInteger $modulus,
         private readonly BigInteger $exponent,
-        ?RSAPublicKey $publicKey = null
+        ?RSAPublicKey $publicKey = null,
     ) {
         $this->publicKey =
             $publicKey ??
@@ -63,7 +63,7 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
         $modulus = Helper::readMPI($bytes);
         return new self(
             $modulus,
-            Helper::readMPI(substr($bytes, $modulus->getLengthInBytes() + 2))
+            Helper::readMPI(substr($bytes, $modulus->getLengthInBytes() + 2)),
         );
     }
 
@@ -154,7 +154,7 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
     public function verify(
         HashAlgorithm $hash,
         string $message,
-        string $signature
+        string $signature,
     ): bool {
         return $this->publicKey
             ->withHash(strtolower($hash->name))
@@ -164,8 +164,8 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
                 substr(
                     $signature,
                     2,
-                    Helper::bit2ByteLength(Helper::bytesToShort($signature))
-                )
+                    Helper::bit2ByteLength(Helper::bytesToShort($signature)),
+                ),
             );
     }
 }

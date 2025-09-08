@@ -21,8 +21,8 @@ use OpenPGP\Enum\{HashAlgorithm, KeyAlgorithm, PacketTag, SignatureType};
  */
 class OnePassSignature extends AbstractPacket
 {
-    const VERSION_3 = 3;
-    const VERSION_6 = 6;
+    const int VERSION_3 = 3;
+    const int VERSION_6 = 6;
 
     /**
      * Constructor
@@ -45,12 +45,12 @@ class OnePassSignature extends AbstractPacket
         private readonly string $salt,
         private readonly string $issuerFingerprint,
         private readonly string $issuerKeyID,
-        private readonly int $nested = 0
+        private readonly int $nested = 0,
     ) {
         parent::__construct(PacketTag::OnePassSignature);
         if ($version != self::VERSION_3 && $version != self::VERSION_6) {
             throw new \InvalidArgumentException(
-                "Version $version of the one-pass signature packet is unsupported."
+                "Version $version of the one-pass signature packet is unsupported.",
             );
         }
     }
@@ -104,7 +104,7 @@ class OnePassSignature extends AbstractPacket
             $salt,
             $issuerFingerprint,
             $issuerKeyID,
-            $nested
+            $nested,
         );
     }
 
@@ -117,7 +117,7 @@ class OnePassSignature extends AbstractPacket
      */
     public static function fromSignature(
         Signature $signature,
-        int $nested = 0
+        int $nested = 0,
     ): self {
         return new self(
             $signature->getVersion() === self::VERSION_6
@@ -129,7 +129,7 @@ class OnePassSignature extends AbstractPacket
             $signature->getSalt(),
             $signature->getIssuerFingerprint(),
             $signature->getIssuerKeyID(),
-            $nested
+            $nested,
         );
     }
 

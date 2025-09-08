@@ -46,7 +46,7 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
         private readonly BigInteger $order,
         private readonly BigInteger $generator,
         private readonly BigInteger $exponent,
-        ?DSAPublicKey $publicKey = null
+        ?DSAPublicKey $publicKey = null,
     ) {
         $this->publicKey =
             $publicKey ??
@@ -191,7 +191,7 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
     public function verify(
         HashAlgorithm $hash,
         string $message,
-        string $signature
+        string $signature,
     ): bool {
         $r = Helper::readMPI($signature);
         $s = Helper::readMPI(substr($signature, $r->getLengthInBytes() + 2));

@@ -31,7 +31,7 @@ class CamelliaKeyWrapper extends KeyWrapper
     {
         parent::__construct(
             new \OpenPGP\Cryptor\Symmetric\Camellia("ecb"),
-            $kekSize
+            $kekSize,
         );
     }
 }

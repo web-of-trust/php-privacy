@@ -32,9 +32,8 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
      */
     public function __construct(
         private readonly BigInteger $gamma,
-        private readonly BigInteger $phi
-    ) {
-    }
+        private readonly BigInteger $phi,
+    ) {}
 
     /**
      * Read encrypted session key parameters from bytes
@@ -58,7 +57,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
      */
     public static function encryptSessionKey(
         string $sessionKey,
-        AsymmetricKey $publicKey
+        AsymmetricKey $publicKey,
     ): self {
         if ($publicKey instanceof PublicKey) {
             $size = $publicKey->getPrime()->getLengthInBytes();
@@ -66,7 +65,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
             $encrypted = $publicKey->encrypt($padded);
             return new self(
                 Helper::bin2BigInt(substr($encrypted, 0, $size)),
-                Helper::bin2BigInt(substr($encrypted, $size, $size))
+                Helper::bin2BigInt(substr($encrypted, $size, $size)),
             );
         } else {
             throw new \RuntimeException("Public key is not ElGamal key.");
@@ -114,8 +113,8 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
         if ($privateKey instanceof PrivateKey) {
             return self::pkcs1Decode(
                 $privateKey->decrypt(
-                    implode([$this->gamma->toBytes(), $this->phi->toBytes()])
-                )
+                    implode([$this->gamma->toBytes(), $this->phi->toBytes()]),
+                ),
             );
         } else {
             throw new \RuntimeException("Private key is not ElGamal key.");
@@ -143,7 +142,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
             $encoded,
             $message,
             $keyLength - $mLength,
-            strlen($message)
+            strlen($message),
         );
         return $encoded;
     }

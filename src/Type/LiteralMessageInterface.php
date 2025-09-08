@@ -42,7 +42,7 @@ interface LiteralMessageInterface extends
         array $signingKeys,
         array $recipients = [],
         ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self;
 
     /**
@@ -58,7 +58,7 @@ interface LiteralMessageInterface extends
         array $signingKeys,
         array $recipients = [],
         ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): SignatureInterface;
 
     /**
@@ -71,7 +71,7 @@ interface LiteralMessageInterface extends
      */
     function verify(
         array $verificationKeys,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): array;
 
     /**
@@ -86,7 +86,7 @@ interface LiteralMessageInterface extends
     function verifyDetached(
         array $verificationKeys,
         SignatureInterface $signature,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): array;
 
     /**
@@ -101,7 +101,7 @@ interface LiteralMessageInterface extends
     function encrypt(
         array $encryptionKeys = [],
         array $passwords = [],
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
     ): EncryptedMessageInterface;
 
     /**
@@ -112,6 +112,6 @@ interface LiteralMessageInterface extends
      * @return self
      */
     function compress(
-        CompressionAlgorithm $algorithm = CompressionAlgorithm::Uncompressed
+        CompressionAlgorithm $algorithm = CompressionAlgorithm::Uncompressed,
     ): self;
 }

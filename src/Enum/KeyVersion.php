@@ -28,8 +28,8 @@ enum KeyVersion: int
     public function hashAlgo(): string
     {
         return match ($this) {
-            self::V4 => 'sha1',
-            self::V6 => 'sha256',
+            self::V4 => "sha1",
+            self::V6 => "sha256",
         };
     }
 }

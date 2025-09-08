@@ -17,13 +17,13 @@ use OpenPGP\Enum\{
     KeyAlgorithm,
     KeyVersion,
     MontgomeryCurve,
-    PacketTag
+    PacketTag,
 };
 use OpenPGP\Type\{
     ECKeyMaterialInterface,
     PublicKeyPacketInterface,
     KeyMaterialInterface,
-    SubkeyPacketInterface
+    SubkeyPacketInterface,
 };
 use phpseclib3\Common\Functions\Strings;
 
@@ -38,7 +38,7 @@ use phpseclib3\Common\Functions\Strings;
  */
 class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
 {
-    const KEY_ID_SIZE = 8;
+    const int KEY_ID_SIZE = 8;
 
     /**
      * Fingerprint bytes
@@ -63,19 +63,19 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         private readonly int $version,
         private readonly DateTimeInterface $creationTime,
         private readonly KeyAlgorithm $keyAlgorithm,
-        private readonly KeyMaterialInterface $keyMaterial
+        private readonly KeyMaterialInterface $keyMaterial,
     ) {
         parent::__construct(
             $this instanceof SubkeyPacketInterface
                 ? PacketTag::PublicSubkey
-                : PacketTag::PublicKey
+                : PacketTag::PublicKey,
         );
         if (
             $version !== KeyVersion::V4->value &&
             $version !== KeyVersion::V6->value
         ) {
             throw new \InvalidArgumentException(
-                "Version {$version} of the key packet is unsupported."
+                "Version {$version} of the key packet is unsupported.",
             );
         }
         $isV6 = $version === KeyVersion::V6->value;
@@ -85,7 +85,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
                 $curve = $keyMaterial->getEcc();
                 if ($curve === Ecc::Ed25519 || $curve === Ecc::Curve25519) {
                     throw new \InvalidArgumentException(
-                        "Legacy curve {$curve->name} cannot be used with v{$version} key packet."
+                        "Legacy curve {$curve->name} cannot be used with v{$version} key packet.",
                     );
                 }
             }
@@ -94,7 +94,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
                 $keyAlgorithm === KeyAlgorithm::ElGamal
             ) {
                 throw new \InvalidArgumentException(
-                    "Key algorithm {$keyAlgorithm->name} cannot be used with v{$version} key packet."
+                    "Key algorithm {$keyAlgorithm->name} cannot be used with v{$version} key packet.",
                 );
             }
         }
@@ -113,7 +113,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
     public static function fromBytes(string $bytes): self
     {
         [$version, $creationTime, $keyAlgorithm, $keyMaterial] = self::decode(
-            $bytes
+            $bytes,
         );
         return new self($version, $creationTime, $keyAlgorithm, $keyMaterial);
     }
@@ -231,7 +231,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
      * {@inheritdoc}
      */
     public function getPreferredHash(
-        ?HashAlgorithm $preferredHash = null
+        ?HashAlgorithm $preferredHash = null,
     ): HashAlgorithm {
         return match (true) {
             $this->keyMaterial instanceof Key\ECPublicKeyMaterial
@@ -272,8 +272,8 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         $version = ord($bytes[$offset++]);
 
         // A four-octet number denoting the time that the key was created.
-        $creationTime = (new \DateTime())->setTimestamp(
-            Helper::bytesToLong($bytes, $offset)
+        $creationTime = new \DateTime()->setTimestamp(
+            Helper::bytesToLong($bytes, $offset),
         );
         $offset += 4;
 
@@ -288,7 +288,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         // A series of values comprising the key material.
         $keyMaterial = self::readKeyMaterial(
             substr($bytes, $offset),
-            $keyAlgorithm
+            $keyAlgorithm,
         );
 
         return [$version, $creationTime, $keyAlgorithm, $keyMaterial];
@@ -296,7 +296,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
 
     private static function readKeyMaterial(
         string $bytes,
-        KeyAlgorithm $keyAlgorithm
+        KeyAlgorithm $keyAlgorithm,
     ): KeyMaterialInterface {
         return match ($keyAlgorithm) {
             KeyAlgorithm::RsaEncryptSign,
@@ -304,31 +304,31 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
             KeyAlgorithm::RsaSign
                 => Key\RSAPublicKeyMaterial::fromBytes($bytes),
             KeyAlgorithm::ElGamal => Key\ElGamalPublicKeyMaterial::fromBytes(
-                $bytes
+                $bytes,
             ),
             KeyAlgorithm::Dsa => Key\DSAPublicKeyMaterial::fromBytes($bytes),
             KeyAlgorithm::Ecdh => Key\ECDHPublicKeyMaterial::fromBytes($bytes),
             KeyAlgorithm::EcDsa => Key\ECDSAPublicKeyMaterial::fromBytes(
-                $bytes
+                $bytes,
             ),
             KeyAlgorithm::EdDsaLegacy
                 => Key\EdDSALegacyPublicKeyMaterial::fromBytes($bytes),
             KeyAlgorithm::X25519 => Key\MontgomeryPublicKeyMaterial::fromBytes(
-                substr($bytes, 0, MontgomeryCurve::Curve25519->payloadSize())
+                substr($bytes, 0, MontgomeryCurve::Curve25519->payloadSize()),
             ),
             KeyAlgorithm::X448 => Key\MontgomeryPublicKeyMaterial::fromBytes(
-                substr($bytes, 0, MontgomeryCurve::Curve448->payloadSize())
+                substr($bytes, 0, MontgomeryCurve::Curve448->payloadSize()),
             ),
             KeyAlgorithm::Ed25519 => Key\EdDSAPublicKeyMaterial::fromBytes(
                 $bytes,
-                EdDSACurve::Ed25519
+                EdDSACurve::Ed25519,
             ),
             KeyAlgorithm::Ed448 => Key\EdDSAPublicKeyMaterial::fromBytes(
                 $bytes,
-                EdDSACurve::Ed448
+                EdDSACurve::Ed448,
             ),
             default => throw new \RuntimeException(
-                "Key algorithm {$keyAlgorithm->name} is unsupported."
+                "Key algorithm {$keyAlgorithm->name} is unsupported.",
             ),
         };
     }

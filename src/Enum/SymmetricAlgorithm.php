@@ -144,7 +144,7 @@ enum SymmetricAlgorithm: int
     {
         return match ($this) {
             self::Plaintext => throw new \RuntimeException(
-                'Symmetric algorithm "Plaintext" is unsupported.'
+                'Symmetric algorithm "Plaintext" is unsupported.',
             ),
             self::Idea => new Symmetric\IDEA($mode),
             self::TripleDes => new Crypt\TripleDES($mode),
@@ -168,7 +168,7 @@ enum SymmetricAlgorithm: int
     {
         return match ($this) {
             self::Plaintext => throw new \InvalidArgumentException(
-                'Symmetric algorithm "Plaintext" is unsupported.'
+                'Symmetric algorithm "Plaintext" is unsupported.',
             ),
             self::Idea => new class extends Symmetric\IDEA implements
                 Symmetric\EcbCipher
@@ -215,11 +215,8 @@ enum SymmetricAlgorithm: int
      *
      * @return array
      */
-    static public function preferredSymmetrics(): array
+    public static function preferredSymmetrics(): array
     {
-        return [
-            self::Aes256,
-            self::Aes128,
-        ];
+        return [self::Aes256, self::Aes128];
     }
 }

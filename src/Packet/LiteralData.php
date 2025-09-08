@@ -44,10 +44,10 @@ class LiteralData extends AbstractPacket implements
         private readonly string $data,
         private readonly Format $format = Format::Utf8,
         private readonly string $filename = "",
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ) {
         parent::__construct(PacketTag::LiteralData);
-        $this->time = $time ?? (new \DateTime())->setTimestamp(time());
+        $this->time = $time ?? new \DateTime()->setTimestamp(time());
     }
 
     /**
@@ -61,8 +61,8 @@ class LiteralData extends AbstractPacket implements
         $filename = substr($bytes, $offset, $length);
 
         $offset += $length;
-        $time = (new \DateTime())->setTimestamp(
-            Helper::bytesToLong($bytes, $offset)
+        $time = new \DateTime()->setTimestamp(
+            Helper::bytesToLong($bytes, $offset),
         );
 
         $offset += 4;
@@ -82,7 +82,7 @@ class LiteralData extends AbstractPacket implements
     public static function fromText(
         string $text,
         Format $format = Format::Utf8,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self {
         return new self($text, $format, "", $time);
     }
@@ -148,7 +148,7 @@ class LiteralData extends AbstractPacket implements
         if ($this->format === Format::Text || $this->format === Format::Utf8) {
             // Remove trailing whitespace and normalize EOL to canonical form <CR><LF>
             $data = Helper::removeTrailingSpaces(
-                mb_convert_encoding($this->data, "UTF-8")
+                mb_convert_encoding($this->data, "UTF-8"),
             );
             return preg_replace(Helper::EOL_PATTERN, Helper::CRLF, $data) ??
                 $data;

@@ -39,7 +39,7 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
     public function __construct(
         private readonly BigInteger $exponent,
         private readonly KeyMaterialInterface $publicMaterial,
-        ?PrivateKey $privateKey = null
+        ?PrivateKey $privateKey = null,
     ) {
         $parameters = $publicMaterial->getParameters();
         $this->privateKey =
@@ -48,7 +48,7 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
                 $exponent,
                 $parameters["y"],
                 $parameters["p"],
-                $parameters["g"]
+                $parameters["g"],
             );
     }
 
@@ -61,7 +61,7 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
      */
     public static function fromBytes(
         string $bytes,
-        KeyMaterialInterface $publicMaterial
+        KeyMaterialInterface $publicMaterial,
     ): self {
         return new self(Helper::readMPI($bytes), $publicMaterial);
     }
@@ -82,9 +82,9 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
                 $privateKey->getPrime(),
                 $privateKey->getGenerator(),
                 $privateKey->getY(),
-                $privateKey->getPublicKey()
+                $privateKey->getPublicKey(),
             ),
-            $privateKey
+            $privateKey,
         );
     }
 
@@ -194,12 +194,9 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
             // Blinded exponentiation computes g**{r(p-1) + x} to compare to y
             $r = BigInteger::randomRange(
                 $two->bitwise_leftShift($pSize - 1),
-                $two->bitwise_leftShift($pSize)
+                $two->bitwise_leftShift($pSize),
             );
-            $rqx = $prime
-                ->subtract($one)
-                ->multiply($r)
-                ->add($this->exponent);
+            $rqx = $prime->subtract($one)->multiply($r)->add($this->exponent);
 
             return $exponent->equals($generator->modPow($rqx, $prime));
         }

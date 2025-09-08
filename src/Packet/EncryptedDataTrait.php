@@ -41,7 +41,7 @@ trait EncryptedDataTrait
      */
     public function encrypt(
         string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
     ): self {
         if ($this->packetList instanceof PacketListInterface) {
             return self::encryptPackets($key, $this->packetList, $symmetric);
@@ -56,7 +56,7 @@ trait EncryptedDataTrait
     {
         return $this->encrypt(
             $sessionKey->getEncryptionKey(),
-            $sessionKey->getSymmetric()
+            $sessionKey->getSymmetric(),
         );
     }
 
@@ -67,7 +67,7 @@ trait EncryptedDataTrait
     {
         return $this->decrypt(
             $sessionKey->getEncryptionKey(),
-            $sessionKey->getSymmetric()
+            $sessionKey->getSymmetric(),
         );
     }
 }

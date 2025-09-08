@@ -18,7 +18,7 @@ use OpenPGP\Type\{
     PrivateKeyInterface,
     SignaturePacketInterface,
     SubkeyInterface,
-    SubkeyPacketInterface
+    SubkeyPacketInterface,
 };
 
 /**
@@ -57,21 +57,22 @@ class Subkey implements SubkeyInterface
         private readonly KeyInterface $mainKey,
         private readonly SubkeyPacketInterface $keyPacket,
         array $revocationSignatures = [],
-        array $bindingSignatures = []
+        array $bindingSignatures = [],
     ) {
         $this->revocationSignatures = array_values(
             array_filter(
                 $revocationSignatures,
-                static fn ($signature) => $signature instanceof
-                    SignaturePacketInterface && $signature->isSubkeyRevocation()
-            )
+                static fn($signature) => $signature instanceof
+                    SignaturePacketInterface &&
+                    $signature->isSubkeyRevocation(),
+            ),
         );
         $this->bindingSignatures = array_values(
             array_filter(
                 $bindingSignatures,
-                static fn ($signature) => $signature instanceof
-                    SignaturePacketInterface && $signature->isSubkeyBinding()
-            )
+                static fn($signature) => $signature instanceof
+                    SignaturePacketInterface && $signature->isSubkeyBinding(),
+            ),
         );
     }
 
@@ -222,7 +223,7 @@ class Subkey implements SubkeyInterface
     public function isRevoked(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): bool {
         if (!empty($this->revocationSignatures)) {
             $revocationKeyIDs = [];
@@ -235,14 +236,16 @@ class Subkey implements SubkeyInterface
                     empty($keyID) ||
                     strcmp($keyID, $signature->getIssuerKeyID()) === 0
                 ) {
-                    if ($signature->verify(
-                        $keyPacket,
-                        implode([
-                            $this->mainKey->getKeyPacket()->getSignBytes(),
-                            $this->keyPacket->getSignBytes(),
-                        ]),
-                        $time
-                    )) {
+                    if (
+                        $signature->verify(
+                            $keyPacket,
+                            implode([
+                                $this->mainKey->getKeyPacket()->getSignBytes(),
+                                $this->keyPacket->getSignBytes(),
+                            ]),
+                            $time,
+                        )
+                    ) {
                         return true;
                     }
                 }
@@ -260,14 +263,16 @@ class Subkey implements SubkeyInterface
     {
         $keyPacket = $this->mainKey->toPublic()->getSigningKeyPacket();
         foreach ($this->bindingSignatures as $signature) {
-            if ($signature->verify(
-                $keyPacket,
-                implode([
-                    $this->mainKey->getKeyPacket()->getSignBytes(),
-                    $this->keyPacket->getSignBytes(),
-                ]),
-                $time
-            )) {
+            if (
+                $signature->verify(
+                    $keyPacket,
+                    implode([
+                        $this->mainKey->getKeyPacket()->getSignBytes(),
+                        $this->keyPacket->getSignBytes(),
+                    ]),
+                    $time,
+                )
+            ) {
                 return true;
             }
         }
@@ -281,7 +286,7 @@ class Subkey implements SubkeyInterface
         PrivateKeyInterface $signKey,
         string $revocationReason = "",
         ?RevocationReasonTag $reasonTag = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self {
         return new self(
             $this->mainKey,
@@ -293,11 +298,11 @@ class Subkey implements SubkeyInterface
                     $this->keyPacket,
                     $revocationReason,
                     $reasonTag,
-                    $time
+                    $time,
                 ),
                 ...$this->revocationSignatures,
             ],
-            $this->bindingSignatures
+            $this->bindingSignatures,
         );
     }
 

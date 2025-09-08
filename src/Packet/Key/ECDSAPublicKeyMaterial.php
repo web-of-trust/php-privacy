@@ -33,7 +33,7 @@ class ECDSAPublicKeyMaterial extends ECPublicKeyMaterial implements
         $length = ord($bytes[0]);
         return new self(
             substr($bytes, 1, $length),
-            Helper::readMPI(substr($bytes, $length + 1))
+            Helper::readMPI(substr($bytes, $length + 1)),
         );
     }
 
@@ -43,7 +43,7 @@ class ECDSAPublicKeyMaterial extends ECPublicKeyMaterial implements
     public function verify(
         HashAlgorithm $hash,
         string $message,
-        string $signature
+        string $signature,
     ): bool {
         $r = Helper::readMPI($signature);
         $s = Helper::readMPI(substr($signature, $r->getLengthInBytes() + 2));

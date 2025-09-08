@@ -91,8 +91,7 @@ enum MontgomeryCurve
                 $secret[0] = $secret[0] & "\xf8";
                 // The highest bit must be 0 & the second highest bit must be 1
                 $secret[$size - 1] = ($secret[$size - 1] & "\x7f") | "\x40";
-            }
-            else {
+            } else {
                 // The two least significant bits of the first byte to 0
                 $secret[0] = $secret[0] & "\xfc";
                 // The most significant bit of the last byte to 1

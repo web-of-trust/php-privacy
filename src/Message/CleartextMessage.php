@@ -17,7 +17,7 @@ use OpenPGP\Type\{
     NotationDataInterface,
     PrivateKeyInterface,
     SignatureInterface,
-    SignedMessageInterface
+    SignedMessageInterface,
 };
 
 /**
@@ -39,9 +39,7 @@ class CleartextMessage implements CleartextMessageInterface
      * @param string $text
      * @return self
      */
-    public function __construct(private readonly string $text)
-    {
-    }
+    public function __construct(private readonly string $text) {}
 
     /**
      * {@inheritdoc}
@@ -69,7 +67,7 @@ class CleartextMessage implements CleartextMessageInterface
         array $signingKeys,
         array $recipients = [],
         ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): SignedMessageInterface {
         return new SignedMessage(
             $this->getText(),
@@ -77,8 +75,8 @@ class CleartextMessage implements CleartextMessageInterface
                 $signingKeys,
                 $recipients,
                 $notationData,
-                $time
-            )
+                $time,
+            ),
         );
     }
 
@@ -89,11 +87,11 @@ class CleartextMessage implements CleartextMessageInterface
         array $signingKeys,
         array $recipients = [],
         ?NotationDataInterface $notationData = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): SignatureInterface {
         $signingKeys = array_filter(
             $signingKeys,
-            static fn ($key) => $key instanceof PrivateKeyInterface
+            static fn($key) => $key instanceof PrivateKeyInterface,
         );
         if (empty($signingKeys)) {
             throw new \InvalidArgumentException("No signing keys provided.");
@@ -101,16 +99,16 @@ class CleartextMessage implements CleartextMessageInterface
         return new Signature(
             new PacketList(
                 array_map(
-                    fn ($key) => SignaturePacket::createLiteralData(
+                    fn($key) => SignaturePacket::createLiteralData(
                         $key->getSecretKeyPacket(),
                         LiteralData::fromText($this->getText()),
                         $recipients,
                         $notationData,
-                        $time
+                        $time,
                     ),
-                    $signingKeys
-                )
-            )
+                    $signingKeys,
+                ),
+            ),
         );
     }
 
@@ -120,7 +118,7 @@ class CleartextMessage implements CleartextMessageInterface
     public function verifyDetached(
         array $verificationKeys,
         SignatureInterface $signature,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): array {
         return $signature->verifyCleartext($verificationKeys, $this, $time);
     }

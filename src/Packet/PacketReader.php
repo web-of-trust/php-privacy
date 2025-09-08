@@ -31,9 +31,8 @@ class PacketReader
     public function __construct(
         private readonly PacketTag $tag,
         private readonly string $data = "",
-        private readonly int $length = 0
-    ) {
-    }
+        private readonly int $length = 0,
+    ) {}
 
     /**
      * Get packet tag
@@ -79,7 +78,7 @@ class PacketReader
             (ord($bytes[$offset]) & 0x80) === 0
         ) {
             throw new \RuntimeException(
-                "Data probably does not conform to a valid OpenPGP format."
+                "Data probably does not conform to a valid OpenPGP format.",
             );
         }
 
@@ -123,7 +122,7 @@ class PacketReader
                         $partialData[] = substr(
                             $bytes,
                             $partialPos,
-                            $partialLen
+                            $partialLen,
                         );
                         $partialPos += $partialLen;
                         break;
@@ -135,7 +134,7 @@ class PacketReader
                         $partialData[] = substr(
                             $bytes,
                             $partialPos,
-                            $partialLen
+                            $partialLen,
                         );
                         $partialPos += $partialLen;
                         break;
@@ -144,7 +143,7 @@ class PacketReader
                         $partialData[] = substr(
                             $bytes,
                             $partialPos,
-                            $partialLen
+                            $partialLen,
                         );
                         $partialPos += $partialLen;
                     } else {
@@ -153,7 +152,7 @@ class PacketReader
                         $partialData[] = substr(
                             $bytes,
                             $partialPos,
-                            $partialLen
+                            $partialLen,
                         );
                         $partialPos += $partialLen;
                         break;

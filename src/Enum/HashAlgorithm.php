@@ -82,7 +82,7 @@ enum HashAlgorithm: int
         return hash(
             strtolower(str_replace("_", "-", $this->name)),
             $message,
-            $binary
+            $binary,
         );
     }
 }

@@ -13,7 +13,7 @@ use OpenPGP\Enum\{AeadAlgorithm, PacketTag, SymmetricAlgorithm};
 use OpenPGP\Type\{
     AeadEncryptedDataPacketInterface,
     PacketListInterface,
-    SessionKeyInterface
+    SessionKeyInterface,
 };
 use phpseclib3\Common\Functions\Strings;
 use phpseclib3\Crypt\Random;
@@ -33,7 +33,7 @@ class AeadEncryptedData extends AbstractPacket implements
 {
     use AeadEncryptedDataTrait, EncryptedDataTrait;
 
-    const VERSION = 1;
+    const int VERSION = 1;
 
     private readonly int $version;
 
@@ -54,7 +54,7 @@ class AeadEncryptedData extends AbstractPacket implements
         private readonly int $chunkSize,
         private readonly string $iv,
         private readonly string $encrypted = "",
-        private readonly ?PacketListInterface $packetList = null
+        private readonly ?PacketListInterface $packetList = null,
     ) {
         parent::__construct(PacketTag::AeadEncryptedData);
         $this->version = self::VERSION;
@@ -71,7 +71,7 @@ class AeadEncryptedData extends AbstractPacket implements
         $version = ord($bytes[$offset++]);
         if ($version !== self::VERSION) {
             throw new \InvalidArgumentException(
-                "Version $version of the AEPD is not supported."
+                "Version $version of the AEPD is not supported.",
             );
         }
 
@@ -96,7 +96,7 @@ class AeadEncryptedData extends AbstractPacket implements
     public static function encryptPackets(
         string $key,
         PacketListInterface $packetList,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
     ): self {
         Helper::assertSymmetric($symmetric);
 
@@ -117,9 +117,9 @@ class AeadEncryptedData extends AbstractPacket implements
                 $symmetric,
                 $aead,
                 $chunkSize,
-                $iv
+                $iv,
             ),
-            $packetList
+            $packetList,
         );
     }
 
@@ -132,12 +132,12 @@ class AeadEncryptedData extends AbstractPacket implements
      */
     public static function encryptPacketsWithSessionKey(
         SessionKeyInterface $sessionKey,
-        PacketListInterface $packetList
+        PacketListInterface $packetList,
     ): self {
         return self::encryptPackets(
             $sessionKey->getEncryptionKey(),
             $packetList,
-            $sessionKey->getSymmetric()
+            $sessionKey->getSymmetric(),
         );
     }
 
@@ -171,7 +171,7 @@ class AeadEncryptedData extends AbstractPacket implements
      */
     public function decrypt(
         string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
     ): self {
         if ($this->packetList instanceof PacketListInterface) {
             return $this;
@@ -180,11 +180,11 @@ class AeadEncryptedData extends AbstractPacket implements
             $data = substr(
                 $this->encrypted,
                 0,
-                $length - $this->aead->tagLength()
+                $length - $this->aead->tagLength(),
             );
             $authTag = substr(
                 $this->encrypted,
-                $length - $this->aead->tagLength()
+                $length - $this->aead->tagLength(),
             );
 
             return new self(
@@ -203,8 +203,8 @@ class AeadEncryptedData extends AbstractPacket implements
                         $this->aead,
                         $this->chunkSize,
                         $this->iv,
-                    )
-                )
+                    ),
+                ),
             );
         }
     }
@@ -230,7 +230,7 @@ class AeadEncryptedData extends AbstractPacket implements
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
         AeadAlgorithm $aead = AeadAlgorithm::Ocb,
         int $chunkSizeByte = 12,
-        string $iv = ""
+        string $iv = "",
     ): string {
         $dataLength = strlen($data);
         $tagLength = $fn === self::AEAD_ENCRYPT ? 0 : $aead->tagLength();
@@ -246,7 +246,7 @@ class AeadEncryptedData extends AbstractPacket implements
                 chr($chunkSizeByte),
             ]),
             0,
-            5
+            5,
         );
         $ciData = substr($aData, 5, 8);
         $cipher = $aead->cipherEngine($key, $symmetric);
@@ -258,7 +258,7 @@ class AeadEncryptedData extends AbstractPacket implements
             $crypted[] = $cipher->$fn(
                 Strings::shift($data, $chunkSize),
                 $cipher->getNonce($iv, $ciData),
-                $aData
+                $aData,
             );
 
             $aData = substr_replace($aData, pack("N", ++$index), 9, 4);
@@ -272,13 +272,13 @@ class AeadEncryptedData extends AbstractPacket implements
             str_repeat(Helper::ZERO_CHAR, 21),
             $aData,
             0,
-            13
+            13,
         );
         $aDataTag = substr_replace($aDataTag, pack("N", $processed), 17, 4);
         $crypted[] = $cipher->$fn(
             $finalChunk,
             $cipher->getNonce($iv, $ciData),
-            $aDataTag
+            $aDataTag,
         );
 
         return implode($crypted);

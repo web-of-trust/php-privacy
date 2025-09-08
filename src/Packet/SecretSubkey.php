@@ -15,7 +15,7 @@ use OpenPGP\Enum\{
     KeyAlgorithm,
     RSAKeySize,
     S2kUsage,
-    SymmetricAlgorithm
+    SymmetricAlgorithm,
 };
 use OpenPGP\Type\{KeyMaterialInterface, S2KInterface, SubkeyPacketInterface};
 
@@ -51,7 +51,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
         ?S2KInterface $s2k = null,
         ?AeadAlgorithm $aead = null,
-        string $iv = ""
+        string $iv = "",
     ) {
         parent::__construct(
             $publicKey,
@@ -61,7 +61,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
             $symmetric,
             $s2k,
             $aead,
-            $iv
+            $iv,
         );
     }
 
@@ -88,7 +88,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
             $symmetric,
             $s2k,
             $aead,
-            $iv
+            $iv,
         );
     }
 
@@ -105,22 +105,22 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
         KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
         Ecc $curve = Ecc::Secp521r1,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self {
         $keyMaterial = self::generateKeyMaterial(
             $keyAlgorithm,
             $rsaKeySize,
-            $curve
+            $curve,
         );
         return new self(
             new PublicSubkey(
                 $keyAlgorithm->keyVersion(),
                 $time ?? new \DateTime(),
                 $keyAlgorithm,
-                $keyMaterial->getPublicMaterial()
+                $keyMaterial->getPublicMaterial(),
             ),
             $keyMaterial->toBytes(),
-            $keyMaterial
+            $keyMaterial,
         );
     }
 
@@ -130,13 +130,13 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
     public function encrypt(
         string $passphrase,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
-        ?AeadAlgorithm $aead = null
+        ?AeadAlgorithm $aead = null,
     ): self {
         if ($this->isDecrypted()) {
             [$encrypted, $iv, $s2k] = $this->encryptKeyMaterial(
                 $passphrase,
                 $symmetric,
-                $aead
+                $aead,
             );
             return new self(
                 $this->getPublicKey(),
@@ -148,7 +148,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
                 $symmetric,
                 $s2k,
                 $aead,
-                $iv
+                $iv,
             );
         } else {
             return $this;
@@ -171,7 +171,7 @@ class SecretSubkey extends SecretKey implements SubkeyPacketInterface
                 $this->getSymmetric(),
                 $this->getS2K(),
                 $this->getAead(),
-                $this->getIV()
+                $this->getIV(),
             );
         }
     }

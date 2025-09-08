@@ -35,9 +35,8 @@ class Verification implements VerificationInterface
         private readonly SignaturePacketInterface $signaturePacket,
         private readonly bool $isVerified = false,
         private readonly string $verificationError = "",
-        private readonly array $userIDs = []
-    ) {
-    }
+        private readonly array $userIDs = [],
+    ) {}
 
     /**
      * {@inheritdoc}

@@ -13,14 +13,14 @@ use OpenPGP\Enum\{
     KeyAlgorithm,
     PacketTag,
     RevocationReasonTag,
-    SymmetricAlgorithm
+    SymmetricAlgorithm,
 };
 use OpenPGP\Packet\{PacketList, Padding, Signature};
 use OpenPGP\Packet\Signature\{
     EmbeddedSignature,
     Features,
     KeyExpirationTime,
-    KeyFlags
+    KeyFlags,
 };
 use OpenPGP\Type\{
     KeyInterface,
@@ -29,7 +29,7 @@ use OpenPGP\Type\{
     PrivateKeyInterface,
     SecretKeyPacketInterface,
     SignaturePacketInterface,
-    UserInterface
+    UserInterface,
 };
 
 /**
@@ -97,24 +97,24 @@ abstract class AbstractKey implements KeyInterface
         $this->directSignatures = $directSignatures;
 
         $this->users = array_map(
-            fn ($user) => new User(
+            fn($user) => new User(
                 $this,
                 $user["userIDPacket"],
                 $user["revocationSignatures"],
                 $user["selfCertifications"],
-                $user["otherCertifications"]
+                $user["otherCertifications"],
             ),
-            $users
+            $users,
         );
 
         $this->subkeys = array_map(
-            fn ($subkey) => new Subkey(
+            fn($subkey) => new Subkey(
                 $this,
                 $subkey["keyPacket"],
                 $subkey["revocationSignatures"],
-                $subkey["bindingSignatures"]
+                $subkey["bindingSignatures"],
             ),
-            $subkeys
+            $subkeys,
         );
     }
 
@@ -132,7 +132,7 @@ abstract class AbstractKey implements KeyInterface
         ];
         if ($this->getVersion() === 6) {
             $packets[] = Padding::createPadding(
-                random_int(Padding::PADDING_MIN, Padding::PADDING_MAX)
+                random_int(Padding::PADDING_MIN, Padding::PADDING_MAX),
             );
         }
 
@@ -217,13 +217,13 @@ abstract class AbstractKey implements KeyInterface
      */
     public function getSigningKeyPacket(
         string $keyID = "",
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): KeyPacketInterface {
         $subkeys = $this->subkeys;
         usort(
             $subkeys,
-            static fn ($a, $b) => (int) $b->getCreationTime()?->getTimestamp() -
-                (int) $a->getCreationTime()?->getTimestamp()
+            static fn($a, $b) => (int) $b->getCreationTime()?->getTimestamp() -
+                (int) $a->getCreationTime()?->getTimestamp(),
         );
         foreach ($subkeys as $subkey) {
             if (empty($keyID) || strcmp($keyID, $subkey->getKeyID()) === 0) {
@@ -247,7 +247,7 @@ abstract class AbstractKey implements KeyInterface
                                     $this->getKeyPacket()->getSignBytes(),
                                     $subkey->getKeyPacket()->getSignBytes(),
                                 ]),
-                                $time
+                                $time,
                             )
                     ) {
                         return $subkey->getKeyPacket();
@@ -263,7 +263,7 @@ abstract class AbstractKey implements KeyInterface
             (!empty($keyID) && strcmp($keyID, $this->getKeyID()) !== 0)
         ) {
             throw new \RuntimeException(
-                "Could not find valid signing key packet."
+                "Could not find valid signing key packet.",
             );
         }
 
@@ -275,13 +275,13 @@ abstract class AbstractKey implements KeyInterface
      */
     public function getEncryptionKeyPacket(
         string $keyID = "",
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): KeyPacketInterface {
         $subkeys = $this->subkeys;
         usort(
             $subkeys,
-            static fn ($a, $b) => (int) $b->getCreationTime()?->getTimestamp() -
-                (int) $a->getCreationTime()?->getTimestamp()
+            static fn($a, $b) => (int) $b->getCreationTime()?->getTimestamp() -
+                (int) $a->getCreationTime()?->getTimestamp(),
         );
         foreach ($subkeys as $subkey) {
             if (empty($keyID) || strcmp($keyID, $subkey->getKeyID()) === 0) {
@@ -300,7 +300,7 @@ abstract class AbstractKey implements KeyInterface
             (!empty($keyID) && strcmp($keyID, $this->getKeyID()) !== 0)
         ) {
             throw new \RuntimeException(
-                "Could not find valid encryption key packet."
+                "Could not find valid encryption key packet.",
             );
         }
 
@@ -429,7 +429,7 @@ abstract class AbstractKey implements KeyInterface
     public function isRevoked(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): bool {
         if (!empty($this->revocationSignatures)) {
             $revocationKeyIDs = [];
@@ -446,7 +446,7 @@ abstract class AbstractKey implements KeyInterface
                         $signature->verify(
                             $keyPacket,
                             $this->keyPacket->getSignBytes(),
-                            $time
+                            $time,
                         )
                     ) {
                         return true;
@@ -465,7 +465,7 @@ abstract class AbstractKey implements KeyInterface
     public function isCertified(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): bool {
         $primaryUser = $this->getPrimaryUser();
         if ($primaryUser instanceof UserInterface) {
@@ -479,14 +479,14 @@ abstract class AbstractKey implements KeyInterface
      */
     public function verify(
         string $userID = "",
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): bool {
         foreach ($this->directSignatures as $signature) {
             if (
                 $signature->verify(
                     $this->toPublic()->getKeyPacket(),
                     $this->keyPacket->getSignBytes(),
-                    $time
+                    $time,
                 )
             ) {
                 return true;
@@ -513,11 +513,11 @@ abstract class AbstractKey implements KeyInterface
      * {@inheritdoc}
      */
     public function getPrimaryUser(
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): ?UserInterface {
         $users = array_filter(
             $this->getSortedPrimaryUsers(),
-            static fn ($user) => !$user->isRevoked(time: $time)
+            static fn($user) => !$user->isRevoked(time: $time),
         );
         return array_pop($users);
     }
@@ -527,7 +527,7 @@ abstract class AbstractKey implements KeyInterface
      */
     public function certifyBy(
         PrivateKeyInterface $signKey,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self {
         $users = [];
         $certifedUserID = "";
@@ -558,7 +558,7 @@ abstract class AbstractKey implements KeyInterface
                 ...$this->getDirectSignatures(),
                 ...$userPackets,
                 ...$this->getSubkeyPackets(),
-            ])
+            ]),
         );
     }
 
@@ -569,7 +569,7 @@ abstract class AbstractKey implements KeyInterface
         PrivateKeyInterface $signKey,
         string $revocationReason = "",
         ?RevocationReasonTag $reasonTag = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self {
         return new static(
             new PacketList([
@@ -580,14 +580,14 @@ abstract class AbstractKey implements KeyInterface
                         $this->getKeyPacket(),
                         $revocationReason,
                         $reasonTag,
-                        $time
+                        $time,
                     ),
                     ...$this->getRevocationSignatures(),
                 ],
                 ...$this->getDirectSignatures(),
                 ...$this->getUserPackets(),
                 ...$this->getSubkeyPackets(),
-            ])
+            ]),
         );
     }
 
@@ -598,7 +598,7 @@ abstract class AbstractKey implements KeyInterface
      * @return DateTimeInterface
      */
     public static function getKeyExpiration(
-        array $signatures
+        array $signatures,
     ): ?DateTimeInterface {
         usort($signatures, static function ($a, $b) {
             $aTime = $a->getCreationTime() ?? new \DateTime();
@@ -612,7 +612,7 @@ abstract class AbstractKey implements KeyInterface
                 $creationTime =
                     $signature->getCreationTime() ?? new \DateTime();
                 $keyExpiry = $creationTime->setTimestamp(
-                    $creationTime->getTimestamp() + $expirationTime
+                    $creationTime->getTimestamp() + $expirationTime,
                 );
                 $signatureExpiry = $signature->getExpirationTime();
                 if (empty($signatureExpiry)) {
@@ -760,7 +760,7 @@ abstract class AbstractKey implements KeyInterface
                 case PacketTag::SecretKey:
                     if (!empty($keyPacket)) {
                         throw new \RuntimeException(
-                            "Key block contains multiple keys."
+                            "Key block contains multiple keys.",
                         );
                     }
                     $keyPacket = $packet;
@@ -797,7 +797,7 @@ abstract class AbstractKey implements KeyInterface
                                 if (
                                     strcmp(
                                         $packet->getIssuerKeyID(),
-                                        $primaryKeyID
+                                        $primaryKeyID,
                                     ) === 0
                                 ) {
                                     $user["selfCertifications"][] = $packet;
@@ -847,10 +847,10 @@ abstract class AbstractKey implements KeyInterface
             $revocationSignatures,
             array_filter(
                 $directSignatures,
-                static fn ($signature) => $signature->verify(
+                static fn($signature) => $signature->verify(
                     $verifyKey,
-                    $verifyKey->getSignBytes()
-                )
+                    $verifyKey->getSignBytes(),
+                ),
             ),
             array_filter($users, static function ($user) use ($verifyKey) {
                 foreach ($user["selfCertifications"] as $signature) {

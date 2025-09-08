@@ -81,7 +81,7 @@ enum AeadAlgorithm: int
      */
     public function cipherEngine(
         string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes128,
     ): AeadCipher {
         return match ($this) {
             self::Eax => new EAX($key, $symmetric),
@@ -95,12 +95,8 @@ enum AeadAlgorithm: int
      *
      * @return array
      */
-    static public function preferredAead(): array
+    public static function preferredAead(): array
     {
-        return [
-            self::Ocb,
-            self::Gcm,
-            self::Eax,
-        ];
+        return [self::Ocb, self::Gcm, self::Eax];
     }
 }

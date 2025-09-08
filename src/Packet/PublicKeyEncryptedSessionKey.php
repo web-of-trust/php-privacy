@@ -14,7 +14,7 @@ use OpenPGP\Type\{
     KeyPacketInterface,
     SecretKeyPacketInterface,
     SessionKeyCryptorInterface,
-    SessionKeyInterface
+    SessionKeyInterface,
 };
 use phpseclib3\Common\Functions\Strings;
 
@@ -30,8 +30,8 @@ use phpseclib3\Common\Functions\Strings;
 class PublicKeyEncryptedSessionKey extends AbstractPacket implements
     EncryptedSessionKeyInterface
 {
-    const VERSION_3 = 3;
-    const VERSION_6 = 6;
+    const int VERSION_3 = 3;
+    const int VERSION_6 = 6;
 
     /**
      * Constructor
@@ -51,12 +51,12 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket implements
         private readonly string $keyFingerprint,
         private readonly KeyAlgorithm $keyAlgorithm,
         private readonly SessionKeyCryptorInterface $sessionKeyCryptor,
-        private readonly ?SessionKeyInterface $sessionKey = null
+        private readonly ?SessionKeyInterface $sessionKey = null,
     ) {
         parent::__construct(PacketTag::PublicKeyEncryptedSessionKey);
         if ($version !== self::VERSION_3 && $version !== self::VERSION_6) {
             throw new \InvalidArgumentException(
-                "Version {$version} of the PKESK packet is unsupported."
+                "Version {$version} of the PKESK packet is unsupported.",
             );
         }
         if (
@@ -64,7 +64,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket implements
             $keyAlgorithm === KeyAlgorithm::ElGamal
         ) {
             throw new \InvalidArgumentException(
-                "Key algorithm {$keyAlgorithm->name} cannot be used with v{$version} PKESK packet."
+                "Key algorithm {$keyAlgorithm->name} cannot be used with v{$version} PKESK packet.",
             );
         }
     }
@@ -82,9 +82,10 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket implements
             $keyVersion = ord($bytes[$offset++]);
             $keyFingerprint = substr($bytes, $offset, $length - 1);
             $offset += $length - 1;
-            $keyID = $keyVersion === KeyVersion::V6->value
-                ? substr($keyFingerprint, 0, PublicKey::KEY_ID_SIZE)
-                : substr($keyFingerprint, 12, PublicKey::KEY_ID_SIZE);
+            $keyID =
+                $keyVersion === KeyVersion::V6->value
+                    ? substr($keyFingerprint, 0, PublicKey::KEY_ID_SIZE)
+                    : substr($keyFingerprint, 12, PublicKey::KEY_ID_SIZE);
         } else {
             $keyID = substr($bytes, $offset, PublicKey::KEY_ID_SIZE);
             $offset += PublicKey::KEY_ID_SIZE;
@@ -99,7 +100,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket implements
             $keyVersion,
             $keyFingerprint,
             $keyAlgorithm,
-            self::readMaterial(substr($bytes, $offset), $keyAlgorithm)
+            self::readMaterial(substr($bytes, $offset), $keyAlgorithm),
         );
     }
 
@@ -112,11 +113,12 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket implements
      */
     public static function encryptSessionKey(
         KeyPacketInterface $keyPacket,
-        SessionKeyInterface $sessionKey
+        SessionKeyInterface $sessionKey,
     ): self {
-        $version = $keyPacket->getVersion() === self::VERSION_6
-            ? self::VERSION_6
-            : self::VERSION_3;
+        $version =
+            $keyPacket->getVersion() === self::VERSION_6
+                ? self::VERSION_6
+                : self::VERSION_3;
         return new self(
             $version,
             $keyPacket->getKeyID(),
@@ -124,7 +126,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket implements
             $keyPacket->getFingerprint(),
             $keyPacket->getKeyAlgorithm(),
             self::produceSessionKeyCryptor($sessionKey, $keyPacket, $version),
-            $sessionKey
+            $sessionKey,
         );
     }
 
@@ -236,13 +238,13 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket implements
                 $secretKey->getFingerprint(),
                 $secretKey->getKeyAlgorithm(),
                 $this->sessionKeyCryptor,
-                $this->decryptSessionKey($secretKey)
+                $this->decryptSessionKey($secretKey),
             );
         }
     }
 
     private function decryptSessionKey(
-        SecretKeyPacketInterface $secretKey
+        SecretKeyPacketInterface $secretKey,
     ): SessionKeyInterface {
         switch ($this->keyAlgorithm) {
             case KeyAlgorithm::RsaEncryptSign:
@@ -250,14 +252,14 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket implements
             case KeyAlgorithm::ElGamal:
             case KeyAlgorithm::Ecdh:
                 $keyData = $this->sessionKeyCryptor->decryptSessionKey(
-                    $secretKey
+                    $secretKey,
                 );
                 if ($this->version === self::VERSION_3) {
                     return Key\SessionKey::fromBytes($keyData);
                 } else {
                     $keyLength = strlen($keyData) - 2;
                     $sessionKey = new Key\SessionKey(
-                        substr($keyData, 0, $keyLength)
+                        substr($keyData, 0, $keyLength),
                     );
                     return $sessionKey->checksum(substr($keyData, $keyLength));
                 }
@@ -265,12 +267,12 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket implements
             case KeyAlgorithm::X25519:
             case KeyAlgorithm::X448:
                 return new Key\SessionKey(
-                    $this->sessionKeyCryptor->decryptSessionKey($secretKey)
+                    $this->sessionKeyCryptor->decryptSessionKey($secretKey),
                 );
                 break;
             default:
                 throw new \RuntimeException(
-                    "Key algorithm {$this->keyAlgorithm->name} is unsupported."
+                    "Key algorithm {$this->keyAlgorithm->name} is unsupported.",
                 );
                 break;
         }
@@ -279,7 +281,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket implements
     private static function produceSessionKeyCryptor(
         SessionKeyInterface $sessionKey,
         KeyPacketInterface $keyPacket,
-        int $version
+        int $version,
     ): SessionKeyCryptorInterface {
         return match ($keyPacket->getKeyAlgorithm()) {
             KeyAlgorithm::RsaEncryptSign,
@@ -294,7 +296,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket implements
                         $sessionKey->getEncryptionKey(),
                         $sessionKey->computeChecksum(),
                     ]),
-                $keyPacket->getKeyMaterial()->getAsymmetricKey()
+                $keyPacket->getKeyMaterial()->getAsymmetricKey(),
             ),
             KeyAlgorithm::Ecdh => Key\ECDHSessionKeyCryptor::encryptSessionKey(
                 $version === self::VERSION_3
@@ -306,48 +308,48 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket implements
                         $sessionKey->getEncryptionKey(),
                         $sessionKey->computeChecksum(),
                     ]),
-                $keyPacket
+                $keyPacket,
             ),
             KeyAlgorithm::X25519
                 => Key\MontgomerySessionKeyCryptor::encryptSessionKey(
                 $sessionKey->getEncryptionKey(),
                 $keyPacket->getECKeyMaterial()->getECKey(),
-                MontgomeryCurve::Curve25519
+                MontgomeryCurve::Curve25519,
             ),
             KeyAlgorithm::X448
                 => Key\MontgomerySessionKeyCryptor::encryptSessionKey(
                 $sessionKey->getEncryptionKey(),
                 $keyPacket->getECKeyMaterial()->getECKey(),
-                MontgomeryCurve::Curve448
+                MontgomeryCurve::Curve448,
             ),
             default => throw new \RuntimeException(
-                "Key algorithm {$keyPacket->getKeyAlgorithm()->name} is unsupported."
+                "Key algorithm {$keyPacket->getKeyAlgorithm()->name} is unsupported.",
             ),
         };
     }
 
     private static function readMaterial(
         string $bytes,
-        KeyAlgorithm $keyAlgorithm
+        KeyAlgorithm $keyAlgorithm,
     ): SessionKeyCryptorInterface {
         return match ($keyAlgorithm) {
             KeyAlgorithm::RsaEncryptSign,
             KeyAlgorithm::RsaEncrypt
                 => Key\RSASessionKeyCryptor::fromBytes($bytes),
             KeyAlgorithm::ElGamal => Key\ElGamalSessionKeyCryptor::fromBytes(
-                $bytes
+                $bytes,
             ),
             KeyAlgorithm::Ecdh => Key\ECDHSessionKeyCryptor::fromBytes($bytes),
             KeyAlgorithm::X25519 => Key\MontgomerySessionKeyCryptor::fromBytes(
                 $bytes,
-                MontgomeryCurve::Curve25519
+                MontgomeryCurve::Curve25519,
             ),
             KeyAlgorithm::X448 => Key\MontgomerySessionKeyCryptor::fromBytes(
                 $bytes,
-                MontgomeryCurve::Curve448
+                MontgomeryCurve::Curve448,
             ),
             default => throw new \RuntimeException(
-                "Key algorithm {$keyAlgorithm->name} is unsupported."
+                "Key algorithm {$keyAlgorithm->name} is unsupported.",
             ),
         };
     }

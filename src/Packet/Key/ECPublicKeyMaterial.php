@@ -46,7 +46,7 @@ abstract class ECPublicKeyMaterial implements
     public function __construct(
         private readonly string $oid,
         private readonly BigInteger $q,
-        ?ECPublicKey $publicKey = null
+        ?ECPublicKey $publicKey = null,
     ) {
         $this->ecc = Ecc::fromOid($oid);
         if ($publicKey instanceof ECPublicKey) {
@@ -66,7 +66,7 @@ abstract class ECPublicKeyMaterial implements
                             : "\x00" . $q->toBytes();
                     $key = PKCS8::savePublicKey(
                         $curve,
-                        PKCS8::extractPoint($point, $curve)
+                        PKCS8::extractPoint($point, $curve),
                     );
                     break;
             }
@@ -141,7 +141,7 @@ abstract class ECPublicKeyMaterial implements
     {
         if ($this->ecc === Ecc::Curve25519) {
             return MontgomeryPublic::load(
-                $this->publicKey->toString("MontgomeryPublic")
+                $this->publicKey->toString("MontgomeryPublic"),
             );
         } else {
             return PKCS8::load($this->publicKey->toString("PKCS8"));

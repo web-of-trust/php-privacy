@@ -11,7 +11,6 @@ namespace OpenPGP\Packet\Key;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\HashAlgorithm;
 use OpenPGP\Type\PublicKeyMaterialInterface;
-use phpseclib3\Crypt\EC\Curves\Ed25519;
 
 /**
  * EdDSALegacy public key material class
@@ -34,7 +33,7 @@ class EdDSALegacyPublicKeyMaterial extends ECPublicKeyMaterial implements
         $length = ord($bytes[0]);
         return new self(
             substr($bytes, 1, $length),
-            Helper::readMPI(substr($bytes, $length + 1))
+            Helper::readMPI(substr($bytes, $length + 1)),
         );
     }
 
@@ -44,7 +43,7 @@ class EdDSALegacyPublicKeyMaterial extends ECPublicKeyMaterial implements
     public function verify(
         HashAlgorithm $hash,
         string $message,
-        string $signature
+        string $signature,
     ): bool {
         $bitLength = Helper::bytesToShort($signature);
         $r = substr($signature, 2, Helper::bit2ByteLength($bitLength)); // MPI of an EC point R
@@ -53,12 +52,12 @@ class EdDSALegacyPublicKeyMaterial extends ECPublicKeyMaterial implements
         $s = substr(
             $signature,
             strlen($r) + 4,
-            Helper::bit2ByteLength($bitLength)
+            Helper::bit2ByteLength($bitLength),
         ); // MPI of EdDSA value S
 
         return $this->getPublicKey()->verify(
             $hash->hash($message),
-            implode([$r, $s])
+            implode([$r, $s]),
         );
     }
 }

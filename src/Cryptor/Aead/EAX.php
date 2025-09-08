@@ -29,11 +29,11 @@ use phpseclib3\Crypt\Common\BlockCipher;
  */
 final class EAX implements AeadCipher
 {
-    const N_TAG = "\x00";
-    const H_TAG = "\x01";
-    const C_TAG = "\x02";
+    const string N_TAG = "\x00";
+    const string H_TAG = "\x01";
+    const string C_TAG = "\x02";
 
-    const CIPHER_MODE = "ctr";
+    const string CIPHER_MODE = "ctr";
 
     private readonly BlockCipher $cipher;
     private readonly CMac $mac;
@@ -51,7 +51,7 @@ final class EAX implements AeadCipher
      */
     public function __construct(
         private readonly string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
     ) {
         $this->cipher = $symmetric->cipherEngine(self::CIPHER_MODE);
         $this->cipher->setKey($key);
@@ -69,7 +69,7 @@ final class EAX implements AeadCipher
     public function encrypt(
         string $plainText,
         string $nonce,
-        string $aData = ""
+        string $aData = "",
     ): string {
         $omacNonce = $this->omac($this->zeroBlock, $nonce);
         $omacAdata = $this->omac($this->oneBlock, $aData);
@@ -87,7 +87,7 @@ final class EAX implements AeadCipher
     public function decrypt(
         string $cipherText,
         string $nonce,
-        string $aData = ""
+        string $aData = "",
     ): string {
         $length = strlen($cipherText);
         $tagLength = $this->mac->getMacSize();

@@ -29,9 +29,7 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
      * @param BigInteger $encrypted
      * @return self
      */
-    public function __construct(private readonly BigInteger $encrypted)
-    {
-    }
+    public function __construct(private readonly BigInteger $encrypted) {}
 
     /**
      * Read encrypted session key from byte string
@@ -53,12 +51,12 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
      */
     public static function encryptSessionKey(
         string $sessionKey,
-        AsymmetricKey $publicKey
+        AsymmetricKey $publicKey,
     ): self {
         if ($publicKey instanceof PublicKey) {
             $publicKey = $publicKey->withPadding(RSA::ENCRYPTION_PKCS1);
             return new self(
-                Helper::bin2BigInt($publicKey->encrypt($sessionKey))
+                Helper::bin2BigInt($publicKey->encrypt($sessionKey)),
             );
         } else {
             throw new \RuntimeException("Public key is not RSA key.");

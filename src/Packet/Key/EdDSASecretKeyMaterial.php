@@ -12,7 +12,7 @@ use OpenPGP\Enum\{EdDSACurve, HashAlgorithm};
 use OpenPGP\Type\{
     ECKeyMaterialInterface,
     KeyMaterialInterface,
-    SecretKeyMaterialInterface
+    SecretKeyMaterialInterface,
 };
 use phpseclib3\Crypt\Common\{AsymmetricKey, PrivateKey, PublicKey};
 use phpseclib3\Crypt\EC;
@@ -46,7 +46,7 @@ class EdDSASecretKeyMaterial implements
     public function __construct(
         private readonly string $secret,
         private readonly KeyMaterialInterface $publicMaterial,
-        ?ECPrivateKey $privateKey = null
+        ?ECPrivateKey $privateKey = null,
     ) {
         if ($privateKey instanceof ECPrivateKey) {
             $this->privateKey = $privateKey;
@@ -60,8 +60,8 @@ class EdDSASecretKeyMaterial implements
                     $arr["dA"],
                     $curve,
                     $params["QA"],
-                    $arr["secret"]
-                )
+                    $arr["secret"],
+                ),
             );
         }
     }
@@ -77,11 +77,11 @@ class EdDSASecretKeyMaterial implements
     public static function fromBytes(
         string $bytes,
         KeyMaterialInterface $publicMaterial,
-        EdDSACurve $curve = EdDSACurve::Ed25519
+        EdDSACurve $curve = EdDSACurve::Ed25519,
     ): self {
         return new self(
             substr($bytes, 0, $curve->payloadSize()),
-            $publicMaterial
+            $publicMaterial,
         );
     }
 
@@ -92,7 +92,7 @@ class EdDSASecretKeyMaterial implements
      * @return self
      */
     public static function generate(
-        EdDSACurve $curve = EdDSACurve::Ed25519
+        EdDSACurve $curve = EdDSACurve::Ed25519,
     ): self {
         $size = $curve->payloadSize();
         do {
@@ -105,9 +105,9 @@ class EdDSASecretKeyMaterial implements
             new EdDSAPublicKeyMaterial(
                 $privateKey->getEncodedCoordinates(),
                 $params["curve"],
-                $privateKey->getPublicKey()
+                $privateKey->getPublicKey(),
             ),
-            $privateKey
+            $privateKey,
         );
     }
 
@@ -175,7 +175,7 @@ class EdDSASecretKeyMaterial implements
         if ($this->publicMaterial instanceof EdDSAPublicKeyMaterial) {
             return strcmp(
                 $this->privateKey->getEncodedCoordinates(),
-                $this->publicMaterial->toBytes()
+                $this->publicMaterial->toBytes(),
             ) === 0;
         }
         return false;

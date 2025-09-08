@@ -22,7 +22,7 @@ use phpseclib3\Crypt\Common\BlockCipher;
  */
 abstract class KeyWrapper
 {
-    const IV = "\xa6\xa6\xa6\xa6\xa6\xa6\xa6\xa6";
+    const string IV = "\xa6\xa6\xa6\xa6\xa6\xa6\xa6\xa6";
 
     /**
      * Constructor
@@ -33,7 +33,7 @@ abstract class KeyWrapper
      */
     protected function __construct(
         private readonly BlockCipher $cipher,
-        private readonly KekSize $kekSize
+        private readonly KekSize $kekSize,
     ) {
         $this->cipher->disablePadding();
     }
@@ -104,19 +104,19 @@ abstract class KeyWrapper
     {
         if (strlen($kek) !== $this->kekSize->value) {
             throw new \LengthException(
-                "Key encryption key size must be {$this->kekSize->value} bytes."
+                "Key encryption key size must be {$this->kekSize->value} bytes.",
             );
         }
         if (strlen($key) < KekSize::Normal->value) {
             throw new \LengthException(
                 "Key length must be at least " .
                     KekSize::Normal->value .
-                    " octets."
+                    " octets.",
             );
         }
         if (strlen($key) % 8 !== 0) {
             throw new \LengthException(
-                "Key length must be a multiple of 64 bits."
+                "Key length must be a multiple of 64 bits.",
             );
         }
     }

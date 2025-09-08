@@ -35,7 +35,7 @@ class UserAttribute extends AbstractPacket implements UserIDPacketInterface
         parent::__construct(PacketTag::UserAttribute);
         $this->attributes = array_filter(
             $attributes,
-            static fn ($attr) => $attr instanceof UserAttributeSubpacket
+            static fn($attr) => $attr instanceof UserAttributeSubpacket,
         );
     }
 
@@ -53,10 +53,7 @@ class UserAttribute extends AbstractPacket implements UserIDPacketInterface
     public function toBytes(): string
     {
         return implode(
-            array_map(
-                static fn ($attr) => $attr->toBytes(),
-                $this->attributes
-            )
+            array_map(static fn($attr) => $attr->toBytes(), $this->attributes),
         );
     }
 

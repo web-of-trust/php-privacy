@@ -23,7 +23,7 @@ use phpseclib3\Exception\BadModeException;
  */
 class Camellia extends BlockCipher
 {
-    const BLOCK_SIZE = 16;
+    const int BLOCK_SIZE = 16;
 
     /**
      * @var array<int>
@@ -1130,7 +1130,7 @@ class Camellia extends BlockCipher
         parent::__construct($mode);
         if ($this->mode === self::MODE_STREAM) {
             throw new BadModeException(
-                "Block ciphers cannot be ran in stream mode."
+                "Block ciphers cannot be ran in stream mode.",
             );
         }
         $this->block_size = self::BLOCK_SIZE;
@@ -1216,7 +1216,7 @@ class Camellia extends BlockCipher
                 $ka,
                 0,
                 $this->subkey,
-                28
+                28,
             );
             [$ka, $this->kw] = self::roldq(17, $ka, 0, $this->kw, 4);
 
@@ -1246,7 +1246,7 @@ class Camellia extends BlockCipher
                 $ka,
                 0,
                 $this->subkey,
-                40
+                40,
             );
 
             /* KB dependant keys */
@@ -1297,7 +1297,7 @@ class Camellia extends BlockCipher
                 $ka,
                 0,
                 $this->subkey,
-                24
+                24,
             );
             [$ka, $this->ke] = self::decroldq(15, $ka, 0, $this->ke, 4);
             [$ka, $t] = self::decroldq(15, $ka, 0, $t, 0);
@@ -1308,14 +1308,14 @@ class Camellia extends BlockCipher
                 $ka,
                 0,
                 $this->subkey,
-                12
+                12,
             );
             [$ka, $this->subkey] = self::decroldqo32(
                 34,
                 $ka,
                 0,
                 $this->subkey,
-                4
+                4,
             );
             [$ka, $this->kw] = self::roldq(17, $ka, 0, $this->kw, 0);
 
@@ -1328,7 +1328,7 @@ class Camellia extends BlockCipher
                 $k,
                 0,
                 $this->subkey,
-                28
+                28,
             );
             [$k, $this->ke] = self::decroldq(15, $k, 0, $this->ke, 4);
             [$k, $this->subkey] = self::decroldq(17, $k, 0, $this->subkey, 12);
@@ -1337,7 +1337,7 @@ class Camellia extends BlockCipher
                 $k,
                 0,
                 $this->subkey,
-                0
+                0,
             );
             /* KR dependant keys */
             [$k, $this->subkey] = self::decroldq(15, $k, 4, $this->subkey, 40);
@@ -1348,7 +1348,7 @@ class Camellia extends BlockCipher
                 $k,
                 4,
                 $this->subkey,
-                8
+                8,
             );
             /* KA dependant keys */
             [$ka, $this->subkey] = self::decroldq(
@@ -1356,14 +1356,14 @@ class Camellia extends BlockCipher
                 $ka,
                 0,
                 $this->subkey,
-                36
+                36,
             );
             [$ka, $this->subkey] = self::decroldq(
                 30,
                 $ka,
                 0,
                 $this->subkey,
-                24
+                24,
             );
             /* 32bit rotation */
             $this->ke[2] = $ka[1];
@@ -1375,7 +1375,7 @@ class Camellia extends BlockCipher
                 $ka,
                 0,
                 $this->subkey,
-                4
+                4,
             );
 
             /* KB dependant keys */
@@ -1388,14 +1388,14 @@ class Camellia extends BlockCipher
                 $kb,
                 0,
                 $this->subkey,
-                32
+                32,
             );
             [$kb, $this->subkey] = self::decroldq(
                 30,
                 $kb,
                 0,
                 $this->subkey,
-                16
+                16,
             );
             [$kb, $this->kw] = self::roldqo32(51, $kb, 0, $this->kw, 0);
 
@@ -1413,7 +1413,7 @@ class Camellia extends BlockCipher
             16 => true,
             24, 32 => false,
             default => throw new \LengthException(
-                "Key sizes are only 16/24/32 bytes."
+                "Key sizes are only 16/24/32 bytes.",
             ),
         };
     }
@@ -1513,7 +1513,7 @@ class Camellia extends BlockCipher
         array $ki,
         int $ioff,
         array $ko,
-        int $ooff
+        int $ooff,
     ): array {
         $ko[0 + $ooff] =
             Bitwise::leftShift32($ki[0 + $ioff], $rot) |
@@ -1547,7 +1547,7 @@ class Camellia extends BlockCipher
         array $ki,
         int $ioff,
         array $ko,
-        int $ooff
+        int $ooff,
     ): array {
         $ko[2 + $ooff] =
             Bitwise::leftShift32($ki[0 + $ioff], $rot) |
@@ -1581,7 +1581,7 @@ class Camellia extends BlockCipher
         array $ki,
         int $ioff,
         array $ko,
-        int $ooff
+        int $ooff,
     ): array {
         $ko[0 + $ooff] =
             Bitwise::leftShift32($ki[1 + $ioff], $rot - 32) |
@@ -1615,7 +1615,7 @@ class Camellia extends BlockCipher
         array $ki,
         int $ioff,
         array $ko,
-        int $ooff
+        int $ooff,
     ): array {
         $ko[2 + $ooff] =
             Bitwise::leftShift32($ki[1 + $ioff], $rot - 32) |
@@ -1660,7 +1660,7 @@ class Camellia extends BlockCipher
     private static function camelliaF2(
         array $s,
         array $skey,
-        int $offset
+        int $offset,
     ): array {
         $t1 = $s[0] ^ $skey[0 + $offset];
         $u = self::$sbox4_4404[$t1 & Bitwise::MASK_8BITS];
@@ -1702,7 +1702,7 @@ class Camellia extends BlockCipher
     private static function camelliaFLs(
         array $s,
         array $fkey,
-        int $offset
+        int $offset,
     ): array {
         $s[1] ^= Bitwise::leftRotate32($s[0] & $fkey[0 + $offset], 1);
         $s[0] ^= $fkey[1 + $offset] | $s[1];
@@ -1743,12 +1743,12 @@ class Camellia extends BlockCipher
         $out = self::int2Bytes($this->state[0], $out, 8);
         $out = self::int2Bytes($this->state[1], $out, 12);
 
-        return implode(array_map(static fn ($byte) => chr($byte), $out));
+        return implode(array_map(static fn($byte) => chr($byte), $out));
     }
 
     private function processBlock192or256(
         string $input,
-        int $offset = 0
+        int $offset = 0,
     ): string {
         for ($i = 0; $i < 4; $i++) {
             $this->state[$i] = Helper::bytesToLong($input, $offset + $i * 4);
@@ -1782,6 +1782,6 @@ class Camellia extends BlockCipher
         $out = self::int2Bytes($this->state[0], $out, 8);
         $out = self::int2Bytes($this->state[1], $out, 12);
 
-        return implode(array_map(static fn ($byte) => chr($byte), $out));
+        return implode(array_map(static fn($byte) => chr($byte), $out));
     }
 }

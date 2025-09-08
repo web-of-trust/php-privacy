@@ -42,14 +42,14 @@ class MontgomerySecretKeyMaterial implements
     public function __construct(
         private readonly string $secret,
         private readonly KeyMaterialInterface $publicMaterial,
-        ?ECPrivateKey $privateKey = null
+        ?ECPrivateKey $privateKey = null,
     ) {
         if ($privateKey instanceof ECPrivateKey) {
             $this->privateKey = $privateKey;
         } else {
             $this->privateKey = EC::loadPrivateKeyFormat(
                 "MontgomeryPrivate",
-                $secret
+                $secret,
             );
         }
     }
@@ -64,11 +64,11 @@ class MontgomerySecretKeyMaterial implements
     public static function fromBytes(
         string $bytes,
         KeyMaterialInterface $publicMaterial,
-        MontgomeryCurve $curve = MontgomeryCurve::Curve25519
+        MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
     ): self {
         return new self(
             substr($bytes, 0, $curve->payloadSize()),
-            $publicMaterial
+            $publicMaterial,
         );
     }
 
@@ -79,21 +79,18 @@ class MontgomerySecretKeyMaterial implements
      * @return self
      */
     public static function generate(
-        MontgomeryCurve $curve = MontgomeryCurve::Curve25519
+        MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
     ): self {
         $secret = $curve->generateSecretKey();
-        $privateKey = EC::loadPrivateKeyFormat(
-            "MontgomeryPrivate",
-            $secret
-        );
+        $privateKey = EC::loadPrivateKeyFormat("MontgomeryPrivate", $secret);
         $secret = $privateKey->toString("MontgomeryPrivate");
         return new self(
             $secret,
             new MontgomeryPublicKeyMaterial(
                 $privateKey->getEncodedCoordinates(),
-                $privateKey->getPublicKey()
+                $privateKey->getPublicKey(),
             ),
-            $privateKey
+            $privateKey,
         );
     }
 
@@ -151,7 +148,7 @@ class MontgomerySecretKeyMaterial implements
     public function getParameters(): array
     {
         return MontgomeryPrivate::load(
-            $this->privateKey->toString("MontgomeryPrivate")
+            $this->privateKey->toString("MontgomeryPrivate"),
         );
     }
 
@@ -163,7 +160,7 @@ class MontgomerySecretKeyMaterial implements
         if ($this->publicMaterial instanceof MontgomeryPublicKeyMaterial) {
             return strcmp(
                 $this->privateKey->getEncodedCoordinates(),
-                $this->publicMaterial->toBytes()
+                $this->publicMaterial->toBytes(),
             ) === 0;
         }
         return false;

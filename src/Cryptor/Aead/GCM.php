@@ -21,8 +21,8 @@ use phpseclib3\Crypt\Common\BlockCipher;
  */
 final class GCM implements AeadCipher
 {
-    const CIPHER_MODE = "gcm";
-    const TAG_LENGTH = 16;
+    const string CIPHER_MODE = "gcm";
+    const int TAG_LENGTH = 16;
 
     private readonly BlockCipher $cipher;
 
@@ -35,7 +35,7 @@ final class GCM implements AeadCipher
      */
     public function __construct(
         string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
     ) {
         $this->cipher = $symmetric->cipherEngine(self::CIPHER_MODE);
         $this->cipher->setKey($key);
@@ -47,7 +47,7 @@ final class GCM implements AeadCipher
     public function encrypt(
         string $plainText,
         string $nonce,
-        string $aData = ""
+        string $aData = "",
     ): string {
         return implode([
             $this->crypt($plainText, $nonce, $aData),
@@ -61,7 +61,7 @@ final class GCM implements AeadCipher
     public function decrypt(
         string $cipherText,
         string $nonce,
-        string $aData = ""
+        string $aData = "",
     ): string {
         $length = strlen($cipherText);
         if ($length < self::TAG_LENGTH) {
@@ -71,7 +71,7 @@ final class GCM implements AeadCipher
         return $this->crypt(
             substr($cipherText, 0, $length - self::TAG_LENGTH),
             $nonce,
-            $aData
+            $aData,
         );
     }
 
@@ -86,7 +86,7 @@ final class GCM implements AeadCipher
     private function crypt(
         string $text,
         string $nonce,
-        string $aData = ""
+        string $aData = "",
     ): string {
         $this->cipher->setNonce($nonce);
         $this->cipher->setAAD($aData);

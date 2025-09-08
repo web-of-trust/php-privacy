@@ -17,7 +17,7 @@ namespace OpenPGP\Packet;
  */
 class ImageUserAttribute extends UserAttributeSubpacket
 {
-    const JPEG = 1;
+    const int JPEG = 1;
 
     /**
      * Constructor
@@ -45,7 +45,7 @@ class ImageUserAttribute extends UserAttributeSubpacket
                 chr(self::JPEG),
                 str_repeat("\x00", 12),
                 $imageData,
-            ])
+            ]),
         );
     }
 

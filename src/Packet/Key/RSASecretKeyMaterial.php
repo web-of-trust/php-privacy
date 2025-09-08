@@ -48,7 +48,7 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
         private readonly BigInteger $primeQ,
         private readonly BigInteger $coefficient,
         private readonly KeyMaterialInterface $publicMaterial,
-        ?RSAPrivateKey $privateKey = null
+        ?RSAPrivateKey $privateKey = null,
     ) {
         $this->privateKey =
             $privateKey ??
@@ -70,7 +70,7 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
      */
     public static function fromBytes(
         string $bytes,
-        KeyMaterialInterface $publicMaterial
+        KeyMaterialInterface $publicMaterial,
     ): self {
         $exponent = Helper::readMPI($bytes);
 
@@ -88,7 +88,7 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
             $primeP,
             $primeQ,
             $coefficient,
-            $publicMaterial
+            $publicMaterial,
         );
     }
 
@@ -99,7 +99,7 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
      * @return self
      */
     public static function generate(
-        RSAKeySize $keySize = RSAKeySize::Normal
+        RSAKeySize $keySize = RSAKeySize::Normal,
     ): self {
         $privateKey = RSA::createKey($keySize->value);
         $params = PKCS8::load($privateKey->toString("PKCS8"));
@@ -113,9 +113,9 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
             new RSAPublicKeyMaterial(
                 $params["modulus"],
                 $params["publicExponent"],
-                $privateKey->getPublicKey()
+                $privateKey->getPublicKey(),
             ),
-            $privateKey
+            $privateKey,
         );
     }
 
@@ -226,7 +226,7 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
             }
 
             // expect p*u = 1 mod q
-            list(, $c) = $this->primeP
+            [, $c] = $this->primeP
                 ->multiply($this->coefficient)
                 ->divide($this->primeQ);
             if (!$c->equals($one)) {
@@ -234,18 +234,18 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
             }
 
             $nSizeOver3 = (int) floor(
-                $this->publicMaterial->getModulus()->getLength() / 3
+                $this->publicMaterial->getModulus()->getLength() / 3,
             );
             $r = BigInteger::randomRange(
                 $one,
-                $two->bitwise_leftShift($nSizeOver3)
+                $two->bitwise_leftShift($nSizeOver3),
             );
             $rde = $r
                 ->multiply($this->exponent)
                 ->multiply($this->publicMaterial->getExponent());
 
-            list(, $p) = $rde->divide($this->primeP->subtract($one));
-            list(, $q) = $rde->divide($this->primeQ->subtract($one));
+            [, $p] = $rde->divide($this->primeP->subtract($one));
+            [, $q] = $rde->divide($this->primeQ->subtract($one));
             return $p->equals($r) && $q->equals($r);
         }
         return false;

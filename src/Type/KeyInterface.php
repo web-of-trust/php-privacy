@@ -18,9 +18,7 @@ use OpenPGP\Enum\{KeyAlgorithm, RevocationReasonTag, SymmetricAlgorithm};
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-interface KeyInterface extends
-    ArmorableInterface,
-    PacketContainerInterface
+interface KeyInterface extends ArmorableInterface, PacketContainerInterface
 {
     /**
      * Return key packet
@@ -118,7 +116,7 @@ interface KeyInterface extends
      */
     function getSigningKeyPacket(
         string $keyID = "",
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): KeyPacketInterface;
 
     /**
@@ -131,7 +129,7 @@ interface KeyInterface extends
      */
     function getEncryptionKeyPacket(
         string $keyID = "",
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): KeyPacketInterface;
 
     /**
@@ -196,7 +194,7 @@ interface KeyInterface extends
     function isRevoked(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): bool;
 
     /**
@@ -210,7 +208,7 @@ interface KeyInterface extends
     function isCertified(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): bool;
 
     /**
@@ -232,7 +230,7 @@ interface KeyInterface extends
      */
     function certifyBy(
         PrivateKeyInterface $signKey,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self;
 
     /**
@@ -248,6 +246,6 @@ interface KeyInterface extends
         PrivateKeyInterface $signKey,
         string $revocationReason = "",
         ?RevocationReasonTag $reasonTag = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self;
 }

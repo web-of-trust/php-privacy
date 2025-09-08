@@ -15,6 +15,4 @@ namespace OpenPGP\Type;
  * @category Type
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-interface SubkeyPacketInterface extends KeyPacketInterface
-{
-}
+interface SubkeyPacketInterface extends KeyPacketInterface {}

@@ -131,7 +131,7 @@ interface SubkeyInterface extends PacketContainerInterface
     function isRevoked(
         ?KeyInterface $verifyKey = null,
         ?SignaturePacketInterface $certificate = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): bool;
 
     /**
@@ -156,6 +156,6 @@ interface SubkeyInterface extends PacketContainerInterface
         PrivateKeyInterface $signKey,
         string $revocationReason = "",
         ?RevocationReasonTag $reasonTag = null,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self;
 }

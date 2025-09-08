@@ -45,7 +45,7 @@ abstract class ECSecretKeyMaterial implements
     public function __construct(
         private readonly BigInteger $d,
         private readonly KeyMaterialInterface $publicMaterial,
-        ?ECPrivateKey $privateKey = null
+        ?ECPrivateKey $privateKey = null,
     ) {
         if ($privateKey instanceof ECPrivateKey) {
             $this->privateKey = $privateKey;
@@ -62,7 +62,7 @@ abstract class ECSecretKeyMaterial implements
                     $arr["dA"],
                     $curve,
                     $params["QA"],
-                    $arr["secret"]
+                    $arr["secret"],
                 );
             } else {
                 $key = PKCS8::savePrivateKey($d, $curve, $params["QA"]);
@@ -138,7 +138,7 @@ abstract class ECSecretKeyMaterial implements
         $curve = $params["curve"];
         if ($curve instanceof Curve25519) {
             return MontgomeryPrivate::load(
-                $this->privateKey->toString("MontgomeryPrivate")
+                $this->privateKey->toString("MontgomeryPrivate"),
             );
         } else {
             return PKCS8::load($this->privateKey->toString("PKCS8"));
@@ -160,16 +160,16 @@ abstract class ECSecretKeyMaterial implements
                         ->equals(
                             Helper::bin2BigInt(
                                 "\x40" .
-                                $this->privateKey->getEncodedCoordinates()
-                            )
+                                    $this->privateKey->getEncodedCoordinates(),
+                            ),
                         );
                 default:
                     $params = $this->publicMaterial->getParameters();
                     $QA = $params["QA"];
                     $curve = $params["curve"];
-                    list($x, $y) = $curve->multiplyPoint(
+                    [$x, $y] = $curve->multiplyPoint(
                         $curve->getBasePoint(),
-                        $this->d
+                        $this->d,
                     );
                     return $x->equals($QA[0]) && $y->equals($QA[1]);
             }

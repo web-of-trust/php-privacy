@@ -42,7 +42,7 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
     public function __construct(
         private readonly BigInteger $exponent,
         private readonly KeyMaterialInterface $publicMaterial,
-        ?DSAPrivateKey $privateKey = null
+        ?DSAPrivateKey $privateKey = null,
     ) {
         $this->privateKey =
             $privateKey ??
@@ -61,7 +61,7 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
      */
     public static function fromBytes(
         string $bytes,
-        KeyMaterialInterface $publicMaterial
+        KeyMaterialInterface $publicMaterial,
     ): self {
         return new self(Helper::readMPI($bytes), $publicMaterial);
     }
@@ -84,9 +84,9 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
                 $params["q"],
                 $params["g"],
                 $params["g"]->powMod($params["x"], $params["p"]),
-                $privateKey->getPublicKey()
+                $privateKey->getPublicKey(),
             ),
-            $privateKey
+            $privateKey,
         );
     }
 
@@ -172,7 +172,7 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
             }
 
             // Check that subgroup order q divides p-1
-            list(, $c) = $prime->subtract($one)->divide($order);
+            [, $c] = $prime->subtract($one)->divide($order);
             if (!$c->equals($zero)) {
                 return false;
             }
@@ -194,7 +194,7 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
             // Blinded exponentiation computes g**{rq + x} to compare to y
             $r = BigInteger::randomRange(
                 $two->bitwise_leftShift($qSize - 1),
-                $two->bitwise_leftShift($qSize)
+                $two->bitwise_leftShift($qSize),
             );
             $rqx = $order->multiply($r)->add($this->exponent);
 

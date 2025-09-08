@@ -22,11 +22,11 @@ use phpseclib3\Math\BigInteger;
  */
 final class Helper
 {
-    const EOL = "\n";
-    const CRLF = "\r\n";
-    const SPACES = " \r\t";
-    const EOL_PATTERN = '/\r?\n/m';
-    const ZERO_CHAR = "\x00";
+    const string EOL = "\n";
+    const string CRLF = "\r\n";
+    const string SPACES = " \r\t";
+    const string EOL_PATTERN = '/\r?\n/m';
+    const string ZERO_CHAR = "\x00";
 
     /**
      * Read multiprecision integer (MPI) from binary data
@@ -38,7 +38,7 @@ final class Helper
     {
         $bitLength = self::bytesToShort($bytes);
         return self::bin2BigInt(
-            substr($bytes, 2, self::bit2ByteLength($bitLength))
+            substr($bytes, 2, self::bit2ByteLength($bitLength)),
         );
     }
 
@@ -71,15 +71,11 @@ final class Helper
      * @return string
      */
     public static function generatePrefix(
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
     ): string {
         $size = $symmetric->blockSize();
         $prefix = Random::string($size);
-        return implode([
-            $prefix,
-            $prefix[$size - 2],
-            $prefix[$size - 1],
-        ]);
+        return implode([$prefix, $prefix[$size - 2], $prefix[$size - 1]]);
     }
 
     /**
@@ -93,7 +89,7 @@ final class Helper
     public static function bytesToLong(
         string $bytes,
         int $offset = 0,
-        bool $be = true
+        bool $be = true,
     ): int {
         $unpacked = unpack($be ? "N" : "V", substr($bytes, $offset, 4));
         return (int) array_pop($unpacked);
@@ -110,7 +106,7 @@ final class Helper
     public static function bytesToShort(
         string $bytes,
         int $offset = 0,
-        bool $be = true
+        bool $be = true,
     ): int {
         $unpacked = unpack($be ? "n" : "v", substr($bytes, $offset, 2));
         return (int) array_pop($unpacked);
@@ -123,11 +119,11 @@ final class Helper
      * @return S2KInterface
      */
     public static function stringToKey(
-        S2kType $type = S2kType::Iterated
+        S2kType $type = S2kType::Iterated,
     ): S2KInterface {
         if ($type === S2kType::Simple) {
             throw new \RuntimeException(
-                "S2k type {$type->name} is unsupported."
+                "S2k type {$type->name} is unsupported.",
             );
         }
         return $type === S2kType::Argon2
@@ -135,13 +131,13 @@ final class Helper
                 self::generatePassword(Argon2S2K::SALT_LENGTH),
                 Config::getArgon2Iteration(),
                 Config::getArgon2Parallelism(),
-                Config::getArgon2MemoryExponent()
+                Config::getArgon2MemoryExponent(),
             )
             : new GenericS2K(
                 Random::string(GenericS2K::SALT_LENGTH),
                 $type,
                 Config::getPreferredHash(),
-                Config::getS2kItCount()
+                Config::getS2kItCount(),
             );
     }
 
@@ -154,7 +150,7 @@ final class Helper
     public static function computeChecksum(string $text): string
     {
         $sum = array_sum(
-            array_map(static fn ($char) => ord($char), str_split($text))
+            array_map(static fn($char) => ord($char), str_split($text)),
         );
         return pack("n", $sum & 0xffff);
     }
@@ -169,8 +165,8 @@ final class Helper
     {
         return preg_replace_callback(
             "/\*/u",
-            static fn () => chr(random_int(40, 126)),
-            str_repeat("*", $length)
+            static fn() => chr(random_int(40, 126)),
+            str_repeat("*", $length),
         );
     }
 
@@ -184,8 +180,8 @@ final class Helper
     {
         $lines = explode(self::EOL, $text);
         $lines = array_map(
-            static fn ($line) => rtrim($line, self::SPACES),
-            $lines
+            static fn($line) => rtrim($line, self::SPACES),
+            $lines,
         );
         return implode(self::EOL, $lines);
     }
@@ -224,7 +220,7 @@ final class Helper
             case HashAlgorithm::Sha1:
             case HashAlgorithm::Ripemd160:
                 throw new \RuntimeException(
-                    "Hash {$hash->name} is unsupported."
+                    "Hash {$hash->name} is unsupported.",
                 );
         }
     }
@@ -243,7 +239,7 @@ final class Helper
             case SymmetricAlgorithm::TripleDes:
             case SymmetricAlgorithm::Cast5:
                 throw new \RuntimeException(
-                    "Symmetric {$symmetric->name} is unsupported."
+                    "Symmetric {$symmetric->name} is unsupported.",
                 );
         }
     }

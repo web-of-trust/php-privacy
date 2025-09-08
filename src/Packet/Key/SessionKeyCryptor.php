@@ -24,7 +24,7 @@ abstract class SessionKeyCryptor implements SessionKeyCryptorInterface
      * {@inheritdoc}
      */
     public function decryptSessionKey(
-        SecretKeyPacketInterface $secretKey
+        SecretKeyPacketInterface $secretKey,
     ): string {
         return $this->decrypt($secretKey->getKeyMaterial()->getAsymmetricKey());
     }

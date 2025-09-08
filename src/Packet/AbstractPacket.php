@@ -22,8 +22,8 @@ use phpseclib3\Common\Functions\Strings;
  */
 abstract class AbstractPacket implements PacketInterface
 {
-    const PARTIAL_MIN_SIZE = 512;
-    const PARTIAL_MAX_SIZE = 1024;
+    const int PARTIAL_MIN_SIZE = 512;
+    const int PARTIAL_MAX_SIZE = 1024;
 
     /**
      * Constructor
@@ -31,9 +31,7 @@ abstract class AbstractPacket implements PacketInterface
      * @param PacketTag $tag
      * @return self
      */
-    protected function __construct(private readonly PacketTag $tag)
-    {
-    }
+    protected function __construct(private readonly PacketTag $tag) {}
 
     /**
      * {@inheritdoc}

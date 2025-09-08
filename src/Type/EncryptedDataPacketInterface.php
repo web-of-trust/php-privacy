@@ -42,7 +42,7 @@ interface EncryptedDataPacketInterface extends PacketInterface
      */
     function encrypt(
         string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
     ): self;
 
     /**
@@ -62,7 +62,7 @@ interface EncryptedDataPacketInterface extends PacketInterface
      */
     function decrypt(
         string $key,
-        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256
+        SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
     ): self;
 
     /**

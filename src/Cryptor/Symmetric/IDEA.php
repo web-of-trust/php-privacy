@@ -30,11 +30,11 @@ use phpseclib3\Exception\BadModeException;
  */
 class IDEA extends BlockCipher
 {
-    const MASK = 0xffff;
-    const BASE = 0x10001;
+    const int MASK = 0xffff;
+    const int BASE = 0x10001;
 
-    const BLOCK_SIZE = 8;
-    const KEY_SIZE = 52;
+    const int BLOCK_SIZE = 8;
+    const int KEY_SIZE = 52;
 
     /**
      * Constructor
@@ -47,7 +47,7 @@ class IDEA extends BlockCipher
         parent::__construct($mode);
         if ($this->mode == self::MODE_STREAM) {
             throw new BadModeException(
-                "Block ciphers cannot be ran in stream mode."
+                "Block ciphers cannot be ran in stream mode.",
             );
         }
         $this->block_size = self::BLOCK_SIZE;
@@ -60,7 +60,7 @@ class IDEA extends BlockCipher
     {
         return self::ideaFunc(
             self::generateWorkingKey(true, $this->key),
-            $input
+            $input,
         );
     }
 
@@ -71,21 +71,19 @@ class IDEA extends BlockCipher
     {
         return self::ideaFunc(
             self::generateWorkingKey(false, $this->key),
-            $input
+            $input,
         );
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function setupKey(): void
-    {
-    }
+    protected function setupKey(): void {}
 
     private static function wordToBytes(
         int $word,
         string $bytes,
-        int $offset = 0
+        int $offset = 0,
     ): string {
         $replace = pack("n", $word);
         return substr_replace($bytes, $replace, $offset, strlen($replace));
@@ -146,14 +144,14 @@ class IDEA extends BlockCipher
         $output = self::wordToBytes(
             self::mul($x0, $workingKey[$keyOff++]),
             $output,
-            0
+            0,
         );
         $output = self::wordToBytes($x2 + $workingKey[$keyOff++], $output, 2);
         $output = self::wordToBytes($x1 + $workingKey[$keyOff++], $output, 4);
         $output = self::wordToBytes(
             self::mul($x3, $workingKey[$keyOff]),
             $output,
-            6
+            6,
         );
 
         return $output;
@@ -303,7 +301,7 @@ class IDEA extends BlockCipher
      */
     private static function generateWorkingKey(
         bool $forEncryption,
-        string $key
+        string $key,
     ): array {
         if ($forEncryption) {
             return self::expandKey($key);

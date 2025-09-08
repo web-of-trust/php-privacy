@@ -17,7 +17,7 @@ use phpseclib3\Crypt\EC\Curves\{
     brainpoolP384r1,
     brainpoolP512r1,
     Ed25519,
-    Curve25519
+    Curve25519,
 };
 use phpseclib3\File\ASN1;
 

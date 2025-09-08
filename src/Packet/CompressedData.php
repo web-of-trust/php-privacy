@@ -26,7 +26,7 @@ class CompressedData extends AbstractPacket
     /**
      * Default zip/zlib compression level, between 1 and 9
      */
-    const DEFLATE_LEVEL = 6;
+    const int DEFLATE_LEVEL = 6;
 
     /**
      * Constructor
@@ -39,7 +39,7 @@ class CompressedData extends AbstractPacket
     public function __construct(
         private readonly string $compressed,
         private readonly PacketListInterface $packetList,
-        private readonly Algorithm $algorithm = Algorithm::Uncompressed
+        private readonly Algorithm $algorithm = Algorithm::Uncompressed,
     ) {
         parent::__construct(PacketTag::CompressedData);
     }
@@ -54,7 +54,7 @@ class CompressedData extends AbstractPacket
         return new self(
             $compressed,
             self::decompress($compressed, $algorithm),
-            $algorithm
+            $algorithm,
         );
     }
 
@@ -67,12 +67,12 @@ class CompressedData extends AbstractPacket
      */
     public static function fromPacketList(
         PacketListInterface $packetList,
-        Algorithm $algorithm = Algorithm::Uncompressed
+        Algorithm $algorithm = Algorithm::Uncompressed,
     ): self {
         return new self(
             self::compress($packetList, $algorithm),
             $packetList,
-            $algorithm
+            $algorithm,
         );
     }
 
@@ -85,7 +85,7 @@ class CompressedData extends AbstractPacket
      */
     public static function fromPackets(
         array $packets,
-        Algorithm $algorithm = Algorithm::Uncompressed
+        Algorithm $algorithm = Algorithm::Uncompressed,
     ) {
         return self::fromPacketList(new PacketList($packets), $algorithm);
     }
@@ -130,17 +130,17 @@ class CompressedData extends AbstractPacket
 
     private static function compress(
         PacketListInterface $packetList,
-        Algorithm $algorithm
+        Algorithm $algorithm,
     ): string {
         return match ($algorithm) {
             Algorithm::Uncompressed => $packetList->encode(),
             Algorithm::Zip => \gzdeflate(
                 $packetList->encode(),
-                self::DEFLATE_LEVEL
+                self::DEFLATE_LEVEL,
             ),
             Algorithm::Zlib => \gzcompress(
                 $packetList->encode(),
-                self::DEFLATE_LEVEL
+                self::DEFLATE_LEVEL,
             ),
             Algorithm::BZip2 => \bzcompress($packetList->encode()),
         };
@@ -148,7 +148,7 @@ class CompressedData extends AbstractPacket
 
     private static function decompress(
         string $compressed,
-        Algorithm $algorithm
+        Algorithm $algorithm,
     ): PacketListInterface {
         return match ($algorithm) {
             Algorithm::Uncompressed => PacketList::decode($compressed),

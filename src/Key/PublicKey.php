@@ -15,7 +15,7 @@ use OpenPGP\Type\{
     KeyInterface,
     PacketListInterface,
     PublicKeyInterface,
-    PublicKeyPacketInterface
+    PublicKeyPacketInterface,
 };
 
 /**
@@ -45,8 +45,7 @@ class PublicKey extends AbstractKey implements PublicKeyInterface
         parent::__construct($packetList);
         if ($this->getKeyPacket() instanceof PublicKeyPacketInterface) {
             $this->publicKeyPacket = $this->getKeyPacket();
-        }
-        else {
+        } else {
             throw new \RuntimeException("Key packet is not public key type.");
         }
     }
@@ -61,7 +60,7 @@ class PublicKey extends AbstractKey implements PublicKeyInterface
      */
     public static function readPublicKeys(
         string $data,
-        bool $armored = true
+        bool $armored = true,
     ): array {
         if ($armored) {
             $armor = Armor::decode($data)->assert(ArmorType::PublicKey);
@@ -75,12 +74,10 @@ class PublicKey extends AbstractKey implements PublicKeyInterface
             if (!empty($indexes[$i + 1])) {
                 $length = $indexes[$i + 1] - $indexes[$i];
                 $publicKeys[] = new self(
-                    $packetList->slice($indexes[$i], $length)
+                    $packetList->slice($indexes[$i], $length),
                 );
             } else {
-                $publicKeys[] = new self(
-                    $packetList->slice($indexes[$i])
-                );
+                $publicKeys[] = new self($packetList->slice($indexes[$i]));
             }
         }
         return $publicKeys;
@@ -94,13 +91,15 @@ class PublicKey extends AbstractKey implements PublicKeyInterface
      */
     public static function armorPublicKeys(array $keys): string
     {
-        $keyData = implode(array_map(
-            static fn ($key) => $key->toPublic()->getPacketList()->encode(),
-            array_filter(
-                $keys,
-                static fn ($key) => $key instanceof KeyInterface
-            )
-        ));
+        $keyData = implode(
+            array_map(
+                static fn($key) => $key->toPublic()->getPacketList()->encode(),
+                array_filter(
+                    $keys,
+                    static fn($key) => $key instanceof KeyInterface,
+                ),
+            ),
+        );
         return empty($keyData)
             ? ""
             : Armor::encode(ArmorType::PublicKey, $keyData);
@@ -115,9 +114,7 @@ class PublicKey extends AbstractKey implements PublicKeyInterface
     public static function fromArmored(string $armored): self
     {
         return self::fromBytes(
-            Armor::decode($armored)
-                ->assert(ArmorType::PublicKey)
-                ->getData()
+            Armor::decode($armored)->assert(ArmorType::PublicKey)->getData(),
         );
     }
 
@@ -147,7 +144,7 @@ class PublicKey extends AbstractKey implements PublicKeyInterface
     {
         return Armor::encode(
             ArmorType::PublicKey,
-            $this->getPacketList()->encode()
+            $this->getPacketList()->encode(),
         );
     }
 

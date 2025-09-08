@@ -27,7 +27,7 @@ class PublicSubkey extends PublicKey implements SubkeyPacketInterface
     public static function fromBytes(string $bytes): self
     {
         [$version, $creationTime, $keyAlgorithm, $keyMaterial] = self::decode(
-            $bytes
+            $bytes,
         );
         return new self($version, $creationTime, $keyAlgorithm, $keyMaterial);
     }

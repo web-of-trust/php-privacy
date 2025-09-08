@@ -33,9 +33,8 @@ class SessionKey implements SessionKeyInterface
     public function __construct(
         private readonly string $encryptionKey,
         private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
-        private readonly ?AeadAlgorithm $aead = null
-    ) {
-    }
+        private readonly ?AeadAlgorithm $aead = null,
+    ) {}
 
     /**
      * Read session key from binary string
@@ -47,7 +46,7 @@ class SessionKey implements SessionKeyInterface
     {
         $sessionKey = new self(
             substr($bytes, 1, strlen($bytes) - 3),
-            SymmetricAlgorithm::from(ord($bytes[0]))
+            SymmetricAlgorithm::from(ord($bytes[0])),
         );
         return $sessionKey->checksum(substr($bytes, strlen($bytes) - 2));
     }
@@ -61,12 +60,12 @@ class SessionKey implements SessionKeyInterface
      */
     public static function produceKey(
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
-        ?AeadAlgorithm $aead = null
+        ?AeadAlgorithm $aead = null,
     ): self {
         return new self(
             Random::string($symmetric->keySizeInByte()),
             $symmetric,
-            $aead
+            $aead,
         );
     }
 

@@ -22,7 +22,7 @@ use phpseclib3\Math\BigInteger;
  */
 class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
 {
-    const DEFAULT_RESERVED = 0;
+    const int DEFAULT_RESERVED = 0;
 
     /**
      * Constructor
@@ -41,7 +41,7 @@ class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
         private readonly HashAlgorithm $kdfHash,
         private readonly SymmetricAlgorithm $kdfSymmetric,
         private readonly int $reserved = self::DEFAULT_RESERVED,
-        ?PublicKey $publicKey = null
+        ?PublicKey $publicKey = null,
     ) {
         parent::__construct($oid, $q, $publicKey);
     }
@@ -68,7 +68,7 @@ class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
             $q,
             HashAlgorithm::from(ord($kdfBytes[2])),
             SymmetricAlgorithm::from(ord($kdfBytes[3])),
-            ord($kdfBytes[1])
+            ord($kdfBytes[1]),
         );
     }
 

@@ -22,7 +22,7 @@ use OpenPGP\Enum\{
     RSAKeySize,
     S2kType,
     S2kUsage,
-    SymmetricAlgorithm
+    SymmetricAlgorithm,
 };
 use OpenPGP\Type\{
     ECKeyMaterialInterface,
@@ -31,7 +31,7 @@ use OpenPGP\Type\{
     S2KInterface,
     SecretKeyMaterialInterface,
     SecretKeyPacketInterface,
-    SubkeyPacketInterface
+    SubkeyPacketInterface,
 };
 use phpseclib3\Crypt\Random;
 
@@ -46,7 +46,7 @@ use phpseclib3\Crypt\Random;
  */
 class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 {
-    const HASH_ALGO = "sha1";
+    const string HASH_ALGO = "sha1";
 
     /**
      * Constructor
@@ -68,12 +68,12 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         private readonly SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Plaintext,
         private readonly ?S2KInterface $s2k = null,
         private readonly ?AeadAlgorithm $aead = null,
-        private readonly string $iv = ""
+        private readonly string $iv = "",
     ) {
         parent::__construct(
             $this instanceof SubkeyPacketInterface
                 ? PacketTag::SecretSubkey
-                : PacketTag::SecretKey
+                : PacketTag::SecretKey,
         );
 
         if (
@@ -81,7 +81,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             $s2kUsage === S2kUsage::MalleableCfb
         ) {
             throw new \InvalidArgumentException(
-                "S2k usage {$s2kUsage->name} cannot be used with v{$publicKey->getVersion()} key packet."
+                "S2k usage {$s2kUsage->name} cannot be used with v{$publicKey->getVersion()} key packet.",
             );
         }
     }
@@ -109,7 +109,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             $symmetric,
             $s2k,
             $aead,
-            $iv
+            $iv,
         );
     }
 
@@ -126,22 +126,22 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
         Ecc $curve = Ecc::Secp521r1,
-        ?DateTimeInterface $time = null
+        ?DateTimeInterface $time = null,
     ): self {
         $keyMaterial = self::generateKeyMaterial(
             $keyAlgorithm,
             $rsaKeySize,
-            $curve
+            $curve,
         );
         return new self(
             new PublicKey(
                 $keyAlgorithm->keyVersion(),
                 $time ?? new \DateTime(),
                 $keyAlgorithm,
-                $keyMaterial->getPublicMaterial()
+                $keyMaterial->getPublicMaterial(),
             ),
             $keyMaterial->toBytes(),
-            $keyMaterial
+            $keyMaterial,
         );
     }
 
@@ -270,7 +270,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
      * {@inheritdoc}
      */
     public function getPreferredHash(
-        ?HashAlgorithm $preferredHash = null
+        ?HashAlgorithm $preferredHash = null,
     ): HashAlgorithm {
         return $this->publicKey->getPreferredHash($preferredHash);
     }
@@ -324,13 +324,13 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     public function encrypt(
         string $passphrase,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
-        ?AeadAlgorithm $aead = null
+        ?AeadAlgorithm $aead = null,
     ): self {
         if ($this->isDecrypted()) {
             [$encrypted, $iv, $s2k] = $this->encryptKeyMaterial(
                 $passphrase,
                 $symmetric,
-                $aead
+                $aead,
             );
             return new self(
                 $this->getPublicKey(),
@@ -342,7 +342,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $symmetric,
                 $s2k,
                 $aead,
-                $iv
+                $iv,
             );
         } else {
             return $this;
@@ -365,7 +365,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $this->getSymmetric(),
                 $this->getS2K(),
                 $this->getAead(),
-                $this->getIV()
+                $this->getIV(),
             );
         }
     }
@@ -437,7 +437,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
      */
     protected static function decode(
         string $bytes,
-        PublicKeyPacketInterface $publicKey
+        PublicKeyPacketInterface $publicKey,
     ): array {
         $offset = strlen($publicKey->toBytes());
         $isV6 = $publicKey->getVersion() === KeyVersion::V6->value;
@@ -464,17 +464,19 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 
                 // Only for a version 6 packet, and if string-to-key usage
                 // octet was 253 or 254, an one-octet count of the following field.
-                if ($isV6 && (
-                    $s2kUsage === S2kUsage::AeadProtect ||
-                    $s2kUsage === S2kUsage::Cfb
-                )) {
+                if (
+                    $isV6 &&
+                    ($s2kUsage === S2kUsage::AeadProtect ||
+                        $s2kUsage === S2kUsage::Cfb)
+                ) {
                     $offset++;
                 }
 
                 $s2kType = S2kType::from(ord($bytes[$offset]));
-                $s2k = $s2kType === S2kType::Argon2
-                    ? Argon2S2K::fromBytes(substr($bytes, $offset))
-                    : GenericS2K::fromBytes(substr($bytes, $offset));
+                $s2k =
+                    $s2kType === S2kType::Argon2
+                        ? Argon2S2K::fromBytes(substr($bytes, $offset))
+                        : GenericS2K::fromBytes(substr($bytes, $offset));
                 $offset += $s2kType->dataLength();
                 break;
             default:
@@ -526,7 +528,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     protected static function generateKeyMaterial(
         KeyAlgorithm $keyAlgorithm = KeyAlgorithm::RsaEncryptSign,
         RSAKeySize $rsaKeySize = RSAKeySize::Normal,
-        Ecc $curve = Ecc::Secp521r1
+        Ecc $curve = Ecc::Secp521r1,
     ): KeyMaterialInterface {
         return match ($keyAlgorithm) {
             KeyAlgorithm::RsaEncryptSign,
@@ -538,19 +540,19 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             KeyAlgorithm::EdDsaLegacy
                 => Key\EdDSALegacySecretKeyMaterial::generate(),
             KeyAlgorithm::X25519 => Key\MontgomerySecretKeyMaterial::generate(
-                MontgomeryCurve::Curve25519
+                MontgomeryCurve::Curve25519,
             ),
             KeyAlgorithm::X448 => Key\MontgomerySecretKeyMaterial::generate(
-                MontgomeryCurve::Curve448
+                MontgomeryCurve::Curve448,
             ),
             KeyAlgorithm::Ed25519 => Key\EdDSASecretKeyMaterial::generate(
-                EdDSACurve::Ed25519
+                EdDSACurve::Ed25519,
             ),
             KeyAlgorithm::Ed448 => Key\EdDSASecretKeyMaterial::generate(
-                EdDSACurve::Ed448
+                EdDSACurve::Ed448,
             ),
             default => throw new \RuntimeException(
-                "Key algorithm {$keyAlgorithm->name} is unsupported."
+                "Key algorithm {$keyAlgorithm->name} is unsupported.",
             ),
         };
     }
@@ -566,20 +568,21 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     protected function encryptKeyMaterial(
         string $passphrase,
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
-        ?AeadAlgorithm $aead = null
+        ?AeadAlgorithm $aead = null,
     ): array {
         Helper::assertSymmetric($symmetric);
 
         $aeadProtect = $aead instanceof AeadAlgorithm;
         if ($aeadProtect && $this->getVersion() !== KeyVersion::V6->value) {
             throw new \InvalidArgumentException(
-                "Using AEAD with version {$this->getVersion()} of the key packet is not allowed."
+                "Using AEAD with version {$this->getVersion()} of the key packet is not allowed.",
             );
         }
 
-        $s2k = $aeadProtect && Argon2S2K::argon2Supported()
-            ? Helper::stringToKey(S2kType::Argon2)
-            : Helper::stringToKey(S2kType::Iterated);
+        $s2k =
+            $aeadProtect && Argon2S2K::argon2Supported()
+                ? Helper::stringToKey(S2kType::Argon2)
+                : Helper::stringToKey(S2kType::Iterated);
 
         $iv = $aeadProtect
             ? Random::string($aead->ivLength())
@@ -591,7 +594,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             $symmetric,
             $s2k,
             $aead,
-            $packetTag
+            $packetTag,
         );
         $clearText = $this->keyMaterial?->toBytes() ?? "";
 
@@ -600,7 +603,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             $encrypted = $cipher->encrypt(
                 $clearText,
                 $iv,
-                implode([$packetTag, $this->publicKey->toBytes()])
+                implode([$packetTag, $this->publicKey->toBytes()]),
             );
         } else {
             $cipher = $symmetric->cipherEngine(S2kUsage::Cfb->name);
@@ -609,7 +612,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             $cipher->setKey($kek);
 
             $encrypted = $cipher->encrypt(
-                implode([$clearText, hash(self::HASH_ALGO, $clearText, true)])
+                implode([$clearText, hash(self::HASH_ALGO, $clearText, true)]),
             );
         }
         return [$encrypted, $iv, $s2k];
@@ -631,7 +634,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $this->symmetric,
                 $this->s2k,
                 $this->aead,
-                $packetTag
+                $packetTag,
             );
 
             if ($this->aead instanceof AeadAlgorithm) {
@@ -639,7 +642,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $keyData = $cipher->decrypt(
                     $this->keyData,
                     $this->iv,
-                    implode([$packetTag, $this->publicKey->toBytes()])
+                    implode([$packetTag, $this->publicKey->toBytes()]),
                 );
             } else {
                 $cipher = $this->symmetric->cipherEngine(S2kUsage::Cfb->name);
@@ -647,7 +650,8 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $cipher->setIV($this->iv);
                 $cipher->setKey($kek);
                 $decrypted = $cipher->decrypt($this->keyData);
-                $length = strlen($decrypted) - HashAlgorithm::Sha1->digestSize();
+                $length =
+                    strlen($decrypted) - HashAlgorithm::Sha1->digestSize();
                 $keyData = substr($decrypted, 0, $length);
                 $hashText = substr($decrypted, $length);
                 $hashed = hash(self::HASH_ALGO, $keyData, true);
@@ -675,11 +679,11 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         SymmetricAlgorithm $symmetric,
         ?S2KInterface $s2k = null,
         ?AeadAlgorithm $aead = null,
-        string $packetTag = ""
+        string $packetTag = "",
     ): string {
         if ($s2k?->getType() === S2kType::Argon2 && empty($aead)) {
             throw new \InvalidArgumentException(
-                "Using Argon2 S2K without AEAD is not allowed."
+                "Using Argon2 S2K without AEAD is not allowed.",
             );
         }
         $derivedKey =
@@ -695,7 +699,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                     chr(KeyVersion::V6->value),
                     chr($symmetric->value),
                     chr($aead->value),
-                ])
+                ]),
             );
         }
         return $derivedKey;
@@ -703,7 +707,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 
     private static function readKeyMaterial(
         string $bytes,
-        PublicKey $publicKey
+        PublicKey $publicKey,
     ): KeyMaterialInterface {
         $keyMaterial = match ($publicKey->getKeyAlgorithm()) {
             KeyAlgorithm::RsaEncryptSign,
@@ -711,51 +715,51 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             KeyAlgorithm::RsaSign
                 => Key\RSASecretKeyMaterial::fromBytes(
                 $bytes,
-                $publicKey->getKeyMaterial()
+                $publicKey->getKeyMaterial(),
             ),
             KeyAlgorithm::ElGamal => Key\ElGamalSecretKeyMaterial::fromBytes(
                 $bytes,
-                $publicKey->getKeyMaterial()
+                $publicKey->getKeyMaterial(),
             ),
             KeyAlgorithm::Dsa => Key\DSASecretKeyMaterial::fromBytes(
                 $bytes,
-                $publicKey->getKeyMaterial()
+                $publicKey->getKeyMaterial(),
             ),
             KeyAlgorithm::Ecdh => Key\ECDHSecretKeyMaterial::fromBytes(
                 $bytes,
-                $publicKey->getKeyMaterial()
+                $publicKey->getKeyMaterial(),
             ),
             KeyAlgorithm::EcDsa => Key\ECDSASecretKeyMaterial::fromBytes(
                 $bytes,
-                $publicKey->getKeyMaterial()
+                $publicKey->getKeyMaterial(),
             ),
             KeyAlgorithm::EdDsaLegacy
                 => Key\EdDSALegacySecretKeyMaterial::fromBytes(
                 $bytes,
-                $publicKey->getKeyMaterial()
+                $publicKey->getKeyMaterial(),
             ),
             KeyAlgorithm::X25519 => Key\MontgomerySecretKeyMaterial::fromBytes(
                 $bytes,
                 $publicKey->getKeyMaterial(),
-                MontgomeryCurve::Curve25519
+                MontgomeryCurve::Curve25519,
             ),
             KeyAlgorithm::X448 => Key\MontgomerySecretKeyMaterial::fromBytes(
                 $bytes,
                 $publicKey->getKeyMaterial(),
-                MontgomeryCurve::Curve448
+                MontgomeryCurve::Curve448,
             ),
             KeyAlgorithm::Ed25519 => Key\EdDSASecretKeyMaterial::fromBytes(
                 $bytes,
                 $publicKey->getKeyMaterial(),
-                EdDSACurve::Ed25519
+                EdDSACurve::Ed25519,
             ),
             KeyAlgorithm::Ed448 => Key\EdDSASecretKeyMaterial::fromBytes(
                 $bytes,
                 $publicKey->getKeyMaterial(),
-                EdDSACurve::Ed448
+                EdDSACurve::Ed448,
             ),
             default => throw new \RuntimeException(
-                "Key algorithm {$publicKey->getKeyAlgorithm()->name} is unsupported."
+                "Key algorithm {$publicKey->getKeyAlgorithm()->name} is unsupported.",
             ),
         };
         if (!$keyMaterial->isValid()) {

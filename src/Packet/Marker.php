@@ -19,7 +19,7 @@ use OpenPGP\Enum\PacketTag;
  */
 class Marker extends AbstractPacket
 {
-    const MARKER = "PGP";
+    const string MARKER = "PGP";
 
     /**
      * Constructor
