@@ -15,7 +15,7 @@ use OpenPGP\Packet\SignatureSubpacket;
 
 /**
  * SignatureExpirationTime sub-packet class
- * Giving giving signature expiration time.
+ * Giving signature expiration time.
  *
  * @package  OpenPGP
  * @category Packet
