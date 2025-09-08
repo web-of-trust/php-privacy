@@ -25,19 +25,14 @@ class PreferredAeadAlgorithms extends SignatureSubpacket
      *
      * @param string $data
      * @param bool $critical
-     * @param bool $isLong
      * @return self
      */
-    public function __construct(
-        string $data,
-        bool $critical = false,
-        bool $isLong = false
-    ) {
+    public function __construct(string $data, bool $critical = false)
+    {
         parent::__construct(
             SignatureSubpacketType::PreferredAeadAlgorithms->value,
             $data,
             $critical,
-            $isLong
         );
     }
 
@@ -49,8 +44,8 @@ class PreferredAeadAlgorithms extends SignatureSubpacket
     public function getPreferences(): array
     {
         return array_map(
-            static fn ($pref) => AeadAlgorithm::from(ord($pref)),
-            str_split($this->getData())
+            static fn($pref) => AeadAlgorithm::from(ord($pref)),
+            str_split($this->getData()),
         );
     }
 }

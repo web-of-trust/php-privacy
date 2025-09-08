@@ -23,30 +23,25 @@ use OpenPGP\Type\NotationDataInterface;
  */
 class NotationData extends SignatureSubpacket implements NotationDataInterface
 {
-    const FLAG_LENGTH = 4;
-    const NAME_LENGTH = 2;
-    const VALUE_LENGTH = 2;
+    const int FLAG_LENGTH = 4;
+    const int NAME_LENGTH = 2;
+    const int VALUE_LENGTH = 2;
 
-    const SALT_NOTATION = "salt@php-openpgp.org";
+    const string SALT_NOTATION = "salt@php-openpgp.org";
 
     /**
      * Constructor
      *
      * @param string $data
      * @param bool $critical
-     * @param bool $isLong
      * @return self
      */
-    public function __construct(
-        string $data,
-        bool $critical = false,
-        bool $isLong = false
-    ) {
+    public function __construct(string $data, bool $critical = false)
+    {
         parent::__construct(
             SignatureSubpacketType::NotationData->value,
             $data,
             $critical,
-            $isLong
         );
     }
 
@@ -63,15 +58,15 @@ class NotationData extends SignatureSubpacket implements NotationDataInterface
         string $notationName,
         string $notationValue,
         bool $humanReadable = false,
-        bool $critical = false
+        bool $critical = false,
     ): self {
         return new self(
             self::notationToBytes(
                 $notationName,
                 $notationValue,
-                $humanReadable
+                $humanReadable,
             ),
-            $critical
+            $critical,
         );
     }
 
@@ -120,20 +115,20 @@ class NotationData extends SignatureSubpacket implements NotationDataInterface
     private static function notationToBytes(
         string $notationName,
         string $notationValue,
-        bool $humanReadable = false
+        bool $humanReadable = false,
     ): string {
         $notationName = mb_convert_encoding($notationName, "UTF-8");
         $nameLength = min(strlen($notationName), 0xffff);
         if ($nameLength !== strlen($notationName)) {
             throw new \InvalidArgumentException(
-                "Notation name exceeds maximum length."
+                "Notation name exceeds maximum length.",
             );
         }
 
         $valueLength = min(strlen($notationValue), 0xffff);
         if ($valueLength !== strlen($notationValue)) {
             throw new \InvalidArgumentException(
-                "Notation value exceeds maximum length."
+                "Notation value exceeds maximum length.",
             );
         }
 

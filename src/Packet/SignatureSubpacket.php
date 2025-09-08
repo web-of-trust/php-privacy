@@ -26,16 +26,13 @@ class SignatureSubpacket implements SubpacketInterface
      * @param int $type
      * @param string $data
      * @param bool $critical
-     * @param bool $isLong
      * @return self
      */
     public function __construct(
         private readonly int $type,
         private readonly string $data,
         private readonly bool $critical = false,
-        private readonly bool $isLong = false
-    ) {
-    }
+    ) {}
 
     /**
      * {@inheritdoc}
@@ -51,14 +48,6 @@ class SignatureSubpacket implements SubpacketInterface
     public function getData(): string
     {
         return $this->data;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isLong(): bool
-    {
-        return $this->isLong;
     }
 
     /**

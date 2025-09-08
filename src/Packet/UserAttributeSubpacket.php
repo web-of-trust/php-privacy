@@ -25,15 +25,12 @@ class UserAttributeSubpacket implements SubpacketInterface
      *
      * @param int $type
      * @param string $data
-     * @param bool $isLong
      * @return self
      */
     public function __construct(
         private readonly int $type = 0,
         private readonly string $data = "",
-        private readonly bool $isLong = false
-    ) {
-    }
+    ) {}
 
     /**
      * {@inheritdoc}
@@ -49,14 +46,6 @@ class UserAttributeSubpacket implements SubpacketInterface
     public function getData(): string
     {
         return $this->data;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isLong(): bool
-    {
-        return $this->isLong;
     }
 
     /**

@@ -25,19 +25,14 @@ class Features extends SignatureSubpacket
      *
      * @param string $data
      * @param bool $critical
-     * @param bool $isLong
      * @return self
      */
-    public function __construct(
-        string $data,
-        bool $critical = false,
-        bool $isLong = false
-    ) {
+    public function __construct(string $data, bool $critical = false)
+    {
         parent::__construct(
             SignatureSubpacketType::Features->value,
             $data,
             $critical,
-            $isLong
         );
     }
 
@@ -50,7 +45,7 @@ class Features extends SignatureSubpacket
      */
     public static function fromFeatures(
         int $features = 0,
-        bool $critical = false
+        bool $critical = false,
     ): self {
         return new self(chr($features), $critical);
     }

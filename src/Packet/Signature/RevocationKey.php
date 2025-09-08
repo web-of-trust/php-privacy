@@ -25,19 +25,14 @@ class RevocationKey extends SignatureSubpacket
      *
      * @param string $data
      * @param bool $critical
-     * @param bool $isLong
      * @return self
      */
-    public function __construct(
-        string $data,
-        bool $critical = false,
-        bool $isLong = false
-    ) {
+    public function __construct(string $data, bool $critical = false)
+    {
         parent::__construct(
             SignatureSubpacketType::RevocationKey->value,
             $data,
             $critical,
-            $isLong
         );
     }
 
@@ -54,15 +49,15 @@ class RevocationKey extends SignatureSubpacket
         RevocationKeyTag $signatureClass,
         KeyAlgorithm $keyAlgorithm,
         string $fingerprint,
-        bool $critical = false
+        bool $critical = false,
     ): self {
         return new self(
             self::revocationToBytes(
                 $signatureClass,
                 $keyAlgorithm,
-                $fingerprint
+                $fingerprint,
             ),
-            $critical
+            $critical,
         );
     }
 
@@ -99,7 +94,7 @@ class RevocationKey extends SignatureSubpacket
     private static function revocationToBytes(
         RevocationKeyTag $signatureClass,
         KeyAlgorithm $keyAlgorithm,
-        string $fingerprint
+        string $fingerprint,
     ): string {
         return implode([
             chr($signatureClass->value),

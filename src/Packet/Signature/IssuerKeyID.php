@@ -27,19 +27,14 @@ class IssuerKeyID extends SignatureSubpacket
      *
      * @param string $data
      * @param bool $critical
-     * @param bool $isLong
      * @return self
      */
-    public function __construct(
-        string $data,
-        bool $critical = false,
-        bool $isLong = false
-    ) {
+    public function __construct(string $data, bool $critical = false)
+    {
         parent::__construct(
             SignatureSubpacketType::IssuerKeyID->value,
             $data,
             $critical,
-            $isLong
         );
     }
 
@@ -52,7 +47,7 @@ class IssuerKeyID extends SignatureSubpacket
      */
     public static function fromKeyID(
         string $keyID,
-        bool $critical = false
+        bool $critical = false,
     ): self {
         return new self($keyID, $critical);
     }

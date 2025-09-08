@@ -32,13 +32,6 @@ interface SubpacketInterface
     function getData(): string;
 
     /**
-     * Get is long
-     *
-     * @return bool
-     */
-    function isLong(): bool;
-
-    /**
      * Serialize subpacket to bytes
      *
      * @return string

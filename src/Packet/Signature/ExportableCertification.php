@@ -25,19 +25,14 @@ class ExportableCertification extends SignatureSubpacket
      *
      * @param string $data
      * @param bool $critical
-     * @param bool $isLong
      * @return self
      */
-    public function __construct(
-        string $data,
-        bool $critical = false,
-        bool $isLong = false
-    ) {
+    public function __construct(string $data, bool $critical = false)
+    {
         parent::__construct(
             SignatureSubpacketType::ExportableCertification->value,
             $data,
             $critical,
-            $isLong
         );
     }
 
@@ -50,7 +45,7 @@ class ExportableCertification extends SignatureSubpacket
      */
     public static function fromExportable(
         bool $exportable = true,
-        bool $critical = false
+        bool $critical = false,
     ): self {
         return new self($exportable ? "\x01" : "\x00", $critical);
     }

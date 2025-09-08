@@ -26,19 +26,14 @@ class EmbeddedSignature extends SignatureSubpacket
      *
      * @param string $data
      * @param bool $critical
-     * @param bool $isLong
      * @return self
      */
-    public function __construct(
-        string $data,
-        bool $critical = false,
-        bool $isLong = false
-    ) {
+    public function __construct(string $data, bool $critical = false)
+    {
         parent::__construct(
             SignatureSubpacketType::EmbeddedSignature->value,
             $data,
             $critical,
-            $isLong
         );
     }
 
@@ -49,7 +44,7 @@ class EmbeddedSignature extends SignatureSubpacket
      * @return self
      */
     public static function fromSignature(
-        SignaturePacketInterface $signature
+        SignaturePacketInterface $signature,
     ): self {
         return new self($signature->toBytes());
     }

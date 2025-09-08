@@ -27,19 +27,14 @@ class SignatureCreationTime extends SignatureSubpacket
      *
      * @param string $data
      * @param bool $critical
-     * @param bool $isLong
      * @return self
      */
-    public function __construct(
-        string $data,
-        bool $critical = false,
-        bool $isLong = false
-    ) {
+    public function __construct(string $data, bool $critical = false)
+    {
         parent::__construct(
             SignatureSubpacketType::SignatureCreationTime->value,
             $data,
             $critical,
-            $isLong
         );
     }
 
@@ -52,7 +47,7 @@ class SignatureCreationTime extends SignatureSubpacket
      */
     public static function fromTime(
         DateTimeInterface $time,
-        bool $critical = false
+        bool $critical = false,
     ): self {
         return new self(pack("N", $time->getTimestamp()), $critical);
     }
@@ -64,8 +59,8 @@ class SignatureCreationTime extends SignatureSubpacket
      */
     public function getCreationTime(): DateTimeInterface
     {
-        return (new \DateTime())->setTimestamp(
-            Helper::bytesToLong($this->getData())
+        return new \DateTime()->setTimestamp(
+            Helper::bytesToLong($this->getData()),
         );
     }
 }

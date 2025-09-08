@@ -26,19 +26,14 @@ class RevocationReason extends SignatureSubpacket
      *
      * @param string $data
      * @param bool $critical
-     * @param bool $isLong
      * @return self
      */
-    public function __construct(
-        string $data,
-        bool $critical = false,
-        bool $isLong = false
-    ) {
+    public function __construct(string $data, bool $critical = false)
+    {
         parent::__construct(
             SignatureSubpacketType::RevocationReason->value,
             $data,
             $critical,
-            $isLong
         );
     }
 
@@ -53,11 +48,11 @@ class RevocationReason extends SignatureSubpacket
     public static function fromRevocation(
         RevocationReasonTag $reason,
         string $description,
-        bool $critical = false
+        bool $critical = false,
     ): self {
         return new self(
             self::revocationToBytes($reason, $description),
-            $critical
+            $critical,
         );
     }
 
@@ -83,7 +78,7 @@ class RevocationReason extends SignatureSubpacket
 
     private static function revocationToBytes(
         RevocationReasonTag $reason,
-        string $description
+        string $description,
     ): string {
         return implode([chr($reason->value), $description]);
     }

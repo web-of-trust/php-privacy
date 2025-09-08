@@ -27,19 +27,14 @@ class SignatureTarget extends SignatureSubpacket
      *
      * @param string $data
      * @param bool $critical
-     * @param bool $isLong
      * @return self
      */
-    public function __construct(
-        string $data,
-        bool $critical = false,
-        bool $isLong = false
-    ) {
+    public function __construct(string $data, bool $critical = false)
+    {
         parent::__construct(
             SignatureSubpacketType::SignatureTarget->value,
             $data,
             $critical,
-            $isLong
         );
     }
 
@@ -56,11 +51,11 @@ class SignatureTarget extends SignatureSubpacket
         KeyAlgorithm $keyAlgorithm,
         HashAlgorithm $hashAlgorithm,
         string $hashData,
-        bool $critical = false
+        bool $critical = false,
     ): self {
         return new self(
             self::hashDataToBytes($keyAlgorithm, $hashAlgorithm, $hashData),
-            $critical
+            $critical,
         );
     }
 
@@ -97,7 +92,7 @@ class SignatureTarget extends SignatureSubpacket
     private static function hashDataToBytes(
         KeyAlgorithm $keyAlgorithm,
         HashAlgorithm $hashAlgorithm,
-        string $hashData
+        string $hashData,
     ): string {
         return implode([
             chr($keyAlgorithm->value),

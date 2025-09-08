@@ -28,19 +28,14 @@ class IssuerFingerprint extends SignatureSubpacket
      *
      * @param string $data
      * @param bool $critical
-     * @param bool $isLong
      * @return self
      */
-    public function __construct(
-        string $data,
-        bool $critical = false,
-        bool $isLong = false
-    ) {
+    public function __construct(string $data, bool $critical = false)
+    {
         parent::__construct(
             SignatureSubpacketType::IssuerFingerprint->value,
             $data,
             $critical,
-            $isLong
         );
     }
 
@@ -53,11 +48,11 @@ class IssuerFingerprint extends SignatureSubpacket
      */
     public static function fromKeyPacket(
         KeyPacketInterface $key,
-        bool $critical = false
+        bool $critical = false,
     ): self {
         return new self(
             chr($key->getVersion()) . $key->getFingerprint(),
-            $critical
+            $critical,
         );
     }
 
@@ -70,11 +65,11 @@ class IssuerFingerprint extends SignatureSubpacket
      */
     public static function wildcard(
         bool $isV6 = true,
-        bool $critical = false
+        bool $critical = false,
     ): self {
         return new self(
             chr($isV6 ? 6 : 4) . str_repeat("\x00", $isV6 ? 32 : 20),
-            $critical
+            $critical,
         );
     }
 
