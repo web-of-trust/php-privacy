@@ -155,7 +155,7 @@ class Argon2S2K implements S2KInterface
         $offset += self::SALT_LENGTH;
         $iteration = ord($bytes[$offset++]);
         $parallelism = ord($bytes[$offset++]);
-        $memoryExponent = ord($bytes[$offset++]);
+        $memoryExponent = ord($bytes[$offset]);
         return new self($salt, $iteration, $parallelism, $memoryExponent);
     }
 
