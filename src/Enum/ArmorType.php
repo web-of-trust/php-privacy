@@ -17,18 +17,6 @@ namespace OpenPGP\Enum;
  */
 enum ArmorType
 {
-    /**
-     * Used for multi-part messages where the armor is split
-     * amongst Y parts, and this is the Xth part out of Y.
-     */
-    case MultipartSection;
-
-    /**
-     * Used for multi-part messages, where this is the
-     * Xth part of an unspecified number of parts.
-     * Requires the MESSAGE-ID Armor Header to be used
-     */
-    case MultipartLast;
 
     /**
      * Used for cleartext signed message.
@@ -56,7 +44,7 @@ enum ArmorType
      */
     case Signature;
 
-    const BEGIN_PATTERN = '/^-----BEGIN PGP (MESSAGE, PART \d+\/\d+|MESSAGE, PART \d+|SIGNED MESSAGE|MESSAGE|PUBLIC KEY BLOCK|PRIVATE KEY BLOCK|SIGNATURE)-----$/';
+    const BEGIN_PATTERN = '/^-----BEGIN PGP (SIGNED MESSAGE|MESSAGE|PUBLIC KEY BLOCK|PRIVATE KEY BLOCK|SIGNATURE)-----$/';
 
     /**
      * Construct armor type from begin armored text.
@@ -71,10 +59,6 @@ enum ArmorType
             throw new \UnexpectedValueException("Unknown ASCII armor type");
         }
         return match (1) {
-            preg_match("/MESSAGE, PART \d+\/\d+/", $matches[0])
-                => self::MultipartSection,
-            preg_match("/MESSAGE, PART \d+/", $matches[0])
-                => self::MultipartLast,
             preg_match("/SIGNED MESSAGE/", $matches[0]) => self::SignedMessage,
             preg_match("/MESSAGE/", $matches[0]) => self::Message,
             preg_match("/PUBLIC KEY BLOCK/", $matches[0]) => self::PublicKey,

@@ -27,12 +27,6 @@ final class Armor
     const string SIGNED_MESSAGE_BEGIN = "-----BEGIN PGP SIGNED MESSAGE-----\n";
     const string MESSAGE_END = "-----END PGP MESSAGE-----\n";
 
-    const string MULTIPART_SECTION_MESSAGE_BEGIN = "-----BEGIN PGP MESSAGE, PART %u/%u-----\n";
-    const string MULTIPART_SECTION_MESSAGE_END = "-----END PGP MESSAGE, PART %u/%u-----\n";
-
-    const string MULTIPART_LAST_MESSAGE_BEGIN = "-----BEGIN PGP MESSAGE, PART %u-----\n";
-    const string MULTIPART_LAST_MESSAGE_END = "-----END PGP MESSAGE, PART %u-----\n";
-
     const string PUBLIC_KEY_BLOCK_BEGIN = "-----BEGIN PGP PUBLIC KEY BLOCK-----\n";
     const string PUBLIC_KEY_BLOCK_END = "-----END PGP PUBLIC KEY BLOCK-----\n";
 
@@ -202,8 +196,6 @@ final class Armor
      * @param string $data
      * @param string $text
      * @param array $hashAlgos
-     * @param int $partIndex
-     * @param int $partTotal
      * @param string $customComment
      * @return string
      */
@@ -212,45 +204,9 @@ final class Armor
         string $data,
         string $text = "",
         array $hashAlgos = [],
-        int $partIndex = 0,
-        int $partTotal = 0,
         string $customComment = "",
     ): string {
         $result = match ($type) {
-            ArmorType::MultipartSection => [
-                sprintf(
-                    self::MULTIPART_SECTION_MESSAGE_BEGIN,
-                    $partIndex,
-                    $partTotal,
-                ),
-                self::addHeader($customComment) . Helper::EOL,
-                chunk_split(
-                    Strings::base64_encode($data),
-                    self::TRUNK_SIZE,
-                    Helper::EOL,
-                ),
-                Config::checksumRequired()
-                    ? "=" . self::crc24Checksum($data) . Helper::EOL
-                    : "",
-                sprintf(
-                    self::MULTIPART_SECTION_MESSAGE_END,
-                    $partIndex,
-                    $partTotal,
-                ),
-            ],
-            ArmorType::MultipartLast => [
-                sprintf(self::MULTIPART_LAST_MESSAGE_BEGIN, $partIndex),
-                self::addHeader($customComment) . Helper::EOL,
-                chunk_split(
-                    Strings::base64_encode($data),
-                    self::TRUNK_SIZE,
-                    Helper::EOL,
-                ),
-                Config::checksumRequired()
-                    ? "=" . self::crc24Checksum($data) . Helper::EOL
-                    : "",
-                sprintf(self::MULTIPART_LAST_MESSAGE_END, $partIndex),
-            ],
             ArmorType::SignedMessage => [
                 self::SIGNED_MESSAGE_BEGIN,
                 !empty($hashAlgos)
