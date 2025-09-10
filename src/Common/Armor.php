@@ -41,7 +41,7 @@ final class Armor
     const string HEADER_PATTERN = '/^([^\s:]|[^\s:][^:]*[^\s:]): .+$/';
     const string SPLIT_PATTERN = '/^-----[^-]+-----$/';
 
-    const int TRUNK_SIZE = 76;
+    const int CHUNK_SIZE = 76;
 
     /**
      * Constructor
@@ -225,7 +225,7 @@ final class Armor
                 self::addHeader($customComment) . Helper::EOL,
                 chunk_split(
                     Strings::base64_encode($data),
-                    self::TRUNK_SIZE,
+                    self::CHUNK_SIZE,
                     Helper::EOL,
                 ),
                 Config::checksumRequired()
@@ -238,7 +238,7 @@ final class Armor
                 self::addHeader($customComment) . Helper::EOL,
                 chunk_split(
                     Strings::base64_encode($data),
-                    self::TRUNK_SIZE,
+                    self::CHUNK_SIZE,
                     Helper::EOL,
                 ),
                 Config::checksumRequired()
@@ -251,7 +251,7 @@ final class Armor
                 self::addHeader($customComment) . Helper::EOL,
                 chunk_split(
                     Strings::base64_encode($data),
-                    self::TRUNK_SIZE,
+                    self::CHUNK_SIZE,
                     Helper::EOL,
                 ),
                 Config::checksumRequired()
@@ -264,7 +264,7 @@ final class Armor
                 self::addHeader($customComment) . Helper::EOL,
                 chunk_split(
                     Strings::base64_encode($data),
-                    self::TRUNK_SIZE,
+                    self::CHUNK_SIZE,
                     Helper::EOL,
                 ),
                 Config::checksumRequired()
@@ -277,7 +277,7 @@ final class Armor
                 self::addHeader($customComment) . Helper::EOL,
                 chunk_split(
                     Strings::base64_encode($data),
-                    self::TRUNK_SIZE,
+                    self::CHUNK_SIZE,
                     Helper::EOL,
                 ),
                 Config::checksumRequired()
