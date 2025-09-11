@@ -115,11 +115,11 @@ enum Ecc: string
     {
         return match ($this) {
             self::Secp256r1,
-            self::Secp384r1,
+            self::BrainpoolP256r11,
             self::Ed25519,
             self::Curve25519
                 => SymmetricAlgorithm::Aes128,
-            self::BrainpoolP256r1,
+            self::Secp384r,
             self::BrainpoolP384r1
                 => SymmetricAlgorithm::Aes192,
             self::Secp521r1,
