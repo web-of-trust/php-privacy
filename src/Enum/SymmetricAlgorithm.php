@@ -110,7 +110,7 @@ enum SymmetricAlgorithm: int
      */
     public function keySizeInByte(): int
     {
-        return $this->keySize() + 7 >> 3;
+        return ($this->keySize() + 7) >> 3;
     }
 
     /**

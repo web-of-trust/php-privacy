@@ -61,7 +61,7 @@ final class Helper
      */
     public static function bit2ByteLength(int $bitLength): int
     {
-        return $bitLength + 7 >> 3;
+        return ($bitLength + 7) >> 3;
     }
 
     /**
