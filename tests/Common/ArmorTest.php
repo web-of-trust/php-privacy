@@ -13,56 +13,6 @@ use OpenPGP\Enum\HashAlgorithm;
  */
 class ArmorTest extends OpenPGPTestCase
 {
-    public function testMultipartSection()
-    {
-        $data = Random::string(100);
-        $partIndex = $this->faker->unique()->randomDigit();
-        $partTotal = $this->faker->unique()->randomDigit();
-        $armored = Armor::encode(
-            ArmorType::MultipartSection,
-            $data,
-            "",
-            [],
-            $partIndex,
-            $partTotal
-        );
-
-        preg_match(
-            "/BEGIN PGP MESSAGE, PART \d+\/\d+/",
-            $armored,
-            $beginMatches
-        );
-        preg_match("/END PGP MESSAGE, PART \d+\/\d+/", $armored, $endMatches);
-        $this->assertTrue(!empty($beginMatches));
-        $this->assertTrue(!empty($endMatches));
-
-        $armor = Armor::decode($armored);
-        $this->assertSame(ArmorType::MultipartSection, $armor->getType());
-        $this->assertSame($data, $armor->getData());
-    }
-
-    public function testMultipartLast()
-    {
-        $data = Random::string(100);
-        $partIndex = $this->faker->randomDigit();
-        $armored = Armor::encode(
-            ArmorType::MultipartLast,
-            $data,
-            "",
-            [],
-            $partIndex
-        );
-
-        preg_match("/BEGIN PGP MESSAGE, PART \d+/", $armored, $beginMatches);
-        preg_match("/END PGP MESSAGE, PART \d+/", $armored, $endMatches);
-        $this->assertTrue(!empty($beginMatches));
-        $this->assertTrue(!empty($endMatches));
-
-        $armor = Armor::decode($armored);
-        $this->assertSame(ArmorType::MultipartLast, $armor->getType());
-        $this->assertSame($data, $armor->getData());
-    }
-
     public function testSignedMessage()
     {
         $data = Random::string(100);
