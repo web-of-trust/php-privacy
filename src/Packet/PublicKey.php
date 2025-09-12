@@ -239,7 +239,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
             $this->keyAlgorithm === KeyAlgorithm::Ed25519
                 => EdDSACurve::Ed25519->hashAlgorithm(),
             $this->keyAlgorithm === KeyAlgorithm::Ed448
-                => EdDSACurve::Ed25519->hashAlgorithm(),
+                => EdDSACurve::Ed448->hashAlgorithm(),
             default => $preferredHash ?? Config::getPreferredHash(),
         };
     }
