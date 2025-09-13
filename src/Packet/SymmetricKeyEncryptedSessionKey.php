@@ -304,13 +304,12 @@ class SymmetricKeyEncryptedSessionKey extends AbstractPacket implements
                             )
                             : $key;
                     $cipher = $this->aead->cipherEngine($kek, $this->symmetric);
-                    $decrypted = $cipher->decrypt(
-                        $this->encrypted,
-                        $this->iv,
-                        $aData,
-                    );
                     $sessionKey = new Key\SessionKey(
-                        $decrypted,
+                        $cipher->decrypt(
+                            $this->encrypted,
+                            $this->iv,
+                            $aData,
+                        ),
                         $this->symmetric,
                     );
                 } else {
