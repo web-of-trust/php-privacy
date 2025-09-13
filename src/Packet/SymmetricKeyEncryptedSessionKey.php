@@ -325,12 +325,11 @@ class SymmetricKeyEncryptedSessionKey extends AbstractPacket implements
                         ),
                     );
                     $decrypted = $cipher->decrypt($this->encrypted);
-                    $sessionKeySymmetric = SymmetricAlgorithm::from(
-                        ord($decrypted[0]),
-                    );
                     $sessionKey = new Key\SessionKey(
                         substr($decrypted, 1),
-                        $sessionKeySymmetric,
+                        SymmetricAlgorithm::from(
+                            ord($decrypted[0]),
+                        ),
                     );
                 }
             }
