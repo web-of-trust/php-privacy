@@ -92,7 +92,7 @@ EOT;
             $compressed->getAlgorithm()
         );
         $literalData = $compressed->getPacketList()->offsetGet(0);
-        $this->assertSame("Hello PHP PG", trim($literalData->getData()));
+        $this->assertSame("Hello PHP PG\n", $literalData->getData());
     }
 
     public function testZlibDecompress()
@@ -118,7 +118,7 @@ EOT;
             $compressed->getAlgorithm()
         );
         $literalData = $compressed->getPacketList()->offsetGet(0);
-        $this->assertSame("Hello PHP PG", trim($literalData->getData()));
+        $this->assertSame("Hello PHP PG\n", $literalData->getData());
     }
 
     public function testBZip2Decompress()
@@ -145,6 +145,6 @@ EOT;
             $compressed->getAlgorithm()
         );
         $literalData = $compressed->getPacketList()->offsetGet(0);
-        $this->assertSame("Hello PHP PG", trim($literalData->getData()));
+        $this->assertSame("Hello PHP PG\n", $literalData->getData());
     }
 }
