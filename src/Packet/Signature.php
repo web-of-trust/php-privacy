@@ -728,7 +728,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         $timestamp = $time?->getTimestamp() ?? time();
         $creationTime = $this->getCreationTime()?->getTimestamp() ?? 0;
         $expirationTime = $this->getExpirationTime()?->getTimestamp() ?? time();
-        return !($creationTime < $timestamp && $timestamp < $expirationTime);
+        return !($creationTime <= $timestamp && $timestamp <= $expirationTime);
     }
 
     /**
