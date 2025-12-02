@@ -60,7 +60,7 @@ class SignatureExpirationTime extends SignatureSubpacket
      */
     public function getExpirationTime(): DateTimeInterface
     {
-        return new \DateTime()->setTimestamp(
+        return (new \DateTime)->setTimestamp(
             Helper::bytesToLong($this->getData()),
         );
     }

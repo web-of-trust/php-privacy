@@ -272,7 +272,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         $version = ord($bytes[$offset++]);
 
         // A four-octet number denoting the time that the key was created.
-        $creationTime = new \DateTime()->setTimestamp(
+        $creationTime = (new \DateTime)->setTimestamp(
             Helper::bytesToLong($bytes, $offset),
         );
         $offset += 4;

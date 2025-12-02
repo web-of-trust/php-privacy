@@ -47,7 +47,7 @@ class LiteralData extends AbstractPacket implements
         ?DateTimeInterface $time = null,
     ) {
         parent::__construct(PacketTag::LiteralData);
-        $this->time = $time ?? new \DateTime()->setTimestamp(time());
+        $this->time = $time ?? (new \DateTime)->setTimestamp(time());
     }
 
     /**
@@ -61,7 +61,7 @@ class LiteralData extends AbstractPacket implements
         $filename = substr($bytes, $offset, $length);
 
         $offset += $length;
-        $time = new \DateTime()->setTimestamp(
+        $time = (new \DateTime)->setTimestamp(
             Helper::bytesToLong($bytes, $offset),
         );
 

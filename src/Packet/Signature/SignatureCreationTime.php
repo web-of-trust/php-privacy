@@ -59,7 +59,7 @@ class SignatureCreationTime extends SignatureSubpacket
      */
     public function getCreationTime(): DateTimeInterface
     {
-        return new \DateTime()->setTimestamp(
+        return (new \DateTime)->setTimestamp(
             Helper::bytesToLong($this->getData()),
         );
     }
