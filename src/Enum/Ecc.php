@@ -119,7 +119,7 @@ enum Ecc: string
             self::Ed25519,
             self::Curve25519
                 => SymmetricAlgorithm::Aes128,
-            self::Secp384r,
+            self::Secp384r1,
             self::BrainpoolP384r1
                 => SymmetricAlgorithm::Aes192,
             self::Secp521r1,
