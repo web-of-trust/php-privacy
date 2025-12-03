@@ -170,3 +170,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.1.0...2.1.1)
 - Unwrap compressed before compress.
 - Fix compression argument passing to compress message.
+
+## 2.2.0 - released 2025-12-03
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.1.1...2.2.0)
+- Remove is long sub packet.
+- Remove multi part armored message.
