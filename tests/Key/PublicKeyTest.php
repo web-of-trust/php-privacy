@@ -12,8 +12,6 @@ use OpenPGP\Tests\OpenPGPTestCase;
  */
 class PublicKeyTest extends OpenPGPTestCase
 {
-    const LITERAL_TEXT = "Hello PHP PG";
-
     public function testReadRSAPublicKey()
     {
         $publicKey = OpenPGP::readPublicKey(
