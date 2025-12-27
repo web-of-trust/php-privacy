@@ -25,7 +25,7 @@ use OpenPGP\Type\{
 /**
  * Signature class
  *
- * Class that represents a detacted OpenPGP signature.
+ * Class that represents a detached OpenPGP signature.
  *
  * @package  OpenPGP
  * @category Message
