@@ -234,7 +234,7 @@ final class Armor
             ArmorType::SignedMessage => [
                 self::SIGNED_MESSAGE_BEGIN,
                 "Hash: $hashAlgo" . Helper::EOL . Helper::EOL,
-                preg_replace("/^- /m", "- - ", $text) . Helper::EOL,
+                preg_replace("/^-/m", "- -", $text) . Helper::EOL,
                 self::SIGNATURE_BEGIN,
                 self::addHeader($customComment) . Helper::EOL,
                 chunk_split(
