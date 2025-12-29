@@ -36,7 +36,6 @@ final class Armor
     const string SIGNATURE_BEGIN = "-----BEGIN PGP SIGNATURE-----\n";
     const string SIGNATURE_END = "-----END PGP SIGNATURE-----\n";
 
-    const string DASH_PATTERN = "/^- /m";
     const string EMPTY_PATTERN = '/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/';
     const string HEADER_PATTERN = '/^([^\s:]|[^\s:][^:]*[^\s:]): .+$/';
     const string SPLIT_PATTERN = '/^-----[^-]+-----$/';
@@ -182,7 +181,7 @@ final class Armor
             $headers,
             $data,
             preg_replace(
-                self::DASH_PATTERN,
+                "/^- /m",
                 "",
                 implode(Helper::CRLF, $textLines),
             ), // Reverse dash-escaped text
@@ -220,7 +219,7 @@ final class Armor
                         Helper::EOL .
                         Helper::EOL
                     : Helper::EOL,
-                preg_replace(self::DASH_PATTERN, "- - ", $text) . Helper::EOL, // Dash-escape text
+                preg_replace("/^-/m", "- -", $text) . Helper::EOL, // Dash-escape text
                 self::SIGNATURE_BEGIN,
                 self::addHeader($customComment) . Helper::EOL,
                 chunk_split(
