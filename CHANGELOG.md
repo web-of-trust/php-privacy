@@ -175,3 +175,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.1.1...2.2.0)
 - Remove is long sub packet.
 - Remove multi part armored message.
+
+## 2.2.1 - released 2025-12-30
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.0...2.2.1)
+- Fix dash-escape armor text.
