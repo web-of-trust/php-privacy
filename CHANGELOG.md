@@ -129,6 +129,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Refactor encrypt secret key packet.
 - Refactor decrypt secret key packet.
 
+## 1.2.6 - released 2025-12-30
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.6...1.2.5)
+- Fix dash-escape armor text.
+
 ## 2.0.0 - released 2024-10-01
 - Release to major version 2
 
