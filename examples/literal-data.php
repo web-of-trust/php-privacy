@@ -169,6 +169,7 @@ $curve448PrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphrase);
 echo "Sign & encrypt literal data message with AES128 cipher:" .
     PHP_EOL .
     PHP_EOL;
+Config::setPreferredSymmetric(SymmetricAlgorithm::Aes128);
 $literalMessage = OpenPGP::createLiteralMessage(random_bytes(10000));
 $encryptedMessage = OpenPGP::encrypt(
     $literalMessage,
