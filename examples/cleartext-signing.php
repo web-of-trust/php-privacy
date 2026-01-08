@@ -4,7 +4,7 @@ require_once dirname(__DIR__) . "/vendor/autoload.php";
 
 use OpenPGP\OpenPGP;
 
-$passphase = "8pM1b;)|5;lD7/SM51o>p1Vp%F}u=AO7";
+$passphrase = "8pM1b;)|5;lD7/SM51o>p1Vp%F}u=AO7";
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -67,7 +67,7 @@ JufkRd7zuLxBKQIPpDhrZEeGvClv
 =B8qK
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-$rsaPrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
+$rsaPrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphrase);
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -100,7 +100,7 @@ ZgPDYnRLXCjPFA==
 =42yk
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-$eccPrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
+$eccPrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphrase);
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -128,7 +128,7 @@ OWcHlS3cfS2V0+EdtxA=
 =xBiu
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-$curve25519PrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
+$curve25519PrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphrase);
 
 $keyData = <<<EOT
 -----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -162,7 +162,7 @@ df0zvgUA1R2LL5cFCeqL+v/SEmEuQm3skaPHAPtOusu/60UhyA==
 =aLGb
 -----END PGP PRIVATE KEY BLOCK-----
 EOT;
-$curve448PrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphase);
+$curve448PrivateKey = OpenPGP::decryptPrivateKey($keyData, $passphrase);
 
 echo "Sign cleartext message:" . PHP_EOL . PHP_EOL;
 $text = <<<EOT
