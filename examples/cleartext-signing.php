@@ -173,9 +173,9 @@ nulla dui, vestibulum aliquam ultrices hendrerit, euismod iaculis magna. Praesen
 auctor ac eget tellus.
 
 What we need from the grocery store:
-- tofu
-- vegetables
-- noodles
+-tofu
+-vegetables
+-noodles
 EOT;
 $signedMessage = OpenPGP::signCleartext($text, [
     $rsaPrivateKey,
