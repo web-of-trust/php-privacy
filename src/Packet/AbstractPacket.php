@@ -114,7 +114,7 @@ abstract class AbstractPacket implements
 
         while ($dataLengh >= self::PARTIAL_MIN_SIZE) {
             $maxSize = min(self::PARTIAL_MAX_SIZE, $dataLengh);
-            $powerOf2 = min((log($maxSize) / M_LN2) | 0, 30);
+            $powerOf2 = min(floor(log($maxSize) / M_LN2) | 0, 30);
             $chunkSize = 1 << $powerOf2;
 
             $partialData[] = implode([
