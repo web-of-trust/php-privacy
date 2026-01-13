@@ -132,3 +132,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 1.2.6 - released 2025-12-30
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.6...1.2.5)
 - Fix dash-escape armor text.
+
+## 1.2.7 - released 2026-01-13
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.7...1.2.6)
+- Fix precision loss warning.
