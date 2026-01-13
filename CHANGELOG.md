@@ -133,6 +133,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.6...1.2.5)
 - Fix dash-escape armor text.
 
+## 1.2.7 - released 2026-01-13
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.7...1.2.6)
+- Fix precision loss warning.
+
 ## 2.0.0 - released 2024-10-01
 - Release to major version 2
 
@@ -183,3 +187,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 2.2.1 - released 2025-12-30
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.0...2.2.1)
 - Fix dash-escape armor text.
+
+## 2.2.2 - released 2026-01-13
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.1...2.2.2)
+- Fix precision loss warning.
+- Support Symfony Process 8.0
