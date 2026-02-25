@@ -34,6 +34,8 @@ class CAST5 extends BlockCipher
 
     const int BLOCK_SIZE = 8;
 
+    protected $key_length = 16;
+
     /**
      * @var array<int>
      */

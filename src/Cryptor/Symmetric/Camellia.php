@@ -1119,6 +1119,8 @@ class Camellia extends BlockCipher
 
     private bool $keyIs128 = false;
 
+    protected $key_length = 16;
+
     /**
      * Constructor
      *

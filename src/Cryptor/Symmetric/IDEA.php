@@ -36,6 +36,8 @@ class IDEA extends BlockCipher
     const int BLOCK_SIZE = 8;
     const int KEY_SIZE = 52;
 
+    protected $key_length = 16;
+
     /**
      * Constructor
      *
