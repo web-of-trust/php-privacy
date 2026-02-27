@@ -142,6 +142,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fix creation of dynamic property is deprecated.
 - Fix implicit conversion from float to int loses precision.
 
+## 1.2.9 - released 2026-02-27
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.8...1.2.9)
+- Refactor key material constructor.
+- Use rsa openssl sign & verify if available.
+
 ## 2.0.0 - released 2024-10-01
 - Release to major version 2
 
@@ -202,3 +207,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.2...2.2.3)
 - Fix creation of dynamic property is deprecated.
 - Fix implicit conversion from float to int loses precision.
+
+## 2.2.4 - released 2026-02-27
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.3...2.2.4)
+- Refactor key material constructor.
+- Use rsa openssl sign & verify if available.
