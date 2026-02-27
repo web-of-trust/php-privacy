@@ -97,35 +97,18 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
     public static function generate(
         RSAKeySize $keySize = RSAKeySize::Normal,
     ): self {
-        if (extension_loaded("openssl")) {
-            $pkey = openssl_pkey_new([
-                'private_key_type' => OPENSSL_KEYTYPE_RSA,
-                'private_key_bits' => $keySize->value,
-            ]);
-            $params = openssl_pkey_get_details($pkey)["rsa"];
-            $modulus = new BigInteger($params["n"], 256);
-            $publicExponent = new BigInteger($params["e"], 256);
-            $privateExponent = new BigInteger($params["d"], 256);
-            $primeP = new BigInteger($params["p"], 256);
-            $primeQ = new BigInteger($params["q"], 256);
-        }
-        else {
-            $privateKey = RSA::createKey($keySize->value);
-            $params = PKCS8::load($privateKey->toString("PKCS8"));
-            $modulus = $params["modulus"];
-            $publicExponent = $params["publicExponent"];
-            $privateExponent = $params["privateExponent"];
-            $primeP = $params["primes"][1];
-            $primeQ = $params["primes"][2];
-        }
+        $privateKey = RSA::createKey($keySize->value);
+        $params = PKCS8::load($privateKey->toString("PKCS8"));
+        $primeP = $params["primes"][1];
+        $primeQ = $params["primes"][2];
         return new self(
-            $privateExponent,
+            $params["privateExponent"],
             $primeP,
             $primeQ,
             $primeP->modInverse($primeQ),
             new RSAPublicKeyMaterial(
-                $modulus,
-                $publicExponent,
+                $params["modulus"],
+                $params["publicExponent"],
             ),
         );
     }
