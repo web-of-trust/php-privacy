@@ -273,10 +273,20 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
      */
     public function sign(HashAlgorithm $hash, string $message): string
     {
-        $privateKey = $this->privateKey
-            ->withHash(strtolower($hash->name))
-            ->withPadding(RSA::SIGNATURE_PKCS1);
-        $signature = $privateKey->sign($message);
+        if (extension_loaded("openssl")) {
+            $signature = openssl_sign(
+                $message,
+                $signature,
+                openssl_pkey_get_private($this->privateKey->toString("PKCS8")),
+                strtolower(str_replace("_", "-", $hash->name)),
+            );
+        }
+        else {
+            $signature = $this->privateKey
+                ->withHash(strtolower($hash->name))
+                ->withPadding(RSA::SIGNATURE_PKCS1)
+                ->sign($message);
+        }
         return implode([pack("n", strlen($signature) * 8), $signature]);
     }
 }

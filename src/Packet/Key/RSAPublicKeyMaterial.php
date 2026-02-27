@@ -156,15 +156,28 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
         string $message,
         string $signature
     ): bool {
-        $publicKey = $this->publicKey
+        if (extension_loaded("openssl")) {
+            return openssl_verify(
+                $message,
+                substr(
+                    $signature,
+                    2,
+                    Helper::bit2ByteLength(Helper::bytesToShort($signature)),
+                ),
+                openssl_pkey_get_public($this->publicKey->toString("PKCS8")),
+                strtolower(str_replace("_", "-", $hash->name)),
+            ) === 1;
+        }
+        return $this->publicKey
             ->withHash(strtolower($hash->name))
-            ->withPadding(RSA::SIGNATURE_PKCS1);
-        $bitLength = Helper::bytesToShort($signature);
-        $signatureBytes = substr(
-            $signature,
-            2,
-            Helper::bit2ByteLength($bitLength)
-        );
-        return $publicKey->verify($message, $signatureBytes);
+            ->withPadding(RSA::SIGNATURE_PKCS1)
+            ->verify(
+                $message,
+                substr(
+                    $signature,
+                    2,
+                    Helper::bit2ByteLength(Helper::bytesToShort($signature)),
+                ),
+            );
     }
 }
