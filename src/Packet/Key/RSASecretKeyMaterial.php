@@ -39,7 +39,6 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
      * @param BigInteger $primeQ
      * @param BigInteger $coefficient
      * @param KeyMaterialInterface $publicMaterial
-     * @param RSAPrivateKey $privateKey
      * @return self
      */
     public function __construct(
@@ -48,17 +47,14 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
         private readonly BigInteger $primeQ,
         private readonly BigInteger $coefficient,
         private readonly KeyMaterialInterface $publicMaterial,
-        ?RSAPrivateKey $privateKey = null,
     ) {
-        $this->privateKey =
-            $privateKey ??
-            RSA::loadPrivateKey([
-                "privateExponent" => $exponent,
-                "p" => $primeP,
-                "q" => $primeQ,
-                "u" => $coefficient,
-                ...$publicMaterial->getParameters(),
-            ]);
+        $this->privateKey = RSA::loadPrivateKey([
+            "privateExponent" => $exponent,
+            "p" => $primeP,
+            "q" => $primeQ,
+            "u" => $coefficient,
+            ...$publicMaterial->getParameters(),
+        ]);
     }
 
     /**
@@ -101,21 +97,36 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
     public static function generate(
         RSAKeySize $keySize = RSAKeySize::Normal,
     ): self {
-        $privateKey = RSA::createKey($keySize->value);
-        $params = PKCS8::load($privateKey->toString("PKCS8"));
-        $primeP = $params["primes"][1];
-        $primeQ = $params["primes"][2];
+        if (extension_loaded("openssl")) {
+            $pkey = openssl_pkey_new([
+                'private_key_type' => OPENSSL_KEYTYPE_RSA,
+                'private_key_bits' => $keySize->value,
+            ]);
+            $params = openssl_pkey_get_details($pkey)["rsa"];
+            $modulus = new BigInteger($params["n"], 256);
+            $publicExponent = new BigInteger($params["e"], 256);
+            $privateExponent = new BigInteger($params["d"], 256);
+            $primeP = new BigInteger($params["p"], 256);
+            $primeQ = new BigInteger($params["q"], 256);
+        }
+        else {
+            $privateKey = RSA::createKey($keySize->value);
+            $params = PKCS8::load($privateKey->toString("PKCS8"));
+            $modulus = $params["modulus"];
+            $publicExponent = $params["publicExponent"];
+            $privateExponent = $params["privateExponent"];
+            $primeP = $params["primes"][1];
+            $primeQ = $params["primes"][2];
+        }
         return new self(
-            $params["privateExponent"],
+            $privateExponent,
             $primeP,
             $primeQ,
             $primeP->modInverse($primeQ),
             new RSAPublicKeyMaterial(
-                $params["modulus"],
-                $params["publicExponent"],
-                $privateKey->getPublicKey(),
+                $modulus,
+                $publicExponent,
             ),
-            $privateKey,
         );
     }
 
@@ -273,10 +284,26 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
      */
     public function sign(HashAlgorithm $hash, string $message): string
     {
-        $signature = $this->privateKey
-            ->withHash(strtolower($hash->name))
-            ->withPadding(RSA::SIGNATURE_PKCS1)
-            ->sign($message);
+        if (extension_loaded("openssl")) {
+            $signature = $this->opensslSign($hash, $message);
+        }
+        else {
+            $signature = $this->privateKey
+                ->withHash(strtolower($hash->name))
+                ->withPadding(RSA::SIGNATURE_PKCS1)
+                ->sign($message);
+        }
         return implode([pack("n", strlen($signature) * 8), $signature]);
+    }
+
+    private function opensslSign(HashAlgorithm $hash, string $message): string
+    {
+        openssl_sign(
+            $message,
+            $signature,
+            openssl_pkey_get_private($this->privateKey->toString("PKCS8")),
+            strtolower(str_replace("_", "-", $hash->name)),
+        );
+        return $signature;
     }
 }

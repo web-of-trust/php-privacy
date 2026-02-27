@@ -36,20 +36,16 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
      *
      * @param BigInteger $modulus
      * @param BigInteger $exponent
-     * @param RSAPublicKey $publicKey
      * @return self
      */
     public function __construct(
         private readonly BigInteger $modulus,
         private readonly BigInteger $exponent,
-        ?RSAPublicKey $publicKey = null,
     ) {
-        $this->publicKey =
-            $publicKey ??
-            RSA::loadPublicKey([
-                "modulus" => $modulus,
-                "publicExponent" => $exponent,
-            ]);
+        $this->publicKey = RSA::loadPublicKey([
+            "modulus" => $modulus,
+            "publicExponent" => $exponent,
+        ]);
     }
 
     /**
@@ -156,6 +152,9 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
         string $message,
         string $signature,
     ): bool {
+        if (extension_loaded("openssl")) {
+            return $this->opensslVerify($hash, $message, $signature);
+        }
         return $this->publicKey
             ->withHash(strtolower($hash->name))
             ->withPadding(RSA::SIGNATURE_PKCS1)
@@ -167,5 +166,23 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
                     Helper::bit2ByteLength(Helper::bytesToShort($signature)),
                 ),
             );
+    }
+
+    private function opensslVerify(
+        HashAlgorithm $hash,
+        string $message,
+        string $signature,
+    )
+    {
+        return openssl_verify(
+            $message,
+            substr(
+                $signature,
+                2,
+                Helper::bit2ByteLength(Helper::bytesToShort($signature)),
+            ),
+            openssl_pkey_get_public($this->publicKey->toString("PKCS8")),
+            strtolower(str_replace("_", "-", $hash->name)),
+        ) === 1;
     }
 }
