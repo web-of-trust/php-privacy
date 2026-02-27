@@ -268,7 +268,7 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
     public function sign(HashAlgorithm $hash, string $message): string
     {
         if (extension_loaded("openssl")) {
-            $signature = openssl_sign(
+            openssl_sign(
                 $message,
                 $signature,
                 openssl_pkey_get_private($this->privateKey->toString("PKCS8")),
