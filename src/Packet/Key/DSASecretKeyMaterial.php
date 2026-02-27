@@ -36,20 +36,16 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
      *
      * @param BigInteger $exponent
      * @param KeyMaterialInterface $publicMaterial
-     * @param DSAPrivateKey $privateKey
      * @return self
      */
     public function __construct(
         private readonly BigInteger $exponent,
         private readonly KeyMaterialInterface $publicMaterial,
-        ?DSAPrivateKey $privateKey = null,
     ) {
-        $this->privateKey =
-            $privateKey ??
-            DSA::loadPrivateKey([
-                "x" => $exponent,
-                ...$publicMaterial->getParameters(),
-            ]);
+        $this->privateKey = DSA::loadPrivateKey([
+            "x" => $exponent,
+            ...$publicMaterial->getParameters(),
+        ]);
     }
 
     /**
@@ -84,9 +80,7 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
                 $params["q"],
                 $params["g"],
                 $params["g"]->powMod($params["x"], $params["p"]),
-                $privateKey->getPublicKey(),
             ),
-            $privateKey,
         );
     }
 

@@ -41,25 +41,19 @@ class EdDSAPublicKeyMaterial implements
      *
      * @param string $public
      * @param TwistedEdwards $curve
-     * @param ECPublicKey $publicKey
      * @return self
      */
     public function __construct(
         private readonly string $public,
         TwistedEdwards $curve,
-        ?ECPublicKey $publicKey = null,
     ) {
-        if ($publicKey instanceof ECPublicKey) {
-            $this->publicKey = $publicKey;
-        } else {
-            $this->publicKey = EC::loadPublicKeyFormat(
-                "PKCS8",
-                PKCS8::savePublicKey(
-                    $curve,
-                    PKCS8::extractPoint($public, $curve),
-                ),
-            );
-        }
+        $this->publicKey = EC::loadPublicKeyFormat(
+            "PKCS8",
+            PKCS8::savePublicKey(
+                $curve,
+                PKCS8::extractPoint($public, $curve),
+            ),
+        );
     }
 
     /**

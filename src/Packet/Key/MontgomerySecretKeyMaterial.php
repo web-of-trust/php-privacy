@@ -36,22 +36,16 @@ class MontgomerySecretKeyMaterial implements
      *
      * @param string $secret
      * @param KeyMaterialInterface $publicMaterial
-     * @param ECPrivateKey $privateKey
      * @return self
      */
     public function __construct(
         private readonly string $secret,
         private readonly KeyMaterialInterface $publicMaterial,
-        ?ECPrivateKey $privateKey = null,
     ) {
-        if ($privateKey instanceof ECPrivateKey) {
-            $this->privateKey = $privateKey;
-        } else {
-            $this->privateKey = EC::loadPrivateKeyFormat(
-                "MontgomeryPrivate",
-                $secret,
-            );
-        }
+        $this->privateKey = EC::loadPrivateKeyFormat(
+            "MontgomeryPrivate",
+            $secret,
+        );
     }
 
     /**
@@ -88,9 +82,7 @@ class MontgomerySecretKeyMaterial implements
             $secret,
             new MontgomeryPublicKeyMaterial(
                 $privateKey->getEncodedCoordinates(),
-                $privateKey->getPublicKey(),
             ),
-            $privateKey,
         );
     }
 

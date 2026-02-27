@@ -38,7 +38,6 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
      * @param BigInteger $order
      * @param BigInteger $generator
      * @param BigInteger $exponent
-     * @param DSAPublicKey $publicKey
      * @return self
      */
     public function __construct(
@@ -46,16 +45,13 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
         private readonly BigInteger $order,
         private readonly BigInteger $generator,
         private readonly BigInteger $exponent,
-        ?DSAPublicKey $publicKey = null,
     ) {
-        $this->publicKey =
-            $publicKey ??
-            DSA::loadPublicKey([
-                "y" => $exponent,
-                "p" => $prime,
-                "q" => $order,
-                "g" => $generator,
-            ]);
+        $this->publicKey = DSA::loadPublicKey([
+            "y" => $exponent,
+            "p" => $prime,
+            "q" => $order,
+            "g" => $generator,
+        ]);
     }
 
     /**

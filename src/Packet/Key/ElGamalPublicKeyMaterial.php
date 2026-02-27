@@ -34,17 +34,14 @@ class ElGamalPublicKeyMaterial implements KeyMaterialInterface
      * @param BigInteger $prime
      * @param BigInteger $generator
      * @param BigInteger $exponent
-     * @param PublicKey $publicKey
      * @return self
      */
     public function __construct(
         private readonly BigInteger $prime,
         private readonly BigInteger $generator,
         private readonly BigInteger $exponent,
-        ?PublicKey $publicKey = null,
     ) {
-        $this->publicKey =
-            $publicKey ?? new PublicKey($exponent, $prime, $generator);
+        $this->publicKey = new PublicKey($exponent, $prime, $generator);
     }
 
     /**

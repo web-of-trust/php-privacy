@@ -70,9 +70,7 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
                     $curve->hashAlgorithm(),
                     $curve->symmetricAlgorithm(),
                     ECDHPublicKeyMaterial::DEFAULT_RESERVED,
-                    $privateKey->getPublicKey(),
                 ),
-                $privateKey,
             );
         } else {
             throw new \InvalidArgumentException(

@@ -34,21 +34,15 @@ class MontgomeryPublicKeyMaterial implements
      * Constructor
      *
      * @param string $public
-     * @param ECPublicKey $publicKey
      * @return self
      */
     public function __construct(
         private readonly string $public,
-        ?ECPublicKey $publicKey = null,
     ) {
-        if ($publicKey instanceof ECPublicKey) {
-            $this->publicKey = $publicKey;
-        } else {
-            $this->publicKey = EC::loadPublicKeyFormat(
-                "MontgomeryPublic",
-                $public,
-            );
-        }
+        $this->publicKey = EC::loadPublicKeyFormat(
+            "MontgomeryPublic",
+            $public,
+        );
     }
 
     /**

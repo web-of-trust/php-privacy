@@ -40,30 +40,24 @@ class EdDSASecretKeyMaterial implements
      *
      * @param string $secret
      * @param KeyMaterialInterface $publicMaterial
-     * @param ECPrivateKey $privateKey
      * @return self
      */
     public function __construct(
         private readonly string $secret,
         private readonly KeyMaterialInterface $publicMaterial,
-        ?ECPrivateKey $privateKey = null,
     ) {
-        if ($privateKey instanceof ECPrivateKey) {
-            $this->privateKey = $privateKey;
-        } else {
-            $params = $publicMaterial->getParameters();
-            $curve = $params["curve"];
-            $arr = $curve->extractSecret($secret);
-            $this->privateKey = EC::loadPrivateKeyFormat(
-                "PKCS8",
-                PKCS8::savePrivateKey(
-                    $arr["dA"],
-                    $curve,
-                    $params["QA"],
-                    $arr["secret"],
-                ),
-            );
-        }
+        $params = $publicMaterial->getParameters();
+        $curve = $params["curve"];
+        $arr = $curve->extractSecret($secret);
+        $this->privateKey = EC::loadPrivateKeyFormat(
+            "PKCS8",
+            PKCS8::savePrivateKey(
+                $arr["dA"],
+                $curve,
+                $params["QA"],
+                $arr["secret"],
+            ),
+        );
     }
 
     /**
@@ -105,9 +99,7 @@ class EdDSASecretKeyMaterial implements
             new EdDSAPublicKeyMaterial(
                 $privateKey->getEncodedCoordinates(),
                 $params["curve"],
-                $privateKey->getPublicKey(),
             ),
-            $privateKey,
         );
     }
 
