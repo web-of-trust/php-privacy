@@ -32,7 +32,6 @@ class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
      * @param HashAlgorithm $kdfHash
      * @param SymmetricAlgorithm $kdfSymmetric
      * @param int $reserved
-     * @param PublicKey $publicKey
      * @return self
      */
     public function __construct(
@@ -41,9 +40,8 @@ class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
         private readonly HashAlgorithm $kdfHash,
         private readonly SymmetricAlgorithm $kdfSymmetric,
         private readonly int $reserved = self::DEFAULT_RESERVED,
-        ?PublicKey $publicKey = null,
     ) {
-        parent::__construct($oid, $q, $publicKey);
+        parent::__construct($oid, $q);
     }
 
     /**
