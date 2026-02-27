@@ -38,38 +38,32 @@ abstract class ECPublicKeyMaterial implements KeyMaterialInterface
      *
      * @param string $oid
      * @param BigInteger $q
-     * @param ECPublicKey $publicKey
      * @return self
      */
     public function __construct(
         private readonly string $oid,
         private readonly BigInteger $q,
-        ?ECPublicKey $publicKey = null
     ) {
+        $format = "PKCS8";
         $this->curveOid = CurveOid::fromOid($oid);
-        if ($publicKey instanceof ECPublicKey) {
-            $this->publicKey = $publicKey;
-        } else {
-            $format = "PKCS8";
-            $curve = $this->curveOid->getCurve();
-            switch ($this->curveOid) {
-                case CurveOid::Curve25519:
-                    $key = substr($q->toBytes(), 1);
-                    $format = "MontgomeryPublic";
-                    break;
-                default:
-                    $point =
-                        $this->curveOid === CurveOid::Ed25519
-                            ? substr($q->toBytes(), 1)
-                            : "\x00" . $q->toBytes();
-                    $key = PKCS8::savePublicKey(
-                        $curve,
-                        PKCS8::extractPoint($point, $curve)
-                    );
-                    break;
-            }
-            $this->publicKey = EC::loadPublicKeyFormat($format, $key);
+        $curve = $this->curveOid->getCurve();
+        switch ($this->curveOid) {
+            case CurveOid::Curve25519:
+                $key = substr($q->toBytes(), 1);
+                $format = "MontgomeryPublic";
+                break;
+            default:
+                $point =
+                    $this->curveOid === CurveOid::Ed25519
+                        ? substr($q->toBytes(), 1)
+                        : "\x00" . $q->toBytes();
+                $key = PKCS8::savePublicKey(
+                    $curve,
+                    PKCS8::extractPoint($point, $curve)
+                );
+                break;
         }
+        $this->publicKey = EC::loadPublicKeyFormat($format, $key);
     }
 
     /**

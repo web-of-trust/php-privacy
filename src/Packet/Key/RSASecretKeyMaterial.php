@@ -48,17 +48,14 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
         private readonly BigInteger $primeQ,
         private readonly BigInteger $coefficient,
         private readonly KeyMaterialInterface $publicMaterial,
-        ?RSAPrivateKey $privateKey = null
     ) {
-        $this->privateKey =
-            $privateKey ??
-            RSA::loadPrivateKey([
-                "privateExponent" => $exponent,
-                "p" => $primeP,
-                "q" => $primeQ,
-                "u" => $coefficient,
-                ...$publicMaterial->getParameters(),
-            ]);
+        $this->privateKey = RSA::loadPrivateKey([
+            "privateExponent" => $exponent,
+            "p" => $primeP,
+            "q" => $primeQ,
+            "u" => $coefficient,
+            ...$publicMaterial->getParameters(),
+        ]);
     }
 
     /**
@@ -113,9 +110,7 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
             new RSAPublicKeyMaterial(
                 $params["modulus"],
                 $params["publicExponent"],
-                $privateKey->getPublicKey()
             ),
-            $privateKey
         );
     }
 

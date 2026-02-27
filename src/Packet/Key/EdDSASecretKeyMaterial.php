@@ -63,9 +63,7 @@ class EdDSASecretKeyMaterial extends ECSecretKeyMaterial implements
                 Helper::bin2BigInt(
                     "\x40" . $privateKey->getEncodedCoordinates()
                 ),
-                $privateKey->getPublicKey()
             ),
-            $privateKey
         );
     }
 

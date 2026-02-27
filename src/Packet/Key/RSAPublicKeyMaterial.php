@@ -36,20 +36,16 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
      *
      * @param BigInteger $modulus
      * @param BigInteger $exponent
-     * @param RSAPublicKey $publicKey
      * @return self
      */
     public function __construct(
         private readonly BigInteger $modulus,
         private readonly BigInteger $exponent,
-        ?RSAPublicKey $publicKey = null
     ) {
-        $this->publicKey =
-            $publicKey ??
-            RSA::loadPublicKey([
-                "modulus" => $modulus,
-                "publicExponent" => $exponent,
-            ]);
+        $this->publicKey = RSA::loadPublicKey([
+            "modulus" => $modulus,
+            "publicExponent" => $exponent,
+        ]);
     }
 
     /**

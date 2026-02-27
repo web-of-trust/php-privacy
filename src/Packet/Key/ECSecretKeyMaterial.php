@@ -37,36 +37,30 @@ abstract class ECSecretKeyMaterial implements KeyMaterialInterface
      *
      * @param BigInteger $d
      * @param KeyMaterialInterface $publicMaterial
-     * @param ECPrivateKey $privateKey
      * @return self
      */
     public function __construct(
         private readonly BigInteger $d,
         private readonly KeyMaterialInterface $publicMaterial,
-        ?ECPrivateKey $privateKey = null
     ) {
-        if ($privateKey instanceof ECPrivateKey) {
-            $this->privateKey = $privateKey;
+        $format = "PKCS8";
+        $params = $publicMaterial->getParameters();
+        $curve = $params["curve"];
+        if ($curve instanceof Curve25519) {
+            $key = strrev($d->toBytes());
+            $format = "MontgomeryPrivate";
+        } elseif ($curve instanceof Ed25519) {
+            $arr = $curve->extractSecret($d->toBytes());
+            $key = PKCS8::savePrivateKey(
+                $arr["dA"],
+                $curve,
+                $params["QA"],
+                $arr["secret"]
+            );
         } else {
-            $format = "PKCS8";
-            $params = $publicMaterial->getParameters();
-            $curve = $params["curve"];
-            if ($curve instanceof Curve25519) {
-                $key = strrev($d->toBytes());
-                $format = "MontgomeryPrivate";
-            } elseif ($curve instanceof Ed25519) {
-                $arr = $curve->extractSecret($d->toBytes());
-                $key = PKCS8::savePrivateKey(
-                    $arr["dA"],
-                    $curve,
-                    $params["QA"],
-                    $arr["secret"]
-                );
-            } else {
-                $key = PKCS8::savePrivateKey($d, $curve, $params["QA"]);
-            }
-            $this->privateKey = EC::loadPrivateKeyFormat($format, $key);
+            $key = PKCS8::savePrivateKey($d, $curve, $params["QA"]);
         }
+        $this->privateKey = EC::loadPrivateKeyFormat($format, $key);
     }
 
     /**
