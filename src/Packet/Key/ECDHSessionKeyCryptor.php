@@ -22,6 +22,7 @@ use OpenPGP\Type\{
     SessionKeyCryptorInterface,
 };
 use phpseclib3\Crypt\{DH, EC};
+use phpseclib3\Crypt\EC\{PrivateKey, PublicKey};
 use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
 use phpseclib3\Math\BigInteger;
 
@@ -80,10 +81,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
 
             $kek = self::ecdhKdf(
                 $keyMaterial->getKdfHash(),
-                DH::computeSecret(
-                    $privateKey,
-                    $keyMaterial->getECKey()->getEncodedCoordinates(),
-                ),
+                self::computeSecret($privateKey, $keyMaterial->getECKey()),
                 self::kdfParameter($keyMaterial, $keyPacket->getFingerprint()),
                 $keyMaterial->getKdfSymmetric()->keySizeInByte(),
             );
@@ -183,9 +181,9 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
 
             $kek = self::ecdhKdf(
                 $publicMaterial->getKdfHash(),
-                DH::computeSecret(
+                self::computeSecret(
                     $keyMaterial->getECKey(),
-                    EC::loadFormat($format, $key)->getEncodedCoordinates(),
+                    EC::loadFormat($format, $key),
                 ),
                 self::kdfParameter(
                     $publicMaterial,
@@ -202,6 +200,31 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
         } else {
             throw new \RuntimeException("Key material is not ECDH key.");
         }
+    }
+
+    /**
+     * Compute shared secret
+     *
+     * @return string
+     */
+    private static function computeSecret(
+        PrivateKey $privateKey,
+        PublicKey $publicKey,
+    ): string {
+        if (
+            extension_loaded("openssl") &&
+            $privateKey->getCurve() != "Curve25519" &&
+            $publicKey->getCurve() != "Curve25519"
+        ) {
+            return openssl_pkey_derive(
+                $publicKey->toString("PKCS8"),
+                openssl_get_privatekey($privateKey->toString("PKCS8")),
+            );
+        }
+        return DH::computeSecret(
+            $privateKey,
+            $publicKey->getEncodedCoordinates(),
+        );
     }
 
     /**
