@@ -54,10 +54,19 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
         AsymmetricKey $publicKey,
     ): self {
         if ($publicKey instanceof PublicKey) {
-            $publicKey = $publicKey->withPadding(RSA::ENCRYPTION_PKCS1);
-            return new self(
-                Helper::bin2BigInt($publicKey->encrypt($sessionKey)),
-            );
+            if (extension_loaded("openssl")) {
+                openssl_public_encrypt(
+                    $sessionKey,
+                    $encrypted,
+                    openssl_pkey_get_public($publicKey->toString("PKCS8")),
+                    OPENSSL_PKCS1_PADDING,
+                );
+            } else {
+                $encrypted = $publicKey
+                    ->withPadding(RSA::ENCRYPTION_PKCS1)
+                    ->encrypt($sessionKey);
+            }
+            return new self(Helper::bin2BigInt($encrypted));
         } else {
             throw new \RuntimeException("Public key is not RSA key.");
         }
@@ -90,8 +99,18 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
     protected function decrypt(AsymmetricKey $privateKey): string
     {
         if ($privateKey instanceof PrivateKey) {
-            $privateKey = $privateKey->withPadding(RSA::ENCRYPTION_PKCS1);
-            return $privateKey->decrypt($this->encrypted->toBytes());
+            if (extension_loaded("openssl")) {
+                openssl_private_decrypt(
+                    $this->encrypted->toBytes(),
+                    $decrypted,
+                    openssl_pkey_get_private($privateKey->toString("PKCS8")),
+                    OPENSSL_PKCS1_PADDING,
+                );
+                return $decrypted;
+            }
+            return $privateKey
+                ->withPadding(RSA::ENCRYPTION_PKCS1)
+                ->decrypt($this->encrypted->toBytes());
         } else {
             throw new \RuntimeException("Private key is not RSA key.");
         }
