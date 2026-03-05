@@ -221,6 +221,16 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
                 openssl_get_privatekey($privateKey->toString("PKCS8")),
             );
         }
+        if (
+            extension_loaded("sodium") &&
+            $privateKey->getCurve() == "Curve25519" &&
+            $publicKey->getCurve() == "Curve25519"
+        ) {
+            return sodium_crypto_scalarmult(
+                $privateKey->toString("MontgomeryPrivate"),
+                $publicKey->getEncodedCoordinates(),
+            );
+        }
         return DH::computeSecret(
             $privateKey,
             $publicKey->getEncodedCoordinates(),
