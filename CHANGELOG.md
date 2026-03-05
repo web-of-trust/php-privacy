@@ -212,3 +212,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.3...2.2.4)
 - Refactor key material constructor.
 - Use rsa openssl sign & verify if available.
+
+## 2.2.5 - released 2026-03-05
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.4...2.2.5)
+- Use sodium curve25519 ecdh if ivailable.
+- Use openssl ecdh if available.
+- Use openssl rsa encrypt, decrypt if available.
