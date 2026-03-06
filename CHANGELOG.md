@@ -218,3 +218,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Use sodium curve25519 ecdh if ivailable.
 - Use openssl ecdh if available.
 - Use openssl rsa encrypt, decrypt if available.
+
+## 2.2.6 - released 2026-03-06
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.5...2.2.6)
+- Refactor montgomery session key cryptor.
