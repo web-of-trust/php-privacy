@@ -310,11 +310,17 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket implements
                     ]),
                 $keyPacket,
             ),
-            KeyAlgorithm::X25519,
+            KeyAlgorithm::X25519
+                => Key\MontgomerySessionKeyCryptor::encryptSessionKey(
+                $sessionKey->getEncryptionKey(),
+                $keyPacket->getECKeyMaterial()->getECKey(),
+                MontgomeryCurve::Curve25519,
+            ),
             KeyAlgorithm::X448
                 => Key\MontgomerySessionKeyCryptor::encryptSessionKey(
                 $sessionKey->getEncryptionKey(),
                 $keyPacket->getECKeyMaterial()->getECKey(),
+                MontgomeryCurve::Curve448,
             ),
             default => throw new \RuntimeException(
                 "Key algorithm {$keyPacket->getKeyAlgorithm()->name} is unsupported.",

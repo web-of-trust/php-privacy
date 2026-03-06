@@ -62,45 +62,37 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
      *
      * @param string $sessionKey
      * @param EC $publicKey
+     * @param MontgomeryCurve $curve
      * @return self
      */
     public static function encryptSessionKey(
         string $sessionKey,
         EC $publicKey,
+        MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
     ): self {
-        $publicCurve = $publicKey->getCurve();
-        switch ($publicCurve) {
-            case MontgomeryCurve::Curve25519->name:
-            case MontgomeryCurve::Curve448->name:
-                $curve = constant(MontgomeryCurve::class . "::" . $publicCurve);
-                $privateKey = EC::createKey($publicCurve);
-                $ephemeralKey = $privateKey->getPublicKey()->getEncodedCoordinates();
+        $privateKey = EC::createKey($publicKey->getCurve());
+        $ephemeralKey = $privateKey->getPublicKey()->getEncodedCoordinates();
 
-                $kek = hash_hkdf(
-                    $curve->hkdfHash(),
-                    implode([
-                        $ephemeralKey,
-                        $publicKey->getEncodedCoordinates(),
-                        self::computeSecret(
-                            $privateKey,
-                            $publicKey,
-                        ),
-                    ]),
-                    $curve->kekSize()->value,
-                    $curve->hkdfInfo(),
-                );
-                $keyWrapper = new AesKeyWrapper($curve->kekSize());
+        $kek = hash_hkdf(
+            $curve->hkdfHash(),
+            implode([
+                $ephemeralKey,
+                $publicKey->getEncodedCoordinates(),
+                DH::computeSecret(
+                    $privateKey,
+                    $publicKey->getEncodedCoordinates(),
+                ),
+            ]),
+            $curve->kekSize()->value,
+            $curve->hkdfInfo(),
+        );
+        $keyWrapper = new AesKeyWrapper($curve->kekSize());
 
-                return new self(
-                    $ephemeralKey,
-                    $keyWrapper->wrap($kek, $sessionKey),
-                    $curve,
-                );
-            default:
-                throw new \InvalidArgumentException(
-                    "{$publicCurve} is not Montgomery Curve.",
-                );
-        }
+        return new self(
+            $ephemeralKey,
+            $keyWrapper->wrap($kek, $sessionKey),
+            $curve,
+        );
     }
 
     /**
@@ -152,62 +144,23 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
      */
     private function decrypt(EC $privateKey): string
     {
-        $curve = $privateKey->getCurve();
-        switch ($curve) {
-            case MontgomeryCurve::Curve25519->name:
-            case MontgomeryCurve::Curve448->name:
-                if ($curve != $this->curve->name) {
-                    throw new \InvalidArgumentException(
-                        "Private {$curve} is not match ephemeral {$this->curve->name}.",
-                    );
-                }
-                $kek = hash_hkdf(
-                    $this->curve->hkdfHash(),
-                    implode([
+        $kek = hash_hkdf(
+            $this->curve->hkdfHash(),
+            implode([
+                $this->ephemeralKey,
+                $privateKey->getEncodedCoordinates(),
+                DH::computeSecret(
+                    $privateKey,
+                    EC::loadFormat(
+                        "MontgomeryPublic",
                         $this->ephemeralKey,
-                        $privateKey->getEncodedCoordinates(),
-                        self::computeSecret(
-                            $privateKey,
-                            EC::loadFormat(
-                                "MontgomeryPublic",
-                                $this->ephemeralKey,
-                            ),
-                        ),
-                    ]),
-                    $this->curve->kekSize()->value,
-                    $this->curve->hkdfInfo(),
-                );
-                $keyWrapper = new AesKeyWrapper($this->curve->kekSize());
-                return $keyWrapper->unwrap($kek, $this->wrappedKey);
-            default:
-                throw new \InvalidArgumentException(
-                    "{$curve} is not Montgomery Curve.",
-                );
-        }
-    }
-
-    /**
-     * Compute shared secret
-     *
-     * @return string
-     */
-    private static function computeSecret(
-        EC $privateKey,
-        EC $publicKey,
-    ): string {
-        if (
-            extension_loaded("sodium") &&
-            $privateKey->getCurve() == "Curve25519" &&
-            $publicKey->getCurve() == "Curve25519"
-        ) {
-            return sodium_crypto_scalarmult(
-                $privateKey->toString("MontgomeryPrivate"),
-                $publicKey->getEncodedCoordinates(),
-            );
-        }
-        return DH::computeSecret(
-            $privateKey,
-            $publicKey->getEncodedCoordinates(),
+                    )->getEncodedCoordinates(),
+                ),
+            ]),
+            $this->curve->kekSize()->value,
+            $this->curve->hkdfInfo(),
         );
+        $keyWrapper = new AesKeyWrapper($this->curve->kekSize());
+        return $keyWrapper->unwrap($kek, $this->wrappedKey);
     }
 }
