@@ -32,17 +32,17 @@ class GenericS2K implements S2KInterface
     /**
      * Default salt length
      */
-    const int SALT_LENGTH = 8;
+    const SALT_LENGTH = 8;
 
     /**
      * Exponent bias, defined in RFC4880
      */
-    const int EXPBIAS = 6;
+    const EXPBIAS = 6;
 
     /**
      * Default iteration count byte
      */
-    const int DEFAULT_IT_COUNT = 224;
+    const DEFAULT_IT_COUNT = 224;
 
     /**
      * The number of resulting count

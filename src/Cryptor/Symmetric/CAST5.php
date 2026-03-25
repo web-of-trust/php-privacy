@@ -29,10 +29,10 @@ use phpseclib3\Exception\BadModeException;
  */
 class CAST5 extends BlockCipher
 {
-    const int MAX_ROUNDS = 16;
-    const int RED_ROUNDS = 12;
+    const MAX_ROUNDS = 16;
+    const RED_ROUNDS = 12;
 
-    const int BLOCK_SIZE = 8;
+    const BLOCK_SIZE = 8;
 
     protected $key_length = 16;
 

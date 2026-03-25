@@ -23,7 +23,7 @@ use phpseclib3\Exception\BadModeException;
  */
 class Camellia extends BlockCipher
 {
-    const int BLOCK_SIZE = 16;
+    const BLOCK_SIZE = 16;
 
     /**
      * @var array<int>

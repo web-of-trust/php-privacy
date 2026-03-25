@@ -29,11 +29,11 @@ use phpseclib3\Crypt\Common\BlockCipher;
  */
 final class EAX implements AeadCipher
 {
-    const string N_TAG = "\x00";
-    const string H_TAG = "\x01";
-    const string C_TAG = "\x02";
+    const N_TAG = "\x00";
+    const H_TAG = "\x01";
+    const C_TAG = "\x02";
 
-    const string CIPHER_MODE = "ctr";
+    const CIPHER_MODE = "ctr";
 
     private readonly BlockCipher $cipher;
     private readonly CMac $mac;
