@@ -222,3 +222,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 2.2.6 - released 2026-03-06
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.5...2.2.6)
 - Refactor montgomery session key cryptor.
+
+## 2.2.7 - released 2026-03-26
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.6...2.2.7)
+- Remove const typing to stay PHP 8.1 compatible.
