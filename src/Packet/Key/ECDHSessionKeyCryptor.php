@@ -35,8 +35,8 @@ use phpseclib3\Math\BigInteger;
  */
 class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
 {
-    const string ANONYMOUS_SENDER = "Anonymous Sender    ";
-    const int PKCS5_BLOCK_SIZE = 8;
+    const ANONYMOUS_SENDER = "Anonymous Sender    ";
+    const PKCS5_BLOCK_SIZE = 8;
 
     /**
      * Constructor

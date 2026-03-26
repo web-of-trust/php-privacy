@@ -22,7 +22,7 @@ use phpseclib3\Crypt\Common\BlockCipher;
  */
 abstract class KeyWrapper
 {
-    const string IV = "\xa6\xa6\xa6\xa6\xa6\xa6\xa6\xa6";
+    const IV = "\xa6\xa6\xa6\xa6\xa6\xa6\xa6\xa6";
 
     /**
      * Constructor

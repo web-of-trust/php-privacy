@@ -23,11 +23,11 @@ use OpenPGP\Type\NotationDataInterface;
  */
 class NotationData extends SignatureSubpacket implements NotationDataInterface
 {
-    const int FLAG_LENGTH = 4;
-    const int NAME_LENGTH = 2;
-    const int VALUE_LENGTH = 2;
+    const FLAG_LENGTH = 4;
+    const NAME_LENGTH = 2;
+    const VALUE_LENGTH = 2;
 
-    const string SALT_NOTATION = "salt@php-openpgp.org";
+    const SALT_NOTATION = "salt@php-openpgp.org";
 
     /**
      * Constructor

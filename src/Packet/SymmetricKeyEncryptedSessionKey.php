@@ -29,9 +29,9 @@ use phpseclib3\Crypt\Random;
 class SymmetricKeyEncryptedSessionKey extends AbstractPacket implements
     EncryptedSessionKeyInterface
 {
-    const int VERSION_4 = 4;
-    const int VERSION_5 = 5;
-    const int VERSION_6 = 6;
+    const VERSION_4 = 4;
+    const VERSION_5 = 5;
+    const VERSION_6 = 6;
 
     /**
      * Constructor

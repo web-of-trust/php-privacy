@@ -38,7 +38,7 @@ use phpseclib3\Common\Functions\Strings;
  */
 class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
 {
-    const int KEY_ID_SIZE = 8;
+    const KEY_ID_SIZE = 8;
 
     /**
      * Fingerprint bytes

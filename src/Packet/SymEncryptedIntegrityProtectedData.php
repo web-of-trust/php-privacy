@@ -38,11 +38,11 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
 {
     use AeadEncryptedDataTrait, EncryptedDataTrait;
 
-    const int VERSION_1 = 1;
-    const int VERSION_2 = 2;
-    const string HASH_ALGO = "sha1";
-    const string MDC_SUFFIX = "\xd3\x14";
-    const int SALT_SIZE = 32;
+    const VERSION_1 = 1;
+    const VERSION_2 = 2;
+    const HASH_ALGO = "sha1";
+    const MDC_SUFFIX = "\xd3\x14";
+    const SALT_SIZE = 32;
 
     /**
      * Constructor

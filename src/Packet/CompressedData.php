@@ -26,7 +26,7 @@ class CompressedData extends AbstractPacket
     /**
      * Default zip/zlib compression level, between 1 and 9
      */
-    const int DEFLATE_LEVEL = 6;
+    const DEFLATE_LEVEL = 6;
 
     /**
      * Constructor
