@@ -166,7 +166,10 @@ class GenericS2K implements S2KInterface
         if (strlen($data) >= $this->count) {
             return $data;
         }
-        return str_repeat($data, (int) floor($this->count / strlen($data))) . substr($data, 0, $this->count % strlen($data));
+        return implode([
+            str_repeat($data, (int) floor($this->count / strlen($data))),
+            substr($data, 0, $this->count % strlen($data)),
+        ]);
     }
 
     private function hash(string $data, int $size): string
