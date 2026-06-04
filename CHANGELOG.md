@@ -147,6 +147,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Refactor key material constructor.
 - Use rsa openssl sign & verify if available.
 
+## 1.2.10 - released 2026-06-04
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.9...1.2.10)
+- Reduce memory usage of S2K iteration
+
 ## 2.0.0 - released 2024-10-01
 - Release to major version 2
 
@@ -226,3 +230,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 2.2.7 - released 2026-03-26
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.6...2.2.7)
 - Remove const typing to stay PHP 8.1 compatible.
+
+## 2.2.8 - released 2026-06-04
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.7...2.2.8)
+- Reduce memory usage of S2K iteration
