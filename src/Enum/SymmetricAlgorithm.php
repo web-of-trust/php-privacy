@@ -9,8 +9,8 @@
 namespace OpenPGP\Enum;
 
 use OpenPGP\Cryptor\Symmetric;
-use phpseclib3\Crypt;
-use phpseclib3\Crypt\Common\BlockCipher;
+use phpseclib4\Crypt;
+use phpseclib4\Crypt\Common\BlockCipher;
 
 /**
  * Symmetric Key Algorithms Enum

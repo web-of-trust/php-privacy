@@ -9,7 +9,7 @@
 namespace OpenPGP\Cryptor\Aead;
 
 use OpenPGP\Enum\SymmetricAlgorithm;
-use phpseclib3\Crypt\Common\BlockCipher;
+use phpseclib4\Crypt\Common\BlockCipher;
 
 /**
  * GCM Authenticated-Encryption class

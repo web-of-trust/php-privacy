@@ -9,7 +9,7 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Type\{SecretKeyPacketInterface, SessionKeyCryptorInterface};
-use phpseclib3\Crypt\Common\AsymmetricKey;
+use phpseclib4\Crypt\Common\AsymmetricKey;
 
 /**
  * Session key cryptor class.

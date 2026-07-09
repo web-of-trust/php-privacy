@@ -9,7 +9,7 @@
 namespace OpenPGP\Common;
 
 use OpenPGP\Enum\ArmorType;
-use phpseclib3\Common\Functions\Strings;
+use phpseclib4\Common\Functions\Strings;
 
 /**
  * Armor class

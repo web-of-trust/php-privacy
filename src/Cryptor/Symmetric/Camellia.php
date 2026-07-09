@@ -10,8 +10,8 @@ namespace OpenPGP\Cryptor\Symmetric;
 
 use OpenPGP\Common\Helper;
 use OpenPGP\Cryptor\Math\Bitwise;
-use phpseclib3\Crypt\Common\BlockCipher;
-use phpseclib3\Exception\BadModeException;
+use phpseclib4\Crypt\Common\BlockCipher;
+use phpseclib4\Exception\BadModeException;
 
 /**
  * Camellia cipher engine class. Ported from Bouncy Castle project.

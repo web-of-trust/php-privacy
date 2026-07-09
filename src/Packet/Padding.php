@@ -9,8 +9,8 @@
 namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\PacketTag;
-use phpseclib3\Common\Functions\Strings;
-use phpseclib3\Crypt\Random;
+use phpseclib4\Common\Functions\Strings;
+use phpseclib4\Crypt\Random;
 
 /**
  * Implementation of the Padding Packet Packet (Tag 21)

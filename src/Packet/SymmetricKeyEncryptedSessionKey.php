@@ -15,7 +15,7 @@ use OpenPGP\Type\{
     S2KInterface,
     SessionKeyInterface,
 };
-use phpseclib3\Crypt\Random;
+use phpseclib4\Crypt\Random;
 
 /**
  * Implementation of the Symmetric Key Encrypted Session Key packet (Tag 3)

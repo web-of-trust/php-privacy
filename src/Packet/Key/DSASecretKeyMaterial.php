@@ -11,11 +11,11 @@ namespace OpenPGP\Packet\Key;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\HashAlgorithm;
 use OpenPGP\Type\{KeyMaterialInterface, SecretKeyMaterialInterface};
-use phpseclib3\Crypt\Common\{AsymmetricKey, PrivateKey, PublicKey};
-use phpseclib3\Crypt\DSA;
-use phpseclib3\Crypt\DSA\PrivateKey as DSAPrivateKey;
-use phpseclib3\Crypt\DSA\Formats\Keys\PKCS8;
-use phpseclib3\Math\BigInteger;
+use phpseclib4\Crypt\Common\{AsymmetricKey, PrivateKey, PublicKey};
+use phpseclib4\Crypt\DSA;
+use phpseclib4\Crypt\DSA\PrivateKey as DSAPrivateKey;
+use phpseclib4\Crypt\DSA\Formats\Keys\PKCS8;
+use phpseclib4\Math\BigInteger;
 
 /**
  * DSA secret key material class
@@ -27,7 +27,7 @@ use phpseclib3\Math\BigInteger;
 class DSASecretKeyMaterial implements SecretKeyMaterialInterface
 {
     /**
-     * phpseclib3 DSA private key
+     * phpseclib4 DSA private key
      */
     private readonly DSAPrivateKey $privateKey;
 

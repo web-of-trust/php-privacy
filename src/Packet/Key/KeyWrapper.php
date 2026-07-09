@@ -9,7 +9,7 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Enum\KekSize;
-use phpseclib3\Crypt\Common\BlockCipher;
+use phpseclib4\Crypt\Common\BlockCipher;
 
 /**
  * KeyWrapper class

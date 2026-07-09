@@ -8,7 +8,7 @@
 
 namespace OpenPGP\Type;
 
-use phpseclib3\Crypt\Common\AsymmetricKey;
+use phpseclib4\Crypt\Common\AsymmetricKey;
 
 /**
  * Key material interface

@@ -10,8 +10,8 @@ namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{HashAlgorithm, SymmetricAlgorithm};
-use phpseclib3\Crypt\EC\PublicKey;
-use phpseclib3\Math\BigInteger;
+use phpseclib4\Crypt\EC\PublicKey;
+use phpseclib4\Math\BigInteger;
 
 /**
  * ECDH public key material class

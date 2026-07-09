@@ -11,11 +11,11 @@ namespace OpenPGP\Packet\Key;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\HashAlgorithm;
 use OpenPGP\Type\{KeyMaterialInterface, PublicKeyMaterialInterface};
-use phpseclib3\Crypt\Common\{AsymmetricKey, PublicKey};
-use phpseclib3\Crypt\RSA;
-use phpseclib3\Crypt\RSA\PublicKey as RSAPublicKey;
-use phpseclib3\Crypt\RSA\Formats\Keys\PKCS8;
-use phpseclib3\Math\BigInteger;
+use phpseclib4\Crypt\Common\{AsymmetricKey, PublicKey};
+use phpseclib4\Crypt\RSA;
+use phpseclib4\Crypt\RSA\PublicKey as RSAPublicKey;
+use phpseclib4\Crypt\RSA\Formats\Keys\PKCS8;
+use phpseclib4\Math\BigInteger;
 
 /**
  * RSA public key material class
@@ -27,7 +27,7 @@ use phpseclib3\Math\BigInteger;
 class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
 {
     /**
-     * phpseclib3 RSA public key
+     * phpseclib4 RSA public key
      */
     private readonly RSAPublicKey $publicKey;
 

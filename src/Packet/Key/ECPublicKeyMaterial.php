@@ -10,12 +10,12 @@ namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Enum\Ecc;
 use OpenPGP\Type\{ECKeyMaterialInterface, KeyMaterialInterface};
-use phpseclib3\Crypt\Common\{AsymmetricKey, PublicKey};
-use phpseclib3\Crypt\EC;
-use phpseclib3\Crypt\EC\PublicKey as ECPublicKey;
-use phpseclib3\Crypt\EC\Formats\Keys\MontgomeryPublic;
-use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
-use phpseclib3\Math\BigInteger;
+use phpseclib4\Crypt\Common\{AsymmetricKey, PublicKey};
+use phpseclib4\Crypt\EC;
+use phpseclib4\Crypt\EC\PublicKey as ECPublicKey;
+use phpseclib4\Crypt\EC\Formats\Keys\MontgomeryPublic;
+use phpseclib4\Crypt\EC\Formats\Keys\PKCS8;
+use phpseclib4\Math\BigInteger;
 
 /**
  * EC public key material class
@@ -31,7 +31,7 @@ abstract class ECPublicKeyMaterial implements
     private readonly Ecc $ecc;
 
     /**
-     * phpseclib3 EC public key
+     * phpseclib4 EC public key
      */
     protected readonly ECPublicKey $publicKey;
 

@@ -10,8 +10,8 @@ namespace OpenPGP\Common;
 
 use OpenPGP\Enum\{HashAlgorithm, S2kType, SymmetricAlgorithm};
 use OpenPGP\Type\S2KInterface;
-use phpseclib3\Crypt\Random;
-use phpseclib3\Math\BigInteger;
+use phpseclib4\Crypt\Random;
+use phpseclib4\Math\BigInteger;
 
 /**
  * Helper class

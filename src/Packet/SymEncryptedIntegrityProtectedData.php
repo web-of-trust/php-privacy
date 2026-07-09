@@ -21,8 +21,8 @@ use OpenPGP\Type\{
     PacketListInterface,
     SessionKeyInterface,
 };
-use phpseclib3\Common\Functions\Strings;
-use phpseclib3\Crypt\Random;
+use phpseclib4\Common\Functions\Strings;
+use phpseclib4\Crypt\Random;
 
 /**
  * Implementation of the Symmetrically Encrypted Integrity Protected Data Packet (Tag 18)

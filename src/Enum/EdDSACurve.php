@@ -8,8 +8,8 @@
 
 namespace OpenPGP\Enum;
 
-use phpseclib3\Crypt\EC\BaseCurves\TwistedEdwards;
-use phpseclib3\Crypt\EC\Curves\{Ed25519, Ed448};
+use phpseclib4\Crypt\EC\BaseCurves\TwistedEdwards;
+use phpseclib4\Crypt\EC\Curves\{Ed25519, Ed448};
 
 /**
  * Ed DSA Curve Enum

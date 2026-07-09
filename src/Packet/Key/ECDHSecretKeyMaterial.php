@@ -11,8 +11,8 @@ namespace OpenPGP\Packet\Key;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{Ecc, MontgomeryCurve};
 use OpenPGP\Type\KeyMaterialInterface;
-use phpseclib3\Crypt\EC;
-use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
+use phpseclib4\Crypt\EC;
+use phpseclib4\Crypt\EC\Formats\Keys\PKCS8;
 
 /**
  * ECDH secret key material class

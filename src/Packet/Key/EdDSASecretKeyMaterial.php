@@ -14,10 +14,10 @@ use OpenPGP\Type\{
     KeyMaterialInterface,
     SecretKeyMaterialInterface,
 };
-use phpseclib3\Crypt\Common\{AsymmetricKey, PrivateKey, PublicKey};
-use phpseclib3\Crypt\EC;
-use phpseclib3\Crypt\EC\PrivateKey as ECPrivateKey;
-use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
+use phpseclib4\Crypt\Common\{AsymmetricKey, PrivateKey, PublicKey};
+use phpseclib4\Crypt\EC;
+use phpseclib4\Crypt\EC\PrivateKey as ECPrivateKey;
+use phpseclib4\Crypt\EC\Formats\Keys\PKCS8;
 
 /**
  * EdDSA secret key material class
@@ -31,7 +31,7 @@ class EdDSASecretKeyMaterial implements
     SecretKeyMaterialInterface
 {
     /**
-     * phpseclib3 EC private key
+     * phpseclib4 EC private key
      */
     private readonly ECPrivateKey $privateKey;
 

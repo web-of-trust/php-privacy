@@ -10,7 +10,7 @@ namespace OpenPGP\Packet;
 
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\SignatureSubpacketType;
-use phpseclib3\Common\Functions\Strings;
+use phpseclib4\Common\Functions\Strings;
 
 /**
  * Sub packet reader class

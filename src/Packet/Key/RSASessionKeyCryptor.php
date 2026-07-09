@@ -9,10 +9,10 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
-use phpseclib3\Crypt\Common\AsymmetricKey;
-use phpseclib3\Crypt\RSA;
-use phpseclib3\Crypt\RSA\{PrivateKey, PublicKey};
-use phpseclib3\Math\BigInteger;
+use phpseclib4\Crypt\Common\AsymmetricKey;
+use phpseclib4\Crypt\RSA;
+use phpseclib4\Crypt\RSA\{PrivateKey, PublicKey};
+use phpseclib4\Math\BigInteger;
 
 /**
  * RSA session key cryptor class.

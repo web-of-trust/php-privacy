@@ -11,7 +11,7 @@ namespace OpenPGP\Packet\Key;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{AeadAlgorithm, SymmetricAlgorithm};
 use OpenPGP\Type\SessionKeyInterface;
-use phpseclib3\Crypt\Random;
+use phpseclib4\Crypt\Random;
 
 /**
  * Session key class

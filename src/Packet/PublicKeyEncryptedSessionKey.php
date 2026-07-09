@@ -16,7 +16,7 @@ use OpenPGP\Type\{
     SessionKeyCryptorInterface,
     SessionKeyInterface,
 };
-use phpseclib3\Common\Functions\Strings;
+use phpseclib4\Common\Functions\Strings;
 
 /**
  * Implementation Public-Key Encrypted Session Key (PKESK) packet (Tag 1).

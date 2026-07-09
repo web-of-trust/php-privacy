@@ -8,8 +8,8 @@
 
 namespace OpenPGP\Enum;
 
-use phpseclib3\Crypt\EC\BaseCurves\Base as BaseCurve;
-use phpseclib3\Crypt\EC\Curves\{
+use phpseclib4\Crypt\EC\BaseCurves\Base as BaseCurve;
+use phpseclib4\Crypt\EC\Curves\{
     secp256r1,
     secp384r1,
     secp521r1,
@@ -19,7 +19,7 @@ use phpseclib3\Crypt\EC\Curves\{
     Ed25519,
     Curve25519,
 };
-use phpseclib3\File\ASN1;
+use phpseclib4\File\ASN1;
 
 /**
  * Elliptic curve cryptography enum

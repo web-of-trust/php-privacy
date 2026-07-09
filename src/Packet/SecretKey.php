@@ -33,7 +33,7 @@ use OpenPGP\Type\{
     SecretKeyPacketInterface,
     SubkeyPacketInterface,
 };
-use phpseclib3\Crypt\Random;
+use phpseclib4\Crypt\Random;
 
 /**
  * Implementation a possibly encrypted private key (Tag 5).

@@ -10,7 +10,7 @@ namespace OpenPGP\Cryptor\Asymmetric\ElGamal;
 
 use OpenPGP\Common\Helper;
 use OpenPGP\Cryptor\Asymmetric\ElGamal;
-use phpseclib3\Math\BigInteger;
+use phpseclib4\Math\BigInteger;
 
 /**
  * ElGamal private key class

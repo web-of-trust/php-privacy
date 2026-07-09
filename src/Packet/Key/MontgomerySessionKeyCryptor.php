@@ -10,7 +10,7 @@ namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Enum\MontgomeryCurve;
 use OpenPGP\Type\{SecretKeyPacketInterface, SessionKeyCryptorInterface};
-use phpseclib3\Crypt\{DH, EC};
+use phpseclib4\Crypt\{DH, EC};
 
 /**
  * Montgomery session key cryptor class.

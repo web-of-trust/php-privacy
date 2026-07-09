@@ -10,7 +10,7 @@ namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\PacketTag;
 use OpenPGP\Type\{PacketInterface, PacketListInterface};
-use phpseclib3\Common\Functions\Strings;
+use phpseclib4\Common\Functions\Strings;
 
 /**
  * Packet list class

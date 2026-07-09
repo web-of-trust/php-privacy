@@ -21,10 +21,10 @@ use OpenPGP\Type\{
     SecretKeyPacketInterface,
     SessionKeyCryptorInterface,
 };
-use phpseclib3\Crypt\{DH, EC};
-use phpseclib3\Crypt\EC\{PrivateKey, PublicKey};
-use phpseclib3\Crypt\EC\Formats\Keys\PKCS8;
-use phpseclib3\Math\BigInteger;
+use phpseclib4\Crypt\{DH, EC};
+use phpseclib4\Crypt\EC\{PrivateKey, PublicKey};
+use phpseclib4\Crypt\EC\Formats\Keys\PKCS8;
+use phpseclib4\Math\BigInteger;
 
 /**
  * ECDH session key cryptor class.

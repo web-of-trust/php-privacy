@@ -37,8 +37,8 @@ use OpenPGP\Type\{
     SubpacketInterface,
     UserIDPacketInterface,
 };
-use phpseclib3\Common\Functions\Strings;
-use phpseclib3\Crypt\Random;
+use phpseclib4\Common\Functions\Strings;
+use phpseclib4\Crypt\Random;
 
 /**
  * Implementation an OpenPGP signature packet (Tag 2).
