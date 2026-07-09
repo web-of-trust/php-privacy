@@ -46,7 +46,7 @@ use phpseclib3\Crypt\Random;
  */
 class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 {
-    const HASH_ALGO = "sha1";
+    const string HASH_ALGO = "sha1";
 
     /**
      * Constructor

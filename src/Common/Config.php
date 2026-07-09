@@ -25,15 +25,15 @@ use OpenPGP\Enum\{
  */
 final class Config
 {
-    const VERSION = "PHP Privacy v2";
-    const COMMENT = "The PHP OpenPGP library";
+    const string VERSION = "PHP Privacy v2";
+    const string COMMENT = "The PHP OpenPGP library";
 
-    const CIPHER_MODE = "cfb";
-    const HKDF_ALGO = "sha256";
+    const string CIPHER_MODE = "cfb";
+    const string HKDF_ALGO = "sha256";
 
-    const AEAD_SUPPORTED = true;
-    const AEAD_CHUNK_SIZE_MIN = 10;
-    const AEAD_CHUNK_SIZE_MAX = 16;
+    const bool AEAD_SUPPORTED = true;
+    const int AEAD_CHUNK_SIZE_MIN = 10;
+    const int AEAD_CHUNK_SIZE_MAX = 16;
 
     private static HashAlgorithm $preferredHash = HashAlgorithm::Sha256;
 

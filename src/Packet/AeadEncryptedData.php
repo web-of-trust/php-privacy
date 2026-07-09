@@ -33,7 +33,7 @@ class AeadEncryptedData extends AbstractPacket implements
 {
     use AeadEncryptedDataTrait, EncryptedDataTrait;
 
-    const VERSION = 1;
+    const int VERSION = 1;
 
     private readonly int $version;
 

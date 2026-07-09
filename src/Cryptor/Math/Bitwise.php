@@ -17,9 +17,9 @@ namespace OpenPGP\Cryptor\Math;
  */
 final class Bitwise
 {
-    const MASK_8BITS = 0xff;
-    const MASK_16BITS = 0xffff;
-    const MASK_32BITS = 0xffffffff;
+    const int MASK_8BITS = 0xff;
+    const int MASK_16BITS = 0xffff;
+    const int MASK_32BITS = 0xffffffff;
 
     public static function rightRotate32(int $x, int $s): int
     {

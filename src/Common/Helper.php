@@ -22,11 +22,11 @@ use phpseclib3\Math\BigInteger;
  */
 final class Helper
 {
-    const EOL = "\n";
-    const CRLF = "\r\n";
-    const SPACES = " \r\t";
-    const EOL_PATTERN = '/\r?\n/m';
-    const ZERO_CHAR = "\x00";
+    const string EOL = "\n";
+    const string CRLF = "\r\n";
+    const string SPACES = " \r\t";
+    const string EOL_PATTERN = '/\r?\n/m';
+    const string ZERO_CHAR = "\x00";
 
     /**
      * Read multiprecision integer (MPI) from binary data

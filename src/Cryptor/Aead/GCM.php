@@ -21,8 +21,8 @@ use phpseclib3\Crypt\Common\BlockCipher;
  */
 final class GCM implements AeadCipher
 {
-    const CIPHER_MODE = "gcm";
-    const TAG_LENGTH = 16;
+    const string CIPHER_MODE = "gcm";
+    const int TAG_LENGTH = 16;
 
     private readonly BlockCipher $cipher;
 

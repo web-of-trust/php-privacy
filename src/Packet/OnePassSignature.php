@@ -21,8 +21,8 @@ use OpenPGP\Enum\{HashAlgorithm, KeyAlgorithm, PacketTag, SignatureType};
  */
 class OnePassSignature extends AbstractPacket
 {
-    const VERSION_3 = 3;
-    const VERSION_6 = 6;
+    const int VERSION_3 = 3;
+    const int VERSION_6 = 6;
 
     /**
      * Constructor

@@ -23,7 +23,7 @@ abstract class ElGamal extends AsymmetricKey
     /**
      * Algorithm Name
      */
-    const ALGORITHM = "ElGamal";
+    const string ALGORITHM = "ElGamal";
 
     private readonly int $bitSize;
 

@@ -30,13 +30,13 @@ use phpseclib3\Exception\BadModeException;
  */
 class IDEA extends BlockCipher
 {
-    const MASK = 0xffff;
-    const BASE = 0x10001;
+    const int MASK = 0xffff;
+    const int BASE = 0x10001;
 
-    const BLOCK_SIZE = 8;
-    const KEY_SIZE = 52;
+    const int BLOCK_SIZE = 8;
+    const int KEY_SIZE = 52;
 
-    protected $key_length = 16;
+    protected int $key_length = 16;
 
     /**
      * Constructor

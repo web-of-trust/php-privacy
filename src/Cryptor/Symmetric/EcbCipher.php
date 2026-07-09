@@ -23,7 +23,7 @@ interface EcbCipher
      * @param string $in
      * @return string
      */
-    function encryptBlock($in): string;
+    function encryptBlock(string $in): string;
 
     /**
      * Decrypts a block
@@ -31,12 +31,12 @@ interface EcbCipher
      * @param string $in
      * @return string
      */
-    function decryptBlock($in): string;
+    function decryptBlock(string $in): string;
 
     /**
      * Sets the key.
      *
      * @param string $key
      */
-    function setKey($key);
+    function setKey(string $key);
 }

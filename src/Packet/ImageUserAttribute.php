@@ -17,7 +17,7 @@ namespace OpenPGP\Packet;
  */
 class ImageUserAttribute extends UserAttributeSubpacket
 {
-    const JPEG = 1;
+    const int JPEG = 1;
 
     /**
      * Constructor

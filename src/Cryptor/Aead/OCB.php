@@ -25,16 +25,16 @@ use OpenPGP\Enum\SymmetricAlgorithm;
  */
 final class OCB implements AeadCipher
 {
-    const ZERO_CHAR = "\x00";
-    const ONE_CHAR = "\x01";
-    const ZERO_BLOCK = "\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0";
+    const string ZERO_CHAR = "\x00";
+    const string ONE_CHAR = "\x01";
+    const string ZERO_BLOCK = "\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0";
 
-    const BLOCK_LENGTH = 16;
-    const IV_LENGTH = 15;
-    const TAG_LENGTH = 16;
+    const int BLOCK_LENGTH = 16;
+    const int IV_LENGTH = 15;
+    const int TAG_LENGTH = 16;
 
-    const MASK_ASTERISK = "x";
-    const MASK_DOLLAR = '$';
+    const string MASK_ASTERISK = "x";
+    const string MASK_DOLLAR = '$';
 
     private readonly EcbCipher $encipher;
 
