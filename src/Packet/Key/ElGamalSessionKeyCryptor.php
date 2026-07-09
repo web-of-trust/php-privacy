@@ -11,7 +11,6 @@ namespace OpenPGP\Packet\Key;
 use OpenPGP\Common\Helper;
 use OpenPGP\Cryptor\Asymmetric\ElGamal\{PrivateKey, PublicKey};
 use phpseclib4\Crypt\Common\AsymmetricKey;
-use phpseclib4\Crypt\Random;
 use phpseclib4\Math\BigInteger;
 
 /**
@@ -168,7 +167,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
         $result = str_repeat(Helper::ZERO_CHAR, $length);
         $count = 0;
         while ($count < $length) {
-            $bytes = Random::string($length - $count);
+            $bytes = random_bytes($length - $count);
             for ($i = 0, $len = strlen($bytes); $i < $len; $i++) {
                 if (ord($bytes[$i]) != 0) {
                     $result[$count++] = $bytes[$i];

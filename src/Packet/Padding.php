@@ -10,7 +10,6 @@ namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\PacketTag;
 use phpseclib4\Common\Functions\Strings;
-use phpseclib4\Crypt\Random;
 
 /**
  * Implementation of the Padding Packet Packet (Tag 21)
@@ -69,6 +68,6 @@ class Padding extends AbstractPacket
      */
     public static function createPadding(int $length): self
     {
-        return new self(Random::string($length));
+        return new self(random_bytes($length));
     }
 }

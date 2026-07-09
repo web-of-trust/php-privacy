@@ -10,7 +10,6 @@ namespace OpenPGP\Common;
 
 use OpenPGP\Enum\{HashAlgorithm, S2kType, SymmetricAlgorithm};
 use OpenPGP\Type\S2KInterface;
-use phpseclib4\Crypt\Random;
 use phpseclib4\Math\BigInteger;
 
 /**
@@ -74,7 +73,7 @@ final class Helper
         SymmetricAlgorithm $symmetric = SymmetricAlgorithm::Aes256,
     ): string {
         $size = $symmetric->blockSize();
-        $prefix = Random::string($size);
+        $prefix = random_bytes($size);
         return implode([$prefix, $prefix[$size - 2], $prefix[$size - 1]]);
     }
 
@@ -134,7 +133,7 @@ final class Helper
                 Config::getArgon2MemoryExponent(),
             )
             : new GenericS2K(
-                Random::string(GenericS2K::SALT_LENGTH),
+                random_bytes(GenericS2K::SALT_LENGTH),
                 $type,
                 Config::getPreferredHash(),
                 Config::getS2kItCount(),

@@ -9,7 +9,6 @@
 namespace OpenPGP\Enum;
 
 use OpenPGP\Common\Helper;
-use phpseclib3\Crypt\Random;
 
 /**
  * Montgomery Curve Enum
@@ -85,7 +84,7 @@ enum MontgomeryCurve
     {
         $size = $this->payloadSize();
         do {
-            $secret = Random::string($size);
+            $secret = random_bytes($size);
             if ($this === self::Curve25519) {
                 /// The lowest three bits must be 0
                 $secret[0] = $secret[0] & "\xf8";

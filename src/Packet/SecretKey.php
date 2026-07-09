@@ -33,7 +33,6 @@ use OpenPGP\Type\{
     SecretKeyPacketInterface,
     SubkeyPacketInterface,
 };
-use phpseclib4\Crypt\Random;
 
 /**
  * Implementation a possibly encrypted private key (Tag 5).
@@ -585,8 +584,8 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 : Helper::stringToKey(S2kType::Iterated);
 
         $iv = $aeadProtect
-            ? Random::string($aead->ivLength())
-            : Random::string($symmetric->blockSize());
+            ? random_bytes($aead->ivLength())
+            : random_bytes($symmetric->blockSize());
 
         $packetTag = $this->getTagByte();
         $kek = self::produceEncryptionKey(

@@ -11,7 +11,6 @@ namespace OpenPGP\Packet\Key;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{AeadAlgorithm, SymmetricAlgorithm};
 use OpenPGP\Type\SessionKeyInterface;
-use phpseclib4\Crypt\Random;
 
 /**
  * Session key class
@@ -63,7 +62,7 @@ class SessionKey implements SessionKeyInterface
         ?AeadAlgorithm $aead = null,
     ): self {
         return new self(
-            Random::string($symmetric->keySizeInByte()),
+            random_bytes($symmetric->keySizeInByte()),
             $symmetric,
             $aead,
         );

@@ -22,7 +22,6 @@ use OpenPGP\Type\{
     SessionKeyInterface,
 };
 use phpseclib4\Common\Functions\Strings;
-use phpseclib4\Crypt\Random;
 
 /**
  * Implementation of the Symmetrically Encrypted Integrity Protected Data Packet (Tag 18)
@@ -149,7 +148,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
         $salt = "";
         $chunkSize = 0;
         if ($aeadProtect) {
-            $salt = Random::string(self::SALT_SIZE);
+            $salt = random_bytes(self::SALT_SIZE);
             $chunkSize = Config::getAeadChunkSize();
             $encrypted = self::aeadCrypt(
                 self::AEAD_ENCRYPT,

@@ -16,7 +16,6 @@ use OpenPGP\Type\{
     SessionKeyInterface,
 };
 use phpseclib4\Common\Functions\Strings;
-use phpseclib4\Crypt\Random;
 
 /**
  * AEAD Protected Data Packet class
@@ -102,7 +101,7 @@ class AeadEncryptedData extends AbstractPacket implements
 
         $aead = Config::getPreferredAead();
         $chunkSize = Config::getAeadChunkSize();
-        $iv = Random::string($aead->ivLength());
+        $iv = random_bytes($aead->ivLength());
 
         return new self(
             $symmetric,

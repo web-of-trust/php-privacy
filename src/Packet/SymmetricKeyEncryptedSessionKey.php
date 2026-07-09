@@ -15,7 +15,6 @@ use OpenPGP\Type\{
     S2KInterface,
     SessionKeyInterface,
 };
-use phpseclib4\Crypt\Random;
 
 /**
  * Implementation of the Symmetric Key Encrypted Session Key packet (Tag 3)
@@ -169,7 +168,7 @@ class SymmetricKeyEncryptedSessionKey extends AbstractPacket implements
                     chr($symmetric->value),
                     chr($aead->value),
                 ]);
-                $iv = Random::string($aead->ivLength());
+                $iv = random_bytes($aead->ivLength());
                 $cipher = $aead->cipherEngine(
                     hash_hkdf(Config::HKDF_ALGO, $key, $keySize, $aData),
                     $symmetric,

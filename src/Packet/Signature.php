@@ -38,7 +38,6 @@ use OpenPGP\Type\{
     UserIDPacketInterface,
 };
 use phpseclib4\Common\Functions\Strings;
-use phpseclib4\Crypt\Random;
 
 /**
  * Implementation an OpenPGP signature packet (Tag 2).
@@ -225,11 +224,11 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         $salt = "";
         $isV6 = $version === KeyVersion::V6->value;
         if ($isV6) {
-            $salt = Random::string($hashAlgorithm->saltSize());
+            $salt = random_bytes($hashAlgorithm->saltSize());
         } else {
             $hashedSubpackets[] = Signature\NotationData::fromNotation(
                 Signature\NotationData::SALT_NOTATION,
-                Random::string($hashAlgorithm->saltSize()),
+                random_bytes($hashAlgorithm->saltSize()),
             );
         }
 
