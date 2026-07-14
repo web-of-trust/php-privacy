@@ -6,8 +6,8 @@ provides encryption with public key or symmetric cryptographic algorithms,
 digital signatures, compression, and key management.
 
 ## Requirement
-* PHP 8.1.x or later,
-* [phpseclib](https://github.com/phpseclib/phpseclib) library provides cryptography algorithms,
+* PHP 8.5.x or later,
+* [phpseclib4](https://github.com/phpseclib/phpseclib) library provides cryptography algorithms,
 * [Argon2](https://github.com/P-H-C/phc-winner-argon2) for Argon2 string-to-key,
 * (optional) PHPUnit to run tests,
 
