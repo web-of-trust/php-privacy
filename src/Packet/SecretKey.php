@@ -45,7 +45,7 @@ use OpenPGP\Type\{
  */
 class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
 {
-    const string HASH_ALGO = "sha1";
+    private const string HASH_ALGO = "sha1";
 
     /**
      * Constructor

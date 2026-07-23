@@ -28,9 +28,9 @@ use OpenPGP\Type\{
 class SymmetricKeyEncryptedSessionKey extends AbstractPacket implements
     EncryptedSessionKeyInterface
 {
-    const int VERSION_4 = 4;
-    const int VERSION_5 = 5;
-    const int VERSION_6 = 6;
+    private const int VERSION_4 = 4;
+    private const int VERSION_5 = 5;
+    private const int VERSION_6 = 6;
 
     /**
      * Constructor

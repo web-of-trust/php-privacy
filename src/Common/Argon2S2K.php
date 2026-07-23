@@ -33,17 +33,17 @@ class Argon2S2K implements S2KInterface
     /**
      * Argon2 salt length
      */
-    const int SALT_LENGTH = 16;
+    private const int SALT_LENGTH = 16;
 
     /**
      * PHP parallelism
      */
-    const int PHP_PARALLELISM = 1;
+    private const int PHP_PARALLELISM = 1;
 
     /**
      * argon2 command
      */
-    const int ARGON2_COMMAND = "argon2";
+    private const int ARGON2_COMMAND = "argon2";
 
     /**
      * Argon2 command path

@@ -22,8 +22,8 @@ use phpseclib4\Common\Functions\Strings;
  */
 abstract class AbstractPacket implements PacketInterface
 {
-    const int PARTIAL_MIN_SIZE = 512;
-    const int PARTIAL_MAX_SIZE = 1024;
+    private const int PARTIAL_MIN_SIZE = 512;
+    private const int PARTIAL_MAX_SIZE = 1024;
 
     /**
      * Constructor

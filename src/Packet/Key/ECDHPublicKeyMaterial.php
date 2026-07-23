@@ -22,7 +22,7 @@ use phpseclib4\Math\BigInteger;
  */
 class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
 {
-    const int DEFAULT_RESERVED = 0;
+    public const int DEFAULT_RESERVED = 0;
 
     /**
      * Constructor

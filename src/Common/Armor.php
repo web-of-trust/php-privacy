@@ -23,24 +23,24 @@ use phpseclib4\Common\Functions\Strings;
  */
 final class Armor
 {
-    const string MESSAGE_BEGIN = "-----BEGIN PGP MESSAGE-----\n";
-    const string SIGNED_MESSAGE_BEGIN = "-----BEGIN PGP SIGNED MESSAGE-----\n";
-    const string MESSAGE_END = "-----END PGP MESSAGE-----\n";
+    private const string MESSAGE_BEGIN = "-----BEGIN PGP MESSAGE-----\n";
+    private const string SIGNED_MESSAGE_BEGIN = "-----BEGIN PGP SIGNED MESSAGE-----\n";
+    private const string MESSAGE_END = "-----END PGP MESSAGE-----\n";
 
-    const string PUBLIC_KEY_BLOCK_BEGIN = "-----BEGIN PGP PUBLIC KEY BLOCK-----\n";
-    const string PUBLIC_KEY_BLOCK_END = "-----END PGP PUBLIC KEY BLOCK-----\n";
+    private const string PUBLIC_KEY_BLOCK_BEGIN = "-----BEGIN PGP PUBLIC KEY BLOCK-----\n";
+    private const string PUBLIC_KEY_BLOCK_END = "-----END PGP PUBLIC KEY BLOCK-----\n";
 
-    const string PRIVATE_KEY_BLOCK_BEGIN = "-----BEGIN PGP PRIVATE KEY BLOCK-----\n";
-    const string PRIVATE_KEY_BLOCK_END = "-----END PGP PRIVATE KEY BLOCK-----\n";
+    private const string PRIVATE_KEY_BLOCK_BEGIN = "-----BEGIN PGP PRIVATE KEY BLOCK-----\n";
+    private const string PRIVATE_KEY_BLOCK_END = "-----END PGP PRIVATE KEY BLOCK-----\n";
 
-    const string SIGNATURE_BEGIN = "-----BEGIN PGP SIGNATURE-----\n";
-    const string SIGNATURE_END = "-----END PGP SIGNATURE-----\n";
+    private const string SIGNATURE_BEGIN = "-----BEGIN PGP SIGNATURE-----\n";
+    private const string SIGNATURE_END = "-----END PGP SIGNATURE-----\n";
 
-    const string EMPTY_PATTERN = '/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/';
-    const string HEADER_PATTERN = '/^([^\s:]|[^\s:][^:]*[^\s:]): .+$/';
-    const string SPLIT_PATTERN = '/^-----[^-]+-----$/';
+    private const string EMPTY_PATTERN = '/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/';
+    private const string HEADER_PATTERN = '/^([^\s:]|[^\s:][^:]*[^\s:]): .+$/';
+    private const string SPLIT_PATTERN = '/^-----[^-]+-----$/';
 
-    const int CHUNK_SIZE = 76;
+    private const int CHUNK_SIZE = 76;
 
     /**
      * Constructor
