@@ -15,27 +15,27 @@ namespace OpenPGP\Enum;
  * @category Enum
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-enum HashAlgorithm: int
+enum HashAlgorithm: string
 {
-    case Unknown = 0;
+    case Unknown = "\x00";
 
-    case Md5 = 1;
+    case Md5 = "\x01";
 
-    case Sha1 = 2;
+    case Sha1 = "\x02";
 
-    case Ripemd160 = 3;
+    case Ripemd160 = "\x03";
 
-    case Sha256 = 8;
+    case Sha256 = "\x08";
 
-    case Sha384 = 9;
+    case Sha384 = "\x09";
 
-    case Sha512 = 10;
+    case Sha512 = "\x0A";
 
-    case Sha224 = 11;
+    case Sha224 = "\x0B";
 
-    case Sha3_256 = 12;
+    case Sha3_256 = "\x0C";
 
-    case Sha3_512 = 14;
+    case Sha3_512 = "\x0E";
 
     /**
      * Digest size

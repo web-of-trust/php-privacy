@@ -15,13 +15,13 @@ namespace OpenPGP\Enum;
  * @category Enum
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-enum CompressionAlgorithm: int
+enum CompressionAlgorithm: string
 {
-    case Uncompressed = 0;
+    case Uncompressed = "\x00";
 
-    case Zip = 1;
+    case Zip = "\x01";
 
-    case Zlib = 2;
+    case Zlib = "\x02";
 
-    case BZip2 = 3;
+    case BZip2 = "\x03";
 }

@@ -15,32 +15,32 @@ namespace OpenPGP\Enum;
  * @category Enum
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-enum S2kType: int
+enum S2kType: string
 {
     /**
      * Simple S2K directly hashes the string to produce the key data.
      */
-    case Simple = 0;
+    case Simple = "\x00";
 
     /**
      * Salted S2K includes a "salt" value in the S2K Specifier -- some arbitrary data --
      * that gets hashed along with the passphrase string to help prevent dictionary attacks.
      */
-    case Salted = 1;
+    case Salted = "\x01";
 
     /**
      * Iterated and Salted S2K includes both a salt and an octet count.
      * The salt is combined with the passphrase, and the resulting value is repeated and then hashed.
      */
-    case Iterated = 3;
+    case Iterated = "\x03";
 
     /**
      * This S2K method hashes the passphrase using Argon2, as specified in RFC9106.
      * This provides memory hardness, further protecting the passphrase against brute-force attacks.
      */
-    case Argon2 = 4;
+    case Argon2 = "\x04";
 
-    case GNU = 101;
+    case GNU = "\x65";
 
     public function dataLength(): int
     {

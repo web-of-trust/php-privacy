@@ -15,155 +15,155 @@ namespace OpenPGP\Enum;
  * @category Enum
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-enum SignatureSubpacketType: int
+enum SignatureSubpacketType: string
 {
     /**
      * Signature Creation Time
      */
-    case SignatureCreationTime = 2;
+    case SignatureCreationTime = "\x02";
 
     /**
      * Signature Expiration Time
      */
-    case SignatureExpirationTime = 3;
+    case SignatureExpirationTime = "\x03";
 
     /**
      * Exportable Certification
      */
-    case ExportableCertification = 4;
+    case ExportableCertification = "\x04";
 
     /**
      * Trust Signature
      */
-    case TrustSignature = 5;
+    case TrustSignature = "\x05";
 
     /**
      * Regular Expression
      */
-    case RegularExpression = 6;
+    case RegularExpression = "\x06";
 
     /**
      * Revocable
      */
-    case Revocable = 7;
+    case Revocable = "\x07";
 
     /**
      * Key Expiration Time
      */
-    case KeyExpirationTime = 9;
+    case KeyExpirationTime = "\x09";
 
     /**
      * Placeholder for backward compatibility
      */
-    case PlaceholderBackwardCompatibility = 10;
+    case PlaceholderBackwardCompatibility = "\x0A";
 
     /**
      * Preferred Symmetric Ciphers for v1 SEIPD
      */
-    case PreferredSymmetricAlgorithms = 11;
+    case PreferredSymmetricAlgorithms = "\x0B";
 
     /**
      * Revocation Key (deprecated)
      */
-    case RevocationKey = 12;
+    case RevocationKey = "\x0C";
 
     /**
      * Issuer Key ID
      */
-    case IssuerKeyID = 16;
+    case IssuerKeyID = "\x10";
 
     /**
      * Notation Data
      */
-    case NotationData = 20;
+    case NotationData = "\x14";
 
     /**
      * Preferred Hash Algorithms
      */
-    case PreferredHashAlgorithms = 21;
+    case PreferredHashAlgorithms = "\x15";
 
     /**
      * Preferred Compression Algorithms
      */
-    case PreferredCompressionAlgorithms = 22;
+    case PreferredCompressionAlgorithms = "\x16";
 
     /**
      * Key Server Preferences
      */
-    case KeyServerPreferences = 23;
+    case KeyServerPreferences = "\x17";
 
     /**
      * Preferred Key Server
      */
-    case PreferredKeyServer = 24;
+    case PreferredKeyServer = "\x18";
 
     /**
      * Primary User ID
      */
-    case PrimaryUserID = 25;
+    case PrimaryUserID = "\x19";
 
     /**
      * Policy URI
      */
-    case PolicyURI = 26;
+    case PolicyURI = "\x1A";
 
     /**
      * Key Flags
      */
-    case KeyFlags = 27;
+    case KeyFlags = "\x1B";
 
     /**
      * Signer's User ID
      */
-    case SignerUserID = 28;
+    case SignerUserID = "\x1C";
 
     /**
      * Reason for Revocation
      */
-    case RevocationReason = 29;
+    case RevocationReason = "\x1D";
 
     /**
      * Features
      */
-    case Features = 30;
+    case Features = "\x1E";
 
     /**
      * Signature Target
      */
-    case SignatureTarget = 31;
+    case SignatureTarget = "\x1F";
 
     /**
      * Embedded Signature
      */
-    case EmbeddedSignature = 32;
+    case EmbeddedSignature = "\x20";
 
     /**
      * Issuer Fingerprint
      */
-    case IssuerFingerprint = 33;
+    case IssuerFingerprint = "\x21";
 
     /**
      * Preferred Aead Algorithms
      */
-    case PreferredAeadAlgorithms = 34;
+    case PreferredAeadAlgorithms = "\x22";
 
     /**
      * Intended Recipient Fingerprint
      */
-    case IntendedRecipientFingerprint = 35;
+    case IntendedRecipientFingerprint = "\x23";
 
     /**
      * Attested Certifications
      */
-    case AttestedCertifications = 37;
+    case AttestedCertifications = "\x25";
 
     /**
      * Key Block
      */
-    case KeyBlock = 38;
+    case KeyBlock = "\x26";
 
     /**
      * Preferred AEAD Ciphers
      */
-    case PreferredAeadCiphers = 39;
+    case PreferredAeadCiphers = "\27";
 }

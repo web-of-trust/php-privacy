@@ -17,26 +17,26 @@ namespace OpenPGP\Enum;
  * @category Enum
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-enum SupportFeature: int
+enum SupportFeature: string
 {
     /**
      * Version 1 Symmetrically Encrypted and Integrity Protected Data packet
      */
-    case Version1SEIPD = 1;
+    case Version1SEIPD = "\x01";
 
     /**
      * AEAD Encrypted Data packet (packet 20).
      * Version 5 Symmetric Encrypted Session Key packet.
      */
-    case AeadEncrypted = 2;
+    case AeadEncrypted = "\x02";
 
     /**
      * Version 5 PublicKey packet.
      */
-    case Version5PublicKey = 4;
+    case Version5PublicKey = "\x04";
 
     /**
      * Version 2 Symmetrically Encrypted and Integrity Protected Data packet
      */
-    case Version2SEIPD = 8;
+    case Version2SEIPD = "\x08";
 }

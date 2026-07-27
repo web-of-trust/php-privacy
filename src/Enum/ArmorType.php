@@ -17,7 +17,6 @@ namespace OpenPGP\Enum;
  */
 enum ArmorType
 {
-
     /**
      * Used for cleartext signed message.
      */

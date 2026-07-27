@@ -17,17 +17,17 @@ namespace OpenPGP\Enum;
  * @category Enum
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-enum S2kUsage: int
+enum S2kUsage: string
 {
     /// Indicates that the secret key data is not encrypted
-    case None = 0;
+    case None = "\x00";
 
     /// AEAD protect
-    case AeadProtect = 253;
+    case AeadProtect = "\xFD";
 
     /// CFB
-    case Cfb = 254;
+    case Cfb = "\xFE";
 
     /// Malleable CFB
-    case MalleableCfb = 255;
+    case MalleableCfb = "\xFF";
 }

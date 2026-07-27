@@ -21,67 +21,67 @@ use phpseclib4\Crypt\Common\BlockCipher;
  * @category Enum
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-enum SymmetricAlgorithm: int
+enum SymmetricAlgorithm: string
 {
     /**
      * Plaintext or unencrypted data
      */
-    case Plaintext = 0;
+    case Plaintext = "\x00";
 
     /**
      * IDEA
      */
-    case Idea = 1;
+    case Idea = "\x01";
 
     /**
      * TripleDES (or DES-EDE) with 168-bit key derived from 192
      */
-    case TripleDes = 2;
+    case TripleDes = "\x02";
 
     /**
      * CAST5 with 128-bit key
      */
-    case Cast5 = 3;
+    case Cast5 = "\x03";
 
     /**
      * Blowfish with 128-bit key, 16 rounds
      */
-    case Blowfish = 4;
+    case Blowfish = "\x04";
 
     /**
      * AES with 128-bit key
      */
-    case Aes128 = 7;
+    case Aes128 = "\x07";
 
     /**
      * AES with 192-bit key
      */
-    case Aes192 = 8;
+    case Aes192 = "\x08";
 
     /**
      * AES with 256-bit key
      */
-    case Aes256 = 9;
+    case Aes256 = "\x09";
 
     /**
      * Twofish with 256-bit key
      */
-    case Twofish = 10;
+    case Twofish = "\x0A";
 
     /**
      * Camellia with 128-bit key
      */
-    case Camellia128 = 11;
+    case Camellia128 = "\x0B";
 
     /**
      * Camellia with 192-bit key
      */
-    case Camellia192 = 12;
+    case Camellia192 = "\x0C";
 
     /**
      * Camellia with 256-bit key
      */
-    case Camellia256 = 13;
+    case Camellia256 = "\x0D";
 
     /**
      * Get key size

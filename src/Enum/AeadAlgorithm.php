@@ -17,22 +17,22 @@ use OpenPGP\Cryptor\Aead\{AeadCipher, EAX, GCM, OCB};
  * @category Enum
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-enum AeadAlgorithm: int
+enum AeadAlgorithm: string
 {
     /**
      * A Conventional Authenticated-Encryption Mod
      */
-    case Eax = 1;
+    case Eax = "\x01";
 
     /**
      * The OCB Authenticated-Encryption Algorithm
      */
-    case Ocb = 2;
+    case Ocb = "\x02";
 
     /**
      * Galois/Counter Mode (GCM) and GMAC
      */
-    case Gcm = 3;
+    case Gcm = "\x03";
 
     /**
      * Get block length

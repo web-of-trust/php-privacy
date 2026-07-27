@@ -15,25 +15,25 @@ namespace OpenPGP\Enum;
  * @category Enum
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-enum LiteralFormat: int
+enum LiteralFormat: string
 {
     /**
      * Binary data 'b'
      */
-    case Binary = 0x62;
+    case Binary = "\x62";
 
     /**
      * Text data 't'
      */
-    case Text = 0x74;
+    case Text = "\x74";
 
     /**
      * Utf8 data 'u'
      */
-    case Utf8 = 0x75;
+    case Utf8 = "\x75";
 
     /**
      * MIME message body part 'm'
      */
-    case Mime = 0x6d;
+    case Mime = "\x6d";
 }

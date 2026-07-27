@@ -16,100 +16,100 @@ namespace OpenPGP\Enum;
  * @category Enum
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-enum PacketTag: int
+enum PacketTag: string
 {
     /**
      * PKESK - Public Key Encrypted Session Key Packet
      */
-    case PublicKeyEncryptedSessionKey = 1;
+    case PublicKeyEncryptedSessionKey = "\x01";
 
     /**
      * SIG - Signature Packet
      */
-    case Signature = 2;
+    case Signature = "\x02";
 
     /**
      * SKESK - Symmetric Key Encrypted Session Key Packet
      */
-    case SymmetricKeyEncryptedSessionKey = 3;
+    case SymmetricKeyEncryptedSessionKey = "\x03";
 
     /**
      * OPS - One-Pass Signature Packet
      */
-    case OnePassSignature = 4;
+    case OnePassSignature = "\x04";
 
     /**
      * SECKEY - Secret Key Packet
      */
-    case SecretKey = 5;
+    case SecretKey = "\x05";
 
     /**
      * PUBKEY - Public Key Packet
      */
-    case PublicKey = 6;
+    case PublicKey = "\x06";
 
     /**
      * SECSUBKEY - Secret Subkey Packet
      */
-    case SecretSubkey = 7;
+    case SecretSubkey = "\x07";
 
     /**
      * COMP - Compressed Data Packet
      */
-    case CompressedData = 8;
+    case CompressedData = "\x08";
 
     /**
      * SED - Symmetrically Encrypted Data Packet
      */
-    case SymEncryptedData = 9;
+    case SymEncryptedData = "\x09";
 
     /**
      * MARKER - Marker Packet
      */
-    case Marker = 10;
+    case Marker = "\x0A";
 
     /**
      * LIT - Literal Data Packet
      */
-    case LiteralData = 11;
+    case LiteralData = "\x0B";
 
     /**
      * TRUST - Trust Packet
      */
-    case Trust = 12;
+    case Trust = "\x0C";
 
     /**
      * UID - User ID Packet
      */
-    case UserID = 13;
+    case UserID = "\x0D";
 
     /**
      * PUBSUBKEY - Public Subkey Packet
      */
-    case PublicSubkey = 14;
+    case PublicSubkey = "\x0E";
 
     /**
      * UAT - User Attribute Packet
      */
-    case UserAttribute = 17;
+    case UserAttribute = "\x11";
 
     /**
      * SEIPD - Symmetrically Encrypted and Integrity Protected Data Packet
      */
-    case SymEncryptedIntegrityProtectedData = 18;
+    case SymEncryptedIntegrityProtectedData = "\x12";
 
     /**
      * MDC - Modification Detection Code Packet
      */
-    case ModificationDetectionCode = 19;
+    case ModificationDetectionCode = "\x13";
 
     /**
      * AEPD - Aead Encrypted Protected Data Packet
      */
-    case AeadEncryptedData = 20;
+    case AeadEncryptedData = "\x14";
 
     /**
      * PADDING - Padding Packet
      */
-    case Padding = 21;
+    case Padding = "\x15";
 }

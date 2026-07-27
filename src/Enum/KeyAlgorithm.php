@@ -20,87 +20,87 @@ use OpenPGP\Common\Config;
  * @category Enum
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-enum KeyAlgorithm: int
+enum KeyAlgorithm: string
 {
     /**
      * RSA (Encrypt or Sign) [HAC]
      */
-    case RsaEncryptSign = 1;
+    case RsaEncryptSign = "\x01";
 
     /**
      * RSA (Encrypt only) [HAC]
      */
-    case RsaEncrypt = 2;
+    case RsaEncrypt = "\x02";
 
     /**
      * RSA (Sign only) [HAC]
      */
-    case RsaSign = 3;
+    case RsaSign = "\x03";
 
     /**
      * Elgamal (Encrypt only) [ELGAMAL] [HAC]
      */
-    case ElGamal = 16;
+    case ElGamal = "\x10";
 
     /**
      * DSA (Sign only) [FIPS186] [HAC]
      */
-    case Dsa = 17;
+    case Dsa = "\x11";
 
     /**
      * ECDH (Encrypt only) [RFC6637]
      */
-    case Ecdh = 18;
+    case Ecdh = "\x12";
 
     /**
      * ECDSA (Sign only) [RFC6637]
      */
-    case EcDsa = 19;
+    case EcDsa = "\x13";
 
     /**
      * ElGamal encrypt & sign
      */
-    case ElGamalEncryptSign = 20;
+    case ElGamalEncryptSign = "\x14";
 
     /**
      * Diffie Hellman
      */
-    case DiffieHellman = 21;
+    case DiffieHellman = "\x15";
 
     /**
      * EdDSA (Sign only) - deprecated by rfc9580 (replaced by `ed25519` identifier below)
      */
-    case EdDsaLegacy = 22;
+    case EdDsaLegacy = "\x16";
 
     /**
      * Reserved for AEDH
      */
-    case Aedh = 23;
+    case Aedh = "\x17";
 
     /**
      * Reserved for AEDSA
      */
-    case AeDsa = 24;
+    case AeDsa = "\x18";
 
     /**
      * X25519 (Encrypt only)
      */
-    case X25519 = 25;
+    case X25519 = "\x19";
 
     /**
      * X448 (Encrypt only)
      */
-    case X448 = 26;
+    case X448 = "\x1A";
 
     /**
      * Ed25519 (Sign only)
      */
-    case Ed25519 = 27;
+    case Ed25519 = "\x1B";
 
     /**
      * Ed448 (Sign only)
      */
-    case Ed448 = 28;
+    case Ed448 = "\x1C";
 
     /**
      * For signing

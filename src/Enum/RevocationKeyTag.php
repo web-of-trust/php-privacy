@@ -15,9 +15,9 @@ namespace OpenPGP\Enum;
  * @category Enum
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-enum RevocationKeyTag: int
+enum RevocationKeyTag: string
 {
-    case ClassDefault = 128;
+    case ClassDefault = "\x80";
 
-    case ClassSensitive = 64;
+    case ClassSensitive = "\x40";
 }
