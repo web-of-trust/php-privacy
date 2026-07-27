@@ -55,7 +55,7 @@ class EdDSALegacySecretKeyMaterial extends ECSecretKeyMaterial implements
         return new self(
             $d,
             new EdDSALegacyPublicKeyMaterial(
-                $curve->encodeOid(),
+                $curve->value,
                 Helper::bin2BigInt(
                     "\x40" . $privateKey->getEncodedCoordinates(),
                 ),

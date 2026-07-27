@@ -65,7 +65,7 @@ class ECDHSecretKeyMaterial extends ECSecretKeyMaterial
             return new self(
                 $d,
                 new ECDHPublicKeyMaterial(
-                    $curve->encodeOid(),
+                    $curve->value,
                     $q,
                     $curve->hashAlgorithm(),
                     $curve->symmetricAlgorithm(),

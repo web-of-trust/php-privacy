@@ -264,7 +264,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
         ECDHPublicKeyMaterial $keyMaterial,
         string $fingerprint,
     ): string {
-        $oid = $keyMaterial->getEcc()->encodeOid();
+        $oid = $keyMaterial->getEcc()->value;
         return implode([
             chr(strlen($oid)),
             $oid,

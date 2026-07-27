@@ -47,7 +47,7 @@ abstract class ECPublicKeyMaterial implements
         private readonly BigInteger $q,
     ) {
         $format = "PKCS8";
-        $this->ecc = Ecc::fromOid($oid);
+        $this->ecc = Ecc::from($oid);
         switch ($this->ecc) {
             case Ecc::Curve25519:
                 $key = substr($q->toBytes(), 1);

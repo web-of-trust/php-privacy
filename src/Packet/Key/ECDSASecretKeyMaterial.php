@@ -58,7 +58,7 @@ class ECDSASecretKeyMaterial extends ECSecretKeyMaterial implements
                 return new self(
                     $params["dA"],
                     new ECDSAPublicKeyMaterial(
-                        $curve->encodeOid(),
+                        $curve->value,
                         Helper::bin2BigInt(
                             $privateKey->getEncodedCoordinates(),
                         ),

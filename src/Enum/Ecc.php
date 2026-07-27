@@ -30,42 +30,45 @@ use phpseclib4\File\ASN1;
  */
 enum Ecc: string
 {
-    case Secp256r1 = "1.2.840.10045.3.1.7";
-
-    case Secp384r1 = "1.3.132.0.34";
-
-    case Secp521r1 = "1.3.132.0.35";
-
-    case BrainpoolP256r1 = "1.3.36.3.3.2.8.1.1.7";
-
-    case BrainpoolP384r1 = "1.3.36.3.3.2.8.1.1.11";
-
-    case BrainpoolP512r1 = "1.3.36.3.3.2.8.1.1.13";
-
-    case Ed25519 = "1.3.6.1.4.1.11591.15.1";
-
-    case Curve25519 = "1.3.6.1.4.1.3029.1.5.1";
+    /**
+     * oid: 1.2.840.10045.3.1.7
+     */
+    case Secp256r1 = "\x2A\x86\x48\xCE\x3D\x03\x01\x07";
 
     /**
-     * Get ecc from oid
-     *
-     * @param string $oid
-     * @return self
+     * oid: 1.3.132.0.34
      */
-    public static function fromOid(string $oid): self
-    {
-        return self::from(ASN1::decodeOID($oid));
-    }
+    case Secp384r1 = "\x2B\x81\x04\x00\x22";
 
     /**
-     * Encode the oid
-     *
-     * @return string
+     * oid: 1.3.132.0.35
      */
-    public function encodeOid(): string
-    {
-        return ASN1::encodeOID($this->value);
-    }
+    case Secp521r1 = "\x2B\x81\x04\x00\x23";
+
+    /**
+     * oid: 1.3.36.3.3.2.8.1.1.7
+     */
+    case BrainpoolP256r1 = "\x2B\x24\x03\x03\x02\x08\x01\x01\x07";
+
+    /**
+     * oid: 1.3.36.3.3.2.8.1.1.11
+     */
+    case BrainpoolP384r1 = "\x2B\x24\x03\x03\x02\x08\x01\x01\x0B";
+
+    /**
+     * oid: 1.3.36.3.3.2.8.1.1.13
+     */
+    case BrainpoolP512r1 = "\x2B\x24\x03\x03\x02\x08\x01\x01\x0D";
+
+    /**
+     * oid: 1.3.6.1.4.1.11591.15.1
+     */
+    case Ed25519 = "\x2B\x06\x01\x04\x01\xDA\x47\x0F\x01";
+
+    /**
+     * oid: 1.3.6.1.4.1.3029.1.5.1
+     */
+    case Curve25519 = "\x2B\x06\x01\x04\x01\x97\x55\x01\x05\x01";
 
     /**
      * Get curve
