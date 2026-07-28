@@ -127,7 +127,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         return implode([
             chr($this->version),
             pack("N", $this->creationTime->getTimestamp()),
-            chr($this->keyAlgorithm->value),
+            $this->keyAlgorithm->value,
             $this->version === KeyVersion::V6->value
                 ? pack("N", strlen($kmBytes))
                 : "",
@@ -278,7 +278,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
         $offset += 4;
 
         // A one-octet number denoting the public-key algorithm of this key.
-        $keyAlgorithm = KeyAlgorithm::from(ord($bytes[$offset++]));
+        $keyAlgorithm = KeyAlgorithm::from($bytes[$offset++]);
 
         if ($version === KeyVersion::V6->value) {
             // - A four-octet scalar octet count for the following key material.

@@ -152,15 +152,15 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         $isV6 = $this->getVersion() === KeyVersion::V6->value;
         if ($this->isEncrypted()) {
             $optBytes = implode([
-                chr($this->symmetric->value),
-                !empty($this->aead) ? chr($this->aead->value) : "",
+                $this->symmetric->value,
+                !empty($this->aead) ? $this->aead->value : "",
                 $isV6 ? chr($this->s2k->getLength()) : "",
                 $this->s2k->toBytes(),
                 $this->iv,
             ]);
             return implode([
                 $this->publicKey->toBytes(),
-                chr($this->s2kUsage->value),
+                $this->s2kUsage->value,
                 $isV6 ? chr(strlen($optBytes)) : "",
                 $optBytes,
                 $this->keyData,
@@ -168,7 +168,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         } else {
             return implode([
                 $this->publicKey->toBytes(),
-                chr(S2kUsage::None->value),
+                S2kUsage::None->value,
                 $this->keyData,
                 $isV6 ? "" : Helper::computeChecksum($this->keyData),
             ]);
@@ -696,8 +696,8 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 implode([
                     $packetTag,
                     chr(KeyVersion::V6->value),
-                    chr($symmetric->value),
-                    chr($aead->value),
+                    $symmetric->value,
+                    $aead->value,
                 ]),
             );
         }

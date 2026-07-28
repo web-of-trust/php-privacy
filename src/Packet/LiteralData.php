@@ -56,7 +56,7 @@ class LiteralData extends AbstractPacket implements
     public static function fromBytes(string $bytes): self
     {
         $offset = 0;
-        $format = Format::from(ord($bytes[$offset++]));
+        $format = Format::from($bytes[$offset++]);
         $length = ord($bytes[$offset++]);
         $filename = substr($bytes, $offset, $length);
 
@@ -125,7 +125,7 @@ class LiteralData extends AbstractPacket implements
     public function getHeader(): string
     {
         return implode([
-            chr($this->format->value),
+            $this->format->value,
             chr(strlen($this->filename)),
             $this->filename,
             pack("N", $this->time->getTimestamp()),

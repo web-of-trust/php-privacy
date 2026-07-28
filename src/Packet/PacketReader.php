@@ -84,7 +84,8 @@ class PacketReader
 
         $header = ord($bytes[$offset++]);
         $isOld = ($header & 0x40) != 0 ? false : true;
-        $tag = PacketTag::from($isOld ? ($header & 0x3f) >> 2 : $header & 0x3f);
+        $tagByte = $isOld ? ($header & 0x3F) >> 2 : $header & 0x3F;
+        $tag = PacketTag::from(chr($tagByte));
 
         $data = "";
         if ($isOld) {

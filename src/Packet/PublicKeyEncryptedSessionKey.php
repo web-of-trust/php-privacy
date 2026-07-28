@@ -92,7 +92,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket implements
             $keyVersion = 0;
             $keyFingerprint = "";
         }
-        $keyAlgorithm = KeyAlgorithm::from(ord($bytes[$offset++]));
+        $keyAlgorithm = KeyAlgorithm::from($bytes[$offset++]);
 
         return new self(
             $version,
@@ -143,7 +143,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket implements
         } else {
             $bytes[] = $this->keyID;
         }
-        $bytes[] = chr($this->keyAlgorithm->value);
+        $bytes[] = $this->keyAlgorithm->value;
         $bytes[] = $this->sessionKeyCryptor->toBytes();
         return implode($bytes);
     }

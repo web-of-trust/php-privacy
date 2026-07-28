@@ -77,7 +77,7 @@ abstract class AbstractPacket implements PacketInterface
      */
     protected function getTagByte(): string
     {
-        return chr(0xc0 | $this->tag->value);
+        return "\xC0" | $this->tag->value;
     }
 
     /**

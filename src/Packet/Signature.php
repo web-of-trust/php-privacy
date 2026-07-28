@@ -114,9 +114,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         );
         $this->signatureData = implode([
             chr($this->version),
-            chr($this->signatureType->value),
-            chr($this->keyAlgorithm->value),
-            chr($this->hashAlgorithm->value),
+            $this->signatureType->value,
+            $this->keyAlgorithm->value,
+            $this->hashAlgorithm->value,
             self::subpacketsToBytes(
                 $this->hashedSubpackets,
                 $this->version === KeyVersion::V6->value,
@@ -234,9 +234,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
 
         $signatureData = implode([
             chr($version),
-            chr($signatureType->value),
-            chr($keyAlgorithm->value),
-            chr($hashAlgorithm->value),
+            $signatureType->value,
+            $keyAlgorithm->value,
+            $hashAlgorithm->value,
             self::subpacketsToBytes($hashedSubpackets, $isV6),
         ]);
         $message = implode([
@@ -1110,35 +1110,25 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
                 KeyFlag::CertifyKeys->value | KeyFlag::SignData->value,
             ),
             new Signature\PreferredSymmetricAlgorithms(
-                implode(
-                    array_map(
-                        static fn($algo) => chr($algo->value),
-                        SymmetricAlgorithm::preferredSymmetrics(),
-                    ),
-                ),
+                implode(SymmetricAlgorithm::preferredSymmetrics())
             ),
             new Signature\PreferredAeadAlgorithms(
-                implode(
-                    array_map(
-                        static fn($algo) => chr($algo->value),
-                        AeadAlgorithm::preferredAead(),
-                    ),
-                ),
+                implode(AeadAlgorithm::preferredAead())
             ),
             new Signature\PreferredHashAlgorithms(
                 implode([
-                    chr(HashAlgorithm::Sha256->value),
-                    chr(HashAlgorithm::Sha3_256->value),
-                    chr(HashAlgorithm::Sha512->value),
-                    chr(HashAlgorithm::Sha3_512->value),
+                    HashAlgorithm::Sha256->value,
+                    HashAlgorithm::Sha3_256->value,
+                    HashAlgorithm::Sha512->value,
+                    HashAlgorithm::Sha3_512->value,
                 ]),
             ),
             new Signature\PreferredCompressionAlgorithms(
                 implode([
-                    chr(CompressionAlgorithm::Uncompressed->value),
-                    chr(CompressionAlgorithm::Zip->value),
-                    chr(CompressionAlgorithm::Zlib->value),
-                    chr(CompressionAlgorithm::BZip2->value),
+                    CompressionAlgorithm::Uncompressed->value,
+                    CompressionAlgorithm::Zip->value,
+                    CompressionAlgorithm::Zlib->value,
+                    CompressionAlgorithm::BZip2->value,
                 ]),
             ),
             Signature\Features::fromFeatures(
@@ -1150,16 +1140,16 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         if ($version === KeyVersion::V6->value) {
             $props[] = new Signature\PreferredAeadCiphers(
                 implode([
-                    chr(SymmetricAlgorithm::Aes256->value),
-                    chr(AeadAlgorithm::Ocb->value),
-                    chr(SymmetricAlgorithm::Aes256->value),
-                    chr(AeadAlgorithm::Gcm->value),
-                    chr(SymmetricAlgorithm::Aes128->value),
-                    chr(AeadAlgorithm::Ocb->value),
-                    chr(SymmetricAlgorithm::Aes128->value),
-                    chr(AeadAlgorithm::Gcm->value),
-                    chr(SymmetricAlgorithm::Aes128->value),
-                    chr(AeadAlgorithm::Eax->value),
+                    SymmetricAlgorithm::Aes256->value,
+                    AeadAlgorithm::Ocb->value,
+                    SymmetricAlgorithm::Aes256->value,
+                    AeadAlgorithm::Gcm->value,
+                    SymmetricAlgorithm::Aes128->value,
+                    AeadAlgorithm::Ocb->value,
+                    SymmetricAlgorithm::Aes128->value,
+                    AeadAlgorithm::Gcm->value,
+                    SymmetricAlgorithm::Aes128->value,
+                    AeadAlgorithm::Eax->value,
                 ]),
             );
         }

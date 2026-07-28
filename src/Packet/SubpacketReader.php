@@ -79,7 +79,7 @@ class SubpacketReader
             $reader = self::read($bytes);
             Strings::shift($bytes, $reader->getLength());
             $critical = ($reader->getType() & 0x80) != 0;
-            $type = SignatureSubpacketType::from($reader->getType() & 0x7f);
+            $type = SignatureSubpacketType::from($reader->getType() & 0x7F);
             $subpackets[] = match ($type) {
                 SignatureSubpacketType::SignatureCreationTime
                     => new Signature\SignatureCreationTime(

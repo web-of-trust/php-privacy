@@ -40,7 +40,7 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
     private const int VERSION_1 = 1;
     private const int VERSION_2 = 2;
     private const string HASH_ALGO = "sha1";
-    private const string MDC_SUFFIX = "\xd3\x14";
+    private const string MDC_SUFFIX = "\xD3\x14";
     private const int SALT_SIZE = 32;
 
     /**
@@ -217,8 +217,8 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
         return $this->version === self::VERSION_2
             ? implode([
                 chr($this->version),
-                chr($this->symmetric->value),
-                chr($this->aead->value),
+                $this->symmetric->value,
+                $this->aead->value,
                 chr($this->chunkSize),
                 $this->salt,
                 $this->encrypted,
@@ -334,10 +334,10 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
         $chunkSize = (1 << $chunkSizeByte + 6) + $tagLength;
 
         $aData = implode([
-            chr(0xc0 | PacketTag::SymEncryptedIntegrityProtectedData->value),
+            "\xC0" | PacketTag::SymEncryptedIntegrityProtectedData->value,
             chr(self::VERSION_2),
-            chr($symmetric->value),
-            chr($aead->value),
+            $symmetric->value,
+            $aead->value,
             chr($chunkSizeByte),
         ]);
 

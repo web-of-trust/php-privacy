@@ -49,7 +49,7 @@ class CompressedData extends AbstractPacket
      */
     public static function fromBytes(string $bytes): self
     {
-        $algorithm = Algorithm::from(ord($bytes[0]));
+        $algorithm = Algorithm::from($bytes[0]);
         $compressed = substr($bytes, 1);
         return new self(
             $compressed,
@@ -125,7 +125,7 @@ class CompressedData extends AbstractPacket
      */
     public function toBytes(): string
     {
-        return implode([chr($this->algorithm->value), $this->compressed]);
+        return implode([$this->algorithm->value, $this->compressed]);
     }
 
     private static function compress(

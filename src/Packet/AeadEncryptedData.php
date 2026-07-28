@@ -32,7 +32,7 @@ class AeadEncryptedData extends AbstractPacket implements
 {
     use AeadEncryptedDataTrait, EncryptedDataTrait;
 
-    private const int VERSION = 1;
+    private const string VERSION = "\x01";
 
     private readonly int $version;
 
@@ -67,7 +67,7 @@ class AeadEncryptedData extends AbstractPacket implements
         $offset = 0;
         // A one-octet version number.
         // The only currently defined version is 1.
-        $version = ord($bytes[$offset++]);
+        $version = $bytes[$offset++];
         if ($version !== self::VERSION) {
             throw new \InvalidArgumentException(
                 "Version $version of the AEPD is not supported.",
@@ -146,9 +146,9 @@ class AeadEncryptedData extends AbstractPacket implements
     public function toBytes(): string
     {
         return implode([
-            chr($this->version),
-            chr($this->symmetric->value),
-            chr($this->aead->value),
+            $this->version,
+            $this->symmetric->value,
+            $this->aead->value,
             chr($this->chunkSize),
             $this->iv,
             $this->encrypted,
@@ -238,10 +238,10 @@ class AeadEncryptedData extends AbstractPacket implements
         $aData = substr_replace(
             str_repeat(Helper::ZERO_CHAR, 13),
             implode([
-                chr(0xc0 | PacketTag::AeadEncryptedData->value),
-                chr(self::VERSION),
-                chr($symmetric->value),
-                chr($aead->value),
+                "\xC0" | PacketTag::AeadEncryptedData->value,
+                self::VERSION,
+                $symmetric->value,
+                $aead->value,
                 chr($chunkSizeByte),
             ]),
             0,

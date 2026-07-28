@@ -160,13 +160,10 @@ class SymmetricKeyEncryptedSessionKey extends AbstractPacket implements
         if ($sessionKey instanceof SessionKeyInterface) {
             if ($aeadProtect) {
                 $aData = implode([
-                    chr(
-                        0xc0 |
-                            PacketTag::SymmetricKeyEncryptedSessionKey->value,
-                    ),
+                    "\xC0" | PacketTag::SymmetricKeyEncryptedSessionKey->value,
                     chr($version),
-                    chr($symmetric->value),
-                    chr($aead->value),
+                    $symmetric->value,
+                    $aead->value,
                 ]);
                 $iv = random_bytes($aead->ivLength());
                 $cipher = $aead->cipherEngine(
@@ -290,8 +287,8 @@ class SymmetricKeyEncryptedSessionKey extends AbstractPacket implements
                     $aData = implode([
                         $this->getTagByte(),
                         chr($this->version),
-                        chr($this->symmetric->value),
-                        chr($this->aead->value),
+                        $this->symmetric->value,
+                        $this->aead->value,
                     ]);
                     $kek =
                         $this->version === self::VERSION_6
@@ -353,8 +350,8 @@ class SymmetricKeyEncryptedSessionKey extends AbstractPacket implements
             self::VERSION_6 => implode([
                 chr($this->version),
                 chr(3 + $this->s2k->getLength() + strlen($this->iv)),
-                chr($this->symmetric->value),
-                chr($this->aead->value),
+                $this->symmetric->value,
+                $this->aead->value,
                 chr($this->s2k->getLength()),
                 $this->s2k->toBytes(),
                 $this->iv,
@@ -362,15 +359,15 @@ class SymmetricKeyEncryptedSessionKey extends AbstractPacket implements
             ]),
             self::VERSION_5 => implode([
                 chr($this->version),
-                chr($this->symmetric->value),
-                chr($this->aead->value),
+                $this->symmetric->value,
+                $this->aead->value,
                 $this->s2k->toBytes(),
                 $this->iv,
                 $this->encrypted,
             ]),
             default => implode([
                 chr($this->version),
-                chr($this->symmetric->value),
+                $this->symmetric->value,
                 $this->s2k->toBytes(),
                 $this->encrypted,
             ]),

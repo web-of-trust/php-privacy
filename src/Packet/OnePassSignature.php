@@ -65,13 +65,13 @@ class OnePassSignature extends AbstractPacket
         $version = ord($bytes[$offset++]);
 
         // A one-octet signature type.
-        $signatureType = SignatureType::from(ord($bytes[$offset++]));
+        $signatureType = SignatureType::from($bytes[$offset++]);
 
         // A one-octet number describing the hash algorithm used.
-        $hashAlgorithm = HashAlgorithm::from(ord($bytes[$offset++]));
+        $hashAlgorithm = HashAlgorithm::from($bytes[$offset++]);
 
         // A one-octet number describing the public-key algorithm used.
-        $keyAlgorithm = KeyAlgorithm::from(ord($bytes[$offset++]));
+        $keyAlgorithm = KeyAlgorithm::from($bytes[$offset++]);
 
         $salt = "";
         $issuerFingerprint = "";
@@ -220,9 +220,9 @@ class OnePassSignature extends AbstractPacket
     {
         $data = [
             chr($this->version),
-            chr($this->signatureType->value),
-            chr($this->hashAlgorithm->value),
-            chr($this->keyAlgorithm->value),
+            $this->signatureType->value,
+            $this->hashAlgorithm->value,
+            $this->keyAlgorithm->value,
         ];
         if ($this->version === self::VERSION_6) {
             $data[] = chr(strlen($this->salt));
