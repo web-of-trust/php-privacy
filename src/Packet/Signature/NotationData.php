@@ -23,11 +23,11 @@ use OpenPGP\Type\NotationDataInterface;
  */
 class NotationData extends SignatureSubpacket implements NotationDataInterface
 {
-    const FLAG_LENGTH = 4;
-    const NAME_LENGTH = 2;
-    const VALUE_LENGTH = 2;
+    private const int FLAG_LENGTH = 4;
+    private const int NAME_LENGTH = 2;
+    private const int VALUE_LENGTH = 2;
 
-    const SALT_NOTATION = "salt@php-openpgp.org";
+    private const string SALT_NOTATION = "salt@php-openpgp.org";
 
     /**
      * Constructor
@@ -85,8 +85,8 @@ class NotationData extends SignatureSubpacket implements NotationDataInterface
     {
         $data = $this->getData();
         $nameLength =
-            ((ord($data[self::FLAG_LENGTH]) & 0xff) << 8) +
-            (ord($data[self::FLAG_LENGTH + 1]) & 0xff);
+            ((ord($data[self::FLAG_LENGTH]) & 0xFF) << 8) +
+            (ord($data[self::FLAG_LENGTH + 1]) & 0xFF);
         $nameOffset =
             self::FLAG_LENGTH + self::NAME_LENGTH + self::VALUE_LENGTH;
         return substr($data, $nameOffset, $nameLength);
@@ -99,11 +99,11 @@ class NotationData extends SignatureSubpacket implements NotationDataInterface
     {
         $data = $this->getData();
         $nameLength =
-            ((ord($data[self::FLAG_LENGTH]) & 0xff) << 8) +
-            (ord($this->getData()[self::FLAG_LENGTH + 1]) & 0xff);
+            ((ord($data[self::FLAG_LENGTH]) & 0xFF) << 8) +
+            (ord($this->getData()[self::FLAG_LENGTH + 1]) & 0xFF);
         $valueLength =
-            ((ord($data[self::FLAG_LENGTH + self::NAME_LENGTH]) & 0xff) << 8) +
-            (ord($data[self::FLAG_LENGTH + self::NAME_LENGTH + 1]) & 0xff);
+            ((ord($data[self::FLAG_LENGTH + self::NAME_LENGTH]) & 0xFF) << 8) +
+            (ord($data[self::FLAG_LENGTH + self::NAME_LENGTH + 1]) & 0xFF);
         $valueOffset =
             self::FLAG_LENGTH +
             self::NAME_LENGTH +
@@ -118,14 +118,14 @@ class NotationData extends SignatureSubpacket implements NotationDataInterface
         bool $humanReadable = false,
     ): string {
         $notationName = mb_convert_encoding($notationName, "UTF-8");
-        $nameLength = min(strlen($notationName), 0xffff);
+        $nameLength = min(strlen($notationName), 0xFFFF);
         if ($nameLength !== strlen($notationName)) {
             throw new \InvalidArgumentException(
                 "Notation name exceeds maximum length.",
             );
         }
 
-        $valueLength = min(strlen($notationValue), 0xffff);
+        $valueLength = min(strlen($notationValue), 0xFFFF);
         if ($valueLength !== strlen($notationValue)) {
             throw new \InvalidArgumentException(
                 "Notation value exceeds maximum length.",
