@@ -109,8 +109,8 @@ class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
             parent::toBytes(),
             "\x03",
             chr($this->reserved),
-            chr($this->kdfHash->value),
-            chr($this->kdfSymmetric->value),
+            $this->kdfHash->value,
+            $this->kdfSymmetric->value,
         ]);
     }
 }
