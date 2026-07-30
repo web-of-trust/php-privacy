@@ -13,6 +13,7 @@
     ],
     "require": {
         "php": ">=8.5",
+        "paragonie/hpke": "^0.8.0",
         "phpseclib/phpseclib": "4.0.x-dev",
         "symfony/process": "^8.0"
     },
