@@ -103,6 +103,41 @@ enum KeyAlgorithm: string
     case Ed448 = "\x1C";
 
     /**
+     * ML-DSA-65+Ed25519 (Sign only)
+     */
+    case MlDsa65Ed25519 = "\x1E";
+
+    /**
+     * ML-DSA-87+Ed448 (Sign only)
+     */
+    case MlDsa87Ed448 = "\x1F";
+
+    /**
+     * SLH-DSA-SHAKE-128s(Sign only)
+     */
+    case SlhDsaShake128s = "\x20";
+
+    /**
+     * SLH-DSA-SHAKE-128f (Sign only)
+     */
+    case SlhDsaShake128f = "\x21";
+
+    /**
+     * SLH-DSA-SHAKE-256s (Sign only)
+     */
+    case SlhDsaShake256s = "\x22";
+
+    /**
+     * ML-KEM-768+X25519 (Encrypt only)
+     */
+    case MlKem768X25519 = "\x23";
+
+    /**
+     * ML-KEM-1024+X448 (Encrypt only)
+     */
+    case MlKem1024X448 = "\x24";
+
+    /**
      * For signing
      *
      * @return bool
@@ -116,7 +151,9 @@ enum KeyAlgorithm: string
             self::DiffieHellman,
             self::Aedh,
             self::X25519,
-            self::X448
+            self::X448,
+            self::MlKem768X25519,
+            self::MlKem1024X448
                 => false,
             default => true,
         };
@@ -136,7 +173,12 @@ enum KeyAlgorithm: string
             self::EdDsaLegacy,
             self::AeDsa,
             self::Ed25519,
-            self::Ed448
+            self::Ed448,
+            self::MlDsa65Ed25519,
+            self::MlDsa87Ed448,
+            self::SlhDsaShake128s,
+            self::SlhDsaShake128f,
+            self::SlhDsaShake256s
                 => false,
             default => true,
         };
@@ -150,8 +192,10 @@ enum KeyAlgorithm: string
     public function keyVersion(): int
     {
         return match ($this) {
-            self::X25519, self::X448, self::Ed25519, self::Ed448 => KeyVersion
-                ::V6->value,
+            self::X25519, self::X448, self::Ed25519, self::Ed448,
+            self::MlDsa65Ed25519, self::MlDsa87Ed448, self::SlhDsaShake128s,
+            self::SlhDsaShake128f, self::SlhDsaShake256s,
+            self::MlKem768X25519, self::MlKem1024X448 => self::V6->value,
             default => Config::presetRFC() == PresetRFC::RFC9580
                 ? KeyVersion::V6->value
                 : KeyVersion::V4->value,

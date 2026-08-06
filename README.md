@@ -1,7 +1,8 @@
 PHP Privacy - The OpenPGP library in PHP language
 =================================================
 PHP Privacy is an implementation of the OpenPGP standard in PHP language.
-It implements [RFC 9580](https://www.rfc-editor.org/rfc/rfc9580) and
+It implements [RFC 9580](https://www.rfc-editor.org/rfc/rfc9580.html),
+[RFC 9980](https://www.rfc-editor.org/rfc/rfc9980.html) and
 provides encryption with public key or symmetric cryptographic algorithms,
 digital signatures, compression, and key management.
 
