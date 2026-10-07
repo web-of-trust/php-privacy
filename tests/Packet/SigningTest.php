@@ -485,6 +485,14 @@ EOT;
         }
     }
 
+    public function testSignatureExpirationTimeSubpacketTakesSeconds()
+    {
+        $subpacket = SignatureExpirationTime::fromTime(3600);
+
+        $this->assertSame(pack("N", 3600), $subpacket->getData());
+        $this->assertSame(3600, $subpacket->getExpirationTime());
+    }
+
     public function testSignatureSubpackets()
     {
         $initSubpackets = array_map(

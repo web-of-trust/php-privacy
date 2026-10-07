@@ -762,12 +762,12 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         ) {
             return null;
         }
-        $validity = Helper::bytesToLong($subpacket->getData());
-        if ($validity === 0) {
+        $expirationTime = $subpacket->getExpirationTime();
+        if ($expirationTime === 0) {
             return null;
         }
         return (new \DateTime())->setTimestamp(
-            $creationTime->getTimestamp() + $validity,
+            $creationTime->getTimestamp() + $expirationTime,
         );
     }
 
