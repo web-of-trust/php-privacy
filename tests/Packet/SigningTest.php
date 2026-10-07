@@ -458,6 +458,33 @@ EOT;
         );
     }
 
+    public function testSignatureWithoutExpirationIsNotExpiredInTheFuture()
+    {
+        $secretKey = SecretKey::fromBytes(
+            base64_decode(self::$rsaSecretKeyData)
+        )->decrypt(self::PASSPHRASE);
+        $createdAt = new \DateTime("2024-01-01T00:00:00Z");
+
+        $noExpirations = [[], [new SignatureExpirationTime(pack("N", 0))]];
+        foreach ($noExpirations as $subpackets) {
+            $signature = Signature::createSignature(
+                $secretKey,
+                SignatureType::Standalone,
+                Random::string(1024),
+                subpackets: $subpackets,
+                time: $createdAt
+            );
+
+            $this->assertFalse($signature->isExpired($createdAt));
+            $this->assertFalse(
+                $signature->isExpired(new \DateTime("2100-01-01T00:00:00Z"))
+            );
+            $this->assertTrue(
+                $signature->isExpired(new \DateTime("2023-12-31T23:59:59Z"))
+            );
+        }
+    }
+
     public function testSignatureSubpackets()
     {
         $initSubpackets = array_map(
