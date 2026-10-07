@@ -3,8 +3,11 @@
 namespace OpenPGP\Tests\Message;
 
 use OpenPGP\Common\Config;
-use OpenPGP\Enum\KeyType;
-use OpenPGP\Packet\LiteralData;
+use OpenPGP\Enum\{KeyType, SignatureType};
+use OpenPGP\Message\Signature;
+use OpenPGP\Packet\{LiteralData, PacketList};
+use OpenPGP\Packet\Signature as SignaturePacket;
+use OpenPGP\Packet\Signature\SignatureExpirationTime;
 use OpenPGP\Type\SignatureInterface;
 use OpenPGP\OpenPGP;
 use OpenPGP\Tests\OpenPGPTestCase;
@@ -187,6 +190,56 @@ EOT;
         )[0];
         $this->assertSame("184d0dc4f5c532b2", $verification->getKeyID(true));
         $this->assertTrue($verification->isVerified());
+    }
+
+    public function testVerifyDetachedSignatureThatExpiresTwoYearsAfterSigning()
+    {
+        $privateKey = OpenPGP::readPrivateKey(
+            file_get_contents("tests/Data/RsaPrivateKey.asc")
+        )->decrypt(self::PASSPHRASE);
+        $publicKey = OpenPGP::readPublicKey(
+            file_get_contents("tests/Data/RsaPublicKey.asc")
+        );
+        $twoYears = 2 * 365 * 24 * 60 * 60;
+        $signature = OpenPGP::readSignature(
+            (new Signature(new PacketList([
+                SignaturePacket::createSignature(
+                    $privateKey->getSigningKeyPacket(),
+                    SignatureType::Text,
+                    LiteralData::fromText(self::LITERAL_TEXT)->getSignBytes(),
+                    subpackets: [
+                        new SignatureExpirationTime(pack("N", $twoYears)),
+                    ],
+                    time: new \DateTime("2025-01-01T00:00:00Z")
+                ),
+            ])))->armor()
+        );
+        $message = OpenPGP::createCleartextMessage(self::LITERAL_TEXT);
+
+        $verification = $message->verifyDetached(
+            [$publicKey],
+            $signature,
+            new \DateTime("2026-06-01T00:00:00Z")
+        )[0];
+        $this->assertTrue($verification->isVerified());
+        $expirationTime = $verification
+            ->getSignaturePacket()
+            ->getExpirationTime();
+        $this->assertSame(
+            (new \DateTime("2027-01-01T00:00:00Z"))->getTimestamp(),
+            $expirationTime->getTimestamp()
+        );
+
+        $verification = $message->verifyDetached(
+            [$publicKey],
+            $signature,
+            new \DateTime("2027-06-01T00:00:00Z")
+        )[0];
+        $this->assertFalse($verification->isVerified());
+        $this->assertStringStartsWith(
+            "Signature is expired at",
+            $verification->getVerificationError()
+        );
     }
 
     public function testVerifyDsaDetachedSignature()
