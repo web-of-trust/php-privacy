@@ -727,7 +727,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
     {
         $timestamp = $time?->getTimestamp() ?? time();
         $creationTime = $this->getCreationTime()?->getTimestamp() ?? 0;
-        $expirationTime = $this->getExpirationTime()?->getTimestamp() ?? time();
+        $expirationTime =
+            $this->getExpirationTime()?->getTimestamp() ?? PHP_INT_MAX;
         return !($creationTime <= $timestamp && $timestamp <= $expirationTime);
     }
 
@@ -754,9 +755,20 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             $this->hashedSubpackets,
             SignatureSubpacketType::SignatureExpirationTime,
         );
-        return $subpacket instanceof Signature\SignatureExpirationTime
-            ? $subpacket->getExpirationTime()
-            : null;
+        $creationTime = $this->getCreationTime();
+        if (
+            !($subpacket instanceof Signature\SignatureExpirationTime) ||
+            !($creationTime instanceof DateTimeInterface)
+        ) {
+            return null;
+        }
+        $expirationTime = $subpacket->getExpirationTime();
+        if ($expirationTime === 0) {
+            return null;
+        }
+        return (new \DateTime())->setTimestamp(
+            $creationTime->getTimestamp() + $expirationTime,
+        );
     }
 
     /**
