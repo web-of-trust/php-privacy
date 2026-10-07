@@ -754,9 +754,20 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             $this->hashedSubpackets,
             SignatureSubpacketType::SignatureExpirationTime,
         );
-        return $subpacket instanceof Signature\SignatureExpirationTime
-            ? $subpacket->getExpirationTime()
-            : null;
+        $creationTime = $this->getCreationTime();
+        if (
+            !($subpacket instanceof Signature\SignatureExpirationTime) ||
+            !($creationTime instanceof DateTimeInterface)
+        ) {
+            return null;
+        }
+        $validity = Helper::bytesToLong($subpacket->getData());
+        if ($validity === 0) {
+            return null;
+        }
+        return (new \DateTime())->setTimestamp(
+            $creationTime->getTimestamp() + $validity,
+        );
     }
 
     /**

@@ -14,6 +14,7 @@ use OpenPGP\Packet\SecretKey;
 use OpenPGP\Packet\Signature;
 use OpenPGP\Packet\SignatureSubpacket;
 use OpenPGP\Packet\Signature\Features;
+use OpenPGP\Packet\Signature\SignatureExpirationTime;
 use OpenPGP\Packet\Signature\KeyFlags;
 use OpenPGP\Packet\SubpacketReader;
 use OpenPGP\Tests\OpenPGPTestCase;
@@ -381,6 +382,80 @@ EOT;
         $this->assertTrue($keyFlags->isSignData());
         $this->assertTrue($keyFlags->isEncryptCommunication());
         $this->assertTrue($keyFlags->isEncryptStorage());
+    }
+
+    public function testSignatureExpiresSecondsAfterItsCreation()
+    {
+        $message = Random::string(1024);
+        $secretKey = SecretKey::fromBytes(
+            base64_decode(self::$rsaSecretKeyData)
+        )->decrypt(self::PASSPHRASE);
+        $publicKey = PublicKey::fromBytes(
+            base64_decode(self::$rsaPublicKeyData)
+        );
+        $createdAt = new \DateTime("2024-01-01T00:00:00Z");
+
+        $signature = Signature::createSignature(
+            $secretKey,
+            SignatureType::Standalone,
+            $message,
+            subpackets: [new SignatureExpirationTime(pack("N", 3600))],
+            time: $createdAt
+        );
+
+        $this->assertSame(
+            $createdAt->getTimestamp() + 3600,
+            $signature->getExpirationTime()->getTimestamp()
+        );
+        $this->assertFalse(
+            $signature->isExpired(new \DateTime("2024-01-01T00:59:59Z"))
+        );
+        $this->assertTrue(
+            $signature->isExpired(new \DateTime("2024-01-01T01:00:01Z"))
+        );
+        $this->assertTrue(
+            $signature->verify(
+                $publicKey,
+                $message,
+                new \DateTime("2024-01-01T00:30:00Z")
+            )
+        );
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage("Signature is expired");
+        $signature->verify(
+            $publicKey,
+            $message,
+            new \DateTime("2024-01-01T01:00:01Z")
+        );
+    }
+
+    public function testSignatureWithZeroExpirationNeverExpires()
+    {
+        $message = Random::string(1024);
+        $secretKey = SecretKey::fromBytes(
+            base64_decode(self::$rsaSecretKeyData)
+        )->decrypt(self::PASSPHRASE);
+        $publicKey = PublicKey::fromBytes(
+            base64_decode(self::$rsaPublicKeyData)
+        );
+
+        $signature = Signature::createSignature(
+            $secretKey,
+            SignatureType::Standalone,
+            $message,
+            subpackets: [new SignatureExpirationTime(pack("N", 0))],
+            time: new \DateTime("2014-06-24T00:00:00Z")
+        );
+
+        $this->assertNull($signature->getExpirationTime());
+        $this->assertTrue(
+            $signature->verify(
+                $publicKey,
+                $message,
+                new \DateTime("2024-01-01T00:00:00Z")
+            )
+        );
     }
 
     public function testSignatureSubpackets()
