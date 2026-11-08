@@ -234,3 +234,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 2.2.8 - released 2026-06-04
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.7...2.2.8)
 - Reduce memory usage of S2K iteration
+
+## 2.2.9 - released 2026-10-08
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.8...2.2.9)
+- Merge pull request #12: Read signature expiration time as seconds after signing, and expiration times of zero as never

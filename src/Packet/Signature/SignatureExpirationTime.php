@@ -8,14 +8,13 @@
 
 namespace OpenPGP\Packet\Signature;
 
-use DateTimeInterface;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\SignatureSubpacketType;
 use OpenPGP\Packet\SignatureSubpacket;
 
 /**
  * SignatureExpirationTime sub-packet class
- * Giving signature expiration time.
+ * Giving time after creation at which the signature expires.
  *
  * @package  OpenPGP
  * @category Packet
@@ -42,26 +41,22 @@ class SignatureExpirationTime extends SignatureSubpacket
     /**
      * From time
      *
-     * @param DateTimeInterface $time
+     * @param int $seconds
      * @param bool $critical
      * @return self
      */
-    public static function fromTime(
-        DateTimeInterface $time,
-        bool $critical = false,
-    ): self {
-        return new self(pack("N", $time->getTimestamp()), $critical);
+    public static function fromTime(int $seconds, bool $critical = false): self
+    {
+        return new self(pack("N", $seconds), $critical);
     }
 
     /**
      * Get expiration time
      *
-     * @return DateTimeInterface
+     * @return int
      */
-    public function getExpirationTime(): DateTimeInterface
+    public function getExpirationTime(): int
     {
-        return (new \DateTime)->setTimestamp(
-            Helper::bytesToLong($this->getData()),
-        );
+        return Helper::bytesToLong($this->getData());
     }
 }
