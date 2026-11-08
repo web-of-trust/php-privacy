@@ -607,7 +607,10 @@ abstract class AbstractKey implements KeyInterface
         });
         foreach ($signatures as $signature) {
             $keyExpirationTime = $signature->getKeyExpirationTime();
-            if ($keyExpirationTime instanceof KeyExpirationTime) {
+            if (
+                $keyExpirationTime instanceof KeyExpirationTime &&
+                $keyExpirationTime->getExpirationTime() > 0
+            ) {
                 $expirationTime = $keyExpirationTime->getExpirationTime();
                 $creationTime =
                     $signature->getCreationTime() ?? new \DateTime();

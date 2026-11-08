@@ -2,16 +2,33 @@
 
 namespace OpenPGP\Tests\Key;
 
-use OpenPGP\Enum\KeyAlgorithm;
-use OpenPGP\Enum\PacketTag;
+use DateTimeInterface;
+use OpenPGP\Common\Armor;
+use OpenPGP\Enum\{
+    ArmorType,
+    HashAlgorithm,
+    KeyAlgorithm,
+    KeyFlag,
+    PacketTag,
+    SignatureType,
+};
 use OpenPGP\OpenPGP;
+use OpenPGP\Packet\{PacketList, Signature, UserID};
+use OpenPGP\Packet\Signature\{
+    KeyExpirationTime,
+    KeyFlags,
+    SignatureExpirationTime,
+};
 use OpenPGP\Tests\OpenPGPTestCase;
+use OpenPGP\Type\PrivateKeyInterface;
 
 /**
  * Testcase class for OpenPGP public key.
  */
 class PublicKeyTest extends OpenPGPTestCase
 {
+    const PASSPHRASE = "password";
+
     public function testReadRSAPublicKey()
     {
         $publicKey = OpenPGP::readPublicKey(
@@ -252,6 +269,58 @@ class PublicKeyTest extends OpenPGPTestCase
         );
     }
 
+    public function testReadKeyWhoseSelfSignaturesNeverExpire()
+    {
+        $privateKey = OpenPGP::readPrivateKey(
+            file_get_contents("tests/Data/RsaPrivateKey.asc")
+        )->decrypt(self::PASSPHRASE);
+        $armored = self::armorPublicKeyWithSelfSignatureSubpackets(
+            $privateKey,
+            [
+                new SignatureExpirationTime(pack("N", 0)),
+                new KeyExpirationTime(pack("N", 0)),
+            ],
+            new \DateTime("2024-01-01T00:00:00Z")
+        );
+
+        $publicKey = OpenPGP::readPublicKey($armored);
+
+        $this->assertNull($publicKey->getExpirationTime());
+        $this->assertNull($publicKey->getSubkeys()[0]->getExpirationTime());
+        $this->assertTrue(
+            $publicKey->verify(time: new \DateTime("2024-06-01T00:00:00Z"))
+        );
+        $this->assertSame(
+            $privateKey->getSubkeys()[0]->getKeyID(),
+            $publicKey->getEncryptionKeyPacket()->getKeyID()
+        );
+    }
+
+    public function testReadKeyWhoseSelfSignaturesExpireSecondsAfterSigning()
+    {
+        $privateKey = OpenPGP::readPrivateKey(
+            file_get_contents("tests/Data/RsaPrivateKey.asc")
+        )->decrypt(self::PASSPHRASE);
+        $signedAt = new \DateTime("2024-01-01T00:00:00Z");
+        $validity = 100 * 365 * 24 * 60 * 60;
+        $armored = self::armorPublicKeyWithSelfSignatureSubpackets(
+            $privateKey,
+            [new SignatureExpirationTime(pack("N", $validity))],
+            $signedAt
+        );
+
+        $publicKey = OpenPGP::readPublicKey($armored);
+
+        $this->assertSame(
+            $signedAt->getTimestamp() + $validity,
+            $publicKey->getExpirationTime()->getTimestamp()
+        );
+        $this->assertSame(
+            $signedAt->getTimestamp() + $validity,
+            $publicKey->getSubkeys()[0]->getExpirationTime()->getTimestamp()
+        );
+    }
+
     public function testKeyIsCertified()
     {
         $keyData = <<<EOT
@@ -350,5 +419,62 @@ EOT;
 
         $padding = $publicKey->getPacketList()->whereTag(PacketTag::Padding)[0];
         $this->assertSame(PacketTag::Padding, $padding->getTag());
+    }
+
+    /**
+     * Armor the public part of a key, self-signed again at the given time with
+     * extra hashed subpackets on its user certification and subkey binding.
+     */
+    private static function armorPublicKeyWithSelfSignatureSubpackets(
+        PrivateKeyInterface $privateKey,
+        array $subpackets,
+        DateTimeInterface $time
+    ): string {
+        $keyPacket = $privateKey->getKeyPacket();
+        $subkeyPacket = $privateKey->getSubkeys()[0]->getKeyPacket();
+        $userID = new UserID($privateKey->getUsers()[0]->getUserID());
+
+        return Armor::encode(
+            ArmorType::PublicKey,
+            (new PacketList([
+                $keyPacket->getPublicKey(),
+                $userID,
+                Signature::createSignature(
+                    $keyPacket,
+                    SignatureType::CertGeneric,
+                    implode([
+                        $keyPacket->getSignBytes(),
+                        $userID->getSignBytes(),
+                    ]),
+                    HashAlgorithm::Sha256,
+                    [
+                        KeyFlags::fromFlags(
+                            KeyFlag::CertifyKeys->value |
+                                KeyFlag::SignData->value
+                        ),
+                        ...$subpackets,
+                    ],
+                    $time
+                ),
+                $subkeyPacket->getPublicKey(),
+                Signature::createSignature(
+                    $keyPacket,
+                    SignatureType::SubkeyBinding,
+                    implode([
+                        $keyPacket->getSignBytes(),
+                        $subkeyPacket->getSignBytes(),
+                    ]),
+                    HashAlgorithm::Sha256,
+                    [
+                        KeyFlags::fromFlags(
+                            KeyFlag::EncryptCommunication->value |
+                                KeyFlag::EncryptStorage->value
+                        ),
+                        ...$subpackets,
+                    ],
+                    $time
+                ),
+            ]))->encode()
+        );
     }
 }
