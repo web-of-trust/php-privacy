@@ -62,7 +62,7 @@ class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
         $offset += $q->getLengthInBytes() + 2;
         $kdfBytes = substr($bytes, $offset);
         if (strlen($kdfBytes) < 4 || ord($kdfBytes[0]) !== 3) {
-            throw new \UnexpectedValueException('Cannot read KDF bytes');
+            throw new \UnexpectedValueException('Cannot read kdf bytes');
         }
         return new self(
             $oid,
