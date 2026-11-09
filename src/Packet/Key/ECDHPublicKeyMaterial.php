@@ -22,7 +22,7 @@ use phpseclib3\Math\BigInteger;
  */
 class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
 {
-    const DEFAULT_RESERVED = 0;
+    const DEFAULT_RESERVED = 1;
 
     /**
      * Constructor
@@ -61,6 +61,9 @@ class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
 
         $offset += $q->getLengthInBytes() + 2;
         $kdfBytes = substr($bytes, $offset);
+        if (strlen($kdfBytes) < 4 || ord($kdfBytes[0]) !== 3 || ord($kdfBytes[1]) !== 1) {
+            throw new \UnexpectedValueException('Cannot read KDFParams');
+        }
         return new self(
             $oid,
             $q,
