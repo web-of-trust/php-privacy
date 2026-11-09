@@ -152,5 +152,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Reduce memory usage of S2K iteration
 
 ## 1.2.11 - released 2026-10-09
-[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.1...1.2.11)
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.10...1.2.11)
 - ECDH subkeys are unusable by other OpenPGP implementations: reserved KDF octet is 0x00, RFC 6637 requires 0x01
+
+## 1.2.12 - released 2026-10-09
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.11...1.2.12)
+- Remove ECDHPublicKeyMaterial::$reserved property
