@@ -22,8 +22,6 @@ use phpseclib3\Math\BigInteger;
  */
 class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
 {
-    const DEFAULT_RESERVED = 1;
-
     /**
      * Constructor
      *
@@ -31,7 +29,6 @@ class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
      * @param BigInteger $q
      * @param HashAlgorithm $kdfHash
      * @param SymmetricAlgorithm $kdfSymmetric
-     * @param int $reserved
      * @return self
      */
     public function __construct(
@@ -39,7 +36,6 @@ class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
         BigInteger $q,
         private readonly HashAlgorithm $kdfHash,
         private readonly SymmetricAlgorithm $kdfSymmetric,
-        private readonly int $reserved = self::DEFAULT_RESERVED,
     ) {
         parent::__construct($oid, $q);
     }
@@ -69,7 +65,6 @@ class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
             $q,
             HashAlgorithm::from(ord($kdfBytes[2])),
             SymmetricAlgorithm::from(ord($kdfBytes[3])),
-            self::DEFAULT_RESERVED,
         );
     }
 
@@ -94,24 +89,13 @@ class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
     }
 
     /**
-     * Get reserved
-     *
-     * @return int
-     */
-    public function getReserved(): int
-    {
-        return $this->reserved;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function toBytes(): string
     {
         return implode([
             parent::toBytes(),
-            "\x03",
-            chr($this->reserved),
+            "\x03\x01",
             chr($this->kdfHash->value),
             chr($this->kdfSymmetric->value),
         ]);
