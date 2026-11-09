@@ -61,12 +61,15 @@ class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
 
         $offset += $q->getLengthInBytes() + 2;
         $kdfBytes = substr($bytes, $offset);
+        if (strlen($kdfBytes) < 4 || ord($kdfBytes[0]) !== 3) {
+            throw new \UnexpectedValueException('Cannot read KDFParams');
+        }
         return new self(
             $oid,
             $q,
             HashAlgorithm::from(ord($kdfBytes[2])),
             SymmetricAlgorithm::from(ord($kdfBytes[3])),
-            ord($kdfBytes[1])
+            self::DEFAULT_RESERVED
         );
     }
 
