@@ -80,6 +80,6 @@ class RevocationReason extends SignatureSubpacket
         RevocationReasonTag $reason,
         string $description,
     ): string {
-        return implode([chr($reason->value), $description]);
+        return implode([$reason->value, $description]);
     }
 }

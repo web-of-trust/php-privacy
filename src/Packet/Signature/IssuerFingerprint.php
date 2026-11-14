@@ -11,7 +11,7 @@ namespace OpenPGP\Packet\Signature;
 use OpenPGP\Enum\SignatureSubpacketType;
 use OpenPGP\Packet\SignatureSubpacket;
 use OpenPGP\Type\KeyPacketInterface;
-use phpseclib3\Common\Functions\Strings;
+use phpseclib4\Common\Functions\Strings;
 
 /**
  * IssuerFingerprint sub-packet class

@@ -195,7 +195,7 @@ enum KeyAlgorithm: string
             self::X25519, self::X448, self::Ed25519, self::Ed448,
             self::MlDsa65Ed25519, self::MlDsa87Ed448, self::SlhDsaShake128s,
             self::SlhDsaShake128f, self::SlhDsaShake256s,
-            self::MlKem768X25519, self::MlKem1024X448 => self::V6->value,
+            self::MlKem768X25519, self::MlKem1024X448 => KeyVersion::V6->value,
             default => Config::presetRFC() == PresetRFC::RFC9580
                 ? KeyVersion::V6->value
                 : KeyVersion::V4->value,

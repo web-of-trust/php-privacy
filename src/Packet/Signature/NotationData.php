@@ -27,7 +27,7 @@ class NotationData extends SignatureSubpacket implements NotationDataInterface
     private const int NAME_LENGTH = 2;
     private const int VALUE_LENGTH = 2;
 
-    private const string SALT_NOTATION = "salt@php-openpgp.org";
+    public const string SALT_NOTATION = "salt@php-openpgp.org";
 
     /**
      * Constructor

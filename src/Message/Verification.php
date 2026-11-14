@@ -9,7 +9,7 @@
 namespace OpenPGP\Message;
 
 use OpenPGP\Type\{SignaturePacketInterface, VerificationInterface};
-use phpseclib3\Common\Functions\Strings;
+use phpseclib4\Common\Functions\Strings;
 
 /**
  * Verification class

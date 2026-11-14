@@ -68,7 +68,7 @@ class RevocationKey extends SignatureSubpacket
      */
     public function getSignatureClass(): RevocationKeyTag
     {
-        return RevocationKeyTag::from(ord($this->getData()[0]));
+        return RevocationKeyTag::from($this->getData()[0]);
     }
 
     /**
@@ -78,7 +78,7 @@ class RevocationKey extends SignatureSubpacket
      */
     public function getKeyAlgorithm(): KeyAlgorithm
     {
-        return KeyAlgorithm::from(ord($this->getData()[1]));
+        return KeyAlgorithm::from($this->getData()[1]);
     }
 
     /**

@@ -10,7 +10,7 @@ namespace OpenPGP\Packet\Signature;
 
 use OpenPGP\Enum\SignatureSubpacketType;
 use OpenPGP\Packet\SignatureSubpacket;
-use phpseclib3\Common\Functions\Strings;
+use phpseclib4\Common\Functions\Strings;
 
 /**
  * IssuerKeyID sub-packet class

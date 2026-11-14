@@ -10,7 +10,7 @@ namespace OpenPGP\Packet\Signature;
 
 use OpenPGP\Enum\{AeadAlgorithm, SignatureSubpacketType, SymmetricAlgorithm};
 use OpenPGP\Packet\SignatureSubpacket;
-use phpseclib3\Common\Functions\Strings;
+use phpseclib4\Common\Functions\Strings;
 
 /**
  * PreferredAeadCiphers sub-packet class

@@ -1122,10 +1122,16 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
                 KeyFlag::CertifyKeys->value | KeyFlag::SignData->value,
             ),
             new Signature\PreferredSymmetricAlgorithms(
-                implode(SymmetricAlgorithm::preferredSymmetrics())
+                implode(array_map(
+                    fn ($algo): string => $algo->value,
+                    SymmetricAlgorithm::preferredSymmetrics()
+                ))
             ),
             new Signature\PreferredAeadAlgorithms(
-                implode(AeadAlgorithm::preferredAead())
+                implode(array_map(
+                    fn ($algo): string => $algo->value,
+                    AeadAlgorithm::preferredAead()
+                ))
             ),
             new Signature\PreferredHashAlgorithms(
                 implode([
