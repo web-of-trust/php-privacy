@@ -116,6 +116,6 @@ class SessionKey implements SessionKeyInterface
      */
     public function toBytes(): string
     {
-        return implode([chr($this->symmetric->value), $this->encryptionKey]);
+        return implode([$this->symmetric->value, $this->encryptionKey]);
     }
 }

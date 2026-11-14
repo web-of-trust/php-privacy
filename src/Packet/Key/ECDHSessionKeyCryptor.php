@@ -268,11 +268,11 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
         return implode([
             chr(strlen($oid)),
             $oid,
-            chr(KeyAlgorithm::Ecdh->value),
+            KeyAlgorithm::Ecdh->value,
             "\x03",
-            chr($keyMaterial->getReserved()),
-            chr($keyMaterial->getKdfHash()->value),
-            chr($keyMaterial->getKdfSymmetric()->value),
+            $keyMaterial->getReserved(),
+            $keyMaterial->getKdfHash()->value,
+            $keyMaterial->getKdfSymmetric()->value,
             self::ANONYMOUS_SENDER,
             $fingerprint,
         ]);
