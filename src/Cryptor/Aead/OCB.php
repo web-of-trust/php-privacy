@@ -327,11 +327,11 @@ final class OCB implements AeadCipher
         $last = strlen($data) - 1;
         for ($i = 0; $i < $last; $i++) {
             $doubleVar[$i] = chr(
-                (ord($data[$i]) << 1) ^ (ord($data[$i + 1]) >> 7),
+                ((ord($data[$i]) << 1) ^ (ord($data[$i + 1]) >> 7)) & 0xFF,
             );
         }
         $doubleVar[$last] = chr(
-            (ord($data[$last]) << 1) ^ ((ord($data[0]) >> 7) * 0x87),
+            ((ord($data[$last]) << 1) ^ ((ord($data[0]) >> 7) * 0x87)) & 0xFF,
         );
         return $doubleVar;
     }
@@ -387,7 +387,7 @@ final class OCB implements AeadCipher
                 $data[$i] = chr(ord($data[$i]) >> $bits);
                 if ($i > 0) {
                     $data[$i] = chr(
-                        ord($data[$i]) | (ord($data[$i - 1]) << 8 - $bits),
+                        (ord($data[$i]) | (ord($data[$i - 1]) << 8 - $bits)) & 0xFF,
                     );
                 }
             }
