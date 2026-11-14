@@ -30,10 +30,7 @@ class SKESKTest extends OpenPGPTestCase
             new PacketList([LiteralData::fromText(self::LITERAL_TEXT)])
         );
 
-        $this->assertSame(
-            SymmetricKeyEncryptedSessionKey::VERSION_4,
-            $skesk->getVersion()
-        );
+        $this->assertSame(4, $skesk->getVersion());
         $this->assertTrue(empty($skesk->getEncrypted()));
         $this->assertSame(
             $skesk->getSessionKey()->getSymmetric(),
@@ -50,10 +47,7 @@ class SKESKTest extends OpenPGPTestCase
             ->decryptWithSessionKey($skesk->getSessionKey());
         $literalData = $seipd->getPacketList()->offsetGet(0);
 
-        $this->assertSame(
-            SymmetricKeyEncryptedSessionKey::VERSION_4,
-            $skesk->getVersion()
-        );
+        $this->assertSame(4, $skesk->getVersion());
         $this->assertSame(self::LITERAL_TEXT, trim($literalData->getData()));
     }
 
@@ -69,10 +63,7 @@ class SKESKTest extends OpenPGPTestCase
             new PacketList([LiteralData::fromText(self::LITERAL_TEXT)])
         );
 
-        $this->assertSame(
-            SymmetricKeyEncryptedSessionKey::VERSION_4,
-            $skesk->getVersion()
-        );
+        $this->assertSame(4, $skesk->getVersion());
         $this->assertTrue(!empty($skesk->getEncrypted()));
         $this->assertTrue(!empty($seipd->getEncrypted()));
 
@@ -87,10 +78,7 @@ class SKESKTest extends OpenPGPTestCase
 
         $this->assertTrue($skesk instanceof SymmetricKeyEncryptedSessionKey);
         $this->assertTrue($seipd instanceof SymEncryptedIntegrityProtectedData);
-        $this->assertSame(
-            SymmetricKeyEncryptedSessionKey::VERSION_4,
-            $skesk->getVersion()
-        );
+        $this->assertSame(4, $skesk->getVersion());
         $this->assertSame(self::LITERAL_TEXT, trim($literalData->getData()));
         $this->assertEquals($sessionKey, $skesk->getSessionKey());
     }
@@ -269,10 +257,7 @@ class SKESKTest extends OpenPGPTestCase
             $sessionKey->getSymmetric(),
             $sessionKey->getAead()
         );
-        $this->assertSame(
-            SymmetricKeyEncryptedSessionKey::VERSION_6,
-            $skesk->getVersion()
-        );
+        $this->assertSame(6, $skesk->getVersion());
         $this->assertTrue(!empty($skesk->getEncrypted()));
 
         $seipd = SymEncryptedIntegrityProtectedData::encryptPacketsWithSessionKey(
@@ -280,10 +265,7 @@ class SKESKTest extends OpenPGPTestCase
             new PacketList([LiteralData::fromText(self::LITERAL_TEXT)]),
             $sessionKey->getAead()
         );
-        $this->assertSame(
-            SymEncryptedIntegrityProtectedData::VERSION_2,
-            $seipd->getVersion()
-        );
+        $this->assertSame(2, $seipd->getVersion());
         $this->assertTrue(!empty($seipd->getEncrypted()));
 
         $packets = PacketList::decode(
@@ -297,10 +279,7 @@ class SKESKTest extends OpenPGPTestCase
 
         $this->assertTrue($skesk instanceof SymmetricKeyEncryptedSessionKey);
         $this->assertTrue($seipd instanceof SymEncryptedIntegrityProtectedData);
-        $this->assertSame(
-            SymmetricKeyEncryptedSessionKey::VERSION_6,
-            $skesk->getVersion()
-        );
+        $this->assertSame(6, $skesk->getVersion());
         $this->assertSame(self::LITERAL_TEXT, trim($literalData->getData()));
         $this->assertEquals(
             $sessionKey->getEncryptionKey(),

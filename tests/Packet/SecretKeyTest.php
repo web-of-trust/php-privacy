@@ -364,11 +364,11 @@ EOT;
             $decryptedSecretKey->getFingerprint()
         );
         $this->assertEquals(
-            $secretKey->getKeyMaterial()->getPrivateKey()->toString("Raw"),
+            $secretKey->getKeyMaterial()->getPrivateKey()->toString("PKCS8"),
             $decryptedSecretKey
                 ->getKeyMaterial()
                 ->getPrivateKey()
-                ->toString("Raw")
+                ->toString("PKCS8")
         );
     }
 
