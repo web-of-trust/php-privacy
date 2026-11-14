@@ -11,7 +11,6 @@ namespace OpenPGP\Packet;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\PacketTag;
 use OpenPGP\Type\PacketInterface;
-use phpseclib4\Common\Functions\Strings;
 
 /**
  * Abstract packet class
@@ -104,21 +103,22 @@ abstract class AbstractPacket implements PacketInterface
     {
         $data = $this->toBytes();
         $dataLen = strlen($data);
+        $offset = 0;
         $partialData = [];
 
-        while ($dataLen >= self::PARTIAL_MIN_SIZE) {
-            $maxSize = min(self::PARTIAL_MAX_SIZE, $dataLen);
+        while ($dataLen - $offset >= self::PARTIAL_MIN_SIZE) {
+            $maxSize = min(self::PARTIAL_MAX_SIZE, $dataLen - $offset);
             $powerOf2 = min((int) floor(log($maxSize) / M_LN2), 30);
             $chunkSize = 1 << $powerOf2;
-
             $partialData[] = implode([
                 chr(224 + $powerOf2),
-                Strings::shift($data, $chunkSize),
+                substr($data, $offset, $chunkSize),
             ]);
-            $dataLen = strlen($data);
+            $offset += $chunkSize;
         }
-        $partialData[] = implode([Helper::simpleLength($dataLen), $data]);
+        $rest = substr($data, $offset);
+        $partialData[] = implode([Helper::simpleLength(strlen($rest)), $rest]);
 
-        return implode([$this->getTagByte(), ...$partialData]);
+        return implode([chr(0xc0 | $this->tag->value), ...$partialData]);
     }
 }
