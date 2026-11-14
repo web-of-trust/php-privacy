@@ -143,8 +143,8 @@ class GenericS2K implements S2KInterface
      */
     public static function fromBytes(string $bytes): self
     {
-        $type = S2kType::from(ord($bytes[0]));
-        $hash = HashAlgorithm::from(ord($bytes[1]));
+        $type = S2kType::from($bytes[0]);
+        $hash = HashAlgorithm::from($bytes[1]);
 
         $salt = match ($type) {
             S2kType::Salted, S2kType::Iterated => substr(
