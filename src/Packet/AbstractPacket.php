@@ -119,6 +119,6 @@ abstract class AbstractPacket implements PacketInterface
         $rest = substr($data, $offset);
         $partialData[] = implode([Helper::simpleLength(strlen($rest)), $rest]);
 
-        return implode([chr(0xc0 | $this->tag->value), ...$partialData]);
+        return implode(["\xC0" | $this->tag->value, ...$partialData]);
     }
 }
