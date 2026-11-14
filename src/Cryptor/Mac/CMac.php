@@ -139,7 +139,7 @@ final class CMac
         $result = "";
         for ($i = strlen($data) - 1; $i >= 0; $i--) {
             $tmp = ord($data[$i]);
-            $result .= chr(($tmp << $bits) | $state);
+            $result .= chr((($tmp << $bits) | $state) & 0xFF);
             $state = ($tmp & $mask) >> 8 - $bits;
         }
         return strrev($result);
