@@ -165,4 +165,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## 1.2.14 - released 2026-10-14
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.13...1.2.14)
+- Fix chr deprecated argument in PHP 8.3 & later
 - Walk an offset instead of shortening the string in AeadEncryptedData::crypt & AbstractPacket::partialEncode()
