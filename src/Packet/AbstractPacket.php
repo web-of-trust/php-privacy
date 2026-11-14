@@ -109,23 +109,22 @@ abstract class AbstractPacket implements
     private function partialEncode(): string
     {
         $data = $this->toBytes();
-        $dataLengh = strlen($data);
+        $dataLen = strlen($data);
+        $offset = 0;
         $partialData = [];
 
-        while ($dataLengh >= self::PARTIAL_MIN_SIZE) {
-            $maxSize = min(self::PARTIAL_MAX_SIZE, $dataLengh);
+        while ($dataLen - $offset >= self::PARTIAL_MIN_SIZE) {
+            $maxSize = min(self::PARTIAL_MAX_SIZE, $dataLen - $offset);
             $powerOf2 = min((int) floor(log($maxSize) / M_LN2), 30);
             $chunkSize = 1 << $powerOf2;
-
             $partialData[] = implode([
                 chr(224 + $powerOf2),
-                substr($data, 0, $chunkSize),
+                substr($data, $offset, $chunkSize),
             ]);
-
-            $data = substr($data, $chunkSize);
-            $dataLengh = strlen($data);
+            $offset += $chunkSize;
         }
-        $partialData[] = implode([self::bodyLength($dataLengh), $data]);
+        $rest = substr($data, $offset);
+        $partialData[] = implode([self::bodyLength(strlen($rest)), $rest]);
 
         return implode([chr(0xc0 | $this->tag->value), ...$partialData]);
     }
