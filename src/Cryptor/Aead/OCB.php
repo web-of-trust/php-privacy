@@ -25,16 +25,16 @@ use OpenPGP\Enum\SymmetricAlgorithm;
  */
 final class OCB implements AeadCipher
 {
-    const string ZERO_CHAR = "\x00";
-    const string ONE_CHAR = "\x01";
-    const string ZERO_BLOCK = "\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0";
+    private const string ZERO_CHAR = "\x00";
+    private const string ONE_CHAR = "\x01";
+    private const string ZERO_BLOCK = "\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0";
 
-    const int BLOCK_LENGTH = 16;
-    const int IV_LENGTH = 15;
-    const int TAG_LENGTH = 16;
+    private const int BLOCK_LENGTH = 16;
+    private const int IV_LENGTH = 15;
+    private const int TAG_LENGTH = 16;
 
-    const string MASK_ASTERISK = "x";
-    const string MASK_DOLLAR = '$';
+    private const string MASK_ASTERISK = "x";
+    private const string MASK_DOLLAR = '$';
 
     private readonly EcbCipher $encipher;
 
@@ -327,11 +327,11 @@ final class OCB implements AeadCipher
         $last = strlen($data) - 1;
         for ($i = 0; $i < $last; $i++) {
             $doubleVar[$i] = chr(
-                (ord($data[$i]) << 1) ^ (ord($data[$i + 1]) >> 7),
+                ((ord($data[$i]) << 1) ^ (ord($data[$i + 1]) >> 7)) & 0xFF,
             );
         }
         $doubleVar[$last] = chr(
-            (ord($data[$last]) << 1) ^ ((ord($data[0]) >> 7) * 0x87),
+            ((ord($data[$last]) << 1) ^ ((ord($data[0]) >> 7) * 0x87)) & 0xFF,
         );
         return $doubleVar;
     }
@@ -387,7 +387,7 @@ final class OCB implements AeadCipher
                 $data[$i] = chr(ord($data[$i]) >> $bits);
                 if ($i > 0) {
                     $data[$i] = chr(
-                        ord($data[$i]) | (ord($data[$i - 1]) << 8 - $bits),
+                        (ord($data[$i]) | (ord($data[$i - 1]) << 8 - $bits)) & 0xFF,
                     );
                 }
             }
