@@ -96,7 +96,7 @@ class Argon2S2K implements S2KInterface
     public function toBytes(): string
     {
         return implode([
-            chr($this->type->value),
+            $this->type->value,
             $this->salt,
             chr($this->iteration),
             chr($this->parallelism),

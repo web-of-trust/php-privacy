@@ -79,21 +79,21 @@ class GenericS2K implements S2KInterface
     {
         return match ($this->type) {
             S2kType::Simple => implode([
-                chr($this->type->value),
-                chr($this->hash->value),
+                $this->type->value,
+                $this->hash->value,
             ]),
             S2kType::Salted => implode([
-                chr($this->type->value),
-                chr($this->hash->value),
+                $this->type->value,
+                $this->hash->value,
                 $this->salt,
             ]),
             S2kType::Iterated => implode([
-                chr($this->type->value),
-                chr($this->hash->value),
+                $this->type->value,
+                $this->hash->value,
                 $this->salt,
                 chr($this->itCount),
             ]),
-            S2kType::GNU => implode([chr($this->type->value), "GNU", "\x01"]),
+            S2kType::GNU => implode([$this->type->value, "GNU", "\x01"]),
             default => "",
         };
     }
