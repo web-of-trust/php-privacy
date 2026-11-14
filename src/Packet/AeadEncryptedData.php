@@ -272,16 +272,15 @@ class AeadEncryptedData extends AbstractPacket implements
             strlen($aData)
         );
 
+        $offset = $chunkIndex = 0;
         $crypted = [];
         $chunkIndexData = substr($aDataBuffer, 5, 8);
-        for ($chunkIndex = 0; $chunkIndex === 0 || strlen($data) > 0; ) {
+        while ($dataLength - $offset >= $chunkSize) {
             $crypted[] = $cipher->$fn(
-                substr($data, 0, $chunkSize),
+                substr($data, $offset, $chunkSize),
                 $cipher->getNonce($this->iv, $chunkIndexData),
                 $aDataBuffer
             );
-            // We take a chunk of data, en/decrypt it, and shift `data` to the next chunk.
-            $data = substr($data, $chunkSize);
             $ciBytes = pack("N", ++$chunkIndex);
             $aDataBuffer = substr_replace(
                 $aDataBuffer,
@@ -290,7 +289,21 @@ class AeadEncryptedData extends AbstractPacket implements
                 strlen($ciBytes)
             );
             $chunkIndexData = substr($aDataBuffer, 5, 8);
+            $offset += $chunkSize;
         }
+        $crypted[] = $cipher->$fn(
+            substr($data, $offset),
+            $cipher->getNonce($this->iv, $chunkIndexData),
+            $aDataBuffer
+        );
+        $ciBytes = pack("N", ++$chunkIndex);
+        $aDataBuffer = substr_replace(
+            $aDataBuffer,
+            $ciBytes,
+            9,
+            strlen($ciBytes)
+        );
+        $chunkIndexData = substr($aDataBuffer, 5, 8);
 
         // After the final chunk, we either encrypt a final, empty data
         // chunk to get the final authentication tag or validate that final
