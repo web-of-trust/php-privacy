@@ -8,7 +8,7 @@
 
 namespace OpenPGP\Type;
 
-use phpseclib3\Crypt\EC;
+use phpseclib4\Crypt\EC;
 
 /**
  * EC key material interface

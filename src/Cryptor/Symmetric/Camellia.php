@@ -257,7 +257,7 @@ class Camellia extends BlockCipher
 
     private bool $keyIs128 = false;
 
-    protected $key_length = 16;
+    protected int $key_length = 16;
 
     /**
      * Constructor
@@ -317,7 +317,7 @@ class Camellia extends BlockCipher
     /**
      * {@inheritdoc}
      */
-    protected function encryptBlock($input): string
+    protected function encryptBlock(string $input): string
     {
         $this->reset();
         $k = $this->computeK();
@@ -394,7 +394,7 @@ class Camellia extends BlockCipher
     /**
      * {@inheritdoc}
      */
-    protected function decryptBlock($input): string
+    protected function decryptBlock(string $input): string
     {
         $this->reset();
         $k = $this->computeK();

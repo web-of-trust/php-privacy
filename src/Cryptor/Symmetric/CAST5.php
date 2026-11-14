@@ -464,7 +464,7 @@ class CAST5 extends BlockCipher
     /**
      * {@inheritdoc}
      */
-    protected function encryptBlock($input)
+    protected function encryptBlock(string $input): string
     {
         $l0 = Helper::bytesToLong($input, 0);
         $r0 = Helper::bytesToLong($input, 4);
@@ -476,7 +476,7 @@ class CAST5 extends BlockCipher
     /**
      * {@inheritdoc}
      */
-    protected function decryptBlock($input)
+    protected function decryptBlock(string $input): string
     {
         $l16 = Helper::bytesToLong($input, 0);
         $r16 = Helper::bytesToLong($input, 4);

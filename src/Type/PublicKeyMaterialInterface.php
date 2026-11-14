@@ -9,7 +9,7 @@
 namespace OpenPGP\Type;
 
 use OpenPGP\Enum\HashAlgorithm;
-use phpseclib3\Crypt\Common\PublicKey;
+use phpseclib4\Crypt\Common\PublicKey;
 
 /**
  * Public key material interface
@@ -21,7 +21,7 @@ use phpseclib3\Crypt\Common\PublicKey;
 interface PublicKeyMaterialInterface extends KeyMaterialInterface
 {
     /**
-     * Get phpseclib3 public key
+     * Get phpseclib4 public key
      *
      * @return PublicKey
      */
