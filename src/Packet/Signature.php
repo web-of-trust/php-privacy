@@ -136,13 +136,13 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         $isV6 = $version === KeyVersion::V6->value;
 
         // One-octet signature type.
-        $signatureType = SignatureType::from(ord($bytes[$offset++]));
+        $signatureType = SignatureType::from($bytes[$offset++]);
 
         // One-octet public-key algorithm.
-        $keyAlgorithm = KeyAlgorithm::from(ord($bytes[$offset++]));
+        $keyAlgorithm = KeyAlgorithm::from($bytes[$offset++]);
 
         // One-octet hash algorithm.
-        $hashAlgorithm = HashAlgorithm::from(ord($bytes[$offset++]));
+        $hashAlgorithm = HashAlgorithm::from($bytes[$offset++]);
 
         // Read hashed subpackets
         $hashedLength = $isV6

@@ -45,7 +45,7 @@ class SessionKey implements SessionKeyInterface
     {
         $sessionKey = new self(
             substr($bytes, 1, strlen($bytes) - 3),
-            SymmetricAlgorithm::from(ord($bytes[0])),
+            SymmetricAlgorithm::from($bytes[0]),
         );
         return $sessionKey->checksum(substr($bytes, strlen($bytes) - 2));
     }

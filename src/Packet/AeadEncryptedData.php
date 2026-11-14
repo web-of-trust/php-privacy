@@ -74,8 +74,8 @@ class AeadEncryptedData extends AbstractPacket implements
             );
         }
 
-        $symmetric = SymmetricAlgorithm::from(ord($bytes[$offset++]));
-        $aead = AeadAlgorithm::from(ord($bytes[$offset++]));
+        $symmetric = SymmetricAlgorithm::from($bytes[$offset++]);
+        $aead = AeadAlgorithm::from($bytes[$offset++]);
         $chunkSize = ord($bytes[$offset++]);
         $iv = substr($bytes, $offset, $aead->ivLength());
         $offset += $aead->ivLength();

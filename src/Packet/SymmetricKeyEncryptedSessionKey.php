@@ -90,13 +90,13 @@ class SymmetricKeyEncryptedSessionKey extends AbstractPacket implements
         }
 
         // A one-octet number describing the symmetric algorithm used.
-        $symmetric = SymmetricAlgorithm::from(ord($bytes[$offset++]));
+        $symmetric = SymmetricAlgorithm::from($bytes[$offset++]);
 
         $aead = null;
         $ivLength = 0;
         if ($version >= self::VERSION_5) {
             // A one-octet AEAD algorithm identifier.
-            $aead = AeadAlgorithm::from(ord($bytes[$offset++]));
+            $aead = AeadAlgorithm::from($bytes[$offset++]);
             $ivLength = $aead->ivLength();
             if ($isV6) {
                 // A one-octet scalar octet count of the following field.
@@ -105,7 +105,7 @@ class SymmetricKeyEncryptedSessionKey extends AbstractPacket implements
         }
 
         // A string-to-key (S2K) specifier, length as defined above.
-        $s2kType = S2kType::from(ord($bytes[$offset]));
+        $s2kType = S2kType::from($bytes[$offset]);
         $s2k =
             $s2kType === S2kType::Argon2
                 ? Argon2S2K::fromBytes(substr($bytes, $offset))
@@ -324,7 +324,7 @@ class SymmetricKeyEncryptedSessionKey extends AbstractPacket implements
                     $sessionKey = new Key\SessionKey(
                         substr($decrypted, 1),
                         SymmetricAlgorithm::from(
-                            ord($decrypted[0]),
+                            $decrypted[0],
                         ),
                     );
                 }

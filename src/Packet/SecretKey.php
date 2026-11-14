@@ -440,7 +440,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     ): array {
         $offset = strlen($publicKey->toBytes());
         $isV6 = $publicKey->getVersion() === KeyVersion::V6->value;
-        $s2kUsage = S2kUsage::from(ord($bytes[$offset++]));
+        $s2kUsage = S2kUsage::from($bytes[$offset++]);
 
         // Only for a version 6 packet where the secret key material encrypted
         if ($isV6 && $s2kUsage !== S2kUsage::None) {
@@ -454,11 +454,11 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             case S2kUsage::Cfb:
             case S2kUsage::AeadProtect:
                 // one-octet symmetric encryption algorithm.
-                $symmetric = SymmetricAlgorithm::from(ord($bytes[$offset++]));
+                $symmetric = SymmetricAlgorithm::from($bytes[$offset++]);
 
                 // If s2k usage octet was 253, a one-octet AEAD algorithm.
                 if ($s2kUsage === S2kUsage::AeadProtect) {
-                    $aead = AeadAlgorithm::from(ord($bytes[$offset++]));
+                    $aead = AeadAlgorithm::from($bytes[$offset++]);
                 }
 
                 // Only for a version 6 packet, and if string-to-key usage
@@ -471,7 +471,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                     $offset++;
                 }
 
-                $s2kType = S2kType::from(ord($bytes[$offset]));
+                $s2kType = S2kType::from($bytes[$offset]);
                 $s2k =
                     $s2kType === S2kType::Argon2
                         ? Argon2S2K::fromBytes(substr($bytes, $offset))

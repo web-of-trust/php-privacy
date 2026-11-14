@@ -97,10 +97,10 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
 
         if ($version === self::VERSION_2) {
             // - A one-octet cipher algorithm.
-            $symmetric = SymmetricAlgorithm::from(ord($bytes[$offset++]));
+            $symmetric = SymmetricAlgorithm::from($bytes[$offset++]);
 
             // - A one-octet AEAD algorithm.
-            $aead = AeadAlgorithm::from(ord($bytes[$offset++]));
+            $aead = AeadAlgorithm::from($bytes[$offset++]);
 
             // - A one-octet chunk size.
             $chunkSize = ord($bytes[$offset++]);

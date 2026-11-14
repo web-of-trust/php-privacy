@@ -67,8 +67,8 @@ class ECDHPublicKeyMaterial extends ECPublicKeyMaterial
         return new self(
             $oid,
             $q,
-            HashAlgorithm::from(ord($kdfBytes[2])),
-            SymmetricAlgorithm::from(ord($kdfBytes[3])),
+            HashAlgorithm::from($kdfBytes[2]),
+            SymmetricAlgorithm::from($kdfBytes[3]),
             $kdfBytes[1],
         );
     }
