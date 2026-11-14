@@ -66,7 +66,7 @@ class SignatureTarget extends SignatureSubpacket
      */
     public function getKeyAlgorithm(): KeyAlgorithm
     {
-        return KeyAlgorithm::from(ord($this->getData()[0]));
+        return KeyAlgorithm::from($this->getData()[0]);
     }
 
     /**
@@ -76,7 +76,7 @@ class SignatureTarget extends SignatureSubpacket
      */
     public function getHashAlgorithm(): HashAlgorithm
     {
-        return HashAlgorithm::from(ord($this->getData()[1]));
+        return HashAlgorithm::from($this->getData()[1]);
     }
 
     /**
@@ -95,8 +95,8 @@ class SignatureTarget extends SignatureSubpacket
         string $hashData,
     ): string {
         return implode([
-            chr($keyAlgorithm->value),
-            chr($hashAlgorithm->value),
+            $keyAlgorithm->value,
+            $hashAlgorithm->value,
             $hashData,
         ]);
     }

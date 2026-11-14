@@ -44,7 +44,7 @@ class PreferredAeadAlgorithms extends SignatureSubpacket
     public function getPreferences(): array
     {
         return array_map(
-            static fn($pref) => AeadAlgorithm::from(ord($pref)),
+            static fn($pref) => AeadAlgorithm::from($pref),
             str_split($this->getData()),
         );
     }

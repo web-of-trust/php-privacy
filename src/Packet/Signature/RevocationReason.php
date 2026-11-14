@@ -63,7 +63,7 @@ class RevocationReason extends SignatureSubpacket
      */
     public function getReason(): RevocationReasonTag
     {
-        return RevocationReasonTag::from(ord($this->getData()[0]));
+        return RevocationReasonTag::from($this->getData()[0]);
     }
 
     /**

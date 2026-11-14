@@ -50,9 +50,9 @@ class PreferredAeadCiphers extends SignatureSubpacket
         while (strlen($data) > 0) {
             $ciphers = str_split(Strings::shift($data, 2));
             if (count($ciphers) == 2) {
-                $preferred = SymmetricAlgorithm::from(ord($ciphers[0]));
+                $preferred = SymmetricAlgorithm::from($ciphers[0]);
                 if ($symmetric == $preferred) {
-                    $aeads[] = AeadAlgorithm::from(ord($ciphers[1]));
+                    $aeads[] = AeadAlgorithm::from($ciphers[1]);
                 }
             }
         }

@@ -34,7 +34,7 @@ class AeadEncryptedData extends AbstractPacket implements
 
     private const string VERSION = "\x01";
 
-    private readonly int $version;
+    private readonly string $version;
 
     /**
      * Constructor
