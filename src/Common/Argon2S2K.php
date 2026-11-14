@@ -43,7 +43,7 @@ class Argon2S2K implements S2KInterface
     /**
      * argon2 command
      */
-    private const int ARGON2_COMMAND = "argon2";
+    private const string ARGON2_COMMAND = "argon2";
 
     /**
      * Argon2 command path
