@@ -158,3 +158,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 1.2.12 - released 2026-10-09
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.11...1.2.12)
 - Remove ECDHPublicKeyMaterial::$reserved property
+
+## 1.2.12 - released 2026-10-14
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.11...1.2.12)
+- Restore ECDHPublicKeyMaterial::$reserved property
