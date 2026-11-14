@@ -2,7 +2,6 @@
 
 namespace OpenPGP\Tests\Packet;
 
-use phpseclib3\Crypt\Random;
 use OpenPGP\Packet\ImageUserAttribute;
 use OpenPGP\Packet\UserAttribute;
 use OpenPGP\Packet\UserAttributeSubpacket;
@@ -33,10 +32,10 @@ class UserIDTest extends OpenPGPTestCase
 
     public function testUserAttribute()
     {
-        $imageAttr = ImageUserAttribute::fromImageData(Random::string(10));
+        $imageAttr = ImageUserAttribute::fromImageData(random_bytes(10));
         $userAttr = new UserAttributeSubpacket(
             $this->faker->numberBetween(2, 10),
-            Random::string(10)
+            random_bytes(10)
         );
 
         $packet = new UserAttribute([$imageAttr, $userAttr]);

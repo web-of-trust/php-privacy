@@ -2,7 +2,6 @@
 
 namespace OpenPGP\Tests\Packet;
 
-use phpseclib3\Crypt\Random;
 use OpenPGP\Enum\KeyAlgorithm;
 use OpenPGP\Enum\KeyFlag;
 use OpenPGP\Enum\SignatureType;
@@ -147,7 +146,7 @@ EOT;
 
     public function testRsaSigning()
     {
-        $message = Random::string(1024);
+        $message = random_bytes(1024);
         $secretKey = SecretKey::fromBytes(
             base64_decode(self::$rsaSecretKeyData)
         )->decrypt(self::PASSPHRASE);
@@ -202,7 +201,7 @@ EOT;
 
     public function testEcdsaP384Signing()
     {
-        $message = Random::string(1024);
+        $message = random_bytes(1024);
         $secretKey = SecretKey::fromBytes(
             base64_decode(self::$ecdsaP384SecretKeyData)
         )->decrypt(self::PASSPHRASE);
@@ -240,7 +239,7 @@ EOT;
 
     public function testEcdsaBrainpoolSigning()
     {
-        $message = Random::string(1024);
+        $message = random_bytes(1024);
         $secretKey = SecretKey::fromBytes(
             base64_decode(self::$ecdsaBrainpoolSecretKeyData)
         )->decrypt(self::PASSPHRASE);
@@ -278,7 +277,7 @@ EOT;
 
     public function testEddsaCurve25519Signing()
     {
-        $message = Random::string(1024);
+        $message = random_bytes(1024);
         $secretKey = SecretKey::fromBytes(
             base64_decode(self::$eddsaCurve25519SecretKeyData)
         )->decrypt(self::PASSPHRASE);
@@ -300,7 +299,7 @@ EOT;
 
     public function testVersion6Curve25519Signing()
     {
-        $message = Random::string(1024);
+        $message = random_bytes(1024);
         $secretKeyData = <<<EOT
 BmOHf+MbAAAAIPlNp7tI1gph5WdwamWH0DMZmbudiRoIJC6thFQ9+JWjABlygXsSvnB+jV9YbOYTYSAdNE6yZqLIL95oNXYrZbC3Dac=
 EOT;
@@ -386,7 +385,7 @@ EOT;
 
     public function testSignatureExpiresSecondsAfterItsCreation()
     {
-        $message = Random::string(1024);
+        $message = random_bytes(1024);
         $secretKey = SecretKey::fromBytes(
             base64_decode(self::$rsaSecretKeyData)
         )->decrypt(self::PASSPHRASE);
@@ -432,7 +431,7 @@ EOT;
 
     public function testSignatureWithZeroExpirationNeverExpires()
     {
-        $message = Random::string(1024);
+        $message = random_bytes(1024);
         $secretKey = SecretKey::fromBytes(
             base64_decode(self::$rsaSecretKeyData)
         )->decrypt(self::PASSPHRASE);
@@ -470,7 +469,7 @@ EOT;
             $signature = Signature::createSignature(
                 $secretKey,
                 SignatureType::Standalone,
-                Random::string(1024),
+                random_bytes(1024),
                 subpackets: $subpackets,
                 time: $createdAt
             );
@@ -498,7 +497,7 @@ EOT;
         $initSubpackets = array_map(
             static fn($type) => new SignatureSubpacket(
                 $type->value,
-                Random::string(100)
+                random_bytes(100)
             ),
             SignatureSubpacketType::cases()
         );

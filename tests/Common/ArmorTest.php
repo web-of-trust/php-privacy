@@ -2,7 +2,6 @@
 
 namespace OpenPGP\Tests\Common;
 
-use phpseclib3\Crypt\Random;
 use OpenPGP\Tests\OpenPGPTestCase;
 use OpenPGP\Common\Armor;
 use OpenPGP\Enum\ArmorType;
@@ -15,7 +14,7 @@ class ArmorTest extends OpenPGPTestCase
 {
     public function testSignedMessage()
     {
-        $data = Random::string(100);
+        $data = random_bytes(100);
         $text = $this->faker->sentence(100);
         $hashAlgo = $this->faker->randomElement(HashAlgorithm::cases())->name;
         $armored = Armor::encode(ArmorType::SignedMessage, $data, $text, [
@@ -39,7 +38,7 @@ class ArmorTest extends OpenPGPTestCase
 
     public function testMessage()
     {
-        $data = Random::string(100);
+        $data = random_bytes(100);
         $armored = Armor::encode(ArmorType::Message, $data);
 
         preg_match("/BEGIN PGP MESSAGE/", $armored, $beginMatches);
@@ -54,7 +53,7 @@ class ArmorTest extends OpenPGPTestCase
 
     public function testPublicKey()
     {
-        $data = Random::string(100);
+        $data = random_bytes(100);
         $armored = Armor::encode(ArmorType::PublicKey, $data);
 
         preg_match("/BEGIN PGP PUBLIC KEY BLOCK/", $armored, $beginMatches);
@@ -69,7 +68,7 @@ class ArmorTest extends OpenPGPTestCase
 
     public function testPrivateKey()
     {
-        $data = Random::string(100);
+        $data = random_bytes(100);
         $armored = Armor::encode(ArmorType::PrivateKey, $data);
 
         preg_match("/BEGIN PGP PRIVATE KEY BLOCK/", $armored, $beginMatches);
@@ -84,7 +83,7 @@ class ArmorTest extends OpenPGPTestCase
 
     public function testSignature()
     {
-        $data = Random::string(100);
+        $data = random_bytes(100);
         $armored = Armor::encode(ArmorType::Signature, $data);
 
         preg_match("/BEGIN PGP SIGNATURE/", $armored, $beginMatches);

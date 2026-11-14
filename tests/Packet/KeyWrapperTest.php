@@ -2,7 +2,6 @@
 
 namespace OpenPGP\Tests\Packet;
 
-use phpseclib3\Crypt\Random;
 use OpenPGP\Enum\KekSize;
 use OpenPGP\Packet\Key\AesKeyWrapper;
 use OpenPGP\Packet\Key\CamelliaKeyWrapper;
@@ -32,8 +31,8 @@ class KeyWrapperTest extends OpenPGPTestCase
         $this->assertSame($wrappedKey128, $wrappedKey128128);
         $this->assertSame($unwrappedKey128, $this->keyData128);
 
-        $key = Random::string(16);
-        $keyData = Random::string(32);
+        $key = random_bytes(16);
+        $keyData = random_bytes(32);
         $wrappedKey = $aes->wrap($key, $keyData);
         $unwrappedKey = $aes->unwrap($key, $wrappedKey);
         $this->assertSame($unwrappedKey, $keyData);
@@ -57,8 +56,8 @@ class KeyWrapperTest extends OpenPGPTestCase
         $this->assertSame($wrappedKey192, $wrappedKey192192);
         $this->assertSame($unwrappedKey192, $this->keyData192);
 
-        $key = Random::string(24);
-        $keyData = Random::string(32);
+        $key = random_bytes(24);
+        $keyData = random_bytes(32);
         $wrappedKey = $aes->wrap($key, $keyData);
         $unwrappedKey = $aes->unwrap($key, $wrappedKey);
         $this->assertSame($unwrappedKey, $keyData);
@@ -89,8 +88,8 @@ class KeyWrapperTest extends OpenPGPTestCase
         $this->assertSame($wrappedKey256, $wrappedKey256256);
         $this->assertSame($unwrappedKey256, $this->keyData256);
 
-        $key = Random::string(32);
-        $keyData = Random::string(32);
+        $key = random_bytes(32);
+        $keyData = random_bytes(32);
         $wrappedKey = $aes->wrap($key, $keyData);
         $unwrappedKey = $aes->unwrap($key, $wrappedKey);
         $this->assertSame($unwrappedKey, $keyData);
@@ -103,8 +102,8 @@ class KeyWrapperTest extends OpenPGPTestCase
         $unwrappedKey128 = $camellia->unwrap($this->key128, $wrappedKey128);
         $this->assertSame($unwrappedKey128, $this->keyData128);
 
-        $key = Random::string(16);
-        $keyData = Random::string(32);
+        $key = random_bytes(16);
+        $keyData = random_bytes(32);
         $wrappedKey = $camellia->wrap($key, $keyData);
         $unwrappedKey = $camellia->unwrap($key, $wrappedKey);
         $this->assertSame($unwrappedKey, $keyData);
@@ -117,8 +116,8 @@ class KeyWrapperTest extends OpenPGPTestCase
         $unwrappedKey192 = $camellia->unwrap($this->key192, $wrappedKey192);
         $this->assertSame($unwrappedKey192, $this->keyData192);
 
-        $key = Random::string(24);
-        $keyData = Random::string(32);
+        $key = random_bytes(24);
+        $keyData = random_bytes(32);
         $wrappedKey = $camellia->wrap($key, $keyData);
         $unwrappedKey = $camellia->unwrap($key, $wrappedKey);
         $this->assertSame($unwrappedKey, $keyData);
@@ -131,8 +130,8 @@ class KeyWrapperTest extends OpenPGPTestCase
         $unwrappedKey256 = $camellia->unwrap($this->key256, $wrappedKey256);
         $this->assertSame($unwrappedKey256, $this->keyData256);
 
-        $key = Random::string(32);
-        $keyData = Random::string(32);
+        $key = random_bytes(32);
+        $keyData = random_bytes(32);
         $wrappedKey = $camellia->wrap($key, $keyData);
         $unwrappedKey = $camellia->unwrap($key, $wrappedKey);
         $this->assertSame($unwrappedKey, $keyData);

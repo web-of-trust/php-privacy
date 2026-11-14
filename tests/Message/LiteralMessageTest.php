@@ -12,7 +12,6 @@ use OpenPGP\Enum\{
 use OpenPGP\Type\SignatureInterface;
 use OpenPGP\OpenPGP;
 use OpenPGP\Tests\OpenPGPTestCase;
-use phpseclib3\Crypt\Random;
 
 /**
  * Testcase class for OpenPGP literal message.
@@ -329,7 +328,7 @@ EOT;
         $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/RsaPublicKey.asc")
         );
-        $literalData = Random::string(10000);
+        $literalData = random_bytes(10000);
         $literalMessage = OpenPGP::createLiteralMessage($literalData);
 
         $signedMessage = $literalMessage->sign([$privateKey]);
@@ -361,7 +360,7 @@ EOT;
         $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcP384PublicKey.asc")
         );
-        $literalData = Random::string(10000);
+        $literalData = random_bytes(10000);
         $literalMessage = OpenPGP::createLiteralMessage($literalData);
 
         $signedMessage = $literalMessage->sign([$privateKey]);
@@ -393,7 +392,7 @@ EOT;
         $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcBrainpoolPublicKey.asc")
         );
-        $literalData = Random::string(10000);
+        $literalData = random_bytes(10000);
         $literalMessage = OpenPGP::createLiteralMessage($literalData);
 
         $signedMessage = $literalMessage->sign([$privateKey]);
@@ -425,7 +424,7 @@ EOT;
         $publicKey = OpenPGP::readPublicKey(
             file_get_contents("tests/Data/EcCurve25519PublicKey.asc")
         );
-        $literalData = Random::string(10000);
+        $literalData = random_bytes(10000);
         $literalMessage = OpenPGP::createLiteralMessage($literalData);
 
         $signedMessage = $literalMessage->sign([$privateKey]);
@@ -464,7 +463,7 @@ EOT;
             file_get_contents("tests/Data/EcCurve25519PublicKey.asc")
         );
 
-        $literalData = Random::string(10000);
+        $literalData = random_bytes(10000);
         $message = OpenPGP::createLiteralMessage($literalData);
         $encryptedMessage = $message
             ->compress(CompressionAlgorithm::BZip2)
@@ -568,7 +567,7 @@ EOT;
     {
         Config::setAeadProtect(true);
 
-        $literalData = Random::string(10000);
+        $literalData = random_bytes(10000);
         $message = OpenPGP::createLiteralMessage($literalData);
         $encryptedMessage = $message
             ->compress(CompressionAlgorithm::BZip2)
@@ -602,7 +601,7 @@ EOT;
         $comment = $this->faker->unique()->sentence(1);
         $passphrase = $this->faker->unique()->password();
         $userID = implode([$name, "($comment)", "<$email>"]);
-        $literalData = Random::string(10000);
+        $literalData = random_bytes(10000);
 
         $privateKey = OpenPGP::generateKey(
             [$userID],
