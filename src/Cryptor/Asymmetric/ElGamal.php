@@ -82,6 +82,26 @@ abstract class ElGamal extends AsymmetricKey
         return new ElGamal\PrivateKey($x, $y, $p, $g);
     }
 
+    protected static function onLoad(array $components): ElGamal
+    {
+        if (isset($components['x'])) {
+            $new = new ElGamal\PrivateKey(
+                $components['x'],
+                $components['y'],
+                $components['p'],
+                $components['g'],
+            );
+        }
+        else {
+            $new = new ElGamal\PublicKey(
+                $components['y'],
+                $components['p'],
+                $components['g'],
+            );
+        }
+        return $new;
+    }
+
     /**
      * Get public key value y
      *
