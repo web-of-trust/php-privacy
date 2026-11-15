@@ -268,3 +268,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 2.2.12 - released 2026-10-14
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.11...2.2.12)
 - Restore ECDHPublicKeyMaterial::$reserved property
+
+## 2.2.13 - released 2026-10-15
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.12...2.2.13)
+- Fix chr deprecated argument in PHP 8.3 & later
+- Walk an offset instead of shortening the string in Aead crypt & partial encode packet
+- Reduce memory usage of S2K iteration
