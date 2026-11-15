@@ -169,6 +169,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Walk an offset instead of shortening the string in AeadEncryptedData::crypt & AbstractPacket::partialEncode()
 - Reduce memory usage of S2K iteration - #10
 
+## 1.2.15 - released 2026-10-15
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.14...1.2.14)
+- S2K::produceKey hash the sequence incrementally instead of building it
+
 ## 2.0.0 - released 2024-10-01
 - Release to major version 2
 
@@ -273,4 +277,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.12...2.2.13)
 - Fix chr deprecated argument in PHP 8.3 & later
 - Walk an offset instead of shortening the string in Aead crypt & partial encode packet
-- Reduce memory usage of S2K iteration
+- S2K::produceKey hash the sequence incrementally instead of building it
