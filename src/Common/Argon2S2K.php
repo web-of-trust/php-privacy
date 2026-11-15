@@ -12,6 +12,7 @@ use OpenPGP\Enum\S2kType;
 use OpenPGP\Type\S2KInterface;
 use Symfony\Component\Process\{ExecutableFinder, Process};
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use phpseclib4\Common\Functions\Strings;
 
 /**
  * Argon2 string-to-key class
@@ -135,7 +136,7 @@ class Argon2S2K implements S2KInterface
             $process->setInput($passphrase);
             try {
                 $process->mustRun();
-                return hex2bin(trim($process->getOutput()));
+                return Strings::hex2bin(trim($process->getOutput()));
             } catch (ProcessFailedException $ex) {
                 throw $ex;
             }
