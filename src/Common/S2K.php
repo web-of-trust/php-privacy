@@ -222,24 +222,4 @@ class S2K
         }
         return substr($key, 0, $length);
     }
-
-    private function iterate(string $data): string
-    {
-        if (strlen($data) >= $this->count) {
-            return $data;
-        }
-        return str_repeat($data, (int) floor($this->count / strlen($data))) .
-               substr($data, 0, $this->count % strlen($data));
-    }
-
-    private function hash(string $data, int $size): string
-    {
-        $alg = strtolower($this->hash->name);
-        $hash = hash($alg, $data, true);
-        while (strlen($hash) < $size) {
-            $data = "\x00" . $data;
-            $hash .= hash($alg, $data, true);
-        }
-        return substr($hash, 0, $size);
-    }
 }
