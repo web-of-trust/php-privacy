@@ -21,7 +21,6 @@ use OpenPGP\Type\{
     PacketListInterface,
     SessionKeyInterface,
 };
-use phpseclib4\Common\Functions\Strings;
 
 /**
  * Implementation of the Symmetrically Encrypted Integrity Protected Data Packet (Tag 18)
@@ -329,9 +328,9 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
         int $chunkSizeByte = 12,
         string $salt = "",
     ): string {
-        $dataLength = strlen($data);
-        $tagLength = $fn === self::AEAD_ENCRYPT ? 0 : $aead->tagLength();
-        $chunkSize = (1 << $chunkSizeByte + 6) + $tagLength;
+        $dataLen = strlen($data);
+        $tagLen = $fn === self::AEAD_ENCRYPT ? 0 : $aead->tagLength();
+        $chunkSize = (1 << $chunkSizeByte + 6) + $tagLen;
 
         $aData = implode([
             "\xC0" | PacketTag::SymEncryptedIntegrityProtectedData->value,
@@ -360,12 +359,11 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
         );
         $cipher = $aead->cipherEngine($kek, $symmetric);
 
+        $offset = $index = 0;
         $crypted = [];
-        for ($index = 0; $index === 0 || strlen($data); ) {
-            // Take a chunk of `data`, en/decrypt it,
-            // and shift `data` to the next chunk.
+        while ($dataLen - $offset >= $chunkSize) {
             $crypted[] = $cipher->$fn(
-                Strings::shift($data, $chunkSize),
+                substr($data, $offset, $chunkSize),
                 $nonce,
                 $aData,
             );
@@ -375,11 +373,24 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
                 $ivLength - 4,
                 4,
             );
+            $offset += $chunkSize;
+        }
+
+        $rest = substr($data, $offset);
+        if (strlen($rest) > 0) {
+            $crypted[] = $cipher->$fn($rest, $nonce, $aData);
+            $nonce = substr_replace(
+                $nonce,
+                pack("N", ++$index),
+                $ivLength - 4,
+                4,
+            );
+            $offset += $chunkSize;
         }
 
         // For encryption: empty final chunk
         // For decryption: final authentication tag
-        $processed = $dataLength - $tagLength * ceil($dataLength / $chunkSize);
+        $processed = $dataLen - $tagLen * ceil($dataLen / $chunkSize);
         $aDataTag = implode([$aData, str_repeat(Helper::ZERO_CHAR, 8)]);
         $aDataTag = substr_replace(
             $aDataTag,
