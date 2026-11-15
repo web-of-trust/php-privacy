@@ -10,6 +10,7 @@ digital signatures, compression, and key management.
 * PHP 8.5.x or later,
 * [phpseclib4](https://github.com/phpseclib/phpseclib) library provides cryptography algorithms,
 * [Argon2](https://github.com/P-H-C/phc-winner-argon2) for Argon2 string-to-key,
+* [ext-pqcrypto](https://github.com/paragonie/ext-pqcrypto) for Post-Quantum Cryptography,
 * (optional) PHPUnit to run tests,
 
 ## Features
