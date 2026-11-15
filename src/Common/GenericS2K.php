@@ -104,13 +104,15 @@ class GenericS2K implements S2KInterface
     public function produceKey(string $passphrase, int $length): string
     {
         return match ($this->type) {
-            S2kType::Simple => $this->hash($passphrase, $length),
-            S2kType::Salted => $this->hash($this->salt . $passphrase, $length),
-            S2kType::Iterated => $this->hash(
-                $this->iterate($this->salt . $passphrase),
-                $length,
+            S2kType::Simple, S2kType::GNU => $this->streamKey(
+                $passphrase, $length
             ),
-            S2kType::GNU => $this->hash($passphrase, $length),
+            S2kType::Salted => $this->streamKey(
+                $this->salt . $passphrase, $length
+            ),
+            S2kType::Iterated => $this->streamIterateKey(
+                $this->salt . $passphrase, $length
+            ),
             default => "",
         };
     }
@@ -161,22 +163,44 @@ class GenericS2K implements S2KInterface
         return new self($salt, $type, $hash, $itCount);
     }
 
-    private function iterate(string $data): string
+    private function streamKey(string $data, int $length)
     {
-        if (strlen($data) >= $this->count) {
-            return $data;
+        $hashAlgo = strtolower(str_replace("_", "-", $this->hash->name));
+        $dataLen = strlen($data);
+        $key = ''; $round = 0;
+        while (strlen($key) < $length) {
+            $ctx = hash_init($hashAlgo);
+            if ($round > 0) {
+                hash_update($ctx, str_repeat("\x00", $round));
+            }
+            hash_update($ctx, $data);
+            $key .= hash_final($ctx, true);
+            $round++;
         }
-        return str_repeat($data, (int) floor($this->count / strlen($data))) .
-               substr($data, 0, $this->count % strlen($data));
+        return substr($key, 0, $length);
     }
 
-    private function hash(string $data, int $size): string
+    private function streamIterateKey(string $data, int $length)
     {
-        $hash = $this->hash->hash($data);
-        while (strlen($hash) < $size) {
-            $data = "\x00" . $data;
-            $hash .= $this->hash->hash($data);
+        $hashAlgo = strtolower(str_replace("_", "-", $this->hash->name));
+        $dataLen = strlen($data);
+        $total = max($this->count, $dataLen);
+        $key = ''; $round = 0;
+        while (strlen($key) < $length) {
+            $ctx = hash_init($hashAlgo);
+            if ($round > 0) {
+                hash_update($ctx, str_repeat("\x00", $round));
+            }
+            $chunk = str_repeat($data, max(1, intdiv(65536, $dataLen)));
+            $left = $total;
+            while ($left > 0) {
+                $n = min($left, strlen($chunk));
+                hash_update($ctx, $n === strlen($chunk) ? $chunk : substr($chunk, 0, $n));
+                $left -= $n;
+            }
+            $key .= hash_final($ctx, true);
+            $round++;
         }
-        return substr($hash, 0, $size);
+        return substr($key, 0, $length);
     }
 }
