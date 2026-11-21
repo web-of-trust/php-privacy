@@ -7,6 +7,7 @@ use OpenPGP\Packet\PacketList;
 use OpenPGP\Packet\PublicKeyEncryptedSessionKey;
 use OpenPGP\Packet\SymEncryptedIntegrityProtectedData;
 use OpenPGP\Packet\SecretSubkey;
+use OpenPGP\Packet\Key\MontgomerySessionKeyCryptor;
 use OpenPGP\Packet\Key\SessionKey;
 use OpenPGP\Tests\OpenPGPTestCase;
 
@@ -336,5 +337,78 @@ EOT;
             $sessionKey->getEncryptionKey(),
             $pkesk->getSessionKey()->getEncryptionKey()
         );
+    }
+
+    public function testMontgomeryV3PkeskCarriesSymmetricInPlaintext()
+    {
+        // RFC 9580, sections 5.1.6 and 5.1.7: in a v3 PKESK packet the
+        // symmetric algorithm octet follows the size octet, not encrypted.
+        foreach ([KeyAlgorithm::X25519, KeyAlgorithm::X448] as $keyAlgorithm) {
+            $secretSubkey = SecretSubkey::generate($keyAlgorithm);
+            $sessionKey = SessionKey::produceKey(SymmetricAlgorithm::Aes128);
+            $cryptor = MontgomerySessionKeyCryptor::encryptSessionKey(
+                $sessionKey->getEncryptionKey(),
+                $secretSubkey->getECKeyMaterial()->getECKey()
+            );
+            $wrappedKey = $cryptor->getWrappedKey();
+            $prefix = implode([
+                "\x03",
+                $secretSubkey->getKeyID(),
+                chr($keyAlgorithm->value),
+                $cryptor->getEphemeralKey(),
+            ]);
+
+            // Layout of RFC 9580
+            $pkesk = PublicKeyEncryptedSessionKey::fromBytes(implode([
+                $prefix,
+                chr(strlen($wrappedKey) + 1),
+                chr(SymmetricAlgorithm::Aes128->value),
+                $wrappedKey,
+            ]))->decrypt($secretSubkey);
+            $this->assertSame(
+                SymmetricAlgorithm::Aes128,
+                $pkesk->getSessionKey()->getSymmetric()
+            );
+            $this->assertSame(
+                $sessionKey->getEncryptionKey(),
+                $pkesk->getSessionKey()->getEncryptionKey()
+            );
+
+            // Written and read again
+            $pkesk = PublicKeyEncryptedSessionKey::fromBytes(
+                (new PublicKeyEncryptedSessionKey(
+                    PublicKeyEncryptedSessionKey::VERSION_3,
+                    $secretSubkey->getKeyID(),
+                    $secretSubkey->getVersion(),
+                    $secretSubkey->getFingerprint(),
+                    $keyAlgorithm,
+                    MontgomerySessionKeyCryptor::encryptSessionKey(
+                        $sessionKey->getEncryptionKey(),
+                        $secretSubkey->getECKeyMaterial()->getECKey(),
+                        SymmetricAlgorithm::Aes128
+                    ),
+                    $sessionKey
+                ))->toBytes()
+            )->decrypt($secretSubkey);
+            $this->assertSame(
+                SymmetricAlgorithm::Aes128,
+                $pkesk->getSessionKey()->getSymmetric()
+            );
+            $this->assertSame(
+                $sessionKey->getEncryptionKey(),
+                $pkesk->getSessionKey()->getEncryptionKey()
+            );
+
+            // v3 packets written without the octet are still read
+            $pkesk = PublicKeyEncryptedSessionKey::fromBytes(implode([
+                $prefix,
+                chr(strlen($wrappedKey)),
+                $wrappedKey,
+            ]))->decrypt($secretSubkey);
+            $this->assertSame(
+                $sessionKey->getEncryptionKey(),
+                $pkesk->getSessionKey()->getEncryptionKey()
+            );
+        }
     }
 }
