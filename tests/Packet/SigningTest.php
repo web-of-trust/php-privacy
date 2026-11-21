@@ -3,6 +3,7 @@
 namespace OpenPGP\Tests\Packet;
 
 use phpseclib3\Crypt\Random;
+use OpenPGP\Enum\HashAlgorithm;
 use OpenPGP\Enum\KeyAlgorithm;
 use OpenPGP\Enum\KeyFlag;
 use OpenPGP\Enum\SignatureType;
@@ -345,6 +346,53 @@ EOT;
         );
         $this->assertSame($publicKey->getKeyID(), $signature->getIssuerKeyID());
         $this->assertTrue($signature->verify($publicKey, "OpenPGP"));
+    }
+
+    public function testVerifyEd25519LegacySignatureWithShortMpis()
+    {
+        // RFC 9580 section 11.3.1: R and S are 32-octet strings stored as
+        // MPIs with their leading zero octets stripped, as GnuPG writes them.
+        // A verifier must zero-fill them back to 32 octets.
+        $secretKey = SecretKey::fromBytes(
+            base64_decode(self::$eddsaCurve25519SecretKeyData)
+        )->decrypt(self::PASSPHRASE);
+        $publicKey = PublicKey::fromBytes(
+            base64_decode(self::$eddsaCurve25519PublicKeyData)
+        );
+
+        // Ed25519 signing is deterministic: find a message whose R or S
+        // starts with a zero octet.
+        $index = 0;
+        do {
+            $message = "message {$index}";
+            $signature = $secretKey
+                ->getKeyMaterial()
+                ->sign(HashAlgorithm::Sha256, $message);
+            $r = substr($signature, 2, 32);
+            $s = substr($signature, 36, 32);
+            $index++;
+        } while ($r[0] !== "\0" && $s[0] !== "\0");
+
+        $stripped = implode([self::mpi($r), self::mpi($s)]);
+        $this->assertLessThan(68, strlen($stripped));
+        $this->assertTrue(
+            $publicKey
+                ->getKeyMaterial()
+                ->verify(HashAlgorithm::Sha256, $message, $stripped)
+        );
+    }
+
+    /**
+     * Encodes an octet string as an MPI, stripping its leading zero octets.
+     */
+    private static function mpi(string $octets): string
+    {
+        $value = ltrim($octets, "\0");
+        $bitLength = strlen($value) === 0
+            ? 0
+            : (strlen($value) - 1) * 8 + strlen(decbin(ord($value[0])));
+
+        return pack("n", $bitLength) . $value;
     }
 
     public function testFeatures()

@@ -11,6 +11,7 @@ namespace OpenPGP\Packet\Key;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\HashAlgorithm;
 use OpenPGP\Type\PublicKeyMaterialInterface;
+use phpseclib3\Crypt\EC\Curves\Ed25519;
 
 /**
  * EdDSALegacy public key material class
@@ -55,9 +56,15 @@ class EdDSALegacyPublicKeyMaterial extends ECPublicKeyMaterial implements
             Helper::bit2ByteLength($bitLength),
         ); // MPI of EdDSA value S
 
+        // R and S are octet strings stored as MPIs, which strip leading zero
+        // octets (RFC 9580, section 11.3.1): zero-fill them back to their
+        // native length before verifying.
         return $this->getPublicKey()->verify(
             $hash->hash($message),
-            implode([$r, $s]),
+            implode([
+                str_pad($r, Ed25519::SIZE, "\0", STR_PAD_LEFT),
+                str_pad($s, Ed25519::SIZE, "\0", STR_PAD_LEFT),
+            ]),
         );
     }
 }
