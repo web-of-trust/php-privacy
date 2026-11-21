@@ -188,6 +188,11 @@ class LiteralMessage extends AbstractMessage implements
                 ) => PublicKeyEncryptedSessionKey::encryptSessionKey(
                     $key->toPublic()->getEncryptionKeyPacket(),
                     $sessionKey,
+                    // The PKESK version follows the SEIPD version,
+                    // not the key version (RFC 9580, section 10.3.2.1).
+                    $sessionKey->getAead() instanceof AeadAlgorithm
+                        ? PublicKeyEncryptedSessionKey::VERSION_6
+                        : PublicKeyEncryptedSessionKey::VERSION_3,
                 ),
                 $encryptionKeys,
             ), // pkesk packets
