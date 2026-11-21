@@ -125,6 +125,13 @@ class Signature implements SignatureInterface
                     $isVerified = false;
                     $verificationError = "";
                     try {
+                        // A revoked key is not to be used
+                        // (RFC 9580, section 5.2.3.31).
+                        if ($key->toPublic()->isRevoked(time: $time)) {
+                            throw new \RuntimeException(
+                                "Verification key is revoked.",
+                            );
+                        }
                         $isVerified = $packet->verify(
                             $keyPacket,
                             $literalData->getSignBytes(),
