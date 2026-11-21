@@ -277,7 +277,7 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
         }
         else {
             $signature = $this->privateKey
-                ->withHash(strtolower($hash->name))
+                ->withHash(strtolower(str_replace("_", "-", $hash->name)))
                 ->withPadding(RSA::SIGNATURE_PKCS1)
                 ->sign($message);
         }
