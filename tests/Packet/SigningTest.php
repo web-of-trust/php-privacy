@@ -168,6 +168,75 @@ EOT;
         $signature->verify($publicKey, self::LITERAL_TEXT);
     }
 
+    public function testVerifyRsaSignatureWithLeadingZeroOctet()
+    {
+        $secretKey = SecretKey::fromBytes(
+            base64_decode(self::$rsaSecretKeyData)
+        )->decrypt(self::PASSPHRASE);
+        $publicKey = PublicKey::fromBytes(
+            base64_decode(self::$rsaPublicKeyData)
+        );
+        $secretMaterial = $secretKey->getKeyMaterial();
+        $publicMaterial = $publicKey->getKeyMaterial();
+
+        // Sign until the raw signature starts with a zero octet
+        // (about one in 256), as it then happens with GnuPG.
+        for ($i = 0; $i < 10000; $i++) {
+            $message = Random::string(32);
+            $signature = $secretMaterial->sign(HashAlgorithm::Sha256, $message);
+            $raw = substr($signature, 2);
+            if ($raw[0] === "\0") {
+                break;
+            }
+        }
+        $this->assertSame("\0", $raw[0]);
+
+        // Re-encode as a minimal MPI, without leading zero octets.
+        $value = ltrim($raw, "\0");
+        $bits = (strlen($value) - 1) * 8 + strlen(decbin(ord($value[0])));
+        $minimal = pack("n", $bits) . $value;
+        $this->assertLessThan(strlen($signature), strlen($minimal));
+
+        $this->assertTrue(
+            $publicMaterial->verify(HashAlgorithm::Sha256, $message, $minimal)
+        );
+        $this->assertTrue(
+            $publicMaterial->verify(HashAlgorithm::Sha256, $message, $signature)
+        );
+        $this->assertFalse(
+            $publicMaterial->verify(HashAlgorithm::Sha256, self::LITERAL_TEXT, $minimal)
+        );
+    }
+
+    public function testRsaSignatureLongerThanModulusIsRejected()
+    {
+        $publicKey = PublicKey::fromBytes(
+            base64_decode(self::$rsaPublicKeyData)
+        );
+        $publicMaterial = $publicKey->getKeyMaterial();
+        $length = $publicMaterial->getModulus()->getLengthInBytes() + 1;
+        $value = "\x01" . str_repeat("\0", $length - 1);
+        $signature = pack("n", ($length - 1) * 8 + 1) . $value;
+        $this->assertFalse(
+            $publicMaterial->verify(HashAlgorithm::Sha256, self::LITERAL_TEXT, $signature)
+        );
+    }
+
+    public function testRsaSignatureShorterThanItsLengthIsRejected()
+    {
+        $publicKey = PublicKey::fromBytes(
+            base64_decode(self::$rsaPublicKeyData)
+        );
+        $publicMaterial = $publicKey->getKeyMaterial();
+        $signature = pack("n", 2048) . str_repeat("\x01", 10);
+        $this->assertFalse(
+            $publicMaterial->verify(HashAlgorithm::Sha256, self::LITERAL_TEXT, $signature)
+        );
+        $this->assertFalse(
+            $publicMaterial->verify(HashAlgorithm::Sha256, self::LITERAL_TEXT, "\x08")
+        );
+    }
+
     public function testVerifyDsaSignature()
     {
         $signatureData = <<<EOT
