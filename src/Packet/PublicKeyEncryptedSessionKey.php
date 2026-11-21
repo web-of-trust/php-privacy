@@ -107,15 +107,21 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket implements
     /**
      * Encrypt session key
      *
+     * Without a version, the version follows the key version.
+     * A v3 PKESK packet precedes a v1 SEIPD packet and a v6 PKESK packet
+     * a v2 SEIPD packet (RFC 9580, section 10.3.2.1).
+     *
      * @param KeyPacketInterface $keyPacket
      * @param SessionKeyInterface $sessionKey
+     * @param int $version
      * @return self
      */
     public static function encryptSessionKey(
         KeyPacketInterface $keyPacket,
         SessionKeyInterface $sessionKey,
+        ?int $version = null,
     ): self {
-        $version =
+        $version ??=
             $keyPacket->getVersion() === self::VERSION_6
                 ? self::VERSION_6
                 : self::VERSION_3;
