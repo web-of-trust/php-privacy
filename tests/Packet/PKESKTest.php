@@ -409,6 +409,28 @@ EOT;
                 $sessionKey->getEncryptionKey(),
                 $pkesk->getSessionKey()->getEncryptionKey()
             );
+
+            // An octet that is not AES-128, AES-192 or AES-256 is read and
+            // written back unchanged, and is rejected only when decrypting
+            foreach ([0, 2, 99, 255] as $octet) {
+                $bytes = implode([
+                    $prefix,
+                    chr(strlen($wrappedKey) + 1),
+                    chr($octet),
+                    $wrappedKey,
+                ]);
+                $packet = PublicKeyEncryptedSessionKey::fromBytes($bytes);
+                $this->assertSame($bytes, $packet->toBytes());
+                try {
+                    $packet->decrypt($secretSubkey);
+                    $this->fail("Octet {$octet} was accepted.");
+                } catch (\InvalidArgumentException $e) {
+                    $this->assertStringContainsString(
+                        "is not AES-128, AES-192 or AES-256",
+                        $e->getMessage()
+                    );
+                }
+            }
         }
     }
 }
