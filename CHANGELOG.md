@@ -278,3 +278,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fix chr deprecated argument in PHP 8.3 & later
 - Walk an offset instead of shortening the string in Aead crypt & partial encode packet
 - S2K::produceKey hash the sequence incrementally instead of building it
+
+## 2.2.14 - released 2026-10-21
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.13...2.2.14)
+- Zero-fill EdDSALegacy R and S to 32 octets before verifying
+- Add SessionKey::toBytesWithChecksum() and harden fromBytes()
+- Left-pad RSA signatures to the modulus length before verifying
+- Try every matching decryption subkey, not only the newest
