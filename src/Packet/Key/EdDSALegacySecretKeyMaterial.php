@@ -70,11 +70,15 @@ class EdDSALegacySecretKeyMaterial extends ECSecretKeyMaterial implements
     {
         $signature = $this->getPrivateKey()->sign($hash->hash($message));
 
+        // R and S are written as MPIs (RFC 9580, section 5.2.3.3), which
+        // carry no leading zero octets (section 3.2).
+        $r = Helper::bin2BigInt(substr($signature, 0, Ed25519::SIZE));
+        $s = Helper::bin2BigInt(substr($signature, Ed25519::SIZE));
         return implode([
-            pack("n", Ed25519::SIZE * 8), // R bit length
-            substr($signature, 0, Ed25519::SIZE), // MPI of an EC point R
-            pack("n", Ed25519::SIZE * 8), // S bit length
-            substr($signature, Ed25519::SIZE), // MPI of EdDSA value S
+            pack("n", $r->getLength()), // R bit length
+            $r->toBytes(), // MPI of an EC point R
+            pack("n", $s->getLength()), // S bit length
+            $s->toBytes(), // MPI of EdDSA value S
         ]);
     }
 }
