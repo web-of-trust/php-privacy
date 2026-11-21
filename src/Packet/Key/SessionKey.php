@@ -39,15 +39,26 @@ class SessionKey implements SessionKeyInterface
     /**
      * Read session key from binary string
      *
+     * Expects the layout of a v3 PKESK session key:
+     * one octet symmetric algorithm, the key, two octets checksum.
+     * This is the inverse of toBytesWithChecksum(), not of toBytes().
+     *
      * @param string $bytes
      * @return self
      */
     public static function fromBytes(string $bytes): self
     {
-        $sessionKey = new self(
-            substr($bytes, 1, strlen($bytes) - 3),
-            SymmetricAlgorithm::from(ord($bytes[0])),
-        );
+        if (strlen($bytes) < 3) {
+            throw new \LengthException("Session key data is too short.");
+        }
+        $symmetric = SymmetricAlgorithm::from(ord($bytes[0]));
+        $key = substr($bytes, 1, strlen($bytes) - 3);
+        if (strlen($key) !== $symmetric->keySizeInByte()) {
+            throw new \LengthException(
+                "Session key length does not match {$symmetric->name}.",
+            );
+        }
+        $sessionKey = new self($key, $symmetric);
         return $sessionKey->checksum(substr($bytes, strlen($bytes) - 2));
     }
 
@@ -114,9 +125,25 @@ class SessionKey implements SessionKeyInterface
 
     /**
      * {@inheritdoc}
+     *
+     * Symmetric algorithm octet and key, without checksum,
+     * as encrypted in a v4 SKESK packet (RFC 9580, section 5.3).
+     * Use toBytesWithChecksum() for the input of fromBytes().
      */
     public function toBytes(): string
     {
         return implode([chr($this->symmetric->value), $this->encryptionKey]);
+    }
+
+    /**
+     * Symmetric algorithm octet, key and two octets checksum,
+     * as encrypted in a v3 PKESK packet (RFC 9580, section 5.1).
+     * This is the inverse of fromBytes().
+     *
+     * @return string
+     */
+    public function toBytesWithChecksum(): string
+    {
+        return implode([$this->toBytes(), $this->computeChecksum()]);
     }
 }
