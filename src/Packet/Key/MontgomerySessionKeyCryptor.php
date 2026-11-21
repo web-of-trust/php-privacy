@@ -8,7 +8,7 @@
 
 namespace OpenPGP\Packet\Key;
 
-use OpenPGP\Enum\MontgomeryCurve;
+use OpenPGP\Enum\{MontgomeryCurve, SymmetricAlgorithm};
 use OpenPGP\Type\{SecretKeyPacketInterface, SessionKeyCryptorInterface};
 use phpseclib3\Crypt\{DH, EC};
 
@@ -27,33 +27,64 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
      * @param string $ephemeralKey
      * @param string $wrappedKey
      * @param MontgomeryCurve $curve
+     * @param SymmetricAlgorithm $symmetric - only in a v3 PKESK packet
+     * @param int $symmetricOctet - the octet as read, if it is not one of
+     *                              AES-128, AES-192 or AES-256
      * @return self
      */
     public function __construct(
         private readonly string $ephemeralKey,
         private readonly string $wrappedKey,
         private readonly MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
+        private readonly ?SymmetricAlgorithm $symmetric = null,
+        private readonly ?int $symmetricOctet = null,
     ) {}
 
     /**
      * Read encrypted session key from byte string
      *
+     * In a v3 PKESK packet the symmetric algorithm octet follows the size
+     * octet in plaintext (RFC 9580, sections 5.1.6 and 5.1.7). A wrapped
+     * key is a multiple of 8 octets long, so the size tells whether the
+     * octet is there; v3 packets written without it are still read.
+     *
      * @param string $bytes
      * @param MontgomeryCurve $curve
+     * @param bool $v3 - read from a v3 PKESK packet
      * @return self
      */
     public static function fromBytes(
         string $bytes,
         MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
+        bool $v3 = false,
     ): self {
+        $offset = $curve->payloadSize();
+        $size = ord($bytes[$offset++]);
+        $symmetric = null;
+        $symmetricOctet = null;
+        if ($v3 && $size % 8 === 1) {
+            // The octet is sent in plaintext and "MUST be AES-128, AES-192,
+            // or AES-256" (RFC 9580, section 5.1.6). Any other value is kept
+            // as read, so that the packet can still be parsed, and is
+            // rejected when this packet is used to decrypt.
+            $octet = ord($bytes[$offset++]);
+            $symmetric = match (SymmetricAlgorithm::tryFrom($octet)) {
+                SymmetricAlgorithm::Aes128 => SymmetricAlgorithm::Aes128,
+                SymmetricAlgorithm::Aes192 => SymmetricAlgorithm::Aes192,
+                SymmetricAlgorithm::Aes256 => SymmetricAlgorithm::Aes256,
+                default => null,
+            };
+            if ($symmetric === null) {
+                $symmetricOctet = $octet;
+            }
+            $size--;
+        }
         return new self(
             substr($bytes, 0, $curve->payloadSize()),
-            substr(
-                $bytes,
-                $curve->payloadSize() + 1,
-                ord($bytes[$curve->payloadSize()]),
-            ),
+            substr($bytes, $offset, $size),
             $curve,
+            $symmetric,
+            $symmetricOctet,
         );
     }
 
@@ -62,11 +93,13 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
      *
      * @param string $sessionKey
      * @param EC $publicKey
+     * @param SymmetricAlgorithm $symmetric - only for a v3 PKESK packet
      * @return self
      */
     public static function encryptSessionKey(
         string $sessionKey,
         EC $publicKey,
+        ?SymmetricAlgorithm $symmetric = null,
     ): self {
         $publicCurve = $publicKey->getCurve();
         switch ($publicCurve) {
@@ -95,6 +128,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
                     $ephemeralKey,
                     $keyWrapper->wrap($kek, $sessionKey),
                     $curve,
+                    $symmetric,
                 );
             default:
                 throw new \InvalidArgumentException(
@@ -108,6 +142,22 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
      */
     public function toBytes(): string
     {
+        if ($this->symmetricOctet !== null) {
+            return implode([
+                $this->ephemeralKey,
+                chr(strlen($this->wrappedKey) + 1),
+                chr($this->symmetricOctet),
+                $this->wrappedKey,
+            ]);
+        }
+        if ($this->symmetric instanceof SymmetricAlgorithm) {
+            return implode([
+                $this->ephemeralKey,
+                chr(strlen($this->wrappedKey) + 1),
+                chr($this->symmetric->value),
+                $this->wrappedKey,
+            ]);
+        }
         return implode([
             $this->ephemeralKey,
             chr(strlen($this->wrappedKey)),
@@ -136,11 +186,27 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
     }
 
     /**
+     * Get symmetric algorithm, as carried in a v3 PKESK packet
+     *
+     * @return SymmetricAlgorithm
+     */
+    public function getSymmetric(): ?SymmetricAlgorithm
+    {
+        return $this->symmetric;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function decryptSessionKey(
         SecretKeyPacketInterface $secretKey,
     ): string {
+        if ($this->symmetricOctet !== null) {
+            throw new \InvalidArgumentException(
+                "Symmetric algorithm {$this->symmetricOctet} in a v3 PKESK " .
+                    "packet is not AES-128, AES-192 or AES-256.",
+            );
+        }
         return $this->decrypt($secretKey->getECKeyMaterial()->getECKey());
     }
 
