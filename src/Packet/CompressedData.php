@@ -8,6 +8,7 @@
 
 namespace OpenPGP\Packet;
 
+use OpenPGP\Common\Config;
 use OpenPGP\Enum\CompressionAlgorithm as Algorithm;
 use OpenPGP\Enum\PacketTag;
 use OpenPGP\Type\PacketListInterface;
@@ -27,6 +28,24 @@ class CompressedData extends AbstractPacket
      * Default zip/zlib compression level, between 1 and 9
      */
     const DEFLATE_LEVEL = 6;
+
+    /**
+     * Largest number of compressed data packets nested in each other
+     */
+    const MAX_NESTING = 8;
+
+    /**
+     * Size of the parts that are decompressed at a time
+     */
+    const CHUNK_SIZE = 65536;
+
+    /**
+     * Nesting depth of the decompression running now, and the octets the
+     * outermost packet list may still decompress
+     */
+    private static int $depth = 0;
+
+    private static int $remaining = 0;
 
     /**
      * Constructor
@@ -150,11 +169,112 @@ class CompressedData extends AbstractPacket
         string $compressed,
         Algorithm $algorithm,
     ): PacketListInterface {
-        return match ($algorithm) {
-            Algorithm::Uncompressed => PacketList::decode($compressed),
-            Algorithm::Zip => PacketList::decode(\gzinflate($compressed)),
-            Algorithm::Zlib => PacketList::decode(\gzuncompress($compressed)),
-            Algorithm::BZip2 => PacketList::decode(\bzdecompress($compressed)),
+        if (self::$depth >= self::MAX_NESTING) {
+            throw new \RuntimeException(
+                "Compressed data packets are nested too deeply.",
+            );
+        }
+        if (!PacketList::isDecoding()) {
+            self::startDecompression();
+        }
+        $data = match ($algorithm) {
+            Algorithm::Uncompressed => self::take($compressed),
+            Algorithm::Zip => self::inflate($compressed, ZLIB_ENCODING_RAW),
+            Algorithm::Zlib => self::inflate($compressed, ZLIB_ENCODING_DEFLATE),
+            Algorithm::BZip2 => self::bunzip($compressed),
         };
+        self::$depth++;
+        try {
+            return PacketList::decode($data);
+        } finally {
+            self::$depth--;
+        }
+    }
+
+    /**
+     * Start counting decompressed octets against the limit. The outermost
+     * packet list calls this once, so that all compressed data packets
+     * in it, side by side or nested, share one limit.
+     */
+    public static function startDecompression(): void
+    {
+        self::$remaining = Config::getMaxDecompressedSize();
+    }
+
+    /**
+     * Count decompressed octets against the limit.
+     */
+    private static function take(string $data): string
+    {
+        self::$remaining -= strlen($data);
+        if (self::$remaining < 0) {
+            throw new \RuntimeException(
+                "Decompressed data exceeds the limit of " .
+                    Config::getMaxDecompressedSize() .
+                    " octets.",
+            );
+        }
+        return $data;
+    }
+
+    private static function inflate(string $compressed, int $encoding): string
+    {
+        $context = \inflate_init($encoding);
+        if ($context === false) {
+            throw new \RuntimeException("Unable to initialize decompression.");
+        }
+        $data = "";
+        $length = strlen($compressed);
+        $offset = 0;
+        do {
+            $part = \inflate_add(
+                $context,
+                substr($compressed, $offset, self::CHUNK_SIZE),
+                $offset + self::CHUNK_SIZE >= $length
+                    ? ZLIB_FINISH
+                    : ZLIB_SYNC_FLUSH,
+            );
+            if ($part === false) {
+                throw new \RuntimeException("Decompression failed.");
+            }
+            $data .= self::take($part);
+            $offset += self::CHUNK_SIZE;
+        } while (
+            $offset < $length &&
+            \inflate_get_status($context) !== ZLIB_STREAM_END
+        );
+        if (\inflate_get_status($context) !== ZLIB_STREAM_END) {
+            throw new \RuntimeException("Decompression failed.");
+        }
+        return $data;
+    }
+
+    private static function bunzip(string $compressed): string
+    {
+        $stream = \fopen("php://temp", "r+");
+        \fwrite($stream, $compressed);
+        \rewind($stream);
+        $filter = \stream_filter_append(
+            $stream,
+            "bzip2.decompress",
+            STREAM_FILTER_READ,
+        );
+        if ($filter === false) {
+            \fclose($stream);
+            throw new \RuntimeException("Unable to initialize decompression.");
+        }
+        $data = "";
+        try {
+            while (!\feof($stream)) {
+                $part = \fread($stream, self::CHUNK_SIZE);
+                if ($part === false) {
+                    throw new \RuntimeException("Decompression failed.");
+                }
+                $data .= self::take($part);
+            }
+        } finally {
+            \fclose($stream);
+        }
+        return $data;
     }
 }

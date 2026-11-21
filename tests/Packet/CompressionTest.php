@@ -2,6 +2,7 @@
 
 namespace OpenPGP\Tests\Packet;
 
+use OpenPGP\Common\Config;
 use OpenPGP\Enum\CompressionAlgorithm;
 use OpenPGP\Packet\CompressedData;
 use OpenPGP\Packet\LiteralData;
@@ -146,5 +147,101 @@ EOT;
         );
         $literalData = $compressed->getPacketList()->offsetGet(0);
         $this->assertSame("Hello PHP PG\n", $literalData->getData());
+    }
+
+    public function testDecompressionStopsAtSizeLimit()
+    {
+        $literalData = LiteralData::fromText(str_repeat("A", 1 << 20));
+        $packets = new PacketList([$literalData]);
+        $default = Config::getMaxDecompressedSize();
+        foreach (
+            [
+                CompressionAlgorithm::Zip,
+                CompressionAlgorithm::Zlib,
+                CompressionAlgorithm::BZip2,
+            ]
+            as $algorithm
+        ) {
+            $bytes = CompressedData::fromPacketList(
+                $packets,
+                $algorithm
+            )->toBytes();
+            Config::setMaxDecompressedSize(1 << 19);
+            $error = null;
+            try {
+                CompressedData::fromBytes($bytes);
+            } catch (\RuntimeException $e) {
+                $error = $e->getMessage();
+            } finally {
+                Config::setMaxDecompressedSize($default);
+            }
+            $this->assertNotNull(
+                $error,
+                "Decompression beyond the limit was accepted for " .
+                    $algorithm->name . "."
+            );
+            $this->assertStringContainsString("exceeds the limit", $error);
+            $decompressed = CompressedData::fromBytes($bytes);
+            $this->assertEquals($packets, $decompressed->getPacketList());
+        }
+    }
+
+    public function testDeeplyNestedCompressedDataIsRejected()
+    {
+        $packets = new PacketList([LiteralData::fromText("nested")]);
+        // Eight levels are accepted, the ninth is not.
+        for ($i = 0; $i < 8; $i++) {
+            $packets = new PacketList([
+                CompressedData::fromPacketList(
+                    $packets,
+                    CompressionAlgorithm::Zip
+                ),
+            ]);
+        }
+        $allowed = $packets->offsetGet(0)->toBytes();
+        $decompressed = CompressedData::fromBytes($allowed);
+        $this->assertInstanceOf(CompressedData::class, $decompressed);
+
+        $tooDeep = CompressedData::fromPacketList(
+            $packets,
+            CompressionAlgorithm::Zip
+        )->toBytes();
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage("nested too deeply");
+        CompressedData::fromBytes($tooDeep);
+    }
+
+    public function testCompressedDataPacketsSideBySideShareTheLimit()
+    {
+        $one = CompressedData::fromPacketList(
+            new PacketList([LiteralData::fromText(str_repeat("A", 300000))]),
+            CompressionAlgorithm::Zip
+        )->encode();
+        $default = Config::getMaxDecompressedSize();
+        Config::setMaxDecompressedSize(1 << 20);
+        try {
+            // Three packets of about 300 KB fit into 1 MiB, four do not.
+            $three = PacketList::decode(str_repeat($one, 3));
+            $error = null;
+            try {
+                PacketList::decode(str_repeat($one, 4));
+            } catch (\RuntimeException $e) {
+                $error = $e->getMessage();
+            }
+        } finally {
+            Config::setMaxDecompressedSize($default);
+        }
+        $this->assertCount(3, $three->getPackets());
+        $this->assertNotNull(
+            $error,
+            "Compressed data packets side by side were each given the full limit."
+        );
+        $this->assertStringContainsString("exceeds the limit", $error);
+    }
+
+    public function testDecompressionLimitMustBePositive()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Config::setMaxDecompressedSize(0);
     }
 }
