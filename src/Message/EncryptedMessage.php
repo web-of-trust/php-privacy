@@ -111,19 +111,26 @@ class EncryptedMessage extends AbstractMessage implements
             );
             foreach ($pkeskPackets as $pkesk) {
                 foreach ($decryptionKeys as $key) {
-                    $keyPacket = $key->getEncryptionKeyPacket();
-                    if (
-                        $pkesk->getKeyAlgorithm() ===
-                            $keyPacket->getKeyAlgorithm() &&
-                        strcmp($pkesk->getKeyID(), $keyPacket->getKeyID()) === 0
+                    foreach (
+                        $key->getDecryptionKeyPackets($pkesk->getKeyID())
+                        as $keyPacket
                     ) {
-                        try {
-                            $sessionKeys[] = $pkesk
-                                ->decrypt($keyPacket)
-                                ->getSessionKey();
-                            break;
-                        } catch (\Throwable $e) {
-                            $errors[] = $e->getMessage();
+                        if (
+                            $pkesk->getKeyAlgorithm() ===
+                                $keyPacket->getKeyAlgorithm() &&
+                            strcmp(
+                                $pkesk->getKeyID(),
+                                $keyPacket->getKeyID(),
+                            ) === 0
+                        ) {
+                            try {
+                                $sessionKeys[] = $pkesk
+                                    ->decrypt($keyPacket)
+                                    ->getSessionKey();
+                                break 2;
+                            } catch (\Throwable $e) {
+                                $errors[] = $e->getMessage();
+                            }
                         }
                     }
                 }
