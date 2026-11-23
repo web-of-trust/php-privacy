@@ -180,16 +180,27 @@ EOT;
         $publicMaterial = $publicKey->getKeyMaterial();
 
         // Sign until the raw signature starts with a zero octet
-        // (about one in 256), as it then happens with GnuPG.
+        // (about one in 256), as it then happens with GnuPG. The raw
+        // signature is as long as the modulus; sign() writes it as an MPI.
+        $modulusLength = ($publicKey->getKeyStrength() + 7) >> 3;
         for ($i = 0; $i < 10000; $i++) {
             $message = Random::string(32);
-            $signature = $secretMaterial->sign(HashAlgorithm::Sha256, $message);
-            $raw = substr($signature, 2);
+            $raw = str_pad(
+                substr(
+                    $secretMaterial->sign(HashAlgorithm::Sha256, $message),
+                    2
+                ),
+                $modulusLength,
+                "\0",
+                STR_PAD_LEFT
+            );
             if ($raw[0] === "\0") {
                 break;
             }
         }
         $this->assertSame("\0", $raw[0]);
+        // The same value with its leading zero octet kept.
+        $signature = pack("n", strlen($raw) * 8) . $raw;
 
         // Re-encode as a minimal MPI, without leading zero octets.
         $value = ltrim($raw, "\0");
@@ -437,8 +448,11 @@ EOT;
             $signature = $secretKey
                 ->getKeyMaterial()
                 ->sign(HashAlgorithm::Sha256, $message);
-            $r = substr($signature, 2, 32);
-            $s = substr($signature, 36, 32);
+            // sign() writes R and S as MPIs; zero-fill them to 32 octets.
+            $rLength = (unpack("n", substr($signature, 0, 2))[1] + 7) >> 3;
+            $r = str_pad(substr($signature, 2, $rLength), 32, "\0", STR_PAD_LEFT);
+            $sLength = (unpack("n", substr($signature, 2 + $rLength, 2))[1] + 7) >> 3;
+            $s = str_pad(substr($signature, 4 + $rLength, $sLength), 32, "\0", STR_PAD_LEFT);
             $index++;
         } while ($r[0] !== "\0" && $s[0] !== "\0");
 
