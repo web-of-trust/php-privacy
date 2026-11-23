@@ -281,6 +281,47 @@ EOT;
         }
     }
 
+    public function testNestingLimitCanBeSet()
+    {
+        $packets = new PacketList([LiteralData::fromText("nested")]);
+        for ($i = 0; $i < 2; $i++) {
+            $packets = new PacketList([
+                CompressedData::fromPacketList(
+                    $packets,
+                    CompressionAlgorithm::Zip
+                ),
+            ]);
+        }
+        $two = $packets->offsetGet(0)->toBytes();
+        $three = CompressedData::fromPacketList(
+            $packets,
+            CompressionAlgorithm::Zip
+        )->toBytes();
+        $default = Config::getMaxCompressionNesting();
+        Config::setMaxCompressionNesting(2);
+        try {
+            $decompressed = CompressedData::fromBytes($two);
+            $error = null;
+            try {
+                CompressedData::fromBytes($three);
+            } catch (\RuntimeException $e) {
+                $error = $e->getMessage();
+            }
+        } finally {
+            Config::setMaxCompressionNesting($default);
+        }
+        $this->assertInstanceOf(CompressedData::class, $decompressed);
+        $this->assertNotNull($error, "Three levels were accepted with a limit of 2.");
+        $this->assertStringContainsString("nested too deeply", $error);
+        $this->assertInstanceOf(CompressedData::class, CompressedData::fromBytes($three));
+    }
+
+    public function testNestingLimitMustBePositive()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Config::setMaxCompressionNesting(0);
+    }
+
     public function testDecompressionLimitMustBePositive()
     {
         $this->expectException(\InvalidArgumentException::class);

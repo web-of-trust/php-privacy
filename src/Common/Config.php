@@ -67,6 +67,8 @@ final class Config
 
     private static int $maxDecompressedSize = 67108864;
 
+    private static int $maxCompressionNesting = 8;
+
     /**
      * Get preferred hash algorithm.
      *
@@ -413,5 +415,33 @@ final class Config
             );
         }
         self::$maxDecompressedSize = $maxDecompressedSize;
+    }
+
+    /**
+     * Get the largest number of compressed data packets
+     * that may be nested in each other.
+     *
+     * @return int
+     */
+    public static function getMaxCompressionNesting(): int
+    {
+        return self::$maxCompressionNesting;
+    }
+
+    /**
+     * Set the largest number of compressed data packets
+     * that may be nested in each other.
+     *
+     * @param int $maxCompressionNesting
+     */
+    public static function setMaxCompressionNesting(
+        int $maxCompressionNesting,
+    ): void {
+        if ($maxCompressionNesting < 1) {
+            throw new \InvalidArgumentException(
+                "Max compression nesting must be greater than 0.",
+            );
+        }
+        self::$maxCompressionNesting = $maxCompressionNesting;
     }
 }

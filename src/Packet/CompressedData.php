@@ -30,11 +30,6 @@ class CompressedData extends AbstractPacket
     const DEFLATE_LEVEL = 6;
 
     /**
-     * Largest number of compressed data packets nested in each other
-     */
-    const MAX_NESTING = 8;
-
-    /**
      * Size of the parts that are decompressed at a time
      */
     const CHUNK_SIZE = 65536;
@@ -176,7 +171,7 @@ class CompressedData extends AbstractPacket
         string $compressed,
         Algorithm $algorithm,
     ): PacketListInterface {
-        if (self::$depth >= self::MAX_NESTING) {
+        if (self::$depth >= Config::getMaxCompressionNesting()) {
             throw new \RuntimeException(
                 "Compressed data packets are nested too deeply.",
             );
