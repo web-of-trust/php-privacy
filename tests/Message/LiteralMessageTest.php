@@ -6,6 +6,7 @@ use OpenPGP\Common\Config;
 use OpenPGP\Enum\{
     AeadAlgorithm,
     CompressionAlgorithm,
+    Ecc,
     KeyType,
     PacketTag
 };
@@ -643,5 +644,59 @@ EOT;
 
         Config::setAeadProtect(false);
         Config::presetRFC4880();
+    }
+
+    public function testEncryptedPacketVersionsMatch()
+    {
+        // RFC 9580, section 10.3.2.1: v3 PKESK with v1 SEIPD,
+        // v6 PKESK with v2 SEIPD, never mixed.
+        $v4Key = OpenPGP::generateKey(
+            ["Alice <alice@example.com>"],
+            self::PASSPHRASE,
+            KeyType::Ecc,
+            curve: Ecc::Ed25519
+        )->decrypt(self::PASSPHRASE);
+        $v6Key = OpenPGP::generateKey(
+            ["Bob <bob@example.com>"],
+            self::PASSPHRASE,
+            KeyType::Curve25519
+        )->decrypt(self::PASSPHRASE);
+        $rsaKey = OpenPGP::readPrivateKey(
+            file_get_contents("tests/Data/RsaPrivateKey.asc")
+        )->decrypt(self::PASSPHRASE);
+        $this->assertSame(4, $v4Key->getVersion());
+        $this->assertTrue($v4Key->aeadSupported());
+        $this->assertFalse($rsaKey->aeadSupported());
+
+        $cases = [
+            [[$v4Key], [6], 2],
+            [[$v4Key, $v6Key], [6, 6], 2],
+            [[$v6Key, $rsaKey], [3, 3], 1],
+        ];
+        foreach ($cases as [$keys, $pkeskVersions, $seipdVersion]) {
+            $encryptedMessage = OpenPGP::encrypt(
+                OpenPGP::createLiteralMessage(self::LITERAL_DATA),
+                array_map(static fn($key) => $key->toPublic(), $keys)
+            );
+            $versions = [];
+            foreach ($encryptedMessage->getPacketList() as $packet) {
+                $versions[$packet->getTag()->name][] = ord(
+                    $packet->toBytes()[0]
+                );
+            }
+            $this->assertSame($pkeskVersions, $versions["PublicKeyEncryptedSessionKey"]);
+            $this->assertSame([$seipdVersion], $versions["SymEncryptedIntegrityProtectedData"]);
+
+            foreach ($keys as $key) {
+                $literalMessage = OpenPGP::decrypt(
+                    OpenPGP::readEncryptedMessage($encryptedMessage->armor()),
+                    [$key]
+                );
+                $this->assertSame(
+                    self::LITERAL_DATA,
+                    $literalMessage->getLiteralData()->getData()
+                );
+            }
+        }
     }
 }
