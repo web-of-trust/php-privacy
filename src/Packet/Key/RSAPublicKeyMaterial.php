@@ -146,34 +146,39 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
 
     /**
      * {@inheritdoc}
+     *
+     * The signature is stored as an MPI, which carries no leading zero
+     * octets (RFC 9580, section 3.2). PKCS#1 v1.5 verification expects
+     * the signature as an octet string of the length of the modulus
+     * (RFC 8017, section 8.2.2), so it is left-padded with zero octets.
+     * A value longer than the modulus is rejected.
      */
     public function verify(
         HashAlgorithm $hash,
         string $message,
         string $signature,
     ): bool {
+        if (strlen($signature) < 2) {
+            return false;
+        }
+        $length = Helper::bit2ByteLength(Helper::bytesToShort($signature));
+        $value = substr($signature, 2, $length);
+        $modulusLength = $this->modulus->getLengthInBytes();
+        if ($length > $modulusLength || strlen($value) !== $length) {
+            return false;
+        }
+        $value = str_pad($value, $modulusLength, "\0", STR_PAD_LEFT);
         if (extension_loaded("openssl")) {
             return openssl_verify(
                 $message,
-                substr(
-                    $signature,
-                    2,
-                    Helper::bit2ByteLength(Helper::bytesToShort($signature)),
-                ),
+                $value,
                 openssl_pkey_get_public($this->publicKey->toString("PKCS8")),
                 strtolower(str_replace("_", "-", $hash->name)),
             ) === 1;
         }
         return $this->publicKey
-            ->withHash(strtolower($hash->name))
+            ->withHash(strtolower(str_replace("_", "-", $hash->name)))
             ->withPadding(RSA::SIGNATURE_PKCS1)
-            ->verify(
-                $message,
-                substr(
-                    $signature,
-                    2,
-                    Helper::bit2ByteLength(Helper::bytesToShort($signature)),
-                ),
-            );
+            ->verify($message, $value);
     }
 }

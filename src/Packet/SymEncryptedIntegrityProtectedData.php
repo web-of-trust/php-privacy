@@ -376,8 +376,12 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
             $offset += $chunkSize;
         }
 
+        // Encryption always produces at least one chunk, even for empty data.
         $rest = substr($data, $offset);
-        if (strlen($rest) > 0) {
+        if (
+            strlen($rest) > 0 ||
+            ($index === 0 && $fn === self::AEAD_ENCRYPT)
+        ) {
             $crypted[] = $cipher->$fn($rest, $nonce, $aData);
             $nonce = substr_replace(
                 $nonce,

@@ -278,3 +278,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fix chr deprecated argument in PHP 8.3 & later
 - Walk an offset instead of shortening the string in Aead crypt & partial encode packet
 - S2K::produceKey hash the sequence incrementally instead of building it
+
+## 2.2.14 - released 2026-10-21
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.13...2.2.14)
+- Zero-fill EdDSALegacy R and S to 32 octets before verifying
+- Add SessionKey::toBytesWithChecksum() and harden fromBytes()
+- Left-pad RSA signatures to the modulus length before verifying
+- Try every matching decryption subkey, not only the newest
+
+## 2.2.15 - released 2026-10-23
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.14...2.2.15)
+- Pass SHA-3 hash names to phpseclib as "sha3-256" and "sha3-512"
+- Zero-fill the Ed25519 legacy seed to 32 octets when loading a secret key
+- AEAD: encrypt empty data as one empty chunk again
+- X25519/X448: read and write the symmetric algorithm octet of a v3 PKESK
+- Use v6 PKESK with v2 SEIPD and v3 PKESK with v1 SEIPD
+- Hash the hashed subpacket area as received
+- GCM: verify the authentication tag when decrypting
+- Write canonical MPIs for RSA and EdDSA legacy signatures

@@ -8,7 +8,13 @@
 
 namespace OpenPGP\Packet;
 
-use OpenPGP\Enum\{KeyAlgorithm, KeyVersion, MontgomeryCurve, PacketTag};
+use OpenPGP\Enum\{
+    KeyAlgorithm,
+    KeyVersion,
+    MontgomeryCurve,
+    PacketTag,
+    SymmetricAlgorithm,
+};
 use OpenPGP\Type\{
     EncryptedSessionKeyInterface,
     KeyPacketInterface,
@@ -100,22 +106,32 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket implements
             $keyVersion,
             $keyFingerprint,
             $keyAlgorithm,
-            self::readMaterial(substr($bytes, $offset), $keyAlgorithm),
+            self::readMaterial(
+                substr($bytes, $offset),
+                $keyAlgorithm,
+                $version,
+            ),
         );
     }
 
     /**
      * Encrypt session key
      *
+     * Without a version, the version follows the key version.
+     * A v3 PKESK packet precedes a v1 SEIPD packet and a v6 PKESK packet
+     * a v2 SEIPD packet (RFC 9580, section 10.3.2.1).
+     *
      * @param KeyPacketInterface $keyPacket
      * @param SessionKeyInterface $sessionKey
+     * @param int $version
      * @return self
      */
     public static function encryptSessionKey(
         KeyPacketInterface $keyPacket,
         SessionKeyInterface $sessionKey,
+        ?int $version = null,
     ): self {
-        $version =
+        $version ??=
             $keyPacket->getVersion() === self::VERSION_6
                 ? self::VERSION_6
                 : self::VERSION_3;
@@ -266,9 +282,15 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket implements
                 break;
             case KeyAlgorithm::X25519:
             case KeyAlgorithm::X448:
-                return new Key\SessionKey(
-                    $this->sessionKeyCryptor->decryptSessionKey($secretKey),
-                );
+                $symmetric = $this->sessionKeyCryptor->getSymmetric();
+                return $symmetric instanceof SymmetricAlgorithm
+                    ? new Key\SessionKey(
+                        $this->sessionKeyCryptor->decryptSessionKey($secretKey),
+                        $symmetric,
+                    )
+                    : new Key\SessionKey(
+                        $this->sessionKeyCryptor->decryptSessionKey($secretKey),
+                    );
                 break;
             default:
                 throw new \RuntimeException(
@@ -315,6 +337,9 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket implements
                 => Key\MontgomerySessionKeyCryptor::encryptSessionKey(
                 $sessionKey->getEncryptionKey(),
                 $keyPacket->getECKeyMaterial()->getECKey(),
+                $version === self::VERSION_3
+                    ? $sessionKey->getSymmetric()
+                    : null,
             ),
             default => throw new \RuntimeException(
                 "Key algorithm {$keyPacket->getKeyAlgorithm()->name} is unsupported.",
@@ -325,6 +350,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket implements
     private static function readMaterial(
         string $bytes,
         KeyAlgorithm $keyAlgorithm,
+        int $version = self::VERSION_6,
     ): SessionKeyCryptorInterface {
         return match ($keyAlgorithm) {
             KeyAlgorithm::RsaEncryptSign,
@@ -337,10 +363,12 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket implements
             KeyAlgorithm::X25519 => Key\MontgomerySessionKeyCryptor::fromBytes(
                 $bytes,
                 MontgomeryCurve::Curve25519,
+                $version === self::VERSION_3,
             ),
             KeyAlgorithm::X448 => Key\MontgomerySessionKeyCryptor::fromBytes(
                 $bytes,
                 MontgomeryCurve::Curve448,
+                $version === self::VERSION_3,
             ),
             default => throw new \RuntimeException(
                 "Key algorithm {$keyAlgorithm->name} is unsupported.",

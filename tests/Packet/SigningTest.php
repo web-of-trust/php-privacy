@@ -2,6 +2,7 @@
 
 namespace OpenPGP\Tests\Packet;
 
+use OpenPGP\Enum\HashAlgorithm;
 use OpenPGP\Enum\KeyAlgorithm;
 use OpenPGP\Enum\KeyFlag;
 use OpenPGP\Enum\SignatureType;
@@ -164,6 +165,86 @@ EOT;
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage("Signed digest mismatch!");
         $signature->verify($publicKey, self::LITERAL_TEXT);
+    }
+
+    public function testVerifyRsaSignatureWithLeadingZeroOctet()
+    {
+        $secretKey = SecretKey::fromBytes(
+            base64_decode(self::$rsaSecretKeyData)
+        )->decrypt(self::PASSPHRASE);
+        $publicKey = PublicKey::fromBytes(
+            base64_decode(self::$rsaPublicKeyData)
+        );
+        $secretMaterial = $secretKey->getKeyMaterial();
+        $publicMaterial = $publicKey->getKeyMaterial();
+
+        // Sign until the raw signature starts with a zero octet
+        // (about one in 256), as it then happens with GnuPG. The raw
+        // signature is as long as the modulus; sign() writes it as an MPI.
+        $modulusLength = ($publicKey->getKeyStrength() + 7) >> 3;
+        for ($i = 0; $i < 10000; $i++) {
+            $message = random_bytes(32);
+            $raw = str_pad(
+                substr(
+                    $secretMaterial->sign(HashAlgorithm::Sha256, $message),
+                    2
+                ),
+                $modulusLength,
+                "\0",
+                STR_PAD_LEFT
+            );
+            if ($raw[0] === "\0") {
+                break;
+            }
+        }
+        $this->assertSame("\0", $raw[0]);
+        // The same value with its leading zero octet kept.
+        $signature = pack("n", strlen($raw) * 8) . $raw;
+
+        // Re-encode as a minimal MPI, without leading zero octets.
+        $value = ltrim($raw, "\0");
+        $bits = (strlen($value) - 1) * 8 + strlen(decbin(ord($value[0])));
+        $minimal = pack("n", $bits) . $value;
+        $this->assertLessThan(strlen($signature), strlen($minimal));
+
+        $this->assertTrue(
+            $publicMaterial->verify(HashAlgorithm::Sha256, $message, $minimal)
+        );
+        $this->assertTrue(
+            $publicMaterial->verify(HashAlgorithm::Sha256, $message, $signature)
+        );
+        $this->assertFalse(
+            $publicMaterial->verify(HashAlgorithm::Sha256, self::LITERAL_TEXT, $minimal)
+        );
+    }
+
+    public function testRsaSignatureLongerThanModulusIsRejected()
+    {
+        $publicKey = PublicKey::fromBytes(
+            base64_decode(self::$rsaPublicKeyData)
+        );
+        $publicMaterial = $publicKey->getKeyMaterial();
+        $length = $publicMaterial->getModulus()->getLengthInBytes() + 1;
+        $value = "\x01" . str_repeat("\0", $length - 1);
+        $signature = pack("n", ($length - 1) * 8 + 1) . $value;
+        $this->assertFalse(
+            $publicMaterial->verify(HashAlgorithm::Sha256, self::LITERAL_TEXT, $signature)
+        );
+    }
+
+    public function testRsaSignatureShorterThanItsLengthIsRejected()
+    {
+        $publicKey = PublicKey::fromBytes(
+            base64_decode(self::$rsaPublicKeyData)
+        );
+        $publicMaterial = $publicKey->getKeyMaterial();
+        $signature = pack("n", 2048) . str_repeat("\x01", 10);
+        $this->assertFalse(
+            $publicMaterial->verify(HashAlgorithm::Sha256, self::LITERAL_TEXT, $signature)
+        );
+        $this->assertFalse(
+            $publicMaterial->verify(HashAlgorithm::Sha256, self::LITERAL_TEXT, "\x08")
+        );
     }
 
     public function testVerifyDsaSignature()
@@ -344,6 +425,56 @@ EOT;
         );
         $this->assertSame($publicKey->getKeyID(), $signature->getIssuerKeyID());
         $this->assertTrue($signature->verify($publicKey, "OpenPGP"));
+    }
+
+    public function testVerifyEd25519LegacySignatureWithShortMpis()
+    {
+        // RFC 9580 section 11.3.1: R and S are 32-octet strings stored as
+        // MPIs with their leading zero octets stripped, as GnuPG writes them.
+        // A verifier must zero-fill them back to 32 octets.
+        $secretKey = SecretKey::fromBytes(
+            base64_decode(self::$eddsaCurve25519SecretKeyData)
+        )->decrypt(self::PASSPHRASE);
+        $publicKey = PublicKey::fromBytes(
+            base64_decode(self::$eddsaCurve25519PublicKeyData)
+        );
+
+        // Ed25519 signing is deterministic: find a message whose R or S
+        // starts with a zero octet.
+        $index = 0;
+        do {
+            $message = "message {$index}";
+            $signature = $secretKey
+                ->getKeyMaterial()
+                ->sign(HashAlgorithm::Sha256, $message);
+            // sign() writes R and S as MPIs; zero-fill them to 32 octets.
+            $rLength = (unpack("n", substr($signature, 0, 2))[1] + 7) >> 3;
+            $r = str_pad(substr($signature, 2, $rLength), 32, "\0", STR_PAD_LEFT);
+            $sLength = (unpack("n", substr($signature, 2 + $rLength, 2))[1] + 7) >> 3;
+            $s = str_pad(substr($signature, 4 + $rLength, $sLength), 32, "\0", STR_PAD_LEFT);
+            $index++;
+        } while ($r[0] !== "\0" && $s[0] !== "\0");
+
+        $stripped = implode([self::mpi($r), self::mpi($s)]);
+        $this->assertLessThan(68, strlen($stripped));
+        $this->assertTrue(
+            $publicKey
+                ->getKeyMaterial()
+                ->verify(HashAlgorithm::Sha256, $message, $stripped)
+        );
+    }
+
+    /**
+     * Encodes an octet string as an MPI, stripping its leading zero octets.
+     */
+    private static function mpi(string $octets): string
+    {
+        $value = ltrim($octets, "\0");
+        $bitLength = strlen($value) === 0
+            ? 0
+            : (strlen($value) - 1) * 8 + strlen(decbin(ord($value[0])));
+
+        return pack("n", $bitLength) . $value;
     }
 
     public function testFeatures()

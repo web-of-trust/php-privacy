@@ -4,3 +4,4 @@
 #   Name <email address> [<github url>]
 
 - Nguyen Van Nguyen <nguyennv1981@gmail.com> <https://github.com/nguyennv>
+- Golgorod <https://github.com/Golgorod>

@@ -67,12 +67,16 @@ final class GCM implements AeadCipher
         if ($length < self::TAG_LENGTH) {
             throw new \LengthException("Invalid GCM cipher text.");
         }
+        $this->cipher->setNonce($nonce);
+        $this->cipher->setAAD($aData);
         $this->cipher->setTag(substr($cipherText, $length - self::TAG_LENGTH));
-        return $this->crypt(
-            substr($cipherText, 0, $length - self::TAG_LENGTH),
-            $nonce,
-            $aData,
-        );
+        try {
+            return $this->cipher->decrypt(
+                substr($cipherText, 0, $length - self::TAG_LENGTH),
+            );
+        } catch (\phpseclib3\Exception\BadDecryptionException $e) {
+            throw new \RuntimeException("Authentication tag mismatch!");
+        }
     }
 
     /**

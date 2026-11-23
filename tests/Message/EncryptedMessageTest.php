@@ -2,6 +2,7 @@
 
 namespace OpenPGP\Tests\Message;
 
+use OpenPGP\Enum\{KeyAlgorithm, KeyType};
 use OpenPGP\Key\{PrivateKey, PublicKey};
 use OpenPGP\Type\AeadEncryptedDataPacketInterface as AeadEncryptedData;
 use OpenPGP\OpenPGP;
@@ -331,6 +332,41 @@ EOT;
                 "bbeda55b9aae63dac45d4f49d89dacf4af37fefc13bab2f1f8e18fb74580d8b0"
             ),
             $encryptedMessage->getSessionKey()->getEncryptionKey()
+        );
+    }
+
+    public function testDecryptWithOlderEncryptionSubkey()
+    {
+        $passphrase = self::PASSPHRASE;
+        $privateKey = OpenPGP::generateKey(
+            ["Test <test@example.com>"],
+            $passphrase,
+            KeyType::Rsa,
+        );
+        $message = OpenPGP::encrypt(
+            OpenPGP::createLiteralMessage(self::LITERAL_DATA),
+            [$privateKey->toPublic()],
+        )->armor();
+
+        // Rotate: add a newer encryption subkey. The older one stays valid.
+        $rotated = $privateKey->addSubkey(
+            $passphrase,
+            KeyAlgorithm::RsaEncryptSign,
+            time: new \DateTime("+1 minute"),
+        );
+        $this->assertCount(2, $rotated->getDecryptionKeyPackets());
+        $this->assertNotSame(
+            $privateKey->getEncryptionKeyPacket()->getKeyID(),
+            $rotated->getEncryptionKeyPacket()->getKeyID(),
+        );
+
+        $decrypted = OpenPGP::decrypt(
+            OpenPGP::readEncryptedMessage($message),
+            [$rotated],
+        );
+        $this->assertSame(
+            self::LITERAL_DATA,
+            $decrypted->getLiteralData()->getData(),
         );
     }
 }

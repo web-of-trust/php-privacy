@@ -215,7 +215,7 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
     {
         $signature = $this->privateKey
             ->withSignatureFormat("Raw")
-            ->withHash(strtolower($hash->name))
+            ->withHash(strtolower(str_replace("_", "-", $hash->name)))
             ->sign($message);
         return implode([
             pack("n", $signature["r"]->getLength()),

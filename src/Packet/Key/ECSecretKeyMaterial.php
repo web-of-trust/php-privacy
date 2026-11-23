@@ -52,7 +52,11 @@ abstract class ECSecretKeyMaterial implements
             $key = strrev($d->toBytes());
             $format = "MontgomeryPrivate";
         } elseif ($curve instanceof Ed25519) {
-            $arr = $curve->extractSecret($d->toBytes());
+            // The seed is an MPI, which drops leading zero octets
+            // (RFC 9580, section 3.2); Ed25519 needs all 32 octets.
+            $arr = $curve->extractSecret(
+                str_pad($d->toBytes(), Ed25519::SIZE, "\x00", STR_PAD_LEFT),
+            );
             $key = PKCS8::savePrivateKey(
                 $arr["dA"],
                 $curve,

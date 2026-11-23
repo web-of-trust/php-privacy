@@ -80,6 +80,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         private readonly string $signature,
         array $hashedSubpackets = [],
         array $unhashedSubpackets = [],
+        ?string $hashedArea = null,
     ) {
         parent::__construct(PacketTag::Signature);
         if (
@@ -114,13 +115,18 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         );
         $this->signatureData = implode([
             chr($this->version),
-            $this->signatureType->value,
-            $this->keyAlgorithm->value,
-            $this->hashAlgorithm->value,
-            self::subpacketsToBytes(
-                $this->hashedSubpackets,
-                $this->version === KeyVersion::V6->value,
-            ),
+            chr($this->signatureType->value),
+            chr($this->keyAlgorithm->value),
+            chr($this->hashAlgorithm->value),
+            $hashedArea !== null
+                ? pack(
+                        $this->version === KeyVersion::V6->value ? "N" : "n",
+                        strlen($hashedArea),
+                    ) . $hashedArea
+                : self::subpacketsToBytes(
+                    $this->hashedSubpackets,
+                    $this->version === KeyVersion::V6->value,
+                ),
         ]);
     }
 
@@ -149,9 +155,8 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             ? Helper::bytesToLong($bytes, $offset)
             : Helper::bytesToShort($bytes, $offset);
         $offset += $isV6 ? 4 : 2;
-        $hashedSubpackets = self::readSubpackets(
-            substr($bytes, $offset, $hashedLength),
-        );
+        $hashedArea = substr($bytes, $offset, $hashedLength);
+        $hashedSubpackets = self::readSubpackets($hashedArea);
         $offset += $hashedLength;
 
         // read unhashed subpackets
@@ -187,6 +192,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
             $signature,
             $hashedSubpackets,
             $unhashedSubpackets,
+            $hashedArea,
         );
     }
 

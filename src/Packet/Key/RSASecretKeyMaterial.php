@@ -277,10 +277,13 @@ class RSASecretKeyMaterial implements SecretKeyMaterialInterface
         }
         else {
             $signature = $this->privateKey
-                ->withHash(strtolower($hash->name))
+                ->withHash(strtolower(str_replace("_", "-", $hash->name)))
                 ->withPadding(RSA::SIGNATURE_PKCS1)
                 ->sign($message);
         }
-        return implode([pack("n", strlen($signature) * 8), $signature]);
+        // The signature is written as an MPI (RFC 9580, section 5.2.3.1),
+        // which carries no leading zero octets (section 3.2).
+        $value = Helper::bin2BigInt($signature);
+        return implode([pack("n", $value->getLength()), $value->toBytes()]);
     }
 }

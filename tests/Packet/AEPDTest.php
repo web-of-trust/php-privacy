@@ -71,4 +71,25 @@ class AEPDTest extends OpenPGPTestCase
         $literalData = $aepd->getPacketList()->offsetGet(0);
         $this->assertSame(self::LITERAL_TEXT, $literalData->getData());
     }
+
+    public function testAeadEncryptEmptyData()
+    {
+        // RFC 9580, section 5.13.2: one or more chunks, then the final tag.
+        // Empty data gives one empty chunk, so two authentication tags.
+        $sessionKey = SessionKey::produceKey(
+            SymmetricAlgorithm::Aes256
+        );
+        $aepd = AeadEncryptedData::encryptPacketsWithSessionKey(
+            $sessionKey,
+            new PacketList([])
+        );
+        $this->assertSame(
+            2 * $aepd->getAead()->tagLength(),
+            strlen($aepd->getEncrypted())
+        );
+
+        $aepd = AeadEncryptedData::fromBytes($aepd->toBytes())
+            ->decrypt($sessionKey->getEncryptionKey());
+        $this->assertCount(0, $aepd->getPacketList());
+    }
 }

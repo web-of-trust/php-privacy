@@ -1009,4 +1009,45 @@ EOT;
             ->whereTag(PacketTag::Padding)[0];
         $this->assertSame(PacketTag::Padding, $padding->getTag());
     }
+
+    public function testReadEd25519LegacyKeyWithShortSecret()
+    {
+        // Unprotected key made by OpenPGP.js 6.1.1. Its 32-octet seed
+        // starts with a zero octet, so the secret MPI has 31 octets.
+        $privateKey = OpenPGP::readPrivateKey(<<<EOT
+-----BEGIN PGP PRIVATE KEY BLOCK-----
+
+xVcEawBVkRYJKwYBBAHaRw8BAQdArdb49GxEKZE0sc2GEIMmwUUyjTHHspsQ
+UzhGpGhJ6eYAAPQKgpkxuQ+FobnG3AGQqzwCQYmUt9xBS4WPUyGKlESZDw3N
+GEVkIDI5IDxlZDI5QGV4YW1wbGUuY29tPsLAEwQTFgoAhQWCawBVkQMLCQcJ
+kIfHjEaDLfaWRRQAAAAAABwAIHNhbHRAbm90YXRpb25zLm9wZW5wZ3Bqcy5v
+cmcDagveq3f1PadoU/aURHOkv+ZW9pgCXQeFBNJlSyMLcAUVCggODAQWAAIB
+AhkBApsDAh4BFiEEiJ5+o/PYuSJy17AVh8eMRoMt9pYAAL8NAQC4SJ9NTXTk
+5rX3k2qRpBRmqpzzyLDo+gA5WuypIw+31wD+JLkBgotgY+f0RjnoaVrFu3Dv
+/meVuAjoXFrZF1IP7wXHXQRrAFWREgorBgEEAZdVAQUBAQdAJF+yZaxr5E7e
+xmePotGaXG3L0jJpI/itjvtITADxnQoDAQgHAAD/SFD0Rieb4sq1RjATPlEu
+sBRsw/LJjF6M+829XVuuAQAQSsK+BBgWCgBwBYJrAFWRCZCHx4xGgy32lkUU
+AAAAAAAcACBzYWx0QG5vdGF0aW9ucy5vcGVucGdwanMub3Jne9n5DVTxgTjt
+J+KdnRRgXtYIcRk5B8FiOUB9P+vRRnACmwwWIQSInn6j89i5InLXsBWHx4xG
+gy32lgAAPGQBAMBIwuwkXvI+oW3p7/UjABeNH74LyK7bAYeye+0kdlJcAP0d
+5cdj8PSSh+XvyJ0crpk0RdgztQKxZLoxybZtZyecAg==
+=pwpC
+-----END PGP PRIVATE KEY BLOCK-----
+EOT);
+        $this->assertSame(
+            KeyAlgorithm::EdDsaLegacy,
+            $privateKey->getKeyPacket()->getKeyAlgorithm()
+        );
+        $this->assertTrue(
+            $privateKey->getSecretKeyPacket()->getSecretKeyMaterial()->isValid()
+        );
+
+        $message = OpenPGP::createLiteralMessage("Hello PHP PG");
+        $signature = $message->signDetached([$privateKey]);
+        $verification = $message->verifyDetached(
+            [$privateKey->toPublic()],
+            $signature
+        )[0];
+        $this->assertTrue($verification->isVerified());
+    }
 }
