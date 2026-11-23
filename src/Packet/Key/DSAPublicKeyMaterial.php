@@ -193,7 +193,7 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
         $s = Helper::readMPI(substr($signature, $r->getLengthInBytes() + 2));
         return $this->publicKey
             ->withSignatureFormat("Raw")
-            ->withHash(strtolower($hash->name))
+            ->withHash(strtolower(str_replace("_", "-", $hash->name)))
             ->verify($message, ["r" => $r, "s" => $s]);
     }
 }

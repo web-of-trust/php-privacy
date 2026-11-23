@@ -177,7 +177,7 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
             ) === 1;
         }
         return $this->publicKey
-            ->withHash(strtolower($hash->name))
+            ->withHash(strtolower(str_replace("_", "-", $hash->name)))
             ->withPadding(RSA::SIGNATURE_PKCS1)
             ->verify($message, $value);
     }
