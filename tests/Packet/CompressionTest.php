@@ -239,6 +239,48 @@ EOT;
         $this->assertStringContainsString("exceeds the limit", $error);
     }
 
+    public function testOneInflateStepStaysSmall()
+    {
+        if (!\function_exists("memory_reset_peak_usage")) {
+            $this->markTestSkipped("memory_reset_peak_usage() needs PHP 8.2.");
+        }
+        $default = Config::getMaxDecompressedSize();
+        foreach (
+            [CompressionAlgorithm::Zip, CompressionAlgorithm::Zlib]
+            as $algorithm
+        ) {
+            // 32 MiB of one octet compress by a factor of several hundred.
+            $bytes = CompressedData::fromPacketList(
+                new PacketList([
+                    LiteralData::fromText(str_repeat("A", 32 << 20)),
+                ]),
+                $algorithm
+            )->toBytes();
+            \gc_collect_cycles();
+            Config::setMaxDecompressedSize(1 << 20);
+            \memory_reset_peak_usage();
+            $before = \memory_get_usage();
+            $error = null;
+            try {
+                CompressedData::fromBytes($bytes);
+            } catch (\RuntimeException $e) {
+                $error = $e->getMessage();
+            } finally {
+                Config::setMaxDecompressedSize($default);
+            }
+            $peak = \memory_get_peak_usage() - $before;
+            $this->assertStringContainsString("exceeds the limit", $error);
+            // The limit is 1 MiB; one step may add a little on top of it,
+            // but not the whole compressed input expanded at once.
+            $this->assertLessThan(
+                8 << 20,
+                $peak,
+                "One decompression step produced " . $peak .
+                    " octets for " . $algorithm->name . "."
+            );
+        }
+    }
+
     public function testDecompressionLimitMustBePositive()
     {
         $this->expectException(\InvalidArgumentException::class);

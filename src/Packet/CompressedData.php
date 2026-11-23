@@ -40,6 +40,13 @@ class CompressedData extends AbstractPacket
     const CHUNK_SIZE = 65536;
 
     /**
+     * Size of the compressed input given to inflate_add() at a time. Deflate
+     * can expand data by a factor of about 1000, so the input is kept small
+     * to bound what one step produces before it is counted.
+     */
+    const INFLATE_INPUT_SIZE = 2048;
+
+    /**
      * Nesting depth of the decompression running now, and the octets the
      * outermost packet list may still decompress
      */
@@ -229,8 +236,8 @@ class CompressedData extends AbstractPacket
         do {
             $part = \inflate_add(
                 $context,
-                substr($compressed, $offset, self::CHUNK_SIZE),
-                $offset + self::CHUNK_SIZE >= $length
+                substr($compressed, $offset, self::INFLATE_INPUT_SIZE),
+                $offset + self::INFLATE_INPUT_SIZE >= $length
                     ? ZLIB_FINISH
                     : ZLIB_SYNC_FLUSH,
             );
@@ -238,7 +245,7 @@ class CompressedData extends AbstractPacket
                 throw new \RuntimeException("Decompression failed.");
             }
             $data .= self::take($part);
-            $offset += self::CHUNK_SIZE;
+            $offset += self::INFLATE_INPUT_SIZE;
         } while (
             $offset < $length &&
             \inflate_get_status($context) !== ZLIB_STREAM_END
