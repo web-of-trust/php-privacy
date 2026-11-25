@@ -151,25 +151,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.9...1.2.10)
 - Reduce memory usage of S2K iteration
 
-## 1.2.11 - released 2026-10-09
+## 1.2.11 - released 2026-11-09
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.10...1.2.11)
 - ECDH subkeys are unusable by other OpenPGP implementations: reserved KDF octet is 0x00, RFC 6637 requires 0x01
 
-## 1.2.12 - released 2026-10-09
+## 1.2.12 - released 2026-11-09
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.11...1.2.12)
 - Remove ECDHPublicKeyMaterial::$reserved property
 
-## 1.2.13 - released 2026-10-14
+## 1.2.13 - released 2026-11-14
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.12...1.2.13)
 - Restore ECDHPublicKeyMaterial::$reserved property
 
-## 1.2.14 - released 2026-10-15
+## 1.2.14 - released 2026-11-15
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.13...1.2.14)
 - Fix chr deprecated argument in PHP 8.3 & later
 - Walk an offset instead of shortening the string in AeadEncryptedData::crypt & AbstractPacket::partialEncode()
 - Reduce memory usage of S2K iteration - #10
 
-## 1.2.15 - released 2026-10-15
+## 1.2.15 - released 2026-11-15
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.14...1.2.14)
 - S2K::produceKey hash the sequence incrementally instead of building it
 
