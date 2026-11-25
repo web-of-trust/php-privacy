@@ -24,11 +24,11 @@ class GCMTest extends OpenPGPTestCase
 
     public function testAesGcmRejectsModifiedInput()
     {
-        $plaintext = Random::string(40);
-        $nonce = Random::string(12);
-        $adata = Random::string(10);
+        $plaintext = random_bytes(40);
+        $nonce = random_bytes(12);
+        $adata = random_bytes(10);
 
-        $gcm = new GCM(Random::string(16));
+        $gcm = new GCM(random_bytes(16));
         $ct = $gcm->encrypt($plaintext, $nonce, $adata);
 
         $cases = [
