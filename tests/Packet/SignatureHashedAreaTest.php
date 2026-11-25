@@ -67,18 +67,18 @@ class SignatureHashedAreaTest extends OpenPGPTestCase
         foreach ($template->getHashedSubpackets() as $subpacket) {
             $body = chr($subpacket->getType()) . $subpacket->getData();
             $hashedArea .= $fiveOctetLengths
-                ? "\xff" . pack("N", strlen($body)) . $body
+                ? "\xFF" . pack("N", strlen($body)) . $body
                 : chr(strlen($body)) . $body;
         }
         $head = implode([
             "\x04",
-            chr(SignatureType::Binary->value),
-            chr($template->getKeyAlgorithm()->value),
-            chr($hash->value),
+            SignatureType::Binary->value,
+            $template->getKeyAlgorithm()->value,
+            $hash->value,
             pack("n", strlen($hashedArea)),
             $hashedArea,
         ]);
-        $message = $data . $head . "\x04\xff" . pack("N", strlen($head));
+        $message = $data . $head . "\x04\xFF" . pack("N", strlen($head));
         return Signature::fromBytes(implode([
             $head,
             pack("n", 0),
