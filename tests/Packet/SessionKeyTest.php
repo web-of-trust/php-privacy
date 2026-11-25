@@ -48,7 +48,7 @@ class SessionKeyTest extends OpenPGPTestCase
     {
         $key = SessionKey::produceKey(SymmetricAlgorithm::Aes256);
         // AES-128 octet in front of a 32 octet key with a matching checksum
-        $bytes = chr(SymmetricAlgorithm::Aes128->value)
+        $bytes = SymmetricAlgorithm::Aes128->value
             . $key->getEncryptionKey() . $key->computeChecksum();
         $this->expectException(\LengthException::class);
         SessionKey::fromBytes($bytes);

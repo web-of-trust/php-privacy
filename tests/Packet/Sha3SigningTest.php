@@ -2,7 +2,6 @@
 
 namespace OpenPGP\Tests\Packet;
 
-use phpseclib3\Crypt\Random;
 use OpenPGP\Enum\HashAlgorithm;
 use OpenPGP\Packet\PublicKey;
 use OpenPGP\Packet\SecretKey;
@@ -67,7 +66,7 @@ EOT;
     public function testSignAndVerifyWithSha3()
     {
         // phpseclib names the SHA-3 hashes "sha3-256" and "sha3-512".
-        $message = Random::string(1024);
+        $message = random_bytes(1024);
         $keys = [
             [self::$dsaSecretKeyData, self::$dsaPublicKeyData],
             [

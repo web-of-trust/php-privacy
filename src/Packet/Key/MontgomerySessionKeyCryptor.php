@@ -28,8 +28,8 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
      * @param string $wrappedKey
      * @param MontgomeryCurve $curve
      * @param SymmetricAlgorithm $symmetric - only in a v3 PKESK packet
-     * @param int $symmetricOctet - the octet as read, if it is not one of
-     *                              AES-128, AES-192 or AES-256
+     * @param string $symmetricOctet - the octet as read, if it is not one of
+     *                                 AES-128, AES-192 or AES-256
      * @return self
      */
     public function __construct(
@@ -37,7 +37,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
         private readonly string $wrappedKey,
         private readonly MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
         private readonly ?SymmetricAlgorithm $symmetric = null,
-        private readonly ?int $symmetricOctet = null,
+        private readonly ?string $symmetricOctet = null,
     ) {}
 
     /**
@@ -146,7 +146,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
             return implode([
                 $this->ephemeralKey,
                 chr(strlen($this->wrappedKey) + 1),
-                chr($this->symmetricOctet),
+                $this->symmetricOctet,
                 $this->wrappedKey,
             ]);
         }
