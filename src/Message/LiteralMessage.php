@@ -358,6 +358,15 @@ class LiteralMessage extends AbstractMessage implements
             $encryptionKeys,
             static fn($key) => $key instanceof KeyInterface,
         );
+        foreach ($encryptionKeys as $key) {
+            // A revoked key is not to be used
+            // (RFC 9580, section 5.2.3.31).
+            if ($key->toPublic()->isRevoked()) {
+                throw new \InvalidArgumentException(
+                    "Encryption key {$key->getKeyID(true)} is revoked.",
+                );
+            }
+        }
         $sessionKey = self::generateSessionKey($encryptionKeys, $symmetric);
         $addPadding = $sessionKey->getAead() instanceof AeadAlgorithm;
         foreach ($encryptionKeys as $key) {
