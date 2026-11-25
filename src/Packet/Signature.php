@@ -115,9 +115,9 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         );
         $this->signatureData = implode([
             chr($this->version),
-            chr($this->signatureType->value),
-            chr($this->keyAlgorithm->value),
-            chr($this->hashAlgorithm->value),
+            $this->signatureType->value,
+            $this->keyAlgorithm->value,
+            $this->hashAlgorithm->value,
             $hashedArea !== null
                 ? pack(
                         $this->version === KeyVersion::V6->value ? "N" : "n",
@@ -1221,7 +1221,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         int $version,
         int $dataLength,
     ): string {
-        return implode([chr($version), "\xff", pack("N", $dataLength)]);
+        return implode([chr($version), "\xFF", pack("N", $dataLength)]);
     }
 
     /**
