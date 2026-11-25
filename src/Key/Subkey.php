@@ -138,7 +138,10 @@ class Subkey implements SubkeyInterface
      */
     public function getExpirationTime(): ?DateTimeInterface
     {
-        return AbstractKey::getKeyExpiration($this->bindingSignatures);
+        return AbstractKey::getKeyExpiration(
+            $this->bindingSignatures,
+            $this->getCreationTime(),
+        );
     }
 
     /**
