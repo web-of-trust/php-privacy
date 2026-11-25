@@ -11,7 +11,7 @@ namespace OpenPGP\Packet\Key;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\HashAlgorithm;
 use OpenPGP\Type\PublicKeyMaterialInterface;
-use phpseclib3\Crypt\EC\Curves\Ed25519;
+use phpseclib4\Crypt\EC\Curves\Ed25519;
 
 /**
  * EdDSALegacy public key material class
