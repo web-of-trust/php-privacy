@@ -74,7 +74,7 @@ final class GCM implements AeadCipher
             return $this->cipher->decrypt(
                 substr($cipherText, 0, $length - self::TAG_LENGTH),
             );
-        } catch (\phpseclib3\Exception\BadDecryptionException $e) {
+        } catch (\phpseclib4\Exception\BadDecryptionException $e) {
             throw new \RuntimeException("Authentication tag mismatch!");
         }
     }

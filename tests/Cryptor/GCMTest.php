@@ -49,7 +49,7 @@ class GCMTest extends OpenPGPTestCase
             } catch (\RuntimeException $e) {
                 $error = $e->getMessage();
             }
-            $this->assertStringContainsString("Error decrypting ciphertext", $error, $message);
+            $this->assertSame("Authentication tag mismatch!", $error, $message);
         }
     }
 }
