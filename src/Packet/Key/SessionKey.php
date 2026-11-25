@@ -50,7 +50,7 @@ class SessionKey implements SessionKeyInterface
         if (strlen($bytes) < 3) {
             throw new \LengthException("Session key data is too short.");
         }
-        $symmetric = SymmetricAlgorithm::from(ord($bytes[0]));
+        $symmetric = SymmetricAlgorithm::from($bytes[0]);
         $key = substr($bytes, 1, strlen($bytes) - 3);
         if (strlen($key) !== $symmetric->keySizeInByte()) {
             throw new \LengthException(
