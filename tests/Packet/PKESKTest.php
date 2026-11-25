@@ -354,7 +354,7 @@ EOT;
             $prefix = implode([
                 "\x03",
                 $secretSubkey->getKeyID(),
-                chr($keyAlgorithm->value),
+                $keyAlgorithm->value,
                 $cryptor->getEphemeralKey(),
             ]);
 
@@ -362,7 +362,7 @@ EOT;
             $pkesk = PublicKeyEncryptedSessionKey::fromBytes(implode([
                 $prefix,
                 chr(strlen($wrappedKey) + 1),
-                chr(SymmetricAlgorithm::Aes128->value),
+                SymmetricAlgorithm::Aes128->value,
                 $wrappedKey,
             ]))->decrypt($secretSubkey);
             $this->assertSame(

@@ -67,7 +67,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
             // or AES-256" (RFC 9580, section 5.1.6). Any other value is kept
             // as read, so that the packet can still be parsed, and is
             // rejected when this packet is used to decrypt.
-            $octet = ord($bytes[$offset++]);
+            $octet = $bytes[$offset++];
             $symmetric = match (SymmetricAlgorithm::tryFrom($octet)) {
                 SymmetricAlgorithm::Aes128 => SymmetricAlgorithm::Aes128,
                 SymmetricAlgorithm::Aes192 => SymmetricAlgorithm::Aes192,
@@ -154,7 +154,7 @@ class MontgomerySessionKeyCryptor implements SessionKeyCryptorInterface
             return implode([
                 $this->ephemeralKey,
                 chr(strlen($this->wrappedKey) + 1),
-                chr($this->symmetric->value),
+                $this->symmetric->value,
                 $this->wrappedKey,
             ]);
         }
