@@ -36,8 +36,8 @@ use phpseclib4\Common\Functions\Strings;
 class PublicKeyEncryptedSessionKey extends AbstractPacket implements
     EncryptedSessionKeyInterface
 {
-    private const int VERSION_3 = 3;
-    private const int VERSION_6 = 6;
+    public const int VERSION_3 = 3;
+    public const int VERSION_6 = 6;
 
     /**
      * Constructor
