@@ -28,6 +28,7 @@ use OpenPGP\Packet\{
     SymEncryptedIntegrityProtectedData,
     SymmetricKeyEncryptedSessionKey,
 };
+use OpenPGP\Key\AbstractKey;
 use OpenPGP\Packet\Key\SessionKey;
 use OpenPGP\Type\{
     EncryptedMessageInterface,
@@ -364,6 +365,17 @@ class LiteralMessage extends AbstractMessage implements
             if ($key->toPublic()->isRevoked()) {
                 throw new \InvalidArgumentException(
                     "Encryption key {$key->getKeyID(true)} is revoked.",
+                );
+            }
+            // An expired key is not to be used
+            // (RFC 9580, section 5.2.3.13).
+            if (
+                AbstractKey::isExpiredAt(
+                    $key->toPublic()->getExpirationTime(),
+                )
+            ) {
+                throw new \InvalidArgumentException(
+                    "Encryption key {$key->getKeyID(true)} is expired.",
                 );
             }
         }
