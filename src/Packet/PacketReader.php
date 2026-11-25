@@ -68,13 +68,14 @@ class PacketReader
      * Read packet from byte string
      *
      * @param string $bytes
+     * @param int $offset
      * @return self
      */
-    public static function read(string $bytes): self
+    public static function read(string $bytes, int $offset = 0): self
     {
-        $offset = 0;
+        $start = $offset;
         if (
-            strlen(substr($bytes, $offset)) < 2 ||
+            strlen($bytes) - $offset < 2 ||
             (ord($bytes[$offset]) & 0x80) === 0
         ) {
             throw new \RuntimeException(
@@ -167,6 +168,6 @@ class PacketReader
             }
         }
 
-        return new self($tag, $data, $offset + $dataLength);
+        return new self($tag, $data, $offset + $dataLength - $start);
     }
 }

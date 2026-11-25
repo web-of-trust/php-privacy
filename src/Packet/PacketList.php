@@ -10,7 +10,6 @@ namespace OpenPGP\Packet;
 
 use OpenPGP\Enum\PacketTag;
 use OpenPGP\Type\{PacketInterface, PacketListInterface};
-use phpseclib3\Common\Functions\Strings;
 
 /**
  * Packet list class
@@ -81,9 +80,11 @@ class PacketList implements PacketListInterface
     private static function decodePackets(string $bytes): self
     {
         $packets = [];
-        while (strlen($bytes)) {
-            $reader = PacketReader::read($bytes);
-            Strings::shift($bytes, $reader->getLength());
+        $offset = 0;
+        $length = strlen($bytes);
+        while ($offset < $length) {
+            $reader = PacketReader::read($bytes, $offset);
+            $offset += $reader->getLength();
             $packets[] = match ($reader->getTag()) {
                 PacketTag::PublicKeyEncryptedSessionKey
                     => PublicKeyEncryptedSessionKey::fromBytes(

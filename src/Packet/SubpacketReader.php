@@ -10,7 +10,6 @@ namespace OpenPGP\Packet;
 
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\SignatureSubpacketType;
-use phpseclib3\Common\Functions\Strings;
 
 /**
  * Sub packet reader class
@@ -75,9 +74,11 @@ class SubpacketReader
     public static function readSignatureSubpackets(string $bytes): array
     {
         $subpackets = [];
-        while (strlen($bytes)) {
-            $reader = self::read($bytes);
-            Strings::shift($bytes, $reader->getLength());
+        $offset = 0;
+        $length = strlen($bytes);
+        while ($offset < $length) {
+            $reader = self::read($bytes, $offset);
+            $offset += $reader->getLength();
             $critical = ($reader->getType() & 0x80) != 0;
             $type = SignatureSubpacketType::from($reader->getType() & 0x7f);
             $subpackets[] = match ($type) {
@@ -228,9 +229,11 @@ class SubpacketReader
     public static function readUserAttributes(string $bytes): array
     {
         $attributes = [];
-        while (strlen($bytes)) {
-            $reader = self::read($bytes);
-            Strings::shift($bytes, $reader->getLength());
+        $offset = 0;
+        $length = strlen($bytes);
+        while ($offset < $length) {
+            $reader = self::read($bytes, $offset);
+            $offset += $reader->getLength();
             $attributes[] = match ($reader->getType()) {
                 ImageUserAttribute::JPEG => new ImageUserAttribute(
                     $reader->getData(),
@@ -248,11 +251,12 @@ class SubpacketReader
      * Read sub packet from byte string
      *
      * @param string $bytes
+     * @param int $offset
      * @return self
      */
-    public static function read(string $bytes): self
+    public static function read(string $bytes, int $offset = 0): self
     {
-        $offset = 0;
+        $start = $offset;
         $header = ord($bytes[$offset++]);
         if ($header < 192) {
             $length = $header;
@@ -266,7 +270,7 @@ class SubpacketReader
         return new self(
             ord($bytes[$offset]),
             substr($bytes, $offset + 1, $length - 1),
-            $offset + $length,
+            $offset + $length - $start,
         );
     }
 }
