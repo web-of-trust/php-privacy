@@ -65,6 +65,10 @@ final class Config
 
     private static bool $checksumRequired = false;
 
+    private static int $maxDecompressedSize = 67108864;
+
+    private static int $maxCompressionNesting = 8;
+
     /**
      * Get preferred hash algorithm.
      *
@@ -383,5 +387,61 @@ final class Config
     public static function setChecksumRequired(bool $checksumRequired): void
     {
         self::$checksumRequired = $checksumRequired;
+    }
+
+    /**
+     * Get the largest number of octets that decompressing
+     * compressed data packets may produce, nested packets included.
+     *
+     * @return int
+     */
+    public static function getMaxDecompressedSize(): int
+    {
+        return self::$maxDecompressedSize;
+    }
+
+    /**
+     * Set the largest number of octets that decompressing
+     * compressed data packets may produce, nested packets included.
+     *
+     * @param int $maxDecompressedSize
+     */
+    public static function setMaxDecompressedSize(
+        int $maxDecompressedSize,
+    ): void {
+        if ($maxDecompressedSize < 1) {
+            throw new \InvalidArgumentException(
+                "Max decompressed size must be greater than 0.",
+            );
+        }
+        self::$maxDecompressedSize = $maxDecompressedSize;
+    }
+
+    /**
+     * Get the largest number of compressed data packets
+     * that may be nested in each other.
+     *
+     * @return int
+     */
+    public static function getMaxCompressionNesting(): int
+    {
+        return self::$maxCompressionNesting;
+    }
+
+    /**
+     * Set the largest number of compressed data packets
+     * that may be nested in each other.
+     *
+     * @param int $maxCompressionNesting
+     */
+    public static function setMaxCompressionNesting(
+        int $maxCompressionNesting,
+    ): void {
+        if ($maxCompressionNesting < 1) {
+            throw new \InvalidArgumentException(
+                "Max compression nesting must be greater than 0.",
+            );
+        }
+        self::$maxCompressionNesting = $maxCompressionNesting;
     }
 }

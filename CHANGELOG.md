@@ -151,25 +151,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.9...1.2.10)
 - Reduce memory usage of S2K iteration
 
-## 1.2.11 - released 2026-10-09
+## 1.2.11 - released 2026-11-09
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.10...1.2.11)
 - ECDH subkeys are unusable by other OpenPGP implementations: reserved KDF octet is 0x00, RFC 6637 requires 0x01
 
-## 1.2.12 - released 2026-10-09
+## 1.2.12 - released 2026-11-09
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.11...1.2.12)
 - Remove ECDHPublicKeyMaterial::$reserved property
 
-## 1.2.13 - released 2026-10-14
+## 1.2.13 - released 2026-11-14
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.12...1.2.13)
 - Restore ECDHPublicKeyMaterial::$reserved property
 
-## 1.2.14 - released 2026-10-15
+## 1.2.14 - released 2026-11-15
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.13...1.2.14)
 - Fix chr deprecated argument in PHP 8.3 & later
 - Walk an offset instead of shortening the string in AeadEncryptedData::crypt & AbstractPacket::partialEncode()
 - Reduce memory usage of S2K iteration - #10
 
-## 1.2.15 - released 2026-10-15
+## 1.2.15 - released 2026-11-15
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/1.2.14...1.2.14)
 - S2K::produceKey hash the sequence incrementally instead of building it
 
@@ -257,36 +257,36 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.7...2.2.8)
 - Reduce memory usage of S2K iteration
 
-## 2.2.9 - released 2026-10-08
+## 2.2.9 - released 2026-11-08
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.8...2.2.9)
 - Merge pull request #12: Read signature expiration time as seconds after signing, and expiration times of zero as never
 
-## 2.2.10 - released 2026-10-09
+## 2.2.10 - released 2026-11-09
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.9...2.2.10)
 - ECDH subkeys are unusable by other OpenPGP implementations: reserved KDF octet is 0x00, RFC 6637 requires 0x01
 
-## 2.2.11 - released 2026-10-09
+## 2.2.11 - released 2026-11-09
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.10...2.2.11)
 - Remove ECDHPublicKeyMaterial::$reserved property
 
-## 2.2.12 - released 2026-10-14
+## 2.2.12 - released 2026-11-14
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.11...2.2.12)
 - Restore ECDHPublicKeyMaterial::$reserved property
 
-## 2.2.13 - released 2026-10-15
+## 2.2.13 - released 2026-11-15
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.12...2.2.13)
 - Fix chr deprecated argument in PHP 8.3 & later
 - Walk an offset instead of shortening the string in Aead crypt & partial encode packet
 - S2K::produceKey hash the sequence incrementally instead of building it
 
-## 2.2.14 - released 2026-10-21
+## 2.2.14 - released 2026-11-21
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.13...2.2.14)
 - Zero-fill EdDSALegacy R and S to 32 octets before verifying
 - Add SessionKey::toBytesWithChecksum() and harden fromBytes()
 - Left-pad RSA signatures to the modulus length before verifying
 - Try every matching decryption subkey, not only the newest
 
-## 2.2.15 - released 2026-10-23
+## 2.2.15 - released 2026-11-23
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.14...2.2.15)
 - Pass SHA-3 hash names to phpseclib as "sha3-256" and "sha3-512"
 - Zero-fill the Ed25519 legacy seed to 32 octets when loading a secret key
@@ -296,3 +296,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Hash the hashed subpacket area as received
 - GCM: verify the authentication tag when decrypting
 - Write canonical MPIs for RSA and EdDSA legacy signatures
+
+## 2.2.16 - released 2026-11-23
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.15...2.2.16)
+- Limit the size and nesting of decompressed data
+- Ignore revocation signatures that do not verify

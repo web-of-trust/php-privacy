@@ -432,29 +432,31 @@ abstract class AbstractKey implements KeyInterface
         ?DateTimeInterface $time = null,
     ): bool {
         if (!empty($this->revocationSignatures)) {
-            $revocationKeyIDs = [];
             $keyID = $certificate?->getIssuerKeyID();
             $keyPacket =
-                $verifyKey?->toPublic()->getSigningKeyPacket() ??
-                $this->toPublic()->getSigningKeyPacket();
+                $verifyKey?->toPublic()->getKeyPacket() ??
+                $this->toPublic()->getKeyPacket();
             foreach ($this->revocationSignatures as $signature) {
                 if (
                     empty($keyID) ||
                     strcmp($keyID, $signature->getIssuerKeyID()) === 0
                 ) {
-                    if (
-                        $signature->verify(
-                            $keyPacket,
-                            $this->keyPacket->getSignBytes(),
-                            $time,
-                        )
-                    ) {
-                        return true;
+                    try {
+                        if (
+                            $signature->verify(
+                                $keyPacket,
+                                $this->keyPacket->getSignBytes(),
+                                $time,
+                            )
+                        ) {
+                            return true;
+                        }
+                    } catch (\Throwable) {
+                        // Not a valid revocation by this key (RFC 9580, section 10.1.5).
                     }
                 }
-                $revocationKeyIDs[] = $signature->getIssuerKeyID();
             }
-            return count($revocationKeyIDs) > 0;
+            return false;
         }
         return false;
     }

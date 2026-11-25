@@ -52,6 +52,34 @@ class PacketList implements PacketListInterface
      */
     public static function decode(string $bytes): self
     {
+        if (self::$decoding === 0) {
+            CompressedData::startDecompression();
+        }
+        self::$decoding++;
+        try {
+            return self::decodePackets($bytes);
+        } finally {
+            self::$decoding--;
+        }
+    }
+
+    /**
+     * Whether an outermost packet list is being decoded right now
+     *
+     * @return bool
+     */
+    public static function isDecoding(): bool
+    {
+        return self::$decoding > 0;
+    }
+
+    /**
+     * Depth of the packet lists being decoded right now
+     */
+    private static int $decoding = 0;
+
+    private static function decodePackets(string $bytes): self
+    {
         $packets = [];
         while (strlen($bytes)) {
             $reader = PacketReader::read($bytes);
