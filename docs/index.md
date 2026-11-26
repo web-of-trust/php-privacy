@@ -32,7 +32,15 @@ digital signatures, compression, and key management.
   DSA, ElGamal, TripleDES, IDEA, CAST5, MD5, SHA-1, RIPEMD-160.
 
 ## Documentation
+Read the pages in this order:
+
 1. [Installation](installation.md)
-2. [Key managerment](key-managerment.md)
-3. [Cleartext signing](cleartext-singing.md)
-3. [Message signing & encryption](message-sign-encrypt.md)
+2. [Configuration](configuration.md): every setting, its default and when to change it.
+3. [Key management](key-managerment.md)
+4. [Cleartext signing](cleartext-singing.md)
+5. [Message signing & encryption](message-sign-encrypt.md)
+6. [Reading messages from others](reading-messages-from-others.md):
+  the limits on compressed data and on the shape of a message,
+  and how to catch the exception they throw.
+
+Runnable scripts are in [examples](../examples/README.md).
