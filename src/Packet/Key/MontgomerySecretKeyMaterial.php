@@ -77,7 +77,6 @@ class MontgomerySecretKeyMaterial implements
     ): self {
         $secret = $curve->generateSecretKey();
         $privateKey = EC::loadPrivateKeyFormat("MontgomeryPrivate", $secret);
-        $secret = $privateKey->toString("MontgomeryPrivate");
         return new self(
             $secret,
             new MontgomeryPublicKeyMaterial(
