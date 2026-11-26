@@ -297,7 +297,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - GCM: verify the authentication tag when decrypting
 - Write canonical MPIs for RSA and EdDSA legacy signatures
 
-## 2.2.16 - released 2026-11-23
+## 2.2.16 - released 2026-11-25
 [Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.15...2.2.16)
 - Limit the size and nesting of decompressed data
 - Ignore revocation signatures that do not verify
+
+## 2.2.17 - released 2026-11-26
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.16...2.2.17)
+- Count the key expiration time from the key creation time
+- Do not verify with or encrypt to an expired key
+- Decode packets and subpackets in linear time
+- Check the grammar of an encrypted message when it is read
+- OCB: process long input in linear time
+

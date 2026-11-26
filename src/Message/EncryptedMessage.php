@@ -8,10 +8,12 @@
 
 namespace OpenPGP\Message;
 
-use OpenPGP\Common\Armor;
+use OpenPGP\Common\{Armor, Config};
 use OpenPGP\Enum\ArmorType;
 use OpenPGP\Packet\{
+    Marker,
     PacketList,
+    Padding,
     PublicKeyEncryptedSessionKey,
     SymmetricKeyEncryptedSessionKey,
 };
@@ -59,6 +61,9 @@ class EncryptedMessage extends AbstractMessage implements
     public static function fromBytes(string $bytes): self
     {
         $packetList = PacketList::decode($bytes);
+        if (Config::checkMessageGrammar()) {
+            self::assertGrammar($packetList);
+        }
         self::assertEncryptedPacket($packetList);
         return new self($packetList);
     }
@@ -213,5 +218,37 @@ class EncryptedMessage extends AbstractMessage implements
             );
         }
         return array_pop($encryptedPackets);
+    }
+
+    /**
+     * Assert packet list follows the grammar of an encrypted message
+     * (RFC 9580, section 10.3): encrypted session key packets, then one
+     * encrypted data packet, then nothing else. Marker and padding
+     * packets are skipped.
+     *
+     * @param PacketListInterface $packetList
+     */
+    private static function assertGrammar(
+        PacketListInterface $packetList,
+    ): void {
+        $encryptedPacket = null;
+        foreach ($packetList as $packet) {
+            if ($packet instanceof Marker || $packet instanceof Padding) {
+                continue;
+            }
+            if ($encryptedPacket === null) {
+                if ($packet instanceof EncryptedSessionKeyInterface) {
+                    continue;
+                }
+                if ($packet instanceof EncryptedDataPacketInterface) {
+                    $encryptedPacket = $packet;
+                    continue;
+                }
+            }
+            throw new \RuntimeException(
+                "Packet {$packet->getTag()->name} is out of place " .
+                    "in an encrypted message (RFC 9580, section 10.3).",
+            );
+        }
     }
 }

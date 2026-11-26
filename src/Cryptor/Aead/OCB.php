@@ -173,54 +173,52 @@ final class OCB implements AeadCipher
         // Checksum_0 = zeros(128)
         $checksum = self::ZERO_BLOCK;
 
-        $ct = str_repeat(self::ZERO_CHAR, $length + self::TAG_LENGTH);
+        // The input is walked with an offset and the output is collected
+        // in parts, so that each block costs the same.
+        $output = [];
 
         // Process any whole blocks
-        $i = 0;
         $pos = 0;
         for ($i = 0; $i < $m; $i++) {
+            $block = substr($text, $pos, self::BLOCK_LENGTH);
             // Offset_i = Offset_{i-1} xor L_{ntz(i)}
             $offset = self::xor($offset, $this->mask[self::ntz($i + 1)]);
             // C_i = Offset_i xor ENCIPHER(K, P_i xor Offset_i)
             // P_i = Offset_i xor DECIPHER(K, C_i xor Offset_i)
             if ($cipher === $this->encipher) {
-                $encrypted = self::xor(
-                    $cipher->encryptBlock(self::xor($offset, $text)),
+                $crypted = self::xor(
+                    $cipher->encryptBlock(self::xor($offset, $block)),
                     $offset,
                 );
             } else {
-                $encrypted = self::xor(
-                    $cipher->decryptBlock(self::xor($offset, $text)),
+                $crypted = self::xor(
+                    $cipher->decryptBlock(self::xor($offset, $block)),
                     $offset,
                 );
             }
-            $ct = substr_replace($ct, $encrypted, $pos, strlen($encrypted));
+            $output[] = $crypted;
             // Checksum_i = Checksum_{i-1} xor P_i
             $checksum = self::xor(
                 $checksum,
-                $cipher === $this->encipher ? $text : substr($ct, $pos),
+                $cipher === $this->encipher ? $block : $crypted,
             );
-
-            $text = substr($text, self::BLOCK_LENGTH);
             $pos += self::BLOCK_LENGTH;
         }
 
         // Process any final partial block and compute raw tag
-        $length = strlen($text);
+        $rest = substr($text, $pos);
+        $length = strlen($rest);
         if ($length) {
             // Offset_* = Offset_m xor L_*
             $offset = self::xor($offset, $this->mask[self::MASK_ASTERISK]);
             // Pad = ENCIPHER(K, Offset_*)
             $padding = $this->encipher->encryptBlock($offset);
             // C_* = P_* xor Pad[1..bitlen(P_*)]
-            $paddedText = self::xor($text, $padding);
-            $ct = substr_replace($ct, $paddedText, $pos, strlen($paddedText));
+            $paddedText = self::xor($rest, $padding);
+            $output[] = $paddedText;
 
             // Checksum_* = Checksum_m xor (P_* || 1 || new Uint8Array(127-bitlen(P_*)))
-            $input =
-                $cipher === $this->encipher
-                    ? $text
-                    : substr($ct, $pos, strlen($ct) - self::TAG_LENGTH);
+            $input = $cipher === $this->encipher ? $rest : $paddedText;
             $xorInput = substr_replace(
                 self::ZERO_BLOCK,
                 $input,
@@ -229,7 +227,6 @@ final class OCB implements AeadCipher
             );
             $xorInput[$length] = "\x80";
             $checksum = self::xor($checksum, $xorInput);
-            $pos += $length;
         }
         // Tag = ENCIPHER(K, Checksum_* xor Offset_* xor L_$) xor HASH(K,A)
         $tag = self::xor(
@@ -244,7 +241,8 @@ final class OCB implements AeadCipher
 
         // Assemble ciphertext
         // C = C_1 || C_2 || ... || C_m || C_* || Tag[1..TAGLEN]
-        return substr_replace($ct, $tag, $pos, strlen($tag));
+        $output[] = $tag;
+        return implode($output);
     }
 
     private function extendKeyVariables(string $text, string $aData): void

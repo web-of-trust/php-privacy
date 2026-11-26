@@ -229,7 +229,8 @@ abstract class AbstractKey implements KeyInterface
             if (empty($keyID) || strcmp($keyID, $subkey->getKeyID()) === 0) {
                 if (
                     !$subkey->isSigningKey() ||
-                    $subkey->isRevoked(time: $time)
+                    $subkey->isRevoked(time: $time) ||
+                    self::isExpiredAt($subkey->getExpirationTime(), $time)
                 ) {
                     continue;
                 }
@@ -287,7 +288,8 @@ abstract class AbstractKey implements KeyInterface
             if (empty($keyID) || strcmp($keyID, $subkey->getKeyID()) === 0) {
                 if (
                     !$subkey->isEncryptionKey() ||
-                    $subkey->isRevoked(time: $time)
+                    $subkey->isRevoked(time: $time) ||
+                    self::isExpiredAt($subkey->getExpirationTime(), $time)
                 ) {
                     continue;
                 }
@@ -312,7 +314,10 @@ abstract class AbstractKey implements KeyInterface
      */
     public function getExpirationTime(): ?DateTimeInterface
     {
-        $expirationTime = self::getKeyExpiration($this->directSignatures);
+        $expirationTime = self::getKeyExpiration(
+            $this->directSignatures,
+            $this->getCreationTime(),
+        );
         if (empty($expirationTime)) {
             $selfCertifications = [];
             foreach ($this->users as $user) {
@@ -322,7 +327,10 @@ abstract class AbstractKey implements KeyInterface
                 ];
             }
             if (!empty($selfCertifications)) {
-                $expirationTime = self::getKeyExpiration($selfCertifications);
+                $expirationTime = self::getKeyExpiration(
+                    $selfCertifications,
+                    $this->getCreationTime(),
+                );
             }
         }
         return $expirationTime;
@@ -594,13 +602,35 @@ abstract class AbstractKey implements KeyInterface
     }
 
     /**
+     * Whether an expiration time lies before the given time (now by default).
+     *
+     * @param DateTimeInterface $expirationTime
+     * @param DateTimeInterface $time
+     * @return bool
+     */
+    public static function isExpiredAt(
+        ?DateTimeInterface $expirationTime,
+        ?DateTimeInterface $time = null,
+    ): bool {
+        return $expirationTime instanceof DateTimeInterface &&
+            $expirationTime->getTimestamp() <
+                ($time ?? new \DateTime())->getTimestamp();
+    }
+
+    /**
      * Get key expiration from signatures.
      *
+     * The key expiration time is the number of seconds after the key
+     * creation time (RFC 9580, section 5.2.3.13). Without a key creation
+     * time the creation time of the signature is used.
+     *
      * @param array $signatures
+     * @param DateTimeInterface $keyCreationTime
      * @return DateTimeInterface
      */
     public static function getKeyExpiration(
         array $signatures,
+        ?DateTimeInterface $keyCreationTime = null,
     ): ?DateTimeInterface {
         usort($signatures, static function ($a, $b) {
             $aTime = $a->getCreationTime() ?? new \DateTime();
@@ -615,8 +645,10 @@ abstract class AbstractKey implements KeyInterface
             ) {
                 $expirationTime = $keyExpirationTime->getExpirationTime();
                 $creationTime =
-                    $signature->getCreationTime() ?? new \DateTime();
-                $keyExpiry = $creationTime->setTimestamp(
+                    $keyCreationTime ??
+                    $signature->getCreationTime() ??
+                    new \DateTime();
+                $keyExpiry = (new \DateTime())->setTimestamp(
                     $creationTime->getTimestamp() + $expirationTime,
                 );
                 $signatureExpiry = $signature->getExpirationTime();
