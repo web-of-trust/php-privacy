@@ -46,15 +46,26 @@ class EdDSALegacyPublicKeyMaterial extends ECPublicKeyMaterial implements
         string $message,
         string $signature,
     ): bool {
-        $bitLength = Helper::bytesToShort($signature);
-        $r = substr($signature, 2, Helper::bit2ByteLength($bitLength)); // MPI of an EC point R
-
-        $bitLength = Helper::bytesToShort(substr($signature, strlen($r) + 2));
-        $s = substr(
-            $signature,
-            strlen($r) + 4,
-            Helper::bit2ByteLength($bitLength),
-        ); // MPI of EdDSA value S
+        // R (MPI of an EC point R) and S (MPI of EdDSA value S) are read
+        // only while the signature holds their length and their value;
+        // a value longer than 32 octets is not a valid R or S.
+        $mpis = [];
+        $offset = 0;
+        foreach (["r", "s"] as $_) {
+            if (strlen($signature) < $offset + 2) {
+                return false;
+            }
+            $length = Helper::bit2ByteLength(
+                Helper::bytesToShort(substr($signature, $offset, 2)),
+            );
+            $value = substr($signature, $offset + 2, $length);
+            if ($length > Ed25519::SIZE || strlen($value) !== $length) {
+                return false;
+            }
+            $mpis[] = $value;
+            $offset += 2 + $length;
+        }
+        [$r, $s] = $mpis;
 
         // R and S are octet strings stored as MPIs, which strip leading zero
         // octets (RFC 9580, section 11.3.1): zero-fill them back to their
