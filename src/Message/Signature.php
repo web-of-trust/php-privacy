@@ -10,6 +10,7 @@ namespace OpenPGP\Message;
 
 use DateTimeInterface;
 use OpenPGP\Common\Armor;
+use OpenPGP\Key\AbstractKey;
 use OpenPGP\Enum\ArmorType;
 use OpenPGP\Packet\{LiteralData, PacketList};
 use OpenPGP\Type\{
@@ -115,9 +116,14 @@ class Signature implements SignatureInterface
             foreach ($verificationKeys as $key) {
                 $keyPacket = null;
                 try {
+                    // A signature made while the key was valid stays
+                    // valid, so the key is chosen at signing time.
                     $keyPacket = $key
                         ->toPublic()
-                        ->getSigningKeyPacket($packet->getIssuerKeyID());
+                        ->getSigningKeyPacket(
+                            $packet->getIssuerKeyID(),
+                            $packet->getCreationTime() ?? $time,
+                        );
                 } catch (\Throwable $e) {
                     $this->verificationErrors[] = $e;
                 }
@@ -130,6 +136,18 @@ class Signature implements SignatureInterface
                         if ($key->toPublic()->isRevoked(time: $time)) {
                             throw new \RuntimeException(
                                 "Verification key is revoked.",
+                            );
+                        }
+                        // An expired key is not to be used
+                        // (RFC 9580, section 5.2.3.13).
+                        if (
+                            AbstractKey::isExpiredAt(
+                                $key->toPublic()->getExpirationTime(),
+                                $packet->getCreationTime() ?? $time,
+                            )
+                        ) {
+                            throw new \RuntimeException(
+                                "Verification key is expired.",
                             );
                         }
                         $isVerified = $packet->verify(

@@ -229,7 +229,8 @@ abstract class AbstractKey implements KeyInterface
             if (empty($keyID) || strcmp($keyID, $subkey->getKeyID()) === 0) {
                 if (
                     !$subkey->isSigningKey() ||
-                    $subkey->isRevoked(time: $time)
+                    $subkey->isRevoked(time: $time) ||
+                    self::isExpiredAt($subkey->getExpirationTime(), $time)
                 ) {
                     continue;
                 }
@@ -287,7 +288,8 @@ abstract class AbstractKey implements KeyInterface
             if (empty($keyID) || strcmp($keyID, $subkey->getKeyID()) === 0) {
                 if (
                     !$subkey->isEncryptionKey() ||
-                    $subkey->isRevoked(time: $time)
+                    $subkey->isRevoked(time: $time) ||
+                    self::isExpiredAt($subkey->getExpirationTime(), $time)
                 ) {
                     continue;
                 }
@@ -597,6 +599,22 @@ abstract class AbstractKey implements KeyInterface
                 ...$this->getSubkeyPackets(),
             ]),
         );
+    }
+
+    /**
+     * Whether an expiration time lies before the given time (now by default).
+     *
+     * @param DateTimeInterface $expirationTime
+     * @param DateTimeInterface $time
+     * @return bool
+     */
+    public static function isExpiredAt(
+        ?DateTimeInterface $expirationTime,
+        ?DateTimeInterface $time = null,
+    ): bool {
+        return $expirationTime instanceof DateTimeInterface &&
+            $expirationTime->getTimestamp() <
+                ($time ?? new \DateTime())->getTimestamp();
     }
 
     /**
