@@ -109,7 +109,7 @@ class SessionKey implements SessionKeyInterface
      */
     public function checksum(string $checksum): self
     {
-        if (strcmp($this->computeChecksum(), $checksum) !== 0) {
+        if (!hash_equals($this->computeChecksum(), $checksum)) {
             throw new \RuntimeException("Session key checksum mismatch!");
         }
         return $this;

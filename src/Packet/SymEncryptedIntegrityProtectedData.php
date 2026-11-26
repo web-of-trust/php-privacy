@@ -281,8 +281,10 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
                 $realHash = substr($decrypted, $digestSize);
                 $toHash = substr($decrypted, 0, $digestSize);
                 if (
-                    strcmp($realHash, hash(self::HASH_ALGO, $toHash, true)) !==
-                    0
+                    !hash_equals(
+                        hash(self::HASH_ALGO, $toHash, true),
+                        $realHash,
+                    )
                 ) {
                     throw new \RuntimeException("Modification detected.");
                 }

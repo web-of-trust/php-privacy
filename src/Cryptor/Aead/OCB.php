@@ -105,7 +105,7 @@ final class OCB implements AeadCipher
         $crypted = $this->crypt($this->decipher, $cipherText, $nonce, $aData);
         $length = strlen($crypted);
         // if (Tag[1..TAGLEN] == T)
-        if (strcmp($tag, substr($crypted, $length - self::TAG_LENGTH)) === 0) {
+        if (hash_equals($tag, substr($crypted, $length - self::TAG_LENGTH))) {
             return substr($crypted, 0, $length - self::TAG_LENGTH);
         }
         throw new \RuntimeException("Authentication tag mismatch!");
