@@ -65,6 +65,8 @@ final class Config
 
     private static bool $checksumRequired = false;
 
+    private static bool $checkMessageGrammar = true;
+
     private static int $maxDecompressedSize = 67108864;
 
     private static int $maxCompressionNesting = 8;
@@ -387,6 +389,28 @@ final class Config
     public static function setChecksumRequired(bool $checksumRequired): void
     {
         self::$checksumRequired = $checksumRequired;
+    }
+
+    /**
+     * Whether encrypted messages are checked against the grammar
+     * of RFC 9580, section 10.3, when they are read.
+     *
+     * @return bool
+     */
+    public static function checkMessageGrammar(): bool
+    {
+        return self::$checkMessageGrammar;
+    }
+
+    /**
+     * Set check message grammar.
+     *
+     * @param bool $checkMessageGrammar
+     */
+    public static function setCheckMessageGrammar(
+        bool $checkMessageGrammar,
+    ): void {
+        self::$checkMessageGrammar = $checkMessageGrammar;
     }
 
     /**
