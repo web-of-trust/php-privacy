@@ -176,6 +176,11 @@ class CompressedData extends AbstractPacket
                 "Compressed data packets are nested too deeply.",
             );
         }
+        if (in_array($algorithm, Config::getRejectedCompressions(), true)) {
+            throw new \RuntimeException(
+                "Compression algorithm {$algorithm->name} is rejected.",
+            );
+        }
         if (!PacketList::isDecoding()) {
             self::startDecompression();
         }

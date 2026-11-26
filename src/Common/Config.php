@@ -71,6 +71,8 @@ final class Config
 
     private static int $maxCompressionNesting = 8;
 
+    private static array $rejectedCompressions = [];
+
     /**
      * Get preferred hash algorithm.
      *
@@ -467,5 +469,34 @@ final class Config
             );
         }
         self::$maxCompressionNesting = $maxCompressionNesting;
+    }
+
+    /**
+     * Get the compression algorithms that are rejected
+     * when compressed data is read.
+     *
+     * @return array<CompressionAlgorithm>
+     */
+    public static function getRejectedCompressions(): array
+    {
+        return self::$rejectedCompressions;
+    }
+
+    /**
+     * Set the compression algorithms that are rejected
+     * when compressed data is read. By default none is rejected.
+     *
+     * @param array<CompressionAlgorithm> $compressions
+     */
+    public static function setRejectedCompressions(array $compressions): void
+    {
+        foreach ($compressions as $compression) {
+            if (!($compression instanceof CompressionAlgorithm)) {
+                throw new \InvalidArgumentException(
+                    "Rejected compressions must be compression algorithms.",
+                );
+            }
+        }
+        self::$rejectedCompressions = array_values($compressions);
     }
 }
