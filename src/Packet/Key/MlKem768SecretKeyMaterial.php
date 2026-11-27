@@ -59,9 +59,7 @@ class MlKem768SecretKeyMaterial extends MontgomerySecretKeyMaterial
             substr($bytes, MontgomeryCurve::Curve25519->payloadSize())
         );
         return new self(
-            $privateKey,
-            $decapsulationKey,
-            $publicMaterial,
+            $privateKey, $decapsulationKey, $publicMaterial,
         );
     }
 
@@ -70,7 +68,8 @@ class MlKem768SecretKeyMaterial extends MontgomerySecretKeyMaterial
      *
      * @return self
      */
-    public static function generate(): self {
+    public static function generate(): self
+    {
         [$sk, $pk] = MLKem768::generateKeypair();
         $eccKey = EC::loadPrivateKeyFormat(
             "MontgomeryPrivate", MontgomeryCurve::Curve25519->generateSecretKey()

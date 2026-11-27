@@ -9,7 +9,10 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Enum\{EdDSACurve, HashAlgorithm, MlDSA};
+use phpseclib4\Crypt\EC;
+use phpseclib4\Crypt\EC\PublicKey;
 use phpseclib4\Crypt\EC\Curves\Ed448;
+use phpseclib4\Crypt\EC\Formats\Keys\PKCS8;
 use PQCrypto\MLDSA87\VerifyingKey;
 
 /**
@@ -22,40 +25,40 @@ use PQCrypto\MLDSA87\VerifyingKey;
 class MlDSA87PublicKeyMaterial extends EdDSAPublicKeyMaterial
 {
     /**
-     * PQCrypto ML-DSA-87 verifying key
-     */
-    private readonly VerifyingKey $verifyingKey;
-
-    /**
      * Constructor
      *
-     * @param string $eccPublic
-     * @param string $mldsaPublic
+     * @param PublicKey $publicKey
+     * @param VerifyingKey $verifyingKey
      * @return self
      */
     public function __construct(
-        string $eccPublic,
-        private readonly string $mldsaPublic,
+        PublicKey $publicKey,
+        private readonly VerifyingKey $verifyingKey,
     ) {
-        parent::__construct($eccPublic, new Ed448());
-        $this->verifyingKey = VerifyingKey::fromBytes($mldsaPublic);
+        parent::__construct($publicKey);
     }
 
     /**
      * Read key material from bytes
      *
      * @param string $bytes
-     * @param EdDSACurve $curve
      * @return self
      */
     public static function fromBytes(
         string $bytes,
-        EdDSACurve $curve = EdDSACurve::Ed448,
     ): self {
-        return new self(
-            substr($bytes, 0, EdDSACurve::Ed448->payloadSize()),
-            substr($bytes, EdDSACurve::Ed448->payloadSize()),
+        $ed = new Ed448();
+        $publicKey = EC::loadPublicKeyFormat(
+            "PKCS8",
+            PKCS8::savePublicKey(
+                $ed,
+                PKCS8::extractPoint(
+                    substr($bytes, 0, EdDSACurve::Ed448->payloadSize()), $ed
+                ),
+            ),
         );
+        $verifyingKey = VerifyingKey::fromBytes(substr($bytes, EdDSACurve::Ed448->payloadSize()));
+        return new self($publicKey, $verifyingKey);
     }
 
     /**
@@ -67,6 +70,16 @@ class MlDSA87PublicKeyMaterial extends EdDSAPublicKeyMaterial
     {
         return EdDSACurve::Ed448->payloadSize()
             + MlDSA::MlDSA87->publicSize();
+    }
+
+    /**
+     * Get verifying key
+     *
+     * @return VerifyingKey
+     */
+    public function getVerifyingKey(): VerifyingKey
+    {
+        return $this->verifyingKey;
     }
 
     /**
@@ -84,7 +97,7 @@ class MlDSA87PublicKeyMaterial extends EdDSAPublicKeyMaterial
     {
         return [
             'eccParameters' => parent::getParameters(),
-            'mldsaPublic' => $this->mldsaPublic,
+            'mldsaPublic' => $this->verifyingKey->bytes(),
         ];
     }
 
@@ -95,7 +108,7 @@ class MlDSA87PublicKeyMaterial extends EdDSAPublicKeyMaterial
     {
         return implode([
             parent::toBytes(),
-            $this->mldsaPublic,
+            $this->verifyingKey->bytes(),
         ]);
     }
 

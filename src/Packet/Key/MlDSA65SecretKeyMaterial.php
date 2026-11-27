@@ -10,7 +10,9 @@ namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Enum\{EdDSACurve, HashAlgorithm, MlDSA};
 use OpenPGP\Type\KeyMaterialInterface;
-use phpseclib4\Crypt\EC\Curves\Ed25519;
+use phpseclib4\Crypt\EC;
+use phpseclib4\Crypt\EC\PrivateKey;
+use phpseclib4\Crypt\EC\Formats\Keys\PKCS8;
 use PQCrypto\MLDSA65;
 use PQCrypto\MLDSA65\SigningKey;
 
@@ -24,25 +26,19 @@ use PQCrypto\MLDSA65\SigningKey;
 class MlDSA65SecretKeyMaterial extends EdDSASecretKeyMaterial
 {
     /**
-     * PQCrypto ML-DSA-65 decapsulation key
-     */
-    private readonly SigningKey $signingKey;
-
-    /**
      * Constructor
      *
-     * @param string $eccSecret
+     * @param PrivateKey $privateKey
+     * @param SigningKey $signingKey
      * @param KeyMaterialInterface $publicMaterial
-     * @param string $mlkemSeed
      * @return self
      */
     public function __construct(
-        string $eccSecret,
+        PrivateKey $privateKey,
+        private readonly SigningKey $signingKey,
         KeyMaterialInterface $publicMaterial,
-        private readonly string $mlkemSeed,
     ) {
-        parent::__construct($eccSecret, $publicMaterial);
-        $this->signingKey = SigningKey::fromBytes($mlkemSeed);
+        parent::__construct($privateKey, $publicMaterial);
     }
 
     /**
@@ -56,24 +52,36 @@ class MlDSA65SecretKeyMaterial extends EdDSASecretKeyMaterial
         string $bytes,
         KeyMaterialInterface $publicMaterial,
     ): self {
+        $params = $publicMaterial->getParameters();
+        $curve = $params["curve"];
+        $arr = $curve->extractSecret(substr($bytes, 0, $curve::SIZE));
+        $privateKey = EC::loadPrivateKeyFormat(
+            "PKCS8",
+            PKCS8::savePrivateKey(
+                $arr["dA"],
+                $curve,
+                $params["QA"],
+                $arr["secret"],
+            ),
+        );
+        $signingKey = SigningKey::fromBytes(
+            substr($bytes, EdDSACurve::Ed25519->payloadSize())
+        );
         return new self(
-            substr($bytes, 0, EdDSACurve::Ed25519->payloadSize()),
-            $publicMaterial,
-            substr($bytes, EdDSACurve::Ed25519->payloadSize()),
+            $privateKey, $signingKey, $publicMaterial,
         );
     }
 
     /**
      * Generate key material by using EC create key
      *
-     * @param EdDSACurve $curve
      * @return self
      */
-    public static function generate(
-    ): self {
+    public static function generate(): self
+    {
         $size = EdDSACurve::Ed25519->payloadSize();
         do {
-            $privateKey = EC::createKey($curve->name);
+            $privateKey = EC::createKey(EdDSACurve::Ed25519->name);
             $params = PKCS8::load($privateKey->toString("PKCS8"));
             $secret = $params["secret"];
         } while (strlen($secret) !== $size);
@@ -81,12 +89,12 @@ class MlDSA65SecretKeyMaterial extends EdDSASecretKeyMaterial
         [$signingKey, $verifyingKey] = MLDSA65::generateKeypair();
 
         return new self(
-            $secret,
+            $privateKey,
+            $signingKey,
             new MlDSA65PublicKeyMaterial(
-                $privateKey->getEncodedCoordinates(),
-                $verifyingKey->bytes(),
+                $privateKey->getPublicKey(),
+                $verifyingKey,
             ),
-            $signingKey->bytes(),
         );
     }
 
@@ -102,6 +110,16 @@ class MlDSA65SecretKeyMaterial extends EdDSASecretKeyMaterial
     }
 
     /**
+     * Get signing key
+     *
+     * @return SigningKey
+     */
+    public function getSigningKey(): SigningKey
+    {
+        return $this->signingKey;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getParameters(): array
@@ -110,7 +128,7 @@ class MlDSA65SecretKeyMaterial extends EdDSASecretKeyMaterial
             "eccParameters" => PKCS8::load(
                 $this->privateKey->toString("PKCS8")
             ),
-            "mlkemSeed" => $this->mlkemSeed,
+            "mlkemSeed" => $this->verifyingKey->bytes(),
         ];
     }
 
@@ -137,7 +155,7 @@ class MlDSA65SecretKeyMaterial extends EdDSASecretKeyMaterial
     {
         return implode([
             parent::toBytes(),
-            $this->mlkemSeed,
+            $this->verifyingKey->bytes(),
         ]);
     }
 

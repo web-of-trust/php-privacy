@@ -32,46 +32,56 @@ class EdDSAPublicKeyMaterial implements
     PublicKeyMaterialInterface
 {
     /**
-     * phpseclib4 EC public key
-     */
-    private readonly ECPublicKey $publicKey;
-
-    /**
      * Constructor
      *
-     * @param string $public
-     * @param TwistedEdwards $curve
+     * @param ECPublicKey $publicKey
      * @return self
      */
     public function __construct(
-        private readonly string $public,
-        TwistedEdwards $curve,
+        private readonly ECPublicKey $publicKey,
     ) {
-        $this->publicKey = EC::loadPublicKeyFormat(
-            "PKCS8",
-            PKCS8::savePublicKey(
-                $curve,
-                PKCS8::extractPoint($public, $curve),
-            ),
-        );
     }
 
     /**
-     * Read key material from bytes
+     * Read Ed25519 key material from bytes
      *
      * @param string $bytes
-     * @param EdDSACurve $curve
      * @return self
      */
-    public static function fromBytes(
+    public static function fromEd25519Bytes(
         string $bytes,
-        EdDSACurve $curve = EdDSACurve::Ed25519,
     ): self {
-        return new self(
-            substr($bytes, 0, $curve->payloadSize()),
-            $curve->getCurve(),
-        );
+        return self::fromEdDSABytes($bytes, EdDSACurve::Ed25519);
     }
+
+    /**
+     * Read Ed448 key material from bytes
+     *
+     * @param string $bytes
+     * @return self
+     */
+    public static function fromEd448Bytes(
+        string $bytes,
+    ): self {
+        return self::fromEdDSABytes($bytes, EdDSACurve::Ed448);
+    }
+
+    private static function fromEdDSABytes(
+        string $bytes,
+        EdDSACurve $curve,
+    ): self {
+        $ed = $curve->getCurve();
+        return new self(EC::loadPublicKeyFormat(
+            "PKCS8",
+            PKCS8::savePublicKey(
+                $ed,
+                PKCS8::extractPoint(
+                    substr($bytes, 0, $curve->payloadSize()), $ed
+                ),
+            ),
+        ));
+    }
+
 
     /**
      * {@inheritdoc}
@@ -126,7 +136,7 @@ class EdDSAPublicKeyMaterial implements
      */
     public function toBytes(): string
     {
-        return $this->public;
+        return $this->publicKey->getEncodedCoordinates();
     }
 
     /**

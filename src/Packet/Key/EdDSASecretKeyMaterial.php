@@ -14,7 +14,7 @@ use OpenPGP\Type\{
     KeyMaterialInterface,
     SecretKeyMaterialInterface,
 };
-use phpseclib4\Crypt\Common\{AsymmetricKey, PrivateKey, PublicKey};
+use phpseclib4\Crypt\Common\{PrivateKey, PublicKey};
 use phpseclib4\Crypt\EC;
 use phpseclib4\Crypt\EC\PrivateKey as ECPrivateKey;
 use phpseclib4\Crypt\EC\Formats\Keys\PKCS8;
@@ -31,25 +31,33 @@ class EdDSASecretKeyMaterial implements
     SecretKeyMaterialInterface
 {
     /**
-     * phpseclib4 EC private key
-     */
-    private readonly ECPrivateKey $privateKey;
-
-    /**
      * Constructor
      *
-     * @param string $secret
+     * @param ECPrivateKey $privateKey
      * @param KeyMaterialInterface $publicMaterial
      * @return self
      */
     public function __construct(
-        private readonly string $secret,
+        private readonly ECPrivateKey $privateKey,
         private readonly KeyMaterialInterface $publicMaterial,
     ) {
+    }
+
+    /**
+     * Read key material from bytes
+     *
+     * @param string $bytes
+     * @param KeyMaterialInterface $publicMaterial
+     * @return self
+     */
+    public static function fromBytes(
+        string $bytes,
+        KeyMaterialInterface $publicMaterial,
+    ): self {
         $params = $publicMaterial->getParameters();
         $curve = $params["curve"];
-        $arr = $curve->extractSecret($secret);
-        $this->privateKey = EC::loadPrivateKeyFormat(
+        $arr = $curve->extractSecret(substr($bytes, 0, $curve::SIZE));
+        $privateKey = EC::loadPrivateKeyFormat(
             "PKCS8",
             PKCS8::savePrivateKey(
                 $arr["dA"],
@@ -58,36 +66,32 @@ class EdDSASecretKeyMaterial implements
                 $arr["secret"],
             ),
         );
+
+        return new self($privateKey, $publicMaterial);
     }
 
     /**
-     * Read key material from bytes
+     * Generate Ed25519 key material by using EC create key
      *
-     * @param string $bytes
-     * @param KeyMaterialInterface $publicMaterial
-     * @param EdDSACurve $curve
      * @return self
      */
-    public static function fromBytes(
-        string $bytes,
-        KeyMaterialInterface $publicMaterial,
-        EdDSACurve $curve = EdDSACurve::Ed25519,
-    ): self {
-        return new self(
-            substr($bytes, 0, $curve->payloadSize()),
-            $publicMaterial,
-        );
+    public static function generateEd25519(): self
+    {
+        return self::generateEdDSA(EdDSACurve::Ed25519);
     }
 
     /**
-     * Generate key material by using EC create key
+     * Generate Ed448 key material by using EC create key
      *
-     * @param EdDSACurve $curve
      * @return self
      */
-    public static function generate(
-        EdDSACurve $curve = EdDSACurve::Ed25519,
-    ): self {
+    public static function generateEd448(): self
+    {
+        return self::generateEdDSA(EdDSACurve::Ed448);
+    }
+
+    private static function generateEdDSA(EdDSACurve $curve): self
+    {
         $size = $curve->payloadSize();
         do {
             $privateKey = EC::createKey($curve->name);
@@ -95,10 +99,9 @@ class EdDSASecretKeyMaterial implements
             $secret = $params["secret"];
         } while (strlen($secret) !== $size);
         return new self(
-            $secret,
+            $privateKey,
             new EdDSAPublicKeyMaterial(
-                $privateKey->getEncodedCoordinates(),
-                $params["curve"],
+                $privateKey->getPublicKey(),
             ),
         );
     }
@@ -170,7 +173,8 @@ class EdDSASecretKeyMaterial implements
      */
     public function toBytes(): string
     {
-        return $this->secret;
+        $params = PKCS8::load($this->privateKey->toString("PKCS8"));
+        return $params["secret"];
     }
 
     /**

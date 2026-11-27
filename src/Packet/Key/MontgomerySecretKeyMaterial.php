@@ -58,12 +58,26 @@ class MontgomerySecretKeyMaterial implements
     }
 
     /**
-     * Generate Montgomery key material
+     * Generate Curve25519 key material
      *
-     * @param MontgomeryCurve $curve
      * @return self
      */
-    public static function generate(
+    public static function generateCurve25519(): self
+    {
+        return self::generateMontgomery(MontgomeryCurve::Curve25519);
+    }
+
+    /**
+     * Generate Curve448 key material
+     *
+     * @return self
+     */
+    public static function generateCurve448(): self
+    {
+        return self::generateMontgomery(MontgomeryCurve::Curve448);
+    }
+
+    private static function generateMontgomery(
         MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
     ): self {
         $privateKey = EC::loadPrivateKeyFormat(

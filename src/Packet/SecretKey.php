@@ -538,18 +538,10 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             KeyAlgorithm::EcDsa => Key\ECDSASecretKeyMaterial::generate($curve),
             KeyAlgorithm::EdDsaLegacy
                 => Key\EdDSALegacySecretKeyMaterial::generate(),
-            KeyAlgorithm::X25519 => Key\MontgomerySecretKeyMaterial::generate(
-                MontgomeryCurve::Curve25519,
-            ),
-            KeyAlgorithm::X448 => Key\MontgomerySecretKeyMaterial::generate(
-                MontgomeryCurve::Curve448,
-            ),
-            KeyAlgorithm::Ed25519 => Key\EdDSASecretKeyMaterial::generate(
-                EdDSACurve::Ed25519,
-            ),
-            KeyAlgorithm::Ed448 => Key\EdDSASecretKeyMaterial::generate(
-                EdDSACurve::Ed448,
-            ),
+            KeyAlgorithm::X25519 => Key\MontgomerySecretKeyMaterial::generateCurve25519(),
+            KeyAlgorithm::X448 => Key\MontgomerySecretKeyMaterial::generateCurve448(),
+            KeyAlgorithm::Ed25519 => Key\EdDSASecretKeyMaterial::generateEd25519(),
+            KeyAlgorithm::Ed448 => Key\EdDSASecretKeyMaterial::generateEd448(),
             default => throw new \RuntimeException(
                 "Key algorithm {$keyAlgorithm->name} is unsupported.",
             ),

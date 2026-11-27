@@ -319,13 +319,11 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
             KeyAlgorithm::X448 => Key\MontgomeryPublicKeyMaterial::fromBytes(
                 substr($bytes, 0, MontgomeryCurve::Curve448->payloadSize()),
             ),
-            KeyAlgorithm::Ed25519 => Key\EdDSAPublicKeyMaterial::fromBytes(
+            KeyAlgorithm::Ed25519 => Key\EdDSAPublicKeyMaterial::fromEd25519Bytes(
                 $bytes,
-                EdDSACurve::Ed25519,
             ),
-            KeyAlgorithm::Ed448 => Key\EdDSAPublicKeyMaterial::fromBytes(
+            KeyAlgorithm::Ed448 => Key\EdDSAPublicKeyMaterial::fromEd448Bytes(
                 $bytes,
-                EdDSACurve::Ed448,
             ),
             KeyAlgorithm::MlDsa65Ed25519 => Key\MlDSA65PublicKeyMaterial::fromBytes(
                 $bytes
