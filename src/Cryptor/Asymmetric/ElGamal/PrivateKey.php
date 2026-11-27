@@ -102,14 +102,8 @@ class PrivateKey extends ElGamal
     public function toString($type, array $options = []): string
     {
         return implode([
-            pack("n", $this->getPrime()->getLength()),
-            $this->getPrime()->toBytes(),
-            pack("n", $this->getGenerator()->getLength()),
-            $this->getGenerator()->toBytes(),
             pack("n", $this->getX()->getLength()),
             $this->getX()->toBytes(),
-            pack("n", $this->getY()->getLength()),
-            $this->getY()->toBytes(),
         ]);
     }
 }

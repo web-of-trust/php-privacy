@@ -25,28 +25,16 @@ use phpseclib4\Math\BigInteger;
 class ElGamalSecretKeyMaterial implements KeyMaterialInterface
 {
     /**
-     * ElGamal private key
-     */
-    private readonly PrivateKey $privateKey;
-
-    /**
      * Constructor
      *
-     * @param BigInteger $exponent
+     * @param PrivateKey $privateKey
      * @param KeyMaterialInterface $publicMaterial
      * @return self
      */
     public function __construct(
-        private readonly BigInteger $exponent,
+        private readonly PrivateKey $privateKey,
         private readonly KeyMaterialInterface $publicMaterial,
     ) {
-        $parameters = $publicMaterial->getParameters();
-        $this->privateKey = new PrivateKey(
-            $exponent,
-            $parameters["y"],
-            $parameters["p"],
-            $parameters["g"],
-        );
     }
 
     /**
@@ -60,7 +48,14 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
         string $bytes,
         KeyMaterialInterface $publicMaterial,
     ): self {
-        return new self(Helper::readMPI($bytes), $publicMaterial);
+        $parameters = $publicMaterial->getParameters();
+        $privateKey = new PrivateKey(
+            Helper::readMPI($bytes),
+            $parameters["y"],
+            $parameters["p"],
+            $parameters["g"],
+        );
+        return new self($privateKey, $publicMaterial);
     }
 
     /**
@@ -74,23 +69,11 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
     {
         $privateKey = ElGamal::createKey($lSize, $nSize);
         return new self(
-            $privateKey->getX(),
+            $privateKey,
             new ElGamalPublicKeyMaterial(
-                $privateKey->getPrime(),
-                $privateKey->getGenerator(),
-                $privateKey->getY(),
+                $privateKey->getPublicKey(),
             ),
         );
-    }
-
-    /**
-     * Get exponent x
-     *
-     * @return BigInteger
-     */
-    public function getExponent(): BigInteger
-    {
-        return $this->exponent;
     }
 
     /**
@@ -135,7 +118,7 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
     public function getParameters(): array
     {
         return [
-            "x" => $this->exponent,
+            "x" => $this->privateKey->getX(),
         ];
     }
 
@@ -148,9 +131,9 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
             $one = new BigInteger(1);
             $two = new BigInteger(2);
 
-            $prime = $this->publicMaterial->getPrime();
-            $generator = $this->publicMaterial->getGenerator();
-            $exponent = $this->publicMaterial->getExponent();
+            $prime = $this->publicMaterial->getPublicKey()->getPrime();
+            $generator = $this->publicMaterial->getPublicKey()->getGenerator();
+            $exponent = $this->publicMaterial->getPublicKey()->getY();
 
             // Check that 1 < g < p
             if (
@@ -183,7 +166,7 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
                 $two->bitwise_leftShift($pSize - 1),
                 $two->bitwise_leftShift($pSize),
             );
-            $rqx = $prime->subtract($one)->multiply($r)->add($this->exponent);
+            $rqx = $prime->subtract($one)->multiply($r)->add($this->privateKey->getX());
 
             return $exponent->equals($generator->modPow($rqx, $prime));
         }
@@ -196,8 +179,8 @@ class ElGamalSecretKeyMaterial implements KeyMaterialInterface
     public function toBytes(): string
     {
         return implode([
-            pack("n", $this->exponent->getLength()),
-            $this->exponent->toBytes(),
+            pack("n", $this->privateKey->getX()->getLength()),
+            $this->privateKey->getX()->toBytes(),
         ]);
     }
 }

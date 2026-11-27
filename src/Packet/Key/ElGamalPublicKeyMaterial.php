@@ -24,24 +24,14 @@ use phpseclib4\Math\BigInteger;
 class ElGamalPublicKeyMaterial implements KeyMaterialInterface
 {
     /**
-     * ElGamal public key
-     */
-    private readonly PublicKey $publicKey;
-
-    /**
      * Constructor
      *
-     * @param BigInteger $prime
-     * @param BigInteger $generator
-     * @param BigInteger $exponent
+     * @param PublicKey $publicKey
      * @return self
      */
     public function __construct(
-        private readonly BigInteger $prime,
-        private readonly BigInteger $generator,
-        private readonly BigInteger $exponent,
+        private readonly PublicKey $publicKey,
     ) {
-        $this->publicKey = new PublicKey($exponent, $prime, $generator);
     }
 
     /**
@@ -60,37 +50,7 @@ class ElGamalPublicKeyMaterial implements KeyMaterialInterface
         $offset += $generator->getLengthInBytes() + 2;
         $exponent = Helper::readMPI(substr($bytes, $offset));
 
-        return new self($prime, $generator, $exponent);
-    }
-
-    /**
-     * Get prime p
-     *
-     * @return BigInteger
-     */
-    public function getPrime(): BigInteger
-    {
-        return $this->prime;
-    }
-
-    /**
-     * Get group generator g
-     *
-     * @return BigInteger
-     */
-    public function getGenerator(): BigInteger
-    {
-        return $this->generator;
-    }
-
-    /**
-     * Get exponent y (= g ** x mod p where x is secret)
-     *
-     * @return BigInteger
-     */
-    public function getExponent(): BigInteger
-    {
-        return $this->exponent;
+        return new self(new PublicKey($exponent, $prime, $generator));
     }
 
     /**
@@ -98,7 +58,7 @@ class ElGamalPublicKeyMaterial implements KeyMaterialInterface
      */
     public function getKeyLength(): int
     {
-        return $this->prime->getLength();
+        return $this->publicKey->getBitSize();
     }
 
     /**
@@ -123,9 +83,9 @@ class ElGamalPublicKeyMaterial implements KeyMaterialInterface
     public function getParameters(): array
     {
         return [
-            "p" => $this->prime,
-            "g" => $this->generator,
-            "y" => $this->exponent,
+            "p" => $this->publicKey->getPrime(),
+            "g" => $this->publicKey->getGenerator(),
+            "y" => $this->publicKey->getY(),
         ];
     }
 
@@ -143,12 +103,12 @@ class ElGamalPublicKeyMaterial implements KeyMaterialInterface
     public function toBytes(): string
     {
         return implode([
-            pack("n", $this->prime->getLength()),
-            $this->prime->toBytes(),
-            pack("n", $this->generator->getLength()),
-            $this->generator->toBytes(),
-            pack("n", $this->exponent->getLength()),
-            $this->exponent->toBytes(),
+            pack("n", $this->publicKey->getPrime()->getLength()),
+            $this->publicKey->getPrime()->toBytes(),
+            pack("n", $this->publicKey->getGenerator()->getLength()),
+            $this->publicKey->getGenerator()->toBytes(),
+            pack("n", $this->publicKey->getY()->getLength()),
+            $this->publicKey->getY()->toBytes(),
         ]);
     }
 }
