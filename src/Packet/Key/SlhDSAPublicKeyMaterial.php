@@ -56,7 +56,7 @@ class SlhDSAPublicKeyMaterial implements SlhDSAPublicKeyMaterialInterface
      */
     public function getKeyLength(): int
     {
-        return $this->slhDSA->publicSize() * 8;
+        return strlen($this->verifyingKey->bytes()) * 8;
     }
 
     /**
