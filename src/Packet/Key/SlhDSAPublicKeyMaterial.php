@@ -46,7 +46,7 @@ class SlhDSAPublicKeyMaterial implements SlhDSAPublicKeyMaterialInterface
         $slh =  match ($slhDSA) {
             SlhDSA::SlhDsaShake128s => new SLHDSA('shake128', 'small'),
             SlhDSA::SlhDsaShake128f => new SLHDSA('shake128', 'fast'),
-            SlhDSA::SlhDsaShake256s => new LHDSA('shake256', 'small'),
+            SlhDSA::SlhDsaShake256s => new SLHDSA('shake256', 'small'),
         };
         return new self($slh->importVerifyingKey($bytes));
     }

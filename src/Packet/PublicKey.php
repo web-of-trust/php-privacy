@@ -18,6 +18,7 @@ use OpenPGP\Enum\{
     KeyVersion,
     MontgomeryCurve,
     PacketTag,
+    SlhDSA,
 };
 use OpenPGP\Type\{
     ECKeyMaterialInterface,
@@ -330,6 +331,15 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
             ),
             KeyAlgorithm::MlDsa87Ed448 => Key\MlDSA87PublicKeyMaterial::fromBytes(
                 $bytes
+            ),
+            KeyAlgorithm::SlhDsaShake128s => Key\SlhDSAPublicKeyMaterial::fromBytes(
+                $bytes, SlhDSA::SlhDsaShake128s
+            ),
+            KeyAlgorithm::SlhDsaShake128f => Key\SlhDSAPublicKeyMaterial::fromBytes(
+                $bytes, SlhDSA::SlhDsaShake128f
+            ),
+            KeyAlgorithm::SlhDsaShake256s => Key\SlhDSAPublicKeyMaterial::fromBytes(
+                $bytes, SlhDSA::SlhDsaShake256s
             ),
             KeyAlgorithm::MlKem768X25519 => Key\MlKem768PublicKeyMaterial::fromBytes(
                 $bytes
