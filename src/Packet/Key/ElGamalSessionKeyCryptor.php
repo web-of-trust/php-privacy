@@ -10,7 +10,7 @@ namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
 use OpenPGP\Cryptor\Asymmetric\ElGamal\{PrivateKey, PublicKey};
-use phpseclib4\Crypt\Common\PrivateKey as PrivateKeyInterface;
+use OpenPGP\Type\{SecretKeyPacketInterface, SessionKeyCryptorInterface};
 use phpseclib4\Math\BigInteger;
 
 /**
@@ -20,7 +20,7 @@ use phpseclib4\Math\BigInteger;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class ElGamalSessionKeyCryptor extends SessionKeyCryptor
+class ElGamalSessionKeyCryptor implements SessionKeyCryptorInterface
 {
     /**
      * Constructor
@@ -74,6 +74,15 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
     /**
      * {@inheritdoc}
      */
+    public function decryptSessionKey(
+        SecretKeyPacketInterface $secretKey,
+    ): string {
+        return $this->decrypt($secretKey->getKeyMaterial()->getPrivateKey());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function toBytes(): string
     {
         return implode([
@@ -105,19 +114,18 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
     }
 
     /**
-     * {@inheritdoc}
+     * Decrypt session key by using private key
+     *
+     * @param PrivateKey $privateKey
+     * @return string
      */
-    protected function decrypt(PrivateKeyInterface $privateKey): string
+    private function decrypt(PrivateKey $privateKey): string
     {
-        if ($privateKey instanceof PrivateKey) {
-            return self::pkcs1Decode(
-                $privateKey->decrypt(
-                    implode([$this->gamma->toBytes(), $this->phi->toBytes()]),
-                ),
-            );
-        } else {
-            throw new \RuntimeException("Private key is not ElGamal key.");
-        }
+        return self::pkcs1Decode(
+            $privateKey->decrypt(
+                implode([$this->gamma->toBytes(), $this->phi->toBytes()]),
+            ),
+        );
     }
 
     /**

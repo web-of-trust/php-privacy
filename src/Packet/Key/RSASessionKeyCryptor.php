@@ -9,7 +9,7 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
-use phpseclib4\Crypt\Common\PrivateKey as PrivateKeyInterface;
+use OpenPGP\Type\{SecretKeyPacketInterface, SessionKeyCryptorInterface};
 use phpseclib4\Crypt\RSA;
 use phpseclib4\Crypt\RSA\{PrivateKey, PublicKey};
 use phpseclib4\Math\BigInteger;
@@ -21,7 +21,7 @@ use phpseclib4\Math\BigInteger;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class RSASessionKeyCryptor extends SessionKeyCryptor
+class RSASessionKeyCryptor implements SessionKeyCryptorInterface
 {
     /**
      * Constructor
@@ -71,6 +71,15 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
     /**
      * {@inheritdoc}
      */
+    public function decryptSessionKey(
+        SecretKeyPacketInterface $secretKey,
+    ): string {
+        return $this->decrypt($secretKey->getKeyMaterial()->getPrivateKey());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function toBytes(): string
     {
         return implode([
@@ -90,25 +99,24 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
     }
 
     /**
-     * {@inheritdoc}
+     * Decrypt session key by using private key
+     *
+     * @param PrivateKey $privateKey
+     * @return string
      */
-    protected function decrypt(PrivateKeyInterface $privateKey): string
+    private function decrypt(PrivateKey $privateKey): string
     {
-        if ($privateKey instanceof PrivateKey) {
-            if (extension_loaded("openssl")) {
-                openssl_private_decrypt(
-                    $this->encrypted->toBytes(),
-                    $decrypted,
-                    openssl_pkey_get_private($privateKey->toString("PKCS8")),
-                    OPENSSL_PKCS1_PADDING,
-                );
-                return $decrypted;
-            }
-            return $privateKey
-                ->withPadding(RSA::ENCRYPTION_PKCS1)
-                ->decrypt($this->encrypted->toBytes());
-        } else {
-            throw new \RuntimeException("Private key is not RSA key.");
+        if (extension_loaded("openssl")) {
+            openssl_private_decrypt(
+                $this->encrypted->toBytes(),
+                $decrypted,
+                openssl_pkey_get_private($privateKey->toString("PKCS8")),
+                OPENSSL_PKCS1_PADDING,
+            );
+            return $decrypted;
         }
+        return $privateKey
+            ->withPadding(RSA::ENCRYPTION_PKCS1)
+            ->decrypt($this->encrypted->toBytes());
     }
 }

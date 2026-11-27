@@ -11,11 +11,9 @@ namespace OpenPGP\Packet\Key;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\HashAlgorithm;
 use OpenPGP\Type\{KeyMaterialInterface, PublicKeyMaterialInterface};
-use phpseclib4\Crypt\Common\{AsymmetricKey, PublicKey};
+use phpseclib4\Crypt\Common\PublicKey;
 use phpseclib4\Crypt\DSA;
 use phpseclib4\Crypt\DSA\PublicKey as DSAPublicKey;
-use phpseclib4\Crypt\DSA\Formats\Keys\PKCS8;
-use phpseclib4\Math\BigInteger;
 
 /**
  * DSA public key material class
@@ -26,32 +24,18 @@ use phpseclib4\Math\BigInteger;
  */
 class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
 {
-    /**
-     * phpseclib4 DSA public key
-     */
-    private readonly DSAPublicKey $publicKey;
+    private readonly array $parameters;
 
     /**
      * Constructor
      *
-     * @param BigInteger $prime
-     * @param BigInteger $order
-     * @param BigInteger $generator
-     * @param BigInteger $exponent
+     * @param DSAPublicKey $publicKey
      * @return self
      */
     public function __construct(
-        private readonly BigInteger $prime,
-        private readonly BigInteger $order,
-        private readonly BigInteger $generator,
-        private readonly BigInteger $exponent,
+        private readonly DSAPublicKey $publicKey,
     ) {
-        $this->publicKey = DSA::loadPublicKey([
-            "y" => $exponent,
-            "p" => $prime,
-            "q" => $order,
-            "g" => $generator,
-        ]);
+        $this->parameters = $publicKey->toArray();
     }
 
     /**
@@ -73,47 +57,12 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
         $offset += $generator->getLengthInBytes() + 2;
         $exponent = Helper::readMPI(substr($bytes, $offset));
 
-        return new self($prime, $order, $generator, $exponent);
-    }
-
-    /**
-     * Get prime p
-     *
-     * @return BigInteger
-     */
-    public function getPrime(): BigInteger
-    {
-        return $this->prime;
-    }
-
-    /**
-     * Get group order q (q is a prime divisor of p-1)
-     *
-     * @return BigInteger
-     */
-    public function getOrder(): BigInteger
-    {
-        return $this->order;
-    }
-
-    /**
-     * Get group generator g
-     *
-     * @return BigInteger
-     */
-    public function getGenerator(): BigInteger
-    {
-        return $this->generator;
-    }
-
-    /**
-     * Get exponent y (= g ** x mod p where x is secret)
-     *
-     * @return BigInteger
-     */
-    public function getExponent(): BigInteger
-    {
-        return $this->exponent;
+        return new self(DSA::loadPublicKey([
+            "y" => $exponent,
+            "p" => $prime,
+            "q" => $order,
+            "g" => $generator,
+        ]));
     }
 
     /**
@@ -121,7 +70,7 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
      */
     public function getKeyLength(): int
     {
-        return $this->prime->getLength();
+        return $this->parameters["p"]->getLength();
     }
 
     /**
@@ -145,7 +94,7 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
      */
     public function getParameters(): array
     {
-        return PKCS8::load($this->publicKey->toString("PKCS8"));
+        return $this->publicKey->toArray();
     }
 
     /**
@@ -162,14 +111,14 @@ class DSAPublicKeyMaterial implements PublicKeyMaterialInterface
     public function toBytes(): string
     {
         return implode([
-            pack("n", $this->prime->getLength()),
-            $this->prime->toBytes(),
-            pack("n", $this->order->getLength()),
-            $this->order->toBytes(),
-            pack("n", $this->generator->getLength()),
-            $this->generator->toBytes(),
-            pack("n", $this->exponent->getLength()),
-            $this->exponent->toBytes(),
+            pack("n", $this->parameters["p"]->getLength()),
+            $this->parameters["p"]->toBytes(),
+            pack("n", $this->parameters["q"]->getLength()),
+            $this->parameters["q"]->toBytes(),
+            pack("n", $this->parameters["g"]->getLength()),
+            $this->parameters["g"]->toBytes(),
+            pack("n", $this->parameters["y"]->getLength()),
+            $this->parameters["y"]->toBytes(),
         ]);
     }
 

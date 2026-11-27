@@ -11,10 +11,9 @@ namespace OpenPGP\Packet\Key;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\HashAlgorithm;
 use OpenPGP\Type\{KeyMaterialInterface, SecretKeyMaterialInterface};
-use phpseclib4\Crypt\Common\{AsymmetricKey, PrivateKey, PublicKey};
+use phpseclib4\Crypt\Common\{PrivateKey, PublicKey};
 use phpseclib4\Crypt\DSA;
 use phpseclib4\Crypt\DSA\PrivateKey as DSAPrivateKey;
-use phpseclib4\Crypt\DSA\Formats\Keys\PKCS8;
 use phpseclib4\Math\BigInteger;
 
 /**
@@ -26,26 +25,20 @@ use phpseclib4\Math\BigInteger;
  */
 class DSASecretKeyMaterial implements SecretKeyMaterialInterface
 {
-    /**
-     * phpseclib4 DSA private key
-     */
-    private readonly DSAPrivateKey $privateKey;
+    private readonly array $parameters;
 
     /**
      * Constructor
      *
-     * @param BigInteger $exponent
+     * @param DSAPrivateKey $privateKey
      * @param KeyMaterialInterface $publicMaterial
      * @return self
      */
     public function __construct(
-        private readonly BigInteger $exponent,
+        private readonly DSAPrivateKey $privateKey,
         private readonly KeyMaterialInterface $publicMaterial,
     ) {
-        $this->privateKey = DSA::loadPrivateKey([
-            "x" => $exponent,
-            ...$publicMaterial->getParameters(),
-        ]);
+        $this->parameters = $privateKey->toArray();
     }
 
     /**
@@ -59,7 +52,11 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
         string $bytes,
         KeyMaterialInterface $publicMaterial,
     ): self {
-        return new self(Helper::readMPI($bytes), $publicMaterial);
+        $privateKey = DSA::loadPrivateKey([
+            "x" => Helper::readMPI($bytes),
+            ...$publicMaterial->getParameters(),
+        ]);
+        return new self($privateKey, $publicMaterial);
     }
 
     /**
@@ -72,26 +69,12 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
     public static function generate(int $lSize = 2048, int $nSize = 224): self
     {
         $privateKey = DSA::createKey($lSize, $nSize);
-        $params = PKCS8::load($privateKey->toString("PKCS8"));
         return new self(
             $params["x"],
             new DSAPublicKeyMaterial(
-                $params["p"],
-                $params["q"],
-                $params["g"],
-                $params["g"]->powMod($params["x"], $params["p"]),
+                $privateKey->getPublicKey(),
             ),
         );
-    }
-
-    /**
-     * Get exponent x
-     *
-     * @return BigInteger
-     */
-    public function getExponent(): BigInteger
-    {
-        return $this->exponent;
     }
 
     /**
@@ -131,7 +114,7 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
      */
     public function getParameters(): array
     {
-        return PKCS8::load($this->privateKey->toString("PKCS8"));
+        return $this->parameters;
     }
 
     /**
@@ -144,10 +127,11 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
             $one = new BigInteger(1);
             $two = new BigInteger(2);
 
-            $prime = $this->publicMaterial->getPrime();
-            $order = $this->publicMaterial->getOrder();
-            $generator = $this->publicMaterial->getGenerator();
-            $exponent = $this->publicMaterial->getExponent();
+            $params = $this->publicMaterial->getParameters();
+            $prime = $params["p"];
+            $order = $params["q"];
+            $generator = $params["g"];
+            $exponent = $params["y"];
 
             // Check that 1 < g < p
             if (
@@ -182,7 +166,7 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
                 $two->bitwise_leftShift($qSize - 1),
                 $two->bitwise_leftShift($qSize),
             );
-            $rqx = $order->multiply($r)->add($this->exponent);
+            $rqx = $order->multiply($r)->add($this->parameters["x"]);
 
             return $exponent->equals($generator->modPow($rqx, $prime));
         }
@@ -195,8 +179,8 @@ class DSASecretKeyMaterial implements SecretKeyMaterialInterface
     public function toBytes(): string
     {
         return implode([
-            pack("n", $this->exponent->getLength()),
-            $this->exponent->toBytes(),
+            pack("n", $this->parameters["x"]->getLength()),
+            $this->parameters["x"]->toBytes(),
         ]);
     }
 
