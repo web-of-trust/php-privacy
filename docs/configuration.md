@@ -125,7 +125,7 @@ Settings marked **new** were added in the version named.
 | Methods | `checksumRequired()`, `setChecksumRequired(bool)` |
 | Default | `false` |
 | What it does | Writes the CRC-24 checksum line into armored output, and requires it when armored data is read. A checksum that is present is always checked. |
-| When to change | Turn it on for readers that still expect the checksum line of RFC 4880. |
+| When to change | Turn it on for readers that still expect the checksum line of RFC 4880. Some GnuPG versions, for example 2.4.4, decrypt armored messages without the line but exit with status 2 when the encoded data ends without padding (GnuPG issue T7071). Turning it on also rejects armored input without the line. |
 
 ### Reading messages
 
