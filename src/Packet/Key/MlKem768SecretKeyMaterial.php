@@ -11,6 +11,7 @@ namespace OpenPGP\Packet\Key;
 use OpenPGP\Enum\{MlKem, MontgomeryCurve};
 use OpenPGP\Type\KeyMaterialInterface;
 use phpseclib4\Crypt\EC;
+use phpseclib4\Crypt\EC\PrivateKey
 use PQCrypto\MLKem768;
 use PQCrypto\MLKem768\DecapsulationKey;
 
@@ -24,25 +25,19 @@ use PQCrypto\MLKem768\DecapsulationKey;
 class MlKem768SecretKeyMaterial extends MontgomerySecretKeyMaterial
 {
     /**
-     * PQCrypto ML-KEM 768 decapsulation key
-     */
-    private readonly DecapsulationKey $decapsulationKey;
-
-    /**
      * Constructor
      *
-     * @param string $eccSecret
+     * @param PrivateKey $privateKey
+     * @param DecapsulationKey $decapsulationKey
      * @param KeyMaterialInterface $publicMaterial
-     * @param string $mlkemSeed
      * @return self
      */
     public function __construct(
-        string $eccSecret,
+        PrivateKey $privateKey,
+        private readonly DecapsulationKey $decapsulationKey,
         KeyMaterialInterface $publicMaterial,
-        private readonly string $mlkemSeed,
     ) {
-        parent::__construct($eccSecret, $publicMaterial);
-        $this->decapsulationKey = DecapsulationKey::fromBytes($mlkemSeed);
+        parent::__construct($privateKey, $publicMaterial);
     }
 
     /**
@@ -56,10 +51,17 @@ class MlKem768SecretKeyMaterial extends MontgomerySecretKeyMaterial
         string $bytes,
         KeyMaterialInterface $publicMaterial,
     ): self {
-        return new self(
+        $privateKey = EC::loadPrivateKeyFormat(
+            "MontgomeryPrivate",
             substr($bytes, 0, MontgomeryCurve::Curve25519->payloadSize()),
+        );
+        $decapsulationKey = DecapsulationKey::fromBytes(
+            substr($bytes, MontgomeryCurve::Curve25519->payloadSize())
+        );
+        return new self(
+            $privateKey,
+            $decapsulationKey,
             $publicMaterial,
-            substr($bytes, MontgomeryCurve::Curve25519->payloadSize()),
         );
     }
 
@@ -70,14 +72,15 @@ class MlKem768SecretKeyMaterial extends MontgomerySecretKeyMaterial
      */
     public static function generate(): self {
         [$sk, $pk] = MLKem768::generateKeypair();
-        $secret = MontgomeryCurve::Curve25519->generateSecretKey();
-        $eccKey = EC::loadPrivateKeyFormat("MontgomeryPrivate", $secret);
+        $eccKey = EC::loadPrivateKeyFormat(
+            "MontgomeryPrivate", MontgomeryCurve::Curve25519->generateSecretKey()
+        );
         return new self(
-            $secret,
-            $sk->bytes(),
+            $eccKey,
+            $sk,
             new MlKem768PublicKeyMaterial(
-                $eccKey->getEncodedCoordinates(),
-                $pk->bytes(),
+                $eccKey->getPublicKey(),
+                $pk,
             ),
         );
     }
@@ -110,7 +113,7 @@ class MlKem768SecretKeyMaterial extends MontgomerySecretKeyMaterial
     {
         return [
             "eccParameters" => parent::getParameters(),
-            "mlkemSeed" => $this->mlkemSeed,
+            "mlkemSeed" => $this->decapsulationKey->bytes(),
         ];
     }
 
@@ -137,7 +140,7 @@ class MlKem768SecretKeyMaterial extends MontgomerySecretKeyMaterial
     {
         return implode([
             parent::toBytes(),
-            $this->mlkemSeed,
+            $this->decapsulationKey->bytes(),
         ]);
     }
 }

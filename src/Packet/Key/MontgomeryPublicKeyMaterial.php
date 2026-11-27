@@ -9,7 +9,7 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Type\{ECKeyMaterialInterface, KeyMaterialInterface};
-use phpseclib4\Crypt\Common\{AsymmetricKey, PublicKey};
+use phpseclib4\Crypt\Common\PublicKey;
 use phpseclib4\Crypt\EC;
 use phpseclib4\Crypt\EC\PublicKey as ECPublicKey;
 use phpseclib4\Crypt\EC\Formats\Keys\MontgomeryPublic;
@@ -26,23 +26,14 @@ class MontgomeryPublicKeyMaterial implements
     KeyMaterialInterface
 {
     /**
-     * phpseclib4 EC public key
-     */
-    private readonly ECPublicKey $publicKey;
-
-    /**
      * Constructor
      *
-     * @param string $public
+     * @param ECPublicKey $publicKey
      * @return self
      */
     public function __construct(
-        private readonly string $public,
+        private readonly ECPublicKey $publicKey,
     ) {
-        $this->publicKey = EC::loadPublicKeyFormat(
-            "MontgomeryPublic",
-            $public,
-        );
     }
 
     /**
@@ -53,7 +44,10 @@ class MontgomeryPublicKeyMaterial implements
      */
     public static function fromBytes(string $bytes): self
     {
-        return new self($bytes);
+        return new self(EC::loadPublicKeyFormat(
+            "MontgomeryPublic",
+            $bytes,
+        ));
     }
 
     /**
@@ -111,6 +105,6 @@ class MontgomeryPublicKeyMaterial implements
      */
     public function toBytes(): string
     {
-        return $this->public;
+        return $this->publicKey->toString("MontgomeryPublic");
     }
 }

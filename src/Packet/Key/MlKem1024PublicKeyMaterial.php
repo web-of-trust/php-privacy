@@ -9,6 +9,8 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Enum\{MlKem, MontgomeryCurve};
+use phpseclib4\Crypt\EC;
+use phpseclib4\Crypt\EC\PublicKey;
 use PQCrypto\MLKem1024\EncapsulationKey;
 
 /**
@@ -21,23 +23,17 @@ use PQCrypto\MLKem1024\EncapsulationKey;
 class MlKem1024PublicKeyMaterial extends MontgomeryPublicKeyMaterial
 {
     /**
-     * PQCrypto ML-KEM 1024 encapsulation key
-     */
-    private readonly EncapsulationKey $encapsulationKey;
-
-    /**
      * Constructor
      *
-     * @param string $eccPublic
-     * @param string $mlkemPublic
+     * @param PublicKey $publicKey
+     * @param EncapsulationKey $encapsulationKey
      * @return self
      */
     public function __construct(
-        string $eccPublic,
-        private readonly string $mlkemPublic,
+        PublicKey $publicKey,
+        private readonly EncapsulationKey $encapsulationKey,
     ) {
-        parent::__construct($eccPublic);
-        $this->encapsulationKey = EncapsulationKey::fromBytes($mlkemPublic);
+        parent::__construct($publicKey);
     }
 
     /**
@@ -48,10 +44,14 @@ class MlKem1024PublicKeyMaterial extends MontgomeryPublicKeyMaterial
      */
     public static function fromBytes(string $bytes): self
     {
-        return new self(
+        $publicKey = EC::loadPublicKeyFormat(
+            "MontgomeryPublic",
             substr($bytes, 0, MontgomeryCurve::Curve448->payloadSize()),
-            substr($bytes, MontgomeryCurve::Curve448->payloadSize()),
         );
+        $encapsulationKey = EncapsulationKey::fromBytes(
+            substr($bytes, MontgomeryCurve::Curve448->payloadSize())
+        );
+        return new self($publicKey, $encapsulationKey);
     }
 
     public static function payloadSize(): int
@@ -85,7 +85,7 @@ class MlKem1024PublicKeyMaterial extends MontgomeryPublicKeyMaterial
     {
         return [
             'eccParameters' => parent::getParameters(),
-            'mlkemPublic' => $this->mlkemPublic,
+            'mlkemPublic' => $this->encapsulationKey->bytes(),
         ];
     }
 
@@ -96,7 +96,7 @@ class MlKem1024PublicKeyMaterial extends MontgomeryPublicKeyMaterial
     {
         return implode([
             parent::toBytes(),
-            $this->mlkemPublic,
+            $this->encapsulationKey->bytes(),
         ]);
     }
 }

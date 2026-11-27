@@ -9,6 +9,8 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Enum\{MlKem, MontgomeryCurve};
+use phpseclib4\Crypt\EC;
+use phpseclib4\Crypt\EC\PublicKey;
 use PQCrypto\MLKem768\EncapsulationKey;
 
 /**
@@ -21,23 +23,17 @@ use PQCrypto\MLKem768\EncapsulationKey;
 class MlKem768PublicKeyMaterial extends MontgomeryPublicKeyMaterial
 {
     /**
-     * PQCrypto ML-KEM 768 encapsulation key
-     */
-    private readonly EncapsulationKey $encapsulationKey;
-
-    /**
      * Constructor
      *
-     * @param string $public
-     * @param string $mlkemPublic
+     * @param PublicKey $publicKey
+     * @param EncapsulationKey $encapsulationKey
      * @return self
      */
     public function __construct(
-        string $eccPublic,
-        private readonly string $mlkemPublic,
+        PublicKey $publicKey,
+        private readonly EncapsulationKey $encapsulationKey,
     ) {
-        parent::__construct($eccPublic);
-        $this->encapsulationKey = EncapsulationKey::fromBytes($mlkemPublic);
+        parent::__construct($publicKey);
     }
 
     /**
@@ -48,10 +44,14 @@ class MlKem768PublicKeyMaterial extends MontgomeryPublicKeyMaterial
      */
     public static function fromBytes(string $bytes): self
     {
-        return new self(
+        $publicKey = EC::loadPublicKeyFormat(
+            "MontgomeryPublic",
             substr($bytes, 0, MontgomeryCurve::Curve25519->payloadSize()),
-            substr($bytes, MontgomeryCurve::Curve25519->payloadSize()),
         );
+        $encapsulationKey = EncapsulationKey::fromBytes(
+            substr($bytes, MontgomeryCurve::Curve25519->payloadSize())
+        );
+        return new self($publicKey, $encapsulationKey);
     }
 
     /**
@@ -90,7 +90,7 @@ class MlKem768PublicKeyMaterial extends MontgomeryPublicKeyMaterial
     {
         return [
             "eccParameters" => parent::getParameters(),
-            "mlkemPublic" => $this->mlkemPublic,
+            "mlkemPublic" => $this->encapsulationKey->bytes(),
         ];
     }
 
@@ -101,7 +101,7 @@ class MlKem768PublicKeyMaterial extends MontgomeryPublicKeyMaterial
     {
         return implode([
             parent::toBytes(),
-            $this->mlkemPublic,
+            $this->encapsulationKey->bytes(),
         ]);
     }
 }

@@ -14,7 +14,7 @@ use OpenPGP\Type\{KeyMaterialInterface, PublicKeyMaterialInterface};
 use phpseclib4\Crypt\Common\PublicKey;
 use phpseclib4\Crypt\RSA;
 use phpseclib4\Crypt\RSA\PublicKey as RSAPublicKey;
-m
+
 /**
  * RSA public key material class
  *
@@ -46,8 +46,9 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
      */
     public static function fromBytes(string $bytes): self
     {
+        $modulus = Helper::readMPI($bytes);
         return new self(RSA::loadPublicKey([
-            "modulus" => Helper::readMPI($bytes),
+            "modulus" => $modulus,
             "publicExponent" => Helper::readMPI(
                 substr($bytes, $modulus->getLengthInBytes() + 2)
             ),

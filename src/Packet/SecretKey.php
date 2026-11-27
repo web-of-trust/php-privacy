@@ -738,14 +738,12 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $publicKey->getKeyMaterial(),
             ),
             KeyAlgorithm::X25519 => Key\MontgomerySecretKeyMaterial::fromBytes(
-                $bytes,
+                substr($bytes, 0, MontgomeryCurve::Curve25519->payloadSize()),
                 $publicKey->getKeyMaterial(),
-                MontgomeryCurve::Curve25519,
             ),
             KeyAlgorithm::X448 => Key\MontgomerySecretKeyMaterial::fromBytes(
-                $bytes,
+                substr($bytes, 0, MontgomeryCurve::Curve448->payloadSize()),
                 $publicKey->getKeyMaterial(),
-                MontgomeryCurve::Curve448,
             ),
             KeyAlgorithm::Ed25519 => Key\EdDSASecretKeyMaterial::fromBytes(
                 $bytes,

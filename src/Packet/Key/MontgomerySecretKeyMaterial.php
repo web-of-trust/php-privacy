@@ -10,7 +10,7 @@ namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Enum\MontgomeryCurve;
 use OpenPGP\Type\{ECKeyMaterialInterface, KeyMaterialInterface};
-use phpseclib4\Crypt\Common\{AsymmetricKey, PrivateKey, PublicKey};
+use phpseclib4\Crypt\Common\{PrivateKey, PublicKey};
 use phpseclib4\Crypt\EC;
 use phpseclib4\Crypt\EC\PrivateKey as ECPrivateKey;
 use phpseclib4\Crypt\EC\Formats\Keys\MontgomeryPrivate;
@@ -27,25 +27,16 @@ class MontgomerySecretKeyMaterial implements
     KeyMaterialInterface
 {
     /**
-     * phpseclib4 EC private key
-     */
-    private readonly ECPrivateKey $privateKey;
-
-    /**
      * Constructor
      *
-     * @param string $secret
+     * @param ECPrivateKey $privateKey
      * @param KeyMaterialInterface $publicMaterial
      * @return self
      */
     public function __construct(
-        private readonly string $secret,
+        private readonly ECPrivateKey $privateKey,
         private readonly KeyMaterialInterface $publicMaterial,
     ) {
-        $this->privateKey = EC::loadPrivateKeyFormat(
-            "MontgomeryPrivate",
-            $secret,
-        );
     }
 
     /**
@@ -58,12 +49,12 @@ class MontgomerySecretKeyMaterial implements
     public static function fromBytes(
         string $bytes,
         KeyMaterialInterface $publicMaterial,
-        MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
     ): self {
-        return new self(
-            substr($bytes, 0, $curve->payloadSize()),
-            $publicMaterial,
+        $privateKey = EC::loadPrivateKeyFormat(
+            "MontgomeryPrivate",
+            $bytes,
         );
+        return new self($privateKey,$publicMaterial);
     }
 
     /**
@@ -75,12 +66,13 @@ class MontgomerySecretKeyMaterial implements
     public static function generate(
         MontgomeryCurve $curve = MontgomeryCurve::Curve25519,
     ): self {
-        $secret = $curve->generateSecretKey();
-        $privateKey = EC::loadPrivateKeyFormat("MontgomeryPrivate", $secret);
+        $privateKey = EC::loadPrivateKeyFormat(
+            "MontgomeryPrivate", $curve->generateSecretKey()
+        );
         return new self(
-            $secret,
+            $privateKey,
             new MontgomeryPublicKeyMaterial(
-                $privateKey->getEncodedCoordinates(),
+                $privateKey->getPublicKey(),
             ),
         );
     }
@@ -154,6 +146,6 @@ class MontgomerySecretKeyMaterial implements
      */
     public function toBytes(): string
     {
-        return $this->secret;
+        return $this->privateKey->toString("MontgomeryPrivate");
     }
 }

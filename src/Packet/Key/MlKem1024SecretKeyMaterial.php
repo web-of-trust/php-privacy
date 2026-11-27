@@ -11,6 +11,7 @@ namespace OpenPGP\Packet\Key;
 use OpenPGP\Enum\{MlKem, MontgomeryCurve};
 use OpenPGP\Type\KeyMaterialInterface;
 use phpseclib4\Crypt\EC;
+use phpseclib4\Crypt\EC\PrivateKey
 use PQCrypto\MLKem1024;
 use PQCrypto\MLKem1024\DecapsulationKey;
 
@@ -24,25 +25,19 @@ use PQCrypto\MLKem1024\DecapsulationKey;
 class MlKem1024SecretKeyMaterial extends MontgomerySecretKeyMaterial
 {
     /**
-     * PQCrypto ML-KEM 1024 decapsulation key
-     */
-    private readonly DecapsulationKey $decapsulationKey;
-
-    /**
      * Constructor
      *
-     * @param string $eccSecret
+     * @param PrivateKey $privateKey
+     * @param DecapsulationKey $decapsulationKey
      * @param KeyMaterialInterface $publicMaterial
-     * @param string $mlkemSeed
      * @return self
      */
     public function __construct(
-        string $eccSecret,
+        PrivateKey $privateKey,
+        private readonly DecapsulationKey $decapsulationKey,
         KeyMaterialInterface $publicMaterial,
-        private readonly string $mlkemSeed,
     ) {
-        parent::__construct($eccSecret, $publicMaterial);
-        $this->decapsulationKey = DecapsulationKey::fromBytes($mlkemSeed);
+        parent::__construct($privateKey, $publicMaterial);
     }
 
     /**
@@ -56,10 +51,17 @@ class MlKem1024SecretKeyMaterial extends MontgomerySecretKeyMaterial
         string $bytes,
         KeyMaterialInterface $publicMaterial,
     ): self {
-        return new self(
+        $privateKey = EC::loadPrivateKeyFormat(
+            "MontgomeryPrivate",
             substr($bytes, 0, MontgomeryCurve::Curve448->payloadSize()),
+        );
+        $decapsulationKey = DecapsulationKey::fromBytes(
+            substr($bytes, MontgomeryCurve::Curve448->payloadSize())
+        );
+        return new self(
+            $privateKey,
+            $decapsulationKey,
             $publicMaterial,
-            substr($bytes, MontgomeryCurve::Curve448->payloadSize()),
         );
     }
 
@@ -70,14 +72,15 @@ class MlKem1024SecretKeyMaterial extends MontgomerySecretKeyMaterial
      */
     public static function generate(): self {
         [$sk, $pk] = MLKem1024::generateKeypair();
-        $secret = MontgomeryCurve::Curve448->generateSecretKey();
-        $eccKey = EC::loadPrivateKeyFormat("MontgomeryPrivate", $secret);
+        $eccKey = EC::loadPrivateKeyFormat(
+            "MontgomeryPrivate", MontgomeryCurve::Curve448->generateSecretKey()
+        );
         return new self(
-            $secret,
-            $sk->bytes(),
+            $eccKey,
+            $sk,
             new MlKem1024PublicKeyMaterial(
-                $eccKey->getEncodedCoordinates(),
-                $pk->bytes(),
+                $eccKey->getPublicKey(),
+                $pk,
             ),
         );
     }
