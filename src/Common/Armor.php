@@ -170,7 +170,7 @@ final class Armor
 
         $data = Strings::base64_decode(implode($dataLines));
         if (
-            strcmp($checksum, self::crc24Checksum($data)) !== 0 &&
+            !hash_equals($checksum, self::crc24Checksum($data)) &&
             (!empty($checksum) || Config::checksumRequired())
         ) {
             throw new \RuntimeException("Ascii armor integrity check failed!");

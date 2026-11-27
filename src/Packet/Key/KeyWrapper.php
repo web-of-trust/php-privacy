@@ -93,7 +93,7 @@ abstract class KeyWrapper
             }
         }
 
-        if (strcmp(self::IV, $a) !== 0) {
+        if (!hash_equals(self::IV, $a)) {
             throw new \RuntimeException("Integrity check failed.");
         }
 

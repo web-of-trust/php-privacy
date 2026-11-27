@@ -308,7 +308,7 @@ class ECDHSessionKeyCryptor implements SessionKeyCryptorInterface
             throw new \LengthException("Invalid padding length.");
         }
         $ps = substr($message, -$n);
-        if (strcmp($ps, str_repeat(chr($n), $n)) !== 0) {
+        if (!hash_equals($ps, str_repeat(chr($n), $n))) {
             throw new \RuntimeException("Invalid padding string.");
         }
         return substr($message, 0, -$n);

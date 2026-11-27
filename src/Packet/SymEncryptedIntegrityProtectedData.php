@@ -13,7 +13,6 @@ use OpenPGP\Enum\{
     AeadAlgorithm,
     HashAlgorithm,
     PacketTag,
-    PresetRFC,
     SymmetricAlgorithm,
 };
 use OpenPGP\Type\{
@@ -139,10 +138,9 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
     ): self {
         Helper::assertSymmetric($symmetric);
         $aeadProtect = $aead instanceof AeadAlgorithm;
-        $version =
-            $aeadProtect || Config::presetRFC() == PresetRFC::RFC9580
-                ? self::VERSION_2
-                : self::VERSION_1;
+        // Version 2 is always AEAD (RFC 9580, section 5.13.2). Without
+        // an AEAD algorithm, version 1 is the one the recipients can read.
+        $version = $aeadProtect ? self::VERSION_2 : self::VERSION_1;
 
         $salt = "";
         $chunkSize = 0;
@@ -280,8 +278,10 @@ class SymEncryptedIntegrityProtectedData extends AbstractPacket implements
                 $realHash = substr($decrypted, $digestSize);
                 $toHash = substr($decrypted, 0, $digestSize);
                 if (
-                    strcmp($realHash, hash(self::HASH_ALGO, $toHash, true)) !==
-                    0
+                    !hash_equals(
+                        hash(self::HASH_ALGO, $toHash, true),
+                        $realHash,
+                    )
                 ) {
                     throw new \RuntimeException("Modification detected.");
                 }

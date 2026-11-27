@@ -236,7 +236,7 @@ class Subkey implements SubkeyInterface
             foreach ($this->revocationSignatures as $signature) {
                 if (
                     empty($keyID) ||
-                    strcmp($keyID, $signature->getIssuerKeyID()) === 0
+                    hash_equals($keyID, $signature->getIssuerKeyID())
                 ) {
                     try {
                         if (

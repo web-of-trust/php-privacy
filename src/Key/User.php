@@ -182,7 +182,7 @@ class User implements UserInterface
             foreach ($this->revocationSignatures as $signature) {
                 if (
                     empty($keyID) ||
-                    strcmp($keyID, $signature->getIssuerKeyID()) === 0
+                    hash_equals($keyID, $signature->getIssuerKeyID())
                 ) {
                     try {
                         if (
@@ -222,7 +222,7 @@ class User implements UserInterface
         foreach ($this->otherCertifications as $signature) {
             if (
                 empty($keyID) ||
-                strcmp($keyID, $signature->getIssuerKeyID()) === 0
+                hash_equals($keyID, $signature->getIssuerKeyID())
             ) {
                 if (
                     $signature->verify(
@@ -272,10 +272,10 @@ class User implements UserInterface
         ?DateTimeInterface $time = null,
     ): self {
         if (
-            strcmp(
+            hash_equals(
                 $signKey->getFingerprint(),
                 $this->mainKey->getFingerprint(),
-            ) === 0
+            )
         ) {
             throw new \RuntimeException(
                 'The user\'s own key can only be used for self-certifications.',

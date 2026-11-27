@@ -51,6 +51,16 @@ or just add it to your `composer.json` file directly.
 }
 ```
 
+## Configuration
+Settings such as the preferred algorithms, the RFC preset and the limits for
+reading messages are static methods of `OpenPGP\Common\Config`. Set them once,
+before you generate keys or read and write messages.
+The defaults suit most uses; on a server that reads messages from others,
+consider lowering the limit on decompressed data.
+See [docs/configuration.md](docs/configuration.md) for every setting and
+[docs/reading-messages-from-others.md](docs/reading-messages-from-others.md)
+for the limits.
+
 ## Basic usage of PHP Privacy
 Sign and verify cleartext message
 ```php

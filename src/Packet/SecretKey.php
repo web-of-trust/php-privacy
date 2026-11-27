@@ -498,7 +498,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $checksum = substr($keyData, strlen($keyData) - 2);
                 $keyData = substr($keyData, 0, strlen($keyData) - 2);
                 if (
-                    strcmp(Helper::computeChecksum($keyData), $checksum) !== 0
+                    !hash_equals(Helper::computeChecksum($keyData), $checksum)
                 ) {
                     throw new \RuntimeException("Key checksum mismatch!");
                 }
@@ -654,7 +654,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $keyData = substr($decrypted, 0, $length);
                 $hashText = substr($decrypted, $length);
                 $hashed = hash(self::HASH_ALGO, $keyData, true);
-                if (strcmp($hashed, $hashText) !== 0) {
+                if (!hash_equals($hashed, $hashText)) {
                     throw new \RuntimeException("Incorrect key passphrase.");
                 }
             }

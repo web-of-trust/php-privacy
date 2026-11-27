@@ -141,10 +141,10 @@ class MontgomerySecretKeyMaterial implements
     public function isValid(): bool
     {
         if ($this->publicMaterial instanceof MontgomeryPublicKeyMaterial) {
-            return strcmp(
+            return hash_equals(
                 $this->privateKey->getEncodedCoordinates(),
                 $this->publicMaterial->toBytes(),
-            ) === 0;
+            );
         }
         return false;
     }
