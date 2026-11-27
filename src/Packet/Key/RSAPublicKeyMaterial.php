@@ -11,10 +11,9 @@ namespace OpenPGP\Packet\Key;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\HashAlgorithm;
 use OpenPGP\Type\{KeyMaterialInterface, PublicKeyMaterialInterface};
-use phpseclib4\Crypt\Common\{AsymmetricKey, PublicKey};
+use phpseclib4\Crypt\Common\PublicKey;
 use phpseclib4\Crypt\RSA;
 use phpseclib4\Crypt\RSA\PublicKey as RSAPublicKey;
-use phpseclib4\Crypt\RSA\Formats\Keys\PKCS8;
 use phpseclib4\Math\BigInteger;
 
 /**
@@ -26,26 +25,18 @@ use phpseclib4\Math\BigInteger;
  */
 class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
 {
-    /**
-     * phpseclib4 RSA public key
-     */
-    private readonly RSAPublicKey $publicKey;
+    private readonly array $parameters;
 
     /**
      * Constructor
      *
-     * @param BigInteger $modulus
-     * @param BigInteger $exponent
+     * @param RSAPublicKey $publicKey
      * @return self
      */
     public function __construct(
-        private readonly BigInteger $modulus,
-        private readonly BigInteger $exponent,
+        private readonly RSAPublicKey $publicKey,
     ) {
-        $this->publicKey = RSA::loadPublicKey([
-            "modulus" => $modulus,
-            "publicExponent" => $exponent,
-        ]);
+        $this->parameters = $publicKey->toArray();
     }
 
     /**
@@ -57,30 +48,11 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
     public static function fromBytes(string $bytes): self
     {
         $modulus = Helper::readMPI($bytes);
-        return new self(
-            $modulus,
-            Helper::readMPI(substr($bytes, $modulus->getLengthInBytes() + 2)),
-        );
-    }
-
-    /**
-     * Get modulus n
-     *
-     * @return BigInteger
-     */
-    public function getModulus(): BigInteger
-    {
-        return $this->modulus;
-    }
-
-    /**
-     * Get exponent e
-     *
-     * @return BigInteger
-     */
-    public function getExponent(): BigInteger
-    {
-        return $this->exponent;
+        $exponent = Helper::readMPI(substr($bytes, $modulus->getLengthInBytes() + 2));
+        return new self(RSA::loadPublicKey([
+            "modulus" => $modulus,
+            "publicExponent" => $exponent,
+        ]));
     }
 
     /**
@@ -112,7 +84,7 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
      */
     public function getParameters(): array
     {
-        return PKCS8::load($this->publicKey->toString("PKCS8"));
+        return $this->parameters;
     }
 
     /**
@@ -129,10 +101,10 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
     public function toBytes(): string
     {
         return implode([
-            pack("n", $this->modulus->getLength()),
-            $this->modulus->toBytes(),
-            pack("n", $this->exponent->getLength()),
-            $this->exponent->toBytes(),
+            pack("n", $this->parameters["n"]->getLength()),
+            $this->parameters["n"]->toBytes(),
+            pack("n", $this->parameters["e"]->getLength()),
+            $this->parameters["e"]->toBytes(),
         ]);
     }
 
@@ -155,19 +127,11 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
         }
         $length = Helper::bit2ByteLength(Helper::bytesToShort($signature));
         $value = substr($signature, 2, $length);
-        $modulusLength = $this->modulus->getLengthInBytes();
+        $modulusLength = $this->parameters["n"]->getLengthInBytes();
         if ($length > $modulusLength || strlen($value) !== $length) {
             return false;
         }
         $value = str_pad($value, $modulusLength, "\0", STR_PAD_LEFT);
-        if (extension_loaded("openssl")) {
-            return openssl_verify(
-                $message,
-                $value,
-                openssl_pkey_get_public($this->publicKey->toString("PKCS8")),
-                strtolower(str_replace("_", "-", $hash->name)),
-            ) === 1;
-        }
         return $this->publicKey
             ->withHash(strtolower(str_replace("_", "-", $hash->name)))
             ->withPadding(RSA::SIGNATURE_PKCS1)

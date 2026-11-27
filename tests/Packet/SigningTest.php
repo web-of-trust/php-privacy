@@ -2,6 +2,7 @@
 
 namespace OpenPGP\Tests\Packet;
 
+use OpenPGP\Common\Helper;
 use OpenPGP\Enum\HashAlgorithm;
 use OpenPGP\Enum\KeyAlgorithm;
 use OpenPGP\Enum\KeyFlag;
@@ -224,7 +225,7 @@ EOT;
             base64_decode(self::$rsaPublicKeyData)
         );
         $publicMaterial = $publicKey->getKeyMaterial();
-        $length = $publicMaterial->getModulus()->getLengthInBytes() + 1;
+        $length = Helper::bit2ByteLength($publicMaterial->getKeyLength()) + 1;
         $value = "\x01" . str_repeat("\0", $length - 1);
         $signature = pack("n", ($length - 1) * 8 + 1) . $value;
         $this->assertFalse(
