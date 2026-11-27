@@ -161,6 +161,23 @@ These settings matter most when messages come from others. See
 | Exception | `RuntimeException`: "Compressed data packets are nested too deeply." A value below 1 gives an `InvalidArgumentException`. |
 | When to change | Set it to 1 if you never expect nested compression. |
 
+#### rejectedCompressions (new in 2.2.18)
+
+| | |
+|---|---|
+| Methods | `getRejectedCompressions()`, `setRejectedCompressions(array)` |
+| Default | `[]` (none is rejected) |
+| What it does | Compression algorithms that are refused when compressed data is read, so that a reader can turn off an algorithm it does not want to decompress. Writing is not affected. |
+| Exception | `RuntimeException`: "Compression algorithm … is rejected." A value that is not a `CompressionAlgorithm` gives an `InvalidArgumentException`. |
+| When to change | Add an algorithm you never expect in messages from others, for example BZip2. |
+
+```php
+use OpenPGP\Common\Config;
+use OpenPGP\Enum\CompressionAlgorithm;
+
+Config::setRejectedCompressions([CompressionAlgorithm::BZip2]);
+```
+
 #### checkMessageGrammar (new in 2.2.17)
 
 | | |
