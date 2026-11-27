@@ -30,16 +30,14 @@ class MlDSA87PublicKeyMaterial extends EdDSAPublicKeyMaterial
      * Constructor
      *
      * @param string $eccPublic
-     * @param Ed448 $curve
      * @param string $mldsaPublic
      * @return self
      */
     public function __construct(
         string $eccPublic,
-        Ed448 $curve,
         private readonly string $mldsaPublic,
     ) {
-        parent::__construct($eccPublic, $curve)
+        parent::__construct($eccPublic, new Ed448());
         $this->verifyingKey = VerifyingKey::fromBytes($mldsaPublic);
     }
 
@@ -56,7 +54,6 @@ class MlDSA87PublicKeyMaterial extends EdDSAPublicKeyMaterial
     ): self {
         return new self(
             substr($bytes, 0, EdDSACurve::Ed448->payloadSize()),
-            new Ed448(),
             substr($bytes, EdDSACurve::Ed448->payloadSize()),
         );
     }
