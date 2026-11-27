@@ -21,7 +21,7 @@ use PQCrypto\MLKem768\EncapsulationKey;
 class MlKem768PublicKeyMaterial extends MontgomeryPublicKeyMaterial
 {
     /**
-     * PQCrypto MLKem768 encapsulation key
+     * PQCrypto ML-KEM 768 encapsulation key
      */
     private readonly EncapsulationKey $encapsulationKey;
 

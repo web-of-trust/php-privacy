@@ -21,7 +21,7 @@ use PQCrypto\MLKem1024\EncapsulationKey;
 class MlKem1024PublicKeyMaterial extends MontgomeryPublicKeyMaterial
 {
     /**
-     * PQCrypto MLKem768 encapsulation key
+     * PQCrypto ML-KEM 1024 encapsulation key
      */
     private readonly EncapsulationKey $encapsKey;
 

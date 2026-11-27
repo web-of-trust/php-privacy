@@ -9,6 +9,7 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Enum\{MlKem, MontgomeryCurve};
+use OpenPGP\Type\KeyMaterialInterface;
 use phpseclib4\Crypt\EC;
 use PQCrypto\MLKem1024;
 use PQCrypto\MLKem1024\DecapsulationKey;
@@ -23,7 +24,7 @@ use PQCrypto\MLKem1024\DecapsulationKey;
 class MlKem1024SecretKeyMaterial extends MontgomerySecretKeyMaterial
 {
     /**
-     * PQCrypto MLKem1024 MLKem1024 decapsulation key
+     * PQCrypto ML-KEM 1024 decapsulation key
      */
     private readonly DecapsulationKey $decapsulationKey;
 
