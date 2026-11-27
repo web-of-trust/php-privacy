@@ -46,11 +46,11 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
      */
     public static function fromBytes(string $bytes): self
     {
-        $modulus = Helper::readMPI($bytes);
-        $exponent = Helper::readMPI(substr($bytes, $modulus->getLengthInBytes() + 2));
         return new self(RSA::loadPublicKey([
-            "modulus" => $modulus,
-            "publicExponent" => $exponent,
+            "modulus" => Helper::readMPI($bytes),
+            "publicExponent" => Helper::readMPI(
+                substr($bytes, $modulus->getLengthInBytes() + 2)
+            ),
         ]));
     }
 
