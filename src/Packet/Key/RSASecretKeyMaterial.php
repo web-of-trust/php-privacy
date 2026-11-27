@@ -11,10 +11,9 @@ namespace OpenPGP\Packet\Key;
 use OpenPGP\Common\Helper;
 use OpenPGP\Enum\{HashAlgorithm, RSAKeySize};
 use OpenPGP\Type\{KeyMaterialInterface, SecretKeyMaterialInterface};
-use phpseclib4\Crypt\Common\{AsymmetricKey, PrivateKey, PublicKey};
+use phpseclib4\Crypt\Common\{PrivateKey, PublicKey};
 use phpseclib4\Crypt\RSA;
 use phpseclib4\Crypt\RSA\PrivateKey as RSAPrivateKey;
-use phpseclib4\Crypt\RSA\Formats\Keys\PKCS8;
 use phpseclib4\Math\BigInteger;
 
 /**

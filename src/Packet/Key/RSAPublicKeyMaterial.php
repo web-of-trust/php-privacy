@@ -14,8 +14,7 @@ use OpenPGP\Type\{KeyMaterialInterface, PublicKeyMaterialInterface};
 use phpseclib4\Crypt\Common\PublicKey;
 use phpseclib4\Crypt\RSA;
 use phpseclib4\Crypt\RSA\PublicKey as RSAPublicKey;
-use phpseclib4\Math\BigInteger;
-
+m
 /**
  * RSA public key material class
  *
