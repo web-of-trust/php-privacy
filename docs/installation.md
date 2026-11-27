@@ -22,6 +22,8 @@ or just add it to your `composer.json` file directly.
 ```
 
 ## Configuration
+The settings are static and apply to the whole PHP process.
+[Configuration](configuration.md) lists every setting with its default.
 
 ```php
 <?php declare(strict_types=1);
@@ -37,7 +39,7 @@ Config::setPreferredHash($hash);
 Config::setPreferredSymmetric($symmetric);
 
 // Set preferred AEAD algorithm.
-Config::setPreferredAead($symmetric);
+Config::setPreferredAead($aead);
 
 // Set preferred compression algorithm.
 Config::setPreferredCompression($compression);

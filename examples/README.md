@@ -6,3 +6,4 @@ PHP Privacy Examples
 * [Key decrypting example](key-decrypting.php)
 * [Cleartext signing example](cleartext-signing.php)
 * [Data signing & encryption example](literal-data.php)
+* [Reading messages from others example](reading-messages-from-others.php)
