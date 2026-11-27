@@ -102,14 +102,6 @@ class RSAPublicKeyMaterial implements PublicKeyMaterialInterface
     /**
      * {@inheritdoc}
      */
-    public function getAsymmetricKey(): AsymmetricKey
-    {
-        return $this->publicKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getPublicKey(): PublicKey
     {
         return $this->publicKey;

@@ -9,7 +9,7 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
-use phpseclib4\Crypt\Common\AsymmetricKey;
+use phpseclib4\Crypt\Common\PrivateKey as PrivateKeyInterface;
 use phpseclib4\Crypt\RSA;
 use phpseclib4\Crypt\RSA\{PrivateKey, PublicKey};
 use phpseclib4\Math\BigInteger;
@@ -51,25 +51,21 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
      */
     public static function encryptSessionKey(
         string $sessionKey,
-        AsymmetricKey $publicKey,
+        PublicKey $publicKey,
     ): self {
-        if ($publicKey instanceof PublicKey) {
-            if (extension_loaded("openssl")) {
-                openssl_public_encrypt(
-                    $sessionKey,
-                    $encrypted,
-                    openssl_pkey_get_public($publicKey->toString("PKCS8")),
-                    OPENSSL_PKCS1_PADDING,
-                );
-            } else {
-                $encrypted = $publicKey
-                    ->withPadding(RSA::ENCRYPTION_PKCS1)
-                    ->encrypt($sessionKey);
-            }
-            return new self(Helper::bin2BigInt($encrypted));
+        if (extension_loaded("openssl")) {
+            openssl_public_encrypt(
+                $sessionKey,
+                $encrypted,
+                openssl_pkey_get_public($publicKey->toString("PKCS8")),
+                OPENSSL_PKCS1_PADDING,
+            );
         } else {
-            throw new \RuntimeException("Public key is not RSA key.");
+            $encrypted = $publicKey
+                ->withPadding(RSA::ENCRYPTION_PKCS1)
+                ->encrypt($sessionKey);
         }
+        return new self(Helper::bin2BigInt($encrypted));
     }
 
     /**
@@ -96,7 +92,7 @@ class RSASessionKeyCryptor extends SessionKeyCryptor
     /**
      * {@inheritdoc}
      */
-    protected function decrypt(AsymmetricKey $privateKey): string
+    protected function decrypt(PrivateKeyInterface $privateKey): string
     {
         if ($privateKey instanceof PrivateKey) {
             if (extension_loaded("openssl")) {

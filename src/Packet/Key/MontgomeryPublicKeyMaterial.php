@@ -91,14 +91,6 @@ class MontgomeryPublicKeyMaterial implements
     /**
      * {@inheritdoc}
      */
-    public function getAsymmetricKey(): AsymmetricKey
-    {
-        return $this->publicKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getParameters(): array
     {
         return MontgomeryPublic::load(

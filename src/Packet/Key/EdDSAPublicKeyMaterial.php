@@ -108,14 +108,6 @@ class EdDSAPublicKeyMaterial implements
     /**
      * {@inheritdoc}
      */
-    public function getAsymmetricKey(): AsymmetricKey
-    {
-        return $this->publicKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getParameters(): array
     {
         return PKCS8::load($this->publicKey->toString("PKCS8"));

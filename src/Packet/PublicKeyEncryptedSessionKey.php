@@ -318,7 +318,7 @@ class PublicKeyEncryptedSessionKey extends AbstractPacket implements
                         $sessionKey->getEncryptionKey(),
                         $sessionKey->computeChecksum(),
                     ]),
-                $keyPacket->getKeyMaterial()->getAsymmetricKey(),
+                $keyPacket->getKeyMaterial()->getPublicKey(),
             ),
             KeyAlgorithm::Ecdh => Key\ECDHSessionKeyCryptor::encryptSessionKey(
                 $version === self::VERSION_3

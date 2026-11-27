@@ -10,7 +10,7 @@ namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Common\Helper;
 use OpenPGP\Cryptor\Asymmetric\ElGamal\{PrivateKey, PublicKey};
-use phpseclib4\Crypt\Common\AsymmetricKey;
+use phpseclib4\Crypt\Common\PrivateKey as PrivateKeyInterface;
 use phpseclib4\Math\BigInteger;
 
 /**
@@ -107,7 +107,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor
     /**
      * {@inheritdoc}
      */
-    protected function decrypt(AsymmetricKey $privateKey): string
+    protected function decrypt(PrivateKeyInterface $privateKey): string
     {
         if ($privateKey instanceof PrivateKey) {
             return self::pkcs1Decode(

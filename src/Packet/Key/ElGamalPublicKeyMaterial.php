@@ -112,14 +112,6 @@ class ElGamalPublicKeyMaterial implements KeyMaterialInterface
     /**
      * {@inheritdoc}
      */
-    public function getAsymmetricKey(): AsymmetricKey
-    {
-        return $this->publicKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getPublicMaterial(): KeyMaterialInterface
     {
         return $this;

@@ -8,8 +8,6 @@
 
 namespace OpenPGP\Type;
 
-use phpseclib4\Crypt\Common\AsymmetricKey;
-
 /**
  * Key material interface
  *
@@ -25,13 +23,6 @@ interface KeyMaterialInterface
      * @return KeyMaterialInterface
      */
     function getPublicMaterial(): KeyMaterialInterface;
-
-    /**
-     * Get asymmetric key
-     *
-     * @return AsymmetricKey
-     */
-    function getAsymmetricKey(): AsymmetricKey;
 
     /**
      * Get key length

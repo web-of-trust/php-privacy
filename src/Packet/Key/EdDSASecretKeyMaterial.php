@@ -138,14 +138,6 @@ class EdDSASecretKeyMaterial implements
     /**
      * {@inheritdoc}
      */
-    public function getAsymmetricKey(): AsymmetricKey
-    {
-        return $this->privateKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getKeyLength(): int
     {
         return $this->publicMaterial->getKeyLength();

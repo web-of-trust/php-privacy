@@ -123,14 +123,6 @@ abstract class ECPublicKeyMaterial implements
     /**
      * {@inheritdoc}
      */
-    public function getAsymmetricKey(): AsymmetricKey
-    {
-        return $this->publicKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getParameters(): array
     {
         if ($this->ecc === Ecc::Curve25519) {
