@@ -226,7 +226,7 @@ abstract class AbstractKey implements KeyInterface
                 (int) $a->getCreationTime()?->getTimestamp(),
         );
         foreach ($subkeys as $subkey) {
-            if (empty($keyID) || strcmp($keyID, $subkey->getKeyID()) === 0) {
+            if (empty($keyID) || hash_equals($keyID, $subkey->getKeyID())) {
                 if (
                     !$subkey->isSigningKey() ||
                     $subkey->isRevoked(time: $time) ||
@@ -261,7 +261,7 @@ abstract class AbstractKey implements KeyInterface
 
         if (
             !$this->isSigningKey() ||
-            (!empty($keyID) && strcmp($keyID, $this->getKeyID()) !== 0)
+            (!empty($keyID) && !hash_equals($keyID, $this->getKeyID()))
         ) {
             throw new \RuntimeException(
                 "Could not find valid signing key packet.",
@@ -285,7 +285,7 @@ abstract class AbstractKey implements KeyInterface
                 (int) $a->getCreationTime()?->getTimestamp(),
         );
         foreach ($subkeys as $subkey) {
-            if (empty($keyID) || strcmp($keyID, $subkey->getKeyID()) === 0) {
+            if (empty($keyID) || hash_equals($keyID, $subkey->getKeyID())) {
                 if (
                     !$subkey->isEncryptionKey() ||
                     $subkey->isRevoked(time: $time) ||
@@ -299,7 +299,7 @@ abstract class AbstractKey implements KeyInterface
 
         if (
             !$this->isEncryptionKey() ||
-            (!empty($keyID) && strcmp($keyID, $this->getKeyID()) !== 0)
+            (!empty($keyID) && !hash_equals($keyID, $this->getKeyID()))
         ) {
             throw new \RuntimeException(
                 "Could not find valid encryption key packet.",
@@ -447,7 +447,7 @@ abstract class AbstractKey implements KeyInterface
             foreach ($this->revocationSignatures as $signature) {
                 if (
                     empty($keyID) ||
-                    strcmp($keyID, $signature->getIssuerKeyID()) === 0
+                    hash_equals($keyID, $signature->getIssuerKeyID())
                 ) {
                     try {
                         if (
@@ -503,7 +503,7 @@ abstract class AbstractKey implements KeyInterface
             }
         }
         foreach ($this->users as $user) {
-            if (empty($userID) || strcmp($user->getUserID(), $userID) === 0) {
+            if (empty($userID) || hash_equals($user->getUserID(), $userID)) {
                 if ($user->verify($time)) {
                     return true;
                 }
@@ -548,7 +548,7 @@ abstract class AbstractKey implements KeyInterface
             $users[] = $certifedUser;
         }
         foreach ($this->getUsers() as $user) {
-            if (strcmp($user->getUserID(), $certifedUserID) !== 0) {
+            if (!hash_equals($user->getUserID(), $certifedUserID)) {
                 $users[] = $user;
             }
         }
@@ -832,10 +832,10 @@ abstract class AbstractKey implements KeyInterface
                             $user = array_pop($users);
                             if (!empty($user)) {
                                 if (
-                                    strcmp(
+                                    hash_equals(
                                         $packet->getIssuerKeyID(),
                                         $primaryKeyID,
-                                    ) === 0
+                                    )
                                 ) {
                                     $user["selfCertifications"][] = $packet;
                                 } else {

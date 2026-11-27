@@ -279,7 +279,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
 
         $keyPackets = [];
         foreach ($subkeys as $subkey) {
-            if (empty($keyID) || strcmp($keyID, $subkey->getKeyID()) === 0) {
+            if (empty($keyID) || hash_equals($keyID, $subkey->getKeyID())) {
                 if (
                     !$subkey->isEncryptionKey() ||
                     $subkey->isRevoked(time: $time)
@@ -496,7 +496,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     ): self {
         $users = $this->getUsers();
         foreach ($users as $key => $user) {
-            if (strcmp($user->getUserID(), $userID) === 0) {
+            if (hash_equals($user->getUserID(), $userID)) {
                 $users[$key] = $user->revokeBy(
                     $this,
                     $revocationReason,
@@ -536,7 +536,7 @@ class PrivateKey extends AbstractKey implements PrivateKeyInterface
     ): self {
         $subkeys = $this->getSubkeys();
         foreach ($subkeys as $key => $subkey) {
-            if (strcmp($subkey->getKeyID(), $keyID) === 0) {
+            if (hash_equals($subkey->getKeyID(), $keyID)) {
                 $subkeys[$key] = $subkey->revokeBy(
                     $this,
                     $revocationReason,

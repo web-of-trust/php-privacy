@@ -123,10 +123,10 @@ class EncryptedMessage extends AbstractMessage implements
                         if (
                             $pkesk->getKeyAlgorithm() ===
                                 $keyPacket->getKeyAlgorithm() &&
-                            strcmp(
+                            hash_equals(
                                 $pkesk->getKeyID(),
                                 $keyPacket->getKeyID(),
-                            ) === 0
+                            )
                         ) {
                             try {
                                 $sessionKeys[] = $pkesk

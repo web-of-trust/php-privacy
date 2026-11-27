@@ -596,7 +596,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         string $dataToVerify,
         ?DateTimeInterface $time = null,
     ): bool {
-        if (strcmp($this->getIssuerKeyID(), $verifyKey->getKeyID()) !== 0) {
+        if (!hash_equals($this->getIssuerKeyID(), $verifyKey->getKeyID())) {
             throw new \RuntimeException(
                 "Signature was not issued by the given public key.",
             );
@@ -630,7 +630,7 @@ class Signature extends AbstractPacket implements SignaturePacketInterface
         ]);
 
         $hash = $this->hashAlgorithm->hash($message);
-        if (strcmp($this->signedHashValue, substr($hash, 0, 2)) !== 0) {
+        if (!hash_equals($this->signedHashValue, substr($hash, 0, 2))) {
             throw new \RuntimeException("Signed digest mismatch!");
         }
 

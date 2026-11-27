@@ -165,10 +165,10 @@ class EdDSASecretKeyMaterial implements
     public function isValid(): bool
     {
         if ($this->publicMaterial instanceof EdDSAPublicKeyMaterial) {
-            return strcmp(
+            return hash_equals(
                 $this->privateKey->getEncodedCoordinates(),
                 $this->publicMaterial->toBytes(),
-            ) === 0;
+            );
         }
         return false;
     }
