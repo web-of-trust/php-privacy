@@ -310,3 +310,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Check the grammar of an encrypted message when it is read
 - OCB: process long input in linear time
 
+## 2.2.18 - released 2026-11-27
+[Full Changelog](https://github.com/web-of-trust/php-privacy/compare/2.2.17...2.2.18)
+- EdDSA legacy: read R and S only within the signature
+- Compare tags and checksums in constant time
+- Add a setting to reject compression algorithms when reading
+- Document configuration and reading messages from others
+- Use SEIPD version 1 when no AEAD algorithm is chosen
