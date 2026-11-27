@@ -2,6 +2,7 @@
 
 use OpenPGP\Enum\KeyAlgorithm;
 use OpenPGP\Packet\PublicSubkey;
+use OpenPGP\Tests\OpenPGPTestCase;
 
 if (extension_loaded('pqcrypto')) {
     /**

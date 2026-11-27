@@ -2,6 +2,7 @@
 
 use OpenPGP\Enum\KeyAlgorithm;
 use OpenPGP\Packet\PublicKey;
+use OpenPGP\Tests\OpenPGPTestCase;
 
 if (extension_loaded('pqcrypto')) {
     /**
@@ -53,7 +54,7 @@ EOT;
                 "a3e2e14b6a493ff930fb27321f125e9a6880338be9fb7da3ae065ea65793242f",
                 $publicKey->getFingerprint(true)
             );
-            $this->assertSame(KeyAlgorithm::Ed25519, $publicKey->getKeyAlgorithm());
+            $this->assertSame(KeyAlgorithm::MlDsa65Ed25519, $publicKey->getKeyAlgorithm());
             $this->assertSame(6, $publicKey->getVersion());
         }
 
@@ -113,7 +114,7 @@ EOT;
                 "0d7a8be1410cd68eed4845ab487b4b4cfaecd8ebad1a1166a84230499200ee20",
                 $publicKey->getFingerprint(true)
             );
-            $this->assertSame(KeyAlgorithm::Ed25519, $publicKey->getKeyAlgorithm());
+            $this->assertSame(KeyAlgorithm::MlDsa87Ed448, $publicKey->getKeyAlgorithm());
             $this->assertSame(6, $publicKey->getVersion());
         }
     }
