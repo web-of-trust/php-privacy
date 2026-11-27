@@ -80,7 +80,7 @@ class MlKem768PublicKeyMaterial extends MontgomeryPublicKeyMaterial
      */
     public function getKeyLength(): int
     {
-        return $this->publicKey->getLength();
+        return MlKem::MlKem768->encapsulationSize() * 8;
     }
 
     /**

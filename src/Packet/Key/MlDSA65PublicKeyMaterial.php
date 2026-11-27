@@ -39,7 +39,7 @@ class MlDSA65PublicKeyMaterial extends EdDSAPublicKeyMaterial
         private readonly string $mldsaPublic,
     ) {
         parent::__construct($eccPublic, new Ed25519());
-        $this->verifyingKey = VerifyingKey::fromBytes($seed);
+        $this->verifyingKey = VerifyingKey::fromBytes($mldsaPublic);
     }
 
     /**
@@ -49,7 +49,10 @@ class MlDSA65PublicKeyMaterial extends EdDSAPublicKeyMaterial
      * @param EdDSACurve $curve
      * @return self
      */
-    public static function fromBytes(string $bytes): self {
+    public static function fromBytes(
+        string $bytes,
+        EdDSACurve $curve = EdDSACurve::Ed25519,
+    ): self {
         return new self(
             substr($bytes, 0, EdDSACurve::Ed25519->payloadSize()),
             substr($bytes, EdDSACurve::Ed25519->payloadSize()),
@@ -82,7 +85,7 @@ class MlDSA65PublicKeyMaterial extends EdDSAPublicKeyMaterial
      */
     public function getKeyLength(): int
     {
-        return MlDSA::MlDSA65->publicSize();
+        return MlDSA::MlDSA65->publicSize() * 8;
     }
 
     /**

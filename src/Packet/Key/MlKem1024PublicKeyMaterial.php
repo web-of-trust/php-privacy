@@ -56,8 +56,8 @@ class MlKem1024PublicKeyMaterial extends MontgomeryPublicKeyMaterial
 
     public static function payloadSize(): int
     {
-        return MontgomeryCurve::Curve25519->payloadSize()
-            + MlKem::MlKem768->encapsulationSize();
+        return MontgomeryCurve::Curve448->payloadSize()
+            + MlKem::MlKem1024->encapsulationSize();
     }
 
     /**
@@ -75,7 +75,7 @@ class MlKem1024PublicKeyMaterial extends MontgomeryPublicKeyMaterial
      */
     public function getKeyLength(): int
     {
-        return MlKem::MlKem768->encapsulationSize();
+        return MlKem::MlKem768->encapsulationSize() * 8;
     }
 
     /**

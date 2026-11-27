@@ -40,7 +40,7 @@ class MlDSA87PublicKeyMaterial extends EdDSAPublicKeyMaterial
         private readonly string $mldsaPublic,
     ) {
         parent::__construct($eccPublic, $curve)
-        $this->verifyingKey = VerifyingKey::fromBytes($seed);
+        $this->verifyingKey = VerifyingKey::fromBytes($mldsaPublic);
     }
 
     /**
@@ -77,7 +77,7 @@ class MlDSA87PublicKeyMaterial extends EdDSAPublicKeyMaterial
      */
     public function getKeyLength(): int
     {
-        return MlDSA::MlDSA87->publicSize();
+        return MlDSA::MlDSA87->publicSize() * 8;
     }
 
     /**
