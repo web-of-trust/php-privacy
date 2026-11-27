@@ -23,7 +23,7 @@ class MlKem1024PublicKeyMaterial extends MontgomeryPublicKeyMaterial
     /**
      * PQCrypto ML-KEM 1024 encapsulation key
      */
-    private readonly EncapsulationKey $encapsKey;
+    private readonly EncapsulationKey $encapsulationKey;
 
     /**
      * Constructor
@@ -37,7 +37,7 @@ class MlKem1024PublicKeyMaterial extends MontgomeryPublicKeyMaterial
         private readonly string $mlkemPublic,
     ) {
         parent::__construct($eccPublic);
-        $this->encapsKey = EncapsulationKey::fromBytes($mlkemPublic);
+        $this->encapsulationKey = EncapsulationKey::fromBytes($mlkemPublic);
     }
 
     /**
@@ -58,6 +58,16 @@ class MlKem1024PublicKeyMaterial extends MontgomeryPublicKeyMaterial
     {
         return MontgomeryCurve::Curve25519->payloadSize()
             + MlKem::MlKem768->encapsulationSize();
+    }
+
+    /**
+     * Get encapsulation key
+     *
+     * @return EncapsulationKey
+     */
+    public function getEncapsulationKey(): EncapsulationKey
+    {
+        return $this->encapsulationKey;
     }
 
     /**

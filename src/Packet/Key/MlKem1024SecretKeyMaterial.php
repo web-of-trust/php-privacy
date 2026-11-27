@@ -123,9 +123,9 @@ class MlKem1024SecretKeyMaterial extends MontgomerySecretKeyMaterial
             $encapsKey = $this->publicMaterial->getEncapsulationKey();
             [$sharedSecret, $ciphertext] = $encapsKey->encapsulate();
             $recipientSecret = $this->decapsulationKey->decapsulate($ciphertext);
-            $mlkemValid = hash_equals($recipientSecret, $sharedSecret);
+            $isValid = hash_equals($recipientSecret, $sharedSecret);
 
-            return parent::isValid() && $mlkemValid;
+            return $isValid && parent::isValid();
         }
         return false;
     }

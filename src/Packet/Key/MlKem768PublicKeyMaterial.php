@@ -89,8 +89,8 @@ class MlKem768PublicKeyMaterial extends MontgomeryPublicKeyMaterial
     public function getParameters(): array
     {
         return [
-            'eccParameters' => parent::getParameters(),
-            'mlkemPublic' => $this->mlkemPublic,
+            "eccParameters" => parent::getParameters(),
+            "mlkemPublic" => $this->mlkemPublic,
         ];
     }
 
