@@ -9,10 +9,6 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Enum\{MlKem, MontgomeryCurve};
-use OpenPGP\Type\{ECKeyMaterialInterface, KeyMaterialInterface};
-use phpseclib4\Crypt\EC;
-use phpseclib4\Crypt\EC\PublicKey as ECPublicKey;
-use phpseclib4\Crypt\EC\Formats\Keys\MontgomeryPublic;
 use PQCrypto\MLKem768\EncapsulationKey;
 
 /**
@@ -22,15 +18,8 @@ use PQCrypto\MLKem768\EncapsulationKey;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class MlKem768PublicKeyMaterial implements
-    ECKeyMaterialInterface,
-    KeyMaterialInterface
+class MlKem768PublicKeyMaterial extends MontgomeryPublicKeyMaterial
 {
-    /**
-     * phpseclib4 EC public key
-     */
-    private readonly ECPublicKey $publicKey;
-
     /**
      * PQCrypto MLKem768 encapsulation key
      */
@@ -39,18 +28,15 @@ class MlKem768PublicKeyMaterial implements
     /**
      * Constructor
      *
-     * @param string $eccPublic
+     * @param string $public
      * @param string $mlkemPublic
      * @return self
      */
     public function __construct(
-        private readonly string $eccPublic,
+        string $eccPublic,
         private readonly string $mlkemPublic,
     ) {
-        $this->publicKey = EC::loadPublicKeyFormat(
-            "MontgomeryPublic",
-            $eccPublic,
-        );
+        parent::__construct($eccPublic);
         $this->encapsulationKey = EncapsulationKey::fromBytes($mlkemPublic);
     }
 
@@ -92,14 +78,6 @@ class MlKem768PublicKeyMaterial implements
     /**
      * {@inheritdoc}
      */
-    public function getECKey(): EC
-    {
-        return MlKem::MlKem768->encapsulationSize();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getKeyLength(): int
     {
         return $this->publicKey->getLength();
@@ -108,34 +86,10 @@ class MlKem768PublicKeyMaterial implements
     /**
      * {@inheritdoc}
      */
-    public function getPublicKey(): PublicKey
-    {
-        return $this->publicKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPublicMaterial(): KeyMaterialInterface
-    {
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAsymmetricKey(): AsymmetricKey
-    {
-        return $this->publicKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getParameters(): array
     {
         return [
-            'eccPublic' => $this->eccPublic,
+            'eccParameters' => parent::getParameters(),
             'mlkemPublic' => $this->mlkemPublic,
         ];
     }
@@ -143,16 +97,11 @@ class MlKem768PublicKeyMaterial implements
     /**
      * {@inheritdoc}
      */
-    public function isValid(): bool
-    {
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function toBytes(): string
     {
-        return implode($this->getParameters());
+        return implode([
+            parent::toBytes(),
+            $this->mlkemPublic,
+        ]);
     }
 }

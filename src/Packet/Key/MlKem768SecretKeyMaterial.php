@@ -9,11 +9,7 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Enum\{MlKem, MontgomeryCurve};
-use OpenPGP\Type\{ECKeyMaterialInterface, KeyMaterialInterface};
-use phpseclib4\Crypt\Common\{AsymmetricKey, PrivateKey, PublicKey};
 use phpseclib4\Crypt\EC;
-use phpseclib4\Crypt\EC\PrivateKey as ECPrivateKey;
-use phpseclib4\Crypt\EC\Formats\Keys\MontgomeryPrivate;
 use PQCrypto\MLKem768;
 use PQCrypto\MLKem768\DecapsulationKey;
 
@@ -24,15 +20,8 @@ use PQCrypto\MLKem768\DecapsulationKey;
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class MlKem768SecretKeyMaterial implements
-    ECKeyMaterialInterface,
-    KeyMaterialInterface
+class MlKem768SecretKeyMaterial extends MontgomerySecretKeyMaterial
 {
-    /**
-     * phpseclib4 EC private key
-     */
-    private readonly ECPrivateKey $privateKey;
-
     /**
      * PQCrypto MLKem768 MLKem768 decapsulation key
      */
@@ -42,19 +31,16 @@ class MlKem768SecretKeyMaterial implements
      * Constructor
      *
      * @param string $eccSecret
-     * @param string $mlkemSeed
      * @param KeyMaterialInterface $publicMaterial
+     * @param string $mlkemSeed
      * @return self
      */
     public function __construct(
-        private readonly string $eccSecret,
+        string $eccSecret,
+        KeyMaterialInterface $publicMaterial,
         private readonly string $mlkemSeed,
-        private readonly KeyMaterialInterface $publicMaterial,
     ) {
-        $this->privateKey = EC::loadPrivateKeyFormat(
-            "MontgomeryPrivate",
-            $eccSecret,
-        );
+        parent::__construct($eccSecret, $publicMaterial);
         $this->decapsulationKey = DecapsulationKey::fromBytes($mlkemSeed);
     }
 
@@ -71,8 +57,8 @@ class MlKem768SecretKeyMaterial implements
     ): self {
         return new self(
             substr($bytes, 0, MontgomeryCurve::Curve25519->payloadSize()),
-            substr($bytes, MontgomeryCurve::Curve25519->payloadSize()),
             $publicMaterial,
+            substr($bytes, MontgomeryCurve::Curve25519->payloadSize()),
         );
     }
 
@@ -119,58 +105,10 @@ class MlKem768SecretKeyMaterial implements
     /**
      * {@inheritdoc}
      */
-    public function getECKey(): EC
-    {
-        return $this->privateKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPrivateKey(): PrivateKey
-    {
-        return $this->privateKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPublicKey(): PublicKey
-    {
-        return $this->privateKey->getPublicKey();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPublicMaterial(): KeyMaterialInterface
-    {
-        return $this->publicMaterial;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAsymmetricKey(): AsymmetricKey
-    {
-        return $this->privateKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getKeyLength(): int
-    {
-        return $this->publicMaterial->getKeyLength();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getParameters(): array
     {
         return [
-            'eccSecret' => $this->eccSecret,
+            'eccParameters' => parent::getParameters(),
             'mlkemSeed' => $this->mlkemSeed,
         ];
     }
@@ -181,18 +119,12 @@ class MlKem768SecretKeyMaterial implements
     public function isValid(): bool
     {
         if ($this->publicMaterial instanceof MlKem768PublicKeyMaterial) {
-            $publicParams = $this->publicMaterial->getParameters();
-            $eccValid = hash_equals(
-                $this->privateKey->getEncodedCoordinates(),
-                $publicParams['eccPublic'],
-            );
-
             $encapsKey = $this->publicMaterial->getEncapsulationKey();
             [$sharedSecret, $ciphertext] = $encapsKey->encapsulate();
             $recipientSecret = $this->decapsulationKey->decapsulate($ciphertext);
-
             $mlkemValid = hash_equals($recipientSecret, $sharedSecret);
-            return $eccValid && $mlkemValid;
+
+            return parent::isValid() && $mlkemValid;
         }
         return false;
     }
@@ -202,6 +134,9 @@ class MlKem768SecretKeyMaterial implements
      */
     public function toBytes(): string
     {
-        return implode($this->getParameters());
+        return implode([
+            parent::toBytes(),
+            $this->mlkemSeed,
+        ]);
     }
 }
