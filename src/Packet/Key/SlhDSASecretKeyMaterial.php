@@ -155,6 +155,11 @@ class SlhDSASecretKeyMaterial implements SlhDSASecretKeyMaterialInterface
      */
     public function sign(HashAlgorithm $hash, string $message): string
     {
+        if ($hash->digestSize() < 32) {
+            throw new \RuntimeException(
+                "Hash {$hash->name} is unsupported.",
+            );
+        }
         return $this->signingKey->sign($hash->hash($message));
     }
 }

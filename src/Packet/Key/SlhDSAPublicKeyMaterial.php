@@ -107,6 +107,11 @@ class SlhDSAPublicKeyMaterial implements SlhDSAPublicKeyMaterialInterface
         string $message,
         string $signature,
     ): bool {
+        if ($hash->digestSize() < 32) {
+            throw new \RuntimeException(
+                "Hash {$hash->name} is unsupported.",
+            );
+        }
         return $this->verifyingKey->verify($signature, $hash->hash($message));
     }
 }
