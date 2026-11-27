@@ -15,7 +15,7 @@ namespace OpenPGP\Enum;
  * @category Enum
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-enum SlhDsa
+enum SlhDSA
 {
     case SlhDsaShake128s;
 
