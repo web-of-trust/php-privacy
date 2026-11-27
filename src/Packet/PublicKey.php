@@ -327,6 +327,18 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
                 $bytes,
                 EdDSACurve::Ed448,
             ),
+            KeyAlgorithm::MlDsa65Ed25519 => Key\MlDSA65PublicKeyMaterial::fromBytes(
+                $bytes
+            ),
+            KeyAlgorithm::MlDsa87Ed448 => Key\MlDSA87PublicKeyMaterial::fromBytes(
+                $bytes
+            ),
+            KeyAlgorithm::MlKem768X25519 => Key\MlKem768PublicKeyMaterial::fromBytes(
+                $bytes
+            ),
+            KeyAlgorithm::MlKem1024X448 => Key\MlKem1024PublicKeyMaterial::fromBytes(
+                $bytes
+            ),
             default => throw new \RuntimeException(
                 "Key algorithm {$keyAlgorithm->name} is unsupported.",
             ),
