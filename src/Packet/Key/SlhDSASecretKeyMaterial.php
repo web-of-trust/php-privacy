@@ -17,7 +17,7 @@ use PQCrypto\SLHDSA;
 use PQCrypto\SLHDSA\{SigningKey, VerifyingKey};
 
 /**
- * EdDSA secret key material class
+ * Post-quantum SLH-DSA secret key material class
  *
  * @package  OpenPGP
  * @category Packet
@@ -157,7 +157,7 @@ class SlhDSASecretKeyMaterial implements SlhDSASecretKeyMaterialInterface
     {
         if ($hash->digestSize() < 32) {
             throw new \RuntimeException(
-                "Hash {$hash->name} is unsupported.",
+                "SLH-DSA does not support {$hash->name} hash algorithm.",
             );
         }
         return $this->signingKey->sign($hash->hash($message));
