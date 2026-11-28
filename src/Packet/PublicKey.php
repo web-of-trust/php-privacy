@@ -326,11 +326,11 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
             KeyAlgorithm::Ed448 => Key\EdDSAPublicKeyMaterial::fromEd448Bytes(
                 $bytes,
             ),
-            KeyAlgorithm::MlDsa65Ed25519 => Key\MlDSA65PublicKeyMaterial::fromBytes(
-                $bytes
+            KeyAlgorithm::MlDsa65Ed25519 => Key\MlDSAPublicKeyMaterial::fromBytes(
+                $bytes, EdDSACurve::Ed25519
             ),
-            KeyAlgorithm::MlDsa87Ed448 => Key\MlDSA87PublicKeyMaterial::fromBytes(
-                $bytes
+            KeyAlgorithm::MlDsa87Ed448 => Key\MlDSAPublicKeyMaterial::fromBytes(
+                $bytes, EdDSACurve::Ed448
             ),
             KeyAlgorithm::SlhDsaShake128s => Key\SlhDSAPublicKeyMaterial::fromBytes(
                 $bytes, SlhDsaAlgorithm::SlhDsaShake128s
@@ -341,11 +341,11 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
             KeyAlgorithm::SlhDsaShake256s => Key\SlhDSAPublicKeyMaterial::fromBytes(
                 $bytes, SlhDsaAlgorithm::SlhDsaShake256s
             ),
-            KeyAlgorithm::MlKem768X25519 => Key\MlKem768PublicKeyMaterial::fromBytes(
-                $bytes
+            KeyAlgorithm::MlKem768X25519 => Key\MlKemPublicKeyMaterial::fromBytes(
+                $bytes, MontgomeryCurve::Curve25519
             ),
-            KeyAlgorithm::MlKem1024X448 => Key\MlKem1024PublicKeyMaterial::fromBytes(
-                $bytes
+            KeyAlgorithm::MlKem1024X448 => Key\MlKemPublicKeyMaterial::fromBytes(
+                $bytes, MontgomeryCurve::Curve448
             ),
             default => throw new \RuntimeException(
                 "Key algorithm {$keyAlgorithm->name} is unsupported.",

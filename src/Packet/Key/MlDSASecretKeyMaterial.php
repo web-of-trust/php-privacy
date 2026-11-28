@@ -9,33 +9,36 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Enum\{EdDSACurve, HashAlgorithm, MlDsaAlgorithm};
-use OpenPGP\Type\KeyMaterialInterface;
+use OpenPGP\Type\{KeyMaterialInterface, MlDSASecretKeyMaterialInterface};
+use ParagonIE\PQCrypto\Compat;
+use ParagonIE\PQCrypto\{SigningKeyInterface, VerificationKeyInterface};
+use ParagonIE\PQCrypto\MLDSA65\SigningKey as MLDSA65SigningKey;
+use ParagonIE\PQCrypto\MLDSA87\SigningKey as MLDSA87SigningKey;
 use phpseclib4\Crypt\EC;
 use phpseclib4\Crypt\EC\PrivateKey;
 use phpseclib4\Crypt\EC\Formats\Keys\PKCS8;
-use PQCrypto\MLDSA65;
-use PQCrypto\MLDSA65\SigningKey;
 
 /**
- * Post-quantum ML-DSA-65 secret key material class
+ * Post-quantum ML-DSA secret key material class
  *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class MlDSA65SecretKeyMaterial extends EdDSASecretKeyMaterial
+class MlDSASecretKeyMaterial extends EdDSASecretKeyMaterial
+    implements MlDSASecretKeyMaterialInterface
 {
     /**
      * Constructor
      *
      * @param PrivateKey $privateKey
-     * @param SigningKey $signingKey
+     * @param SigningKeyInterface $signingKey
      * @param KeyMaterialInterface $publicMaterial
      * @return self
      */
     public function __construct(
         PrivateKey $privateKey,
-        private readonly SigningKey $signingKey,
+        private readonly SigningKeyInterface $signingKey,
         KeyMaterialInterface $publicMaterial,
     ) {
         parent::__construct($privateKey, $publicMaterial);
@@ -64,9 +67,16 @@ class MlDSA65SecretKeyMaterial extends EdDSASecretKeyMaterial
                 $arr["secret"],
             ),
         );
-        $signingKey = SigningKey::fromBytes(
-            substr($bytes, EdDSACurve::Ed25519->payloadSize())
-        );
+        if ($curve::SIZE === EdDSACurve::Ed25519->payloadSize()) {
+            $signingKey = MLDSA65SigningKey::fromBytes(
+                substr($bytes, $curve::SIZE)
+            );
+        }
+        else {
+            $signingKey = MLDSA87SigningKey::fromBytes(
+                substr($bytes, $curve::SIZE)
+            );
+        }
         return new self(
             $privateKey, $signingKey, $publicMaterial,
         );
@@ -75,46 +85,40 @@ class MlDSA65SecretKeyMaterial extends EdDSASecretKeyMaterial
     /**
      * Generate key material by using EC create key
      *
+     * @param EdDSACurve $curve
      * @return self
      */
-    public static function generate(): self
-    {
-        $size = EdDSACurve::Ed25519->payloadSize();
+    public static function generate(
+        EdDSACurve $curve = EdDSACurve::Ed25519
+    ): self {
+        $size = $curve->payloadSize();
         do {
-            $privateKey = EC::createKey(EdDSACurve::Ed25519->name);
+            $privateKey = EC::createKey($curve->name);
             $params = PKCS8::load($privateKey->toString("PKCS8"));
             $secret = $params["secret"];
         } while (strlen($secret) !== $size);
 
-        [$signingKey, $verifyingKey] = MLDSA65::generateKeypair();
+        if ($curve === EdDSACurve::Ed25519) {
+            ['signingKey' => $sk, 'verificationKey' => $vk] = Compat::mldsa65_keygen();
+        }
+        else {
+            ['signingKey' => $sk, 'verificationKey' => $vk] = Compat::mldsa87_keygen();
+        }
 
         return new self(
             $privateKey,
-            $signingKey,
-            new MlDSA65PublicKeyMaterial(
+            $sk,
+            new MlDSAPublicKeyMaterial(
                 $privateKey->getPublicKey(),
-                $verifyingKey,
+                $vk,
             ),
         );
     }
 
     /**
-     * Get payload size
-     *
-     * @return int
+     * {@inheritdoc}
      */
-    public static function payloadSize(): int
-    {
-        return EdDSACurve::Ed25519->payloadSize()
-            + MlDsaAlgorithm::MlDSA65->secretSize();
-    }
-
-    /**
-     * Get signing key
-     *
-     * @return SigningKey
-     */
-    public function getSigningKey(): SigningKey
+    public function getSigningKey(): SigningKeyInterface
     {
         return $this->signingKey;
     }
@@ -125,10 +129,8 @@ class MlDSA65SecretKeyMaterial extends EdDSASecretKeyMaterial
     public function getParameters(): array
     {
         return [
-            "eccParameters" => PKCS8::load(
-                $this->privateKey->toString("PKCS8")
-            ),
-            "mlkemSeed" => $this->verifyingKey->bytes(),
+            ...parent::getParameters(),
+            "verificationKey" => $this->verificationKey->bytes(),
         ];
     }
 
@@ -137,11 +139,19 @@ class MlDSA65SecretKeyMaterial extends EdDSASecretKeyMaterial
      */
     public function isValid(): bool
     {
-        if ($this->publicMaterial instanceof MlDSA65PublicKeyMaterial) {
+        if ($this->publicMaterial instanceof MlDSAPublicKeyMaterial) {
+            $curve = $this->publicMaterial->getPublicKey()->getCurve();
+            $verificationKey = $this->publicMaterial->getVerificationKey();
+
             $message = random_bytes(1024);
-            $signature = $this->signingKey->sign($message);
-            $verifyingKey = $this->publicMaterial->getVerifyingKey();
-            $isValid = $verifyingKey->verify($signature, $message);
+            if ($curve === EdDSACurve::Ed25519->name) {
+                $signature = Compat::mldsa65_sign($this->signingKey, $message);
+                $isValid = Compat::mldsa65_verify($verificationKey, $signature, $message);
+            }
+            else {
+                $signature = Compat::mldsa87_sign($this->signingKey, $message);
+                $isValid = Compat::mldsa87_verify($verificationKey, $signature, $message);
+            }
 
             return $isValid && parent::isValid();
         }
@@ -155,7 +165,7 @@ class MlDSA65SecretKeyMaterial extends EdDSASecretKeyMaterial
     {
         return implode([
             parent::toBytes(),
-            $this->verifyingKey->bytes(),
+            $this->verificationKey->bytes(),
         ]);
     }
 

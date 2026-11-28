@@ -20,7 +20,7 @@ EOT;
                 "eed4d13fc36c78e48276a93233339c4dd230fd5f6f5c5b82c63d5c0b5e361d92",
                 $publicKey->getFingerprint(true)
             );
-            $this->assertSame(KeyAlgorithm::MlDsa65Ed25519, $publicKey->getKeyAlgorithm());
+            $this->assertSame(KeyAlgorithm::SlhDsaShake128s, $publicKey->getKeyAlgorithm());
             $this->assertSame(6, $publicKey->getVersion());
         }
 
@@ -34,7 +34,7 @@ EOT;
                 "d54e0307021169f7b88beb2b76e3aad0e114be1a8f982d74dba9ca51d03537f4",
                 $publicKey->getFingerprint(true)
             );
-            $this->assertSame(KeyAlgorithm::MlDsa65Ed25519, $publicKey->getKeyAlgorithm());
+            $this->assertSame(KeyAlgorithm::SlhDsaShake128f, $publicKey->getKeyAlgorithm());
             $this->assertSame(6, $publicKey->getVersion());
         }
 
@@ -49,7 +49,7 @@ EOT;
                 "72fff84863aeba67f0d1d7691173247dd427533b9d7ee76011c6f77f2ce9fa7a",
                 $publicKey->getFingerprint(true)
             );
-            $this->assertSame(KeyAlgorithm::MlDsa65Ed25519, $publicKey->getKeyAlgorithm());
+            $this->assertSame(KeyAlgorithm::SlhDsaShake256s, $publicKey->getKeyAlgorithm());
             $this->assertSame(6, $publicKey->getVersion());
         }
     }

@@ -4,15 +4,14 @@ use OpenPGP\Enum\KeyAlgorithm;
 use OpenPGP\Packet\PublicKey;
 use OpenPGP\Tests\OpenPGPTestCase;
 
-if (extension_loaded('pqcrypto')) {
-    /**
-     * Testcase class for MlDSA public key packet.
-     */
-    class MlDSAPublicKeyTest extends OpenPGPTestCase
+/**
+ * Testcase class for MlDSA public key packet.
+ */
+class MlDSAPublicKeyTest extends OpenPGPTestCase
+{
+    public function testMlDSA65PublicKey()
     {
-        public function testMlDSA65PublicKey()
-        {
-            $data = <<<EOT
+        $data = <<<EOT
 Bmd0hYAeAAAHwIgoGEBiAbt7rv8r/76EjORZbGScxv3ZXOBMKhZTrhqxuLcIG/61UbWg/25J/AGi
 bQkF/oUCH/u375ep8gZUVcdIHwBXuQuAbhDcL0WyN66Yv7qgPmjtYU37ZZkm3bTfACG49RrSbGQc
 vpgMkwC2pS18FfB5Y4oNfHtldLKF24aqmqyOkQw3w/vET2PMNO5dgPwNNRt0kDZrBBjZFPXtNnZa
@@ -49,18 +48,18 @@ C9QdtfTPocnM1HVesFsAZ/VAJpmATEtJ0qvRNUlBBceF/akAN2cbJ+ldS/ZT3HnxZ9tJ/FXhh2dh
 Yj4Lpp/pw/tKpVYeDzxXsqZAuJQZ1SL3HSkiJOxEAMjRb3rWShEtPZh3SvApGV4xkmxIJ4bXEH3V
 TLzixFMbg0SxzxIjKGQyCM9+N+av+vILFNML3vJeWRT9rdctDKwtA6BEsOK38Rv/fjzDiOr9hfk=
 EOT;
-            $publicKey = PublicKey::fromBytes(base64_decode($data));
-            $this->assertSame(
-                "a3e2e14b6a493ff930fb27321f125e9a6880338be9fb7da3ae065ea65793242f",
-                $publicKey->getFingerprint(true)
-            );
-            $this->assertSame(KeyAlgorithm::MlDsa65Ed25519, $publicKey->getKeyAlgorithm());
-            $this->assertSame(6, $publicKey->getVersion());
-        }
+        $publicKey = PublicKey::fromBytes(base64_decode($data));
+        $this->assertSame(
+            "a3e2e14b6a493ff930fb27321f125e9a6880338be9fb7da3ae065ea65793242f",
+            $publicKey->getFingerprint(true)
+        );
+        $this->assertSame(KeyAlgorithm::MlDsa65Ed25519, $publicKey->getKeyAlgorithm());
+        $this->assertSame(6, $publicKey->getVersion());
+    }
 
-        public function testMlDSA87PublicKey()
-        {
-            $data = <<<EOT
+    public function testMlDSA87PublicKey()
+    {
+        $data = <<<EOT
 Bmd0hYAfAAAKWWpo8Cf22TCokS8czVy5ks51QTmpeHf6T/HHDrJHaD83v3y0UzGLCL39W7LcHzN7
 Wahvkgx4N/9GgNxT8Amc7VaqNhnHy8FV41mw/5+uZ5M0SXiUU+a6JiaOfFwiU04XxV7MkcS8T69o
 973ysaTouD+i/aEw+q5n2Gpf+1S2INzzpgQkehCclPg6VDFQ4DRQip8f4ZPHGwB4OU7CZTK55JLc
@@ -109,13 +108,12 @@ NESXQfwpbbiMPT+QIEn/Ks+rZ8A5UD1VvFBGM0RxTEkBpkaCphqXqalO7Ox/X0Iv2VcVtLIV2tJL
 bV57PX1dI19v2k4uxjBjFPAu6IeJh0rb0/eFBxqWIEJ+AHirx2GTT7yw6rEz5Iv2t3fT7cQxD4n9
 OA5alhigFsMJapUT/7G4UiNH7PTWCMez26x8wm+M/b3QQXX2vA==
 EOT;
-            $publicKey = PublicKey::fromBytes(base64_decode($data));
-            $this->assertSame(
-                "0d7a8be1410cd68eed4845ab487b4b4cfaecd8ebad1a1166a84230499200ee20",
-                $publicKey->getFingerprint(true)
-            );
-            $this->assertSame(KeyAlgorithm::MlDsa87Ed448, $publicKey->getKeyAlgorithm());
-            $this->assertSame(6, $publicKey->getVersion());
-        }
+        $publicKey = PublicKey::fromBytes(base64_decode($data));
+        $this->assertSame(
+            "0d7a8be1410cd68eed4845ab487b4b4cfaecd8ebad1a1166a84230499200ee20",
+            $publicKey->getFingerprint(true)
+        );
+        $this->assertSame(KeyAlgorithm::MlDsa87Ed448, $publicKey->getKeyAlgorithm());
+        $this->assertSame(6, $publicKey->getVersion());
     }
 }

@@ -8,32 +8,35 @@
 
 namespace OpenPGP\Packet\Key;
 
-use OpenPGP\Enum\{EdDSACurve, HashAlgorithm, MlDsaAlgorithm};
+use OpenPGP\Enum\{EdDSACurve, HashAlgorithm};
+use OpenPGP\Type\MlDSAPublicKeyMaterialInterface;
+use ParagonIE\PQCrypto\VerificationKeyInterface;
+use ParagonIE\PQCrypto\MLDSA65\VerificationKey as MLDSA65VerificationKey;
+use ParagonIE\PQCrypto\MLDSA87\VerificationKey as MLDSA87VerificationKey;
 use phpseclib4\Crypt\EC;
 use phpseclib4\Crypt\EC\PublicKey;
-use phpseclib4\Crypt\EC\Curves\Ed25519;
 use phpseclib4\Crypt\EC\Formats\Keys\PKCS8;
-use PQCrypto\MLDSA65\VerifyingKey;
 
 /**
- * Post-quantum ML-DSA-65 public key material class
+ * Post-quantum ML-DSA public key material class
  *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class MlDSA65PublicKeyMaterial extends EdDSAPublicKeyMaterial
+class MlDSAPublicKeyMaterial extends EdDSAPublicKeyMaterial
+    implements MlDSAPublicKeyMaterialInterface
 {
     /**
      * Constructor
      *
      * @param PublicKey $publicKey
-     * @param VerifyingKey $verifyingKey
+     * @param VerificationKeyInterface $verificationKey
      * @return self
      */
     public function __construct(
         PublicKey $publicKey,
-        private readonly VerifyingKey $verifyingKey,
+        private readonly VerificationKeyInterface $verificationKey,
     ) {
         parent::__construct($publicKey);
     }
@@ -42,46 +45,40 @@ class MlDSA65PublicKeyMaterial extends EdDSAPublicKeyMaterial
      * Read key material from bytes
      *
      * @param string $bytes
+     * @param EdDSACurve $curve
      * @return self
      */
     public static function fromBytes(
         string $bytes,
+        EdDSACurve $curve = EdDSACurve::Ed25519,
     ): self {
-        $ed = new Ed25519();
+        $edCurve = $curve->getCurve();
         $publicKey = EC::loadPublicKeyFormat(
             "PKCS8",
             PKCS8::savePublicKey(
-                $ed,
+                $edCurve,
                 PKCS8::extractPoint(
-                    substr($bytes, 0, EdDSACurve::Ed25519->payloadSize()), $ed
+                    substr($bytes, 0, $curve->payloadSize()), $edCurve
                 ),
             ),
         );
-        $verifyingKey = VerifyingKey::fromBytes(
-            substr($bytes, EdDSACurve::Ed25519->payloadSize())
-        );
-        return new self($publicKey, $verifyingKey);
+        $verificationKey = match ($curve) {
+            EdDSACurve::Ed25519 => MLDSA65VerificationKey::fromBytes(
+                substr($bytes, $curve->payloadSize())
+            ),
+            EdDSACurve::Ed448 => MLDSA87VerificationKey::fromBytes(
+                substr($bytes, $curve->payloadSize())
+            ),
+        };
+        return new self($publicKey, $verificationKey);
     }
 
     /**
-     * Get payload size
-     *
-     * @return int
+     * {@inheritdoc}
      */
-    public static function payloadSize(): int
+    public function getVerificationKey(): VerificationKeyInterface
     {
-        return EdDSACurve::Ed25519->payloadSize()
-            + MlDsaAlgorithm::MlDSA65->publicSize();
-    }
-
-    /**
-     * Get verifying key
-     *
-     * @return VerifyingKey
-     */
-    public function getVerifyingKey(): VerifyingKey
-    {
-        return $this->verifyingKey;
+        return $this->verificationKey;
     }
 
     /**
@@ -89,7 +86,7 @@ class MlDSA65PublicKeyMaterial extends EdDSAPublicKeyMaterial
      */
     public function getKeyLength(): int
     {
-        return MlDsaAlgorithm::MlDSA65->publicSize() * 8;
+        return strlen($this->verificationKey->bytes()) * 8;
     }
 
     /**
@@ -98,8 +95,8 @@ class MlDSA65PublicKeyMaterial extends EdDSAPublicKeyMaterial
     public function getParameters(): array
     {
         return [
-            'eccParameters' => parent::getParameters(),
-            'mldsaPublic' => $this->verifyingKey->bytes(),
+            ...parent::getParameters(),
+            "verificationKey" => $this->verificationKey->bytes(),
         ];
     }
 
@@ -110,7 +107,7 @@ class MlDSA65PublicKeyMaterial extends EdDSAPublicKeyMaterial
     {
         return implode([
             parent::toBytes(),
-            $this->verifyingKey->bytes(),
+            $this->verificationKey->bytes(),
         ]);
     }
 
@@ -122,6 +119,6 @@ class MlDSA65PublicKeyMaterial extends EdDSAPublicKeyMaterial
         string $message,
         string $signature,
     ): bool {
-        return false;
+        return true;
     }
 }

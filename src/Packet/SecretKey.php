@@ -543,8 +543,12 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             KeyAlgorithm::X448 => Key\MontgomerySecretKeyMaterial::generateCurve448(),
             KeyAlgorithm::Ed25519 => Key\EdDSASecretKeyMaterial::generateEd25519(),
             KeyAlgorithm::Ed448 => Key\EdDSASecretKeyMaterial::generateEd448(),
-            KeyAlgorithm::MlDsa65Ed25519 => Key\MlDSA65SecretKeyMaterial::generate(),
-            KeyAlgorithm::MlDsa87Ed448 => Key\MlDSA87SecretKeyMaterial::generate(),
+            KeyAlgorithm::MlDsa65Ed25519 => Key\MlDSASecretKeyMaterial::generate(
+                EdDSACurve::Ed25519
+            ),
+            KeyAlgorithm::MlDsa87Ed448 => Key\MlDSASecretKeyMaterial::generate(
+                EdDSACurve::Ed448
+            ),
             KeyAlgorithm::SlhDsaShake128s => Key\SlhDSASecretKeyMaterial::generate(
                 SlhDsaAlgorithm::SlhDsaShake128s
             ),
@@ -761,11 +765,11 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $publicKey->getKeyMaterial(),
                 EdDSACurve::Ed448,
             ),
-            KeyAlgorithm::MlDsa65Ed25519 => Key\MlDSA65SecretKeyMaterial::fromBytes(
+            KeyAlgorithm::MlDsa65Ed25519 => Key\MlDSASecretKeyMaterial::fromBytes(
                 $bytes,
                 $publicKey->getKeyMaterial(),
             ),
-            KeyAlgorithm::MlDsa87Ed448 => Key\MlDSA87SecretKeyMaterial::fromBytes(
+            KeyAlgorithm::MlDsa87Ed448 => Key\MlDSASecretKeyMaterial::fromBytes(
                 $bytes,
                 $publicKey->getKeyMaterial(),
             ),
@@ -784,11 +788,11 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 SlhDsaAlgorithm::SlhDsaShake256s,
                 $publicKey->getKeyMaterial(),
             ),
-            KeyAlgorithm::MlKem768X25519 => Key\MlKem768SecretKeyMaterial::fromBytes(
+            KeyAlgorithm::MlKem768X25519 => Key\MlKemSecretKeyMaterial::fromBytes(
                 $bytes,
                 $publicKey->getKeyMaterial(),
             ),
-            KeyAlgorithm::MlKem1024X448 => Key\MlKem1024SecretKeyMaterial::fromBytes(
+            KeyAlgorithm::MlKem1024X448 => Key\MlKemSecretKeyMaterial::fromBytes(
                 $bytes,
                 $publicKey->getKeyMaterial(),
             ),

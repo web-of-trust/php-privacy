@@ -9,29 +9,33 @@
 namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Enum\{MlKemAlgorithm, MontgomeryCurve};
+use OpenPGP\Type\MlKemPublicKeyMaterialInterface;
+use ParagonIE\PQCrypto\EncapsKeyInterface;
+use ParagonIE\PQCrypto\MLKem768\EncapsulationKey as MLKem768EncapsKey;
+use ParagonIE\PQCrypto\MLKem1024\EncapsulationKey as MLKem1024EncapsKey;
 use phpseclib4\Crypt\EC;
 use phpseclib4\Crypt\EC\PublicKey;
-use PQCrypto\MLKem1024\EncapsulationKey;
 
 /**
- * Post-quantum ML-KEM 1024 public key material class
+ * Post-quantum ML-KEM public key material class
  *
  * @package  OpenPGP
  * @category Packet
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-class MlKem1024PublicKeyMaterial extends MontgomeryPublicKeyMaterial
+class MlKemPublicKeyMaterial extends MontgomeryPublicKeyMaterial
+    implements MlKemPublicKeyMaterialInterface
 {
     /**
      * Constructor
      *
      * @param PublicKey $publicKey
-     * @param EncapsulationKey $encapsulationKey
+     * @param EncapsKeyInterface $encapsulationKey
      * @return self
      */
     public function __construct(
         PublicKey $publicKey,
-        private readonly EncapsulationKey $encapsulationKey,
+        private readonly EncapsKeyInterface $encapsulationKey,
     ) {
         parent::__construct($publicKey);
     }
@@ -40,32 +44,34 @@ class MlKem1024PublicKeyMaterial extends MontgomeryPublicKeyMaterial
      * Read key material from bytes
      *
      * @param string $bytes
+     * @param MontgomeryCurve $curve
      * @return self
      */
-    public static function fromBytes(string $bytes): self
+    public static function fromBytes(
+        string $bytes, MontgomeryCurve $curve = MontgomeryCurve::Curve25519
+    ): self
     {
         $publicKey = EC::loadPublicKeyFormat(
             "MontgomeryPublic",
-            substr($bytes, 0, MontgomeryCurve::Curve448->payloadSize()),
+            substr($bytes, 0, $curve->payloadSize()),
         );
-        $encapsulationKey = EncapsulationKey::fromBytes(
-            substr($bytes, MontgomeryCurve::Curve448->payloadSize())
-        );
+        if ($curve === MontgomeryCurve::Curve25519) {
+            $encapsulationKey = new MLKem768EncapsKey(
+                substr($bytes, $curve->payloadSize())
+            );
+        }
+        else {
+            $encapsulationKey = new MLKem1024EncapsKey(
+                substr($bytes, $curve->payloadSize())
+            );
+        }
         return new self($publicKey, $encapsulationKey);
     }
 
-    public static function payloadSize(): int
-    {
-        return MontgomeryCurve::Curve448->payloadSize()
-            + MlKemAlgorithm::MlKem1024->encapsulationSize();
-    }
-
     /**
-     * Get encapsulation key
-     *
-     * @return EncapsulationKey
+     * {@inheritdoc}
      */
-    public function getEncapsulationKey(): EncapsulationKey
+    public function getEncapsulationKey(): EncapsKeyInterface
     {
         return $this->encapsulationKey;
     }
@@ -75,7 +81,7 @@ class MlKem1024PublicKeyMaterial extends MontgomeryPublicKeyMaterial
      */
     public function getKeyLength(): int
     {
-        return MlKemAlgorithm::MlKem768->encapsulationSize() * 8;
+        return strlen($this->encapsulationKey->bytes()) * 8;
     }
 
     /**
@@ -84,8 +90,8 @@ class MlKem1024PublicKeyMaterial extends MontgomeryPublicKeyMaterial
     public function getParameters(): array
     {
         return [
-            'eccParameters' => parent::getParameters(),
-            'mlkemPublic' => $this->encapsulationKey->bytes(),
+            ...parent::getParameters(),
+            'encapsulationKey' => $this->encapsulationKey->bytes(),
         ];
     }
 

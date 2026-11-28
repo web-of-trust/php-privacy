@@ -4,15 +4,14 @@ use OpenPGP\Enum\KeyAlgorithm;
 use OpenPGP\Packet\PublicSubkey;
 use OpenPGP\Tests\OpenPGPTestCase;
 
-if (extension_loaded('pqcrypto')) {
-    /**
-     * Testcase class for MlKem public key packet.
-     */
-    class MlKemPublicKeyTest extends OpenPGPTestCase
+/**
+ * Testcase class for MlKem public key packet.
+ */
+class MlKemPublicKeyTest extends OpenPGPTestCase
+{
+    public function testV6MlKem768PublicKey()
     {
-        public function testV6MlKem768PublicKey()
-        {
-            $data = <<<EOT
+        $data = <<<EOT
 Bmd0hYAjAAAEwCIVC0MM9yTsGbi+Vd+byq3jJwhXETaUBKV1yAI0Q7BfXkJC3YN0sGULB1LIvZBS
 lFEx/9op4ncn+0J9IKeKzuu449mu2UdNA/XK+5wl+sGGdTVNrJq3s7R/BktVNWBMG0t+eYBtItQa
 xwYucsOntcO344uH1BA+ZHIALxsHN6KrZPCeqfF9ppTB8UAlvVR0JATPtyyuxFw6MUex06GlYzir
@@ -36,15 +35,15 @@ jEcVDZdIRaRTrkK/4PJzVHGb4wwkOwfLoPEBCMuAYTxfqJVEgdBi6pUsPaEOQzkUeIeOVgoFnMhP
 3+N22fMWkCBc/LYOThtPXFWtHkq5jmmj+aiuyGOaadccBKWTvxloBly25QADfbYI2oImtVu1JDjF
 Cf6PQ74UWSEf9EvmTgsMQq/TPICLDUyoTkteLTQ=
 EOT;
-            $publicSubkey = PublicSubkey::fromBytes(base64_decode($data));
-            $this->assertSame(
-                "dafe0eebb2675ecfcdc20a23fe89ca5d12e83f527dfa354b6dcf662131a48b9d",
-                $publicSubkey->getFingerprint(true)
-            );
-            $this->assertSame(KeyAlgorithm::MlKem768X25519, $publicSubkey->getKeyAlgorithm());
-            $this->assertSame(6, $publicSubkey->getVersion());
+        $publicSubkey = PublicSubkey::fromBytes(base64_decode($data));
+        $this->assertSame(
+            "dafe0eebb2675ecfcdc20a23fe89ca5d12e83f527dfa354b6dcf662131a48b9d",
+            $publicSubkey->getFingerprint(true)
+        );
+        $this->assertSame(KeyAlgorithm::MlKem768X25519, $publicSubkey->getKeyAlgorithm());
+        $this->assertSame(6, $publicSubkey->getVersion());
 
-            $data = <<<EOT
+        $data = <<<EOT
 Bmd0hYAjAAAEwI0Zdym6JJULp436Pqz8uyX9pPdFy1hhWsOTRlnBQ+pdgVpfW8iNNfeB4Fe7mRqa
 Z4p734q7vBseXUO0G2x3E1oX5fSwokNpcokbF4SAoeXIQUKOpixgarMcSWsR5TBF0ps5xdGuuclH
 J1pXbOOcItoYotpn+TgrPHrMIXnNifymIWywENLLkggcelpQe+gcYPVv8JfP73EvtujPfTIl2nbK
@@ -68,18 +67,18 @@ V1NXvmpDzzCpeVp5vaK8THHDoZZ1MGUJ8KCDlPy1XkOrheeTdXa6OQJaQBqFPAo5VSka1WDE0uMq
 L9F7iUB9n6G6n4drCWZLp/JdwjafSwcrpzM3mGuB9hiyvmu/1awTnwehOtaozpJ7O4rBLJQRa0wz
 cXTdmQsFve0SYZxEQT1XdobWDoAVsV1SWu1ngys=
 EOT;
-            $publicSubkey = PublicSubkey::fromBytes(base64_decode($data));
-            $this->assertSame(
-                "7dae8fbce23022607167af72a002e774e0ca379a2d7ae072384e1e8fde3265e4",
-                $publicSubkey->getFingerprint(true)
-            );
-            $this->assertSame(KeyAlgorithm::MlKem768X25519, $publicSubkey->getKeyAlgorithm());
-            $this->assertSame(6, $publicSubkey->getVersion());
-        }
+        $publicSubkey = PublicSubkey::fromBytes(base64_decode($data));
+        $this->assertSame(
+            "7dae8fbce23022607167af72a002e774e0ca379a2d7ae072384e1e8fde3265e4",
+            $publicSubkey->getFingerprint(true)
+        );
+        $this->assertSame(KeyAlgorithm::MlKem768X25519, $publicSubkey->getKeyAlgorithm());
+        $this->assertSame(6, $publicSubkey->getVersion());
+    }
 
-        public function testV4MlKem768PublicKey()
-        {
-            $data = <<<EOT
+    public function testV4MlKem768PublicKey()
+    {
+        $data = <<<EOT
 BGd0hYAjsIfqoDHr3VUD76sj9JP+04jzHeAhTXnoPF3N7Cs281UB+Awo6DCHkI8GuMzoPE4BOsuY
 u1RyWZL7xZTGtTqua8iSHLRoqLppdL7u0M5IUafYaacURmnGARVgK6FvljpMVX33rAn3yzAV2STM
 ln8wxhRJ2Qol0Ss+m4L2hyt74h0a05D9M8Iyl2J+w8G54jmcaRxmNoBlOnesM052o7TlwcZjwKJ2
@@ -103,18 +102,18 @@ hHK5mm4ACbMi6hSaKY2zhDp2NGAXBGTW8DZDdHhWIZtfdgjC9cExwJ1Y+Q5jOkhSAodehgXFEmkJ
 J8diLIEr8R7aoE/BRIGgsl/P9TOoSziAukuR022b9VpaxFmAw5VKwR1p+LGSO5NNk8pHNDHO8Z1v
 q2ucB6XUJZP4+KPae2VsP3szXOt9s+Q8Mg==
 EOT;
-            $publicSubkey = PublicSubkey::fromBytes(base64_decode($data));
-            $this->assertSame(
-                "e51dbfea51936988b5428fffa4f95f985ed61a51",
-                $publicSubkey->getFingerprint(true)
-            );
-            $this->assertSame(KeyAlgorithm::MlKem768X25519, $publicSubkey->getKeyAlgorithm());
-            $this->assertSame(4, $publicSubkey->getVersion());
-        }
+        $publicSubkey = PublicSubkey::fromBytes(base64_decode($data));
+        $this->assertSame(
+            "e51dbfea51936988b5428fffa4f95f985ed61a51",
+            $publicSubkey->getFingerprint(true)
+        );
+        $this->assertSame(KeyAlgorithm::MlKem768X25519, $publicSubkey->getKeyAlgorithm());
+        $this->assertSame(4, $publicSubkey->getVersion());
+    }
 
-        public function testMlKem1024PublicKey()
-        {
-            $data = <<<EOT
+    public function testMlKem1024PublicKey()
+    {
+        $data = <<<EOT
 Bmd0hYAkAAAGWLH+IMi/hC5S+X7/CXHh4t+OuVUnLpAeBmGffyct5gJ74hazABm1GA03XhqmoKxM
 +KinKvbCf8VpO/Yq9lRa5dZeyWaS1IaBcpCLSqGC/QNEKpqSUqgy0TgDi0zDbJy6U0cvT+JF2Rli
 g6Jq3ElYCrrK5zic47kiNIYYxUTCxooLh6jLAESdkVIGhRjLzXQ9BEPKtsAIyhOCjPO+ibG6O2zA
@@ -145,13 +144,12 @@ ioiccbAEaVclRksAq7iEH2yY2ukycgIP/Wu4S7QwNwKHG7lc6mmXZyVnKTDBfQdG2OVk9dpLPjGi
 OifMORGIeQlp9lIIGhjMJlktpRsphBZJtxyQRjVn1GgMCYJKVdFtJ9EfQnZH+ihE55iRvIRnQeE8
 +AcpPKU2YL6kpLPSWaC9VpvnNm65zBi86LWgJ98l8zWlmxDT3rY=
 EOT;
-            $publicSubkey = PublicSubkey::fromBytes(base64_decode($data));
-            $this->assertSame(
-                "65090e147a8116ab7f62ab4ec7aae59d9e6532feb2af230c73cdc869fbc60c8f",
-                $publicSubkey->getFingerprint(true)
-            );
-            $this->assertSame(KeyAlgorithm::MlKem1024X448, $publicSubkey->getKeyAlgorithm());
-            $this->assertSame(6, $publicSubkey->getVersion());
-        }
+        $publicSubkey = PublicSubkey::fromBytes(base64_decode($data));
+        $this->assertSame(
+            "65090e147a8116ab7f62ab4ec7aae59d9e6532feb2af230c73cdc869fbc60c8f",
+            $publicSubkey->getFingerprint(true)
+        );
+        $this->assertSame(KeyAlgorithm::MlKem1024X448, $publicSubkey->getKeyAlgorithm());
+        $this->assertSame(6, $publicSubkey->getVersion());
     }
 }
