@@ -153,6 +153,8 @@ class SlhDSASecretKeyMaterial implements SlhDSASecretKeyMaterialInterface
      */
     public function sign(HashAlgorithm $hash, string $message): string
     {
+        // The signature hash algo MUST have digest larger than 256 bits
+        // https://www.rfc-editor.org/rfc/rfc9980.html#section-9.4
         if ($hash->digestSize() < 32) {
             throw new \RuntimeException(
                 "SLH-DSA does not support {$hash->name} hash algorithm.",
