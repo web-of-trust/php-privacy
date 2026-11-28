@@ -87,12 +87,10 @@ class MlKemSecretKeyMaterial extends MontgomerySecretKeyMaterial
             "MontgomeryPrivate", $curve->generateSecretKey()
         );
 
-        if ($curve === MontgomeryCurve::Curve25519) {
-            [$decapsKey, $encapsKey] = Compat::mlkem768_keygen();
-        }
-        else {
-            [$decapsKey, $encapsKey] = Compat::mlkem1024_keygen();
-        }
+        [$decapsKey, $encapsKey] = match ($curve) {
+            MontgomeryCurve::Curve25519 => Compat::mlkem768_keygen(),
+            MontgomeryCurve::Curve448 => Compat::mlkem1024_keygen(),
+        };
         return new self(
             $eccKey,
             $decapsKey,

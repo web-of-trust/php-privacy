@@ -55,16 +55,14 @@ class MlKemPublicKeyMaterial extends MontgomeryPublicKeyMaterial
             "MontgomeryPublic",
             substr($bytes, 0, $curve->payloadSize()),
         );
-        if ($curve === MontgomeryCurve::Curve25519) {
-            $encapsulationKey = new MLKem768EncapsKey(
+        $encapsulationKey = match ($curve) {
+            EdDSACurve::Ed25519 => new MLKem768EncapsKey(
                 substr($bytes, $curve->payloadSize())
-            );
-        }
-        else {
-            $encapsulationKey = new MLKem1024EncapsKey(
+            ),
+            EdDSACurve::Ed448 => new MLKem1024EncapsKey(
                 substr($bytes, $curve->payloadSize())
-            );
-        }
+            ),
+        };
         return new self($publicKey, $encapsulationKey);
     }
 

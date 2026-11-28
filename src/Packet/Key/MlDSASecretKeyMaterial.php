@@ -67,16 +67,14 @@ class MlDSASecretKeyMaterial extends EdDSASecretKeyMaterial
                 $arr["secret"],
             ),
         );
-        if ($curve::SIZE === EdDSACurve::Ed25519->payloadSize()) {
-            $signingKey = MLDSA65SigningKey::fromBytes(
+        $signingKey = match ($curve::SIZE) {
+            EdDSACurve::Ed25519->payloadSize() => MLDSA65SigningKey::fromBytes(
                 substr($bytes, $curve::SIZE)
-            );
-        }
-        else {
-            $signingKey = MLDSA87SigningKey::fromBytes(
+            ),
+            EdDSACurve::Ed448->payloadSize() => MLDSA87SigningKey::fromBytes(
                 substr($bytes, $curve::SIZE)
-            );
-        }
+            ),
+        };
         return new self(
             $privateKey, $signingKey, $publicMaterial,
         );
@@ -145,14 +143,22 @@ class MlDSASecretKeyMaterial extends EdDSASecretKeyMaterial
             $verificationKey = $this->publicMaterial->getVerificationKey();
 
             $message = random_bytes(1024);
-            if ($curve === EdDSACurve::Ed25519) {
-                $signature = Compat::mldsa65_sign($this->signingKey, $message);
-                $isValid = Compat::mldsa65_verify($verificationKey, $signature, $message);
-            }
-            else {
-                $signature = Compat::mldsa87_sign($this->signingKey, $message);
-                $isValid = Compat::mldsa87_verify($verificationKey, $signature, $message);
-            }
+            $signature = match ($curve) {
+                EdDSACurve::Ed25519 => Compat::mldsa65_sign(
+                    $this->signingKey, $message
+                ),
+                EdDSACurve::Ed448 => Compat::mldsa87_sign(
+                    $this->signingKey, $message
+                ),
+            };
+            $isValid = match ($curve) {
+                EdDSACurve::Ed25519 => Compat::mldsa65_verify(
+                    $verificationKey, $signature, $message
+                ),
+                EdDSACurve::Ed448 => Compat::mldsa87_verify(
+                    $verificationKey, $signature, $message
+                ),
+            };
 
             return $isValid && parent::isValid();
         }
