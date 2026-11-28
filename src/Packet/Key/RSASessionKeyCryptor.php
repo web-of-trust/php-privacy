@@ -53,18 +53,9 @@ class RSASessionKeyCryptor implements SessionKeyCryptorInterface
         string $sessionKey,
         PublicKey $publicKey,
     ): self {
-        if (extension_loaded("openssl")) {
-            openssl_public_encrypt(
-                $sessionKey,
-                $encrypted,
-                openssl_pkey_get_public($publicKey->toString("PKCS8")),
-                OPENSSL_PKCS1_PADDING,
-            );
-        } else {
-            $encrypted = $publicKey
-                ->withPadding(RSA::ENCRYPTION_PKCS1)
-                ->encrypt($sessionKey);
-        }
+        $encrypted = $publicKey
+            ->withPadding(RSA::ENCRYPTION_PKCS1)
+            ->encrypt($sessionKey);
         return new self(Helper::bin2BigInt($encrypted));
     }
 
@@ -106,15 +97,6 @@ class RSASessionKeyCryptor implements SessionKeyCryptorInterface
      */
     private function decrypt(PrivateKey $privateKey): string
     {
-        if (extension_loaded("openssl")) {
-            openssl_private_decrypt(
-                $this->encrypted->toBytes(),
-                $decrypted,
-                openssl_pkey_get_private($privateKey->toString("PKCS8")),
-                OPENSSL_PKCS1_PADDING,
-            );
-            return $decrypted;
-        }
         return $privateKey
             ->withPadding(RSA::ENCRYPTION_PKCS1)
             ->decrypt($this->encrypted->toBytes());
