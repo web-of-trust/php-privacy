@@ -45,6 +45,13 @@ final class OCB implements AeadCipher
     private int $maxNtz = 0;
 
     /**
+     * The OpenSSL cipher method for this key, or null if OpenSSL is not used.
+     */
+    private readonly ?string $openssl;
+
+    private readonly string $key;
+
+    /**
      * Constructor
      *
      * @param string $key - The encryption key
@@ -64,6 +71,8 @@ final class OCB implements AeadCipher
         $this->decipher = $symmetric->ecbCipherEngine();
         $this->encipher->setKey($key);
         $this->decipher->setKey($key);
+        $this->key = $key;
+        $this->openssl = self::opensslMethod($symmetric, strlen($key));
 
         $maskAsterisk = $this->encipher->encryptBlock(self::ZERO_BLOCK);
         $maskDollar = self::double($maskAsterisk);
@@ -83,6 +92,22 @@ final class OCB implements AeadCipher
         string $nonce,
         string $aData = "",
     ): string {
+        if ($this->openssl !== null) {
+            $tag = "";
+            $cipherText = openssl_encrypt(
+                $plainText,
+                $this->openssl,
+                $this->key,
+                OPENSSL_RAW_DATA,
+                $nonce,
+                $tag,
+                $aData,
+                self::TAG_LENGTH,
+            );
+            if ($cipherText !== false && strlen($tag) === self::TAG_LENGTH) {
+                return $cipherText . $tag;
+            }
+        }
         return $this->crypt($this->encipher, $plainText, $nonce, $aData);
     }
 
@@ -102,6 +127,23 @@ final class OCB implements AeadCipher
         $tag = substr($cipherText, $length - self::TAG_LENGTH);
         $cipherText = substr($cipherText, 0, $length - self::TAG_LENGTH);
 
+        if ($this->openssl !== null) {
+            $plainText = openssl_decrypt(
+                $cipherText,
+                $this->openssl,
+                $this->key,
+                OPENSSL_RAW_DATA,
+                $nonce,
+                $tag,
+                $aData,
+            );
+            if ($plainText !== false) {
+                return $plainText;
+            }
+            // A wrong tag, or OpenSSL could not run: the PHP code below
+            // decides, and throws on a wrong tag as before.
+        }
+
         $crypted = $this->crypt($this->decipher, $cipherText, $nonce, $aData);
         $length = strlen($crypted);
         // if (Tag[1..TAGLEN] == T)
@@ -117,6 +159,39 @@ final class OCB implements AeadCipher
     public function getNonce(string $iv, string $chunkIndex): string
     {
         return substr_replace($iv, substr($iv, 7) ^ $chunkIndex, 7);
+    }
+
+    /**
+     * Get the OpenSSL cipher method for OCB with this key,
+     * or null if OpenSSL does not offer it.
+     *
+     * @param SymmetricAlgorithm $symmetric - The symmetric cipher algorithm
+     * @param int $keyLength - The key length in bytes
+     * @return string|null
+     */
+    private static function opensslMethod(
+        SymmetricAlgorithm $symmetric,
+        int $keyLength,
+    ): ?string {
+        $method = match ($symmetric) {
+            SymmetricAlgorithm::Aes128 => "aes-128-ocb",
+            SymmetricAlgorithm::Aes192 => "aes-192-ocb",
+            SymmetricAlgorithm::Aes256 => "aes-256-ocb",
+            default => null,
+        };
+        if (
+            $method === null ||
+            $keyLength !== $symmetric->keySizeInByte() ||
+            !function_exists("openssl_get_cipher_methods")
+        ) {
+            return null;
+        }
+        static $methods = null;
+        $methods ??= array_map(
+            "strtolower",
+            openssl_get_cipher_methods(),
+        );
+        return in_array($method, $methods, true) ? $method : null;
     }
 
     /**
