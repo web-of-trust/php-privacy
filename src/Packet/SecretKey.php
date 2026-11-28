@@ -51,7 +51,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
     /**
      * Constructor
      *
-     * @param PublicKey $publicKey
+     * @param PublicKeyPacketInterface $publicKey
      * @param S2kUsage $s2kUsage
      * @param string $keyData
      * @param KeyMaterialInterface $keyMaterial
@@ -61,7 +61,7 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
      * @return self
      */
     public function __construct(
-        private readonly PublicKey $publicKey,
+        private readonly PublicKeyPacketInterface $publicKey,
         private readonly string $keyData = "",
         private readonly ?KeyMaterialInterface $keyMaterial = null,
         private readonly S2kUsage $s2kUsage = S2kUsage::None,
@@ -128,6 +128,14 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
         Ecc $curve = Ecc::Secp521r1,
         ?DateTimeInterface $time = null,
     ): self {
+        if (!extension_loaded('pqcrypto') &&
+            ($keyAlgorithm === KeyAlgorithm::SlhDsaShake128s ||
+            $keyAlgorithm === KeyAlgorithm::SlhDsaShake128f ||
+            $keyAlgorithm === KeyAlgorithm::SlhDsaShake256s)) {
+            throw new \InvalidArgumentException(
+                "SLH-DSA key algorithms require pqcrypto extension!",
+            );
+        }
         $keyMaterial = self::generateKeyMaterial(
             $keyAlgorithm,
             $rsaKeySize,

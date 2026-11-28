@@ -130,7 +130,7 @@ class MlDSAPublicKeyMaterial extends EdDSAPublicKeyMaterial
 
         $curveName = $this->getPublicKey()->getCurve();
         $curve = constant(EdDSACurve::class . "::" . $curveName);
-        var $eccSignatureSize = $curve->signatureSize();
+        $eccSignatureSize = $curve->signatureSize();
         $mldsaSignature = match ($curve) {
             EdDSACurve::Ed25519 => substr(
                 $signature, $eccSignatureSize, Compat::MLDSA65_SIGNATURE_BYTES
@@ -147,7 +147,7 @@ class MlDSAPublicKeyMaterial extends EdDSAPublicKeyMaterial
                 $this->verificationKey, $mldsaSignature, $hash->hash($message)
             ),
         };
-        var $eccSignature = substr($signature, 0, $eccSignatureSize);
+        $eccSignature = substr($signature, 0, $eccSignatureSize);
 
         return $isValid && parent::verify($hash, $hash->hash($message), $eccSignature);
     }
