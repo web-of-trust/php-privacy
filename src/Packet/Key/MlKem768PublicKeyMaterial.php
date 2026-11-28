@@ -8,7 +8,7 @@
 
 namespace OpenPGP\Packet\Key;
 
-use OpenPGP\Enum\{MlKem, MontgomeryCurve};
+use OpenPGP\Enum\{MlKemAlgorithm, MontgomeryCurve};
 use phpseclib4\Crypt\EC;
 use phpseclib4\Crypt\EC\PublicKey;
 use PQCrypto\MLKem768\EncapsulationKey;
@@ -62,7 +62,7 @@ class MlKem768PublicKeyMaterial extends MontgomeryPublicKeyMaterial
     public static function payloadSize(): int
     {
         return MontgomeryCurve::Curve25519->payloadSize()
-            + MlKem::MlKem768->encapsulationSize();
+            + MlKemAlgorithm::MlKem768->encapsulationSize();
     }
 
     /**
@@ -80,7 +80,7 @@ class MlKem768PublicKeyMaterial extends MontgomeryPublicKeyMaterial
      */
     public function getKeyLength(): int
     {
-        return MlKem::MlKem768->encapsulationSize() * 8;
+        return MlKemAlgorithm::MlKem768->encapsulationSize() * 8;
     }
 
     /**

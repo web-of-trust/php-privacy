@@ -9,13 +9,13 @@
 namespace OpenPGP\Enum;
 
 /**
- * Post-quantum ML-KEM Enum
+ * Post-quantum ML-KEM Algorithm Enum
  *
  * @package  OpenPGP
  * @category Enum
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-enum MlKem
+enum MlKemAlgorithm
 {
     case MlKem768;
 
