@@ -51,6 +51,19 @@ enum EdDSACurve
     }
 
     /**
+     * Get signature size
+     *
+     * @return int
+     */
+    public function signatureSize(): int
+    {
+        return match ($this) {
+            self::Ed25519 => 64,
+            self::Ed448 => 114,
+        };
+    }
+
+    /**
      * Get hash algorithm
      *
      * @return HashAlgorithm

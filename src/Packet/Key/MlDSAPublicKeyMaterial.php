@@ -10,6 +10,7 @@ namespace OpenPGP\Packet\Key;
 
 use OpenPGP\Enum\{EdDSACurve, HashAlgorithm};
 use OpenPGP\Type\MlDSAPublicKeyMaterialInterface;
+use ParagonIE\PQCrypto\Compat;
 use ParagonIE\PQCrypto\VerificationKeyInterface;
 use ParagonIE\PQCrypto\MLDSA65\VerificationKey as MLDSA65VerificationKey;
 use ParagonIE\PQCrypto\MLDSA87\VerificationKey as MLDSA87VerificationKey;
@@ -119,6 +120,33 @@ class MlDSAPublicKeyMaterial extends EdDSAPublicKeyMaterial
         string $message,
         string $signature,
     ): bool {
-        return true;
+        if ($hash->digestSize() < 32) {
+            throw new \RuntimeException(
+                "ML-DSA does not support {$hash->name} hash algorithm.",
+            );
+        }
+
+        $curve = $this->getPublicKey()->getCurve();
+        if ($curve === EdDSACurve::Ed25519->name) {
+            var $eccSignatureSize = EdDSACurve::Ed25519->signatureSize();
+            var $mldsaSignature = substr(
+                $signature, $eccSignatureSize, Compat::MLDSA65_SIGNATURE_BYTES
+            );
+            $isValid = Compat::mldsa65_verify(
+                $this->verificationKey, $mldsaSignature, $hash->hash($message)
+            );
+        }
+        else {
+            var $eccSignatureSize = EdDSACurve::Ed448->signatureSize();
+            var $mldsaSignature = substr(
+                $signature, $eccSignatureSize, Compat::MLDSA87_SIGNATURE_BYTES
+            );
+            $isValid = Compat::mldsa87_verify(
+                $this->verificationKey, $mldsaSignature, $hash->hash($message)
+            );
+        }
+        var $eccSignature = substr($signature, 0, $eccSignatureSize);
+
+        return $isValid && parent::verify($hash, $hash->hash($message), $eccSignature);
     }
 }

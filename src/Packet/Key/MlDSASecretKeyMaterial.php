@@ -8,7 +8,7 @@
 
 namespace OpenPGP\Packet\Key;
 
-use OpenPGP\Enum\{EdDSACurve, HashAlgorithm, MlDsaAlgorithm};
+use OpenPGP\Enum\{EdDSACurve, HashAlgorithm};
 use OpenPGP\Type\{KeyMaterialInterface, MlDSASecretKeyMaterialInterface};
 use ParagonIE\PQCrypto\Compat;
 use ParagonIE\PQCrypto\{SigningKeyInterface, VerificationKeyInterface};
@@ -140,7 +140,7 @@ class MlDSASecretKeyMaterial extends EdDSASecretKeyMaterial
     public function isValid(): bool
     {
         if ($this->publicMaterial instanceof MlDSAPublicKeyMaterial) {
-            $curve = $this->publicMaterial->getPublicKey()->getCurve();
+            $curve = $this->getPrivateKey()->getCurve();
             $verificationKey = $this->publicMaterial->getVerificationKey();
 
             $message = random_bytes(1024);
@@ -174,6 +174,18 @@ class MlDSASecretKeyMaterial extends EdDSASecretKeyMaterial
      */
     public function sign(HashAlgorithm $hash, string $message): string
     {
-        return "";
+        if ($hash->digestSize() < 32) {
+            throw new \RuntimeException(
+                "ML-DSA does not support {$hash->name} hash algorithm.",
+            );
+        }
+        $curve = $this->getPrivateKey()->getCurve();
+        if ($curve === EdDSACurve::Ed25519->name) {
+            $mldsaSignature = Compat::mldsa65_sign($this->signingKey, $hash->hash($message));
+        }
+        else {
+            $mldsaSignature = Compat::mldsa87_sign($this->signingKey, $hash->hash($message));
+        }
+        return parent::sign($hash, $message) . $mldsaSignature;
     }
 }
