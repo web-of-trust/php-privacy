@@ -18,7 +18,7 @@ use OpenPGP\Enum\{
     KeyVersion,
     MontgomeryCurve,
     PacketTag,
-    SlhDSA,
+    SlhDsaAlgorithm,
 };
 use OpenPGP\Type\{
     ECKeyMaterialInterface,
@@ -113,6 +113,7 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
      */
     public static function fromBytes(string $bytes): self
     {
+        // echo (chunk_split(base64_encode($bytes), 76, "\n"));exit;
         [$version, $creationTime, $keyAlgorithm, $keyMaterial] = self::decode(
             $bytes,
         );
@@ -333,13 +334,13 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
                 $bytes
             ),
             KeyAlgorithm::SlhDsaShake128s => Key\SlhDSAPublicKeyMaterial::fromBytes(
-                $bytes, SlhDSA::SlhDsaShake128s
+                $bytes, SlhDsaAlgorithm::SlhDsaShake128s
             ),
             KeyAlgorithm::SlhDsaShake128f => Key\SlhDSAPublicKeyMaterial::fromBytes(
-                $bytes, SlhDSA::SlhDsaShake128f
+                $bytes, SlhDsaAlgorithm::SlhDsaShake128f
             ),
             KeyAlgorithm::SlhDsaShake256s => Key\SlhDSAPublicKeyMaterial::fromBytes(
-                $bytes, SlhDSA::SlhDsaShake256s
+                $bytes, SlhDsaAlgorithm::SlhDsaShake256s
             ),
             KeyAlgorithm::MlKem768X25519 => Key\MlKem768PublicKeyMaterial::fromBytes(
                 $bytes

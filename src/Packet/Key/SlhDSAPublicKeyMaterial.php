@@ -8,8 +8,8 @@
 
 namespace OpenPGP\Packet\Key;
 
-use OpenPGP\Enum\{HashAlgorithm, SlhDSA};
-use OpenPGP\Type\SlhDSAPublicKeyMaterialInterface;
+use OpenPGP\Enum\{HashAlgorithm, SlhDsaAlgorithm};
+use OpenPGP\Type\{KeyMaterialInterface, SlhDSAPublicKeyMaterialInterface};
 use PQCrypto\SLHDSA;
 use PQCrypto\SLHDSA\VerifyingKey;
 
@@ -25,8 +25,7 @@ class SlhDSAPublicKeyMaterial implements SlhDSAPublicKeyMaterialInterface
     /**
      * Constructor
      *
-     * @param string $public
-     * @param SlhDSA $slhDSA
+     * @param VerifyingKey $verifyingKey
      * @return self
      */
     public function __construct(
@@ -38,15 +37,15 @@ class SlhDSAPublicKeyMaterial implements SlhDSAPublicKeyMaterialInterface
      * Read key material from bytes
      *
      * @param string $bytes
-     * @param SlhDSA $slhDSA
+     * @param SlhDsaAlgorithm $algo
      * @return self
      */
-    public static function fromBytes(string $bytes, SlhDSA $slhDSA): self
+    public static function fromBytes(string $bytes, SlhDsaAlgorithm $algo): self
     {
-        $slh =  match ($slhDSA) {
-            SlhDSA::SlhDsaShake128s => new SLHDSA('shake128', 'small'),
-            SlhDSA::SlhDsaShake128f => new SLHDSA('shake128', 'fast'),
-            SlhDSA::SlhDsaShake256s => new SLHDSA('shake256', 'small'),
+        $slh =  match ($algo) {
+            SlhDsaAlgorithm::SlhDsaShake128s => new SLHDSA('shake128', 'small'),
+            SlhDsaAlgorithm::SlhDsaShake128f => new SLHDSA('shake128', 'fast'),
+            SlhDsaAlgorithm::SlhDsaShake256s => new SLHDSA('shake256', 'small'),
         };
         return new self($slh->importVerifyingKey($bytes));
     }

@@ -9,13 +9,13 @@
 namespace OpenPGP\Enum;
 
 /**
- * Post-quantum SLH-DSA Enum
+ * Post-quantum SLH-DSA Algorithm Enum
  *
  * @package  OpenPGP
  * @category Enum
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-enum SlhDSA
+enum SlhDsaAlgorithm
 {
     case SlhDsaShake128s;
 

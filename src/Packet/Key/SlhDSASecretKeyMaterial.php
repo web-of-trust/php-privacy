@@ -8,7 +8,7 @@
 
 namespace OpenPGP\Packet\Key;
 
-use OpenPGP\Enum\{HashAlgorithm, SlhDSA};
+use OpenPGP\Enum\{HashAlgorithm, SlhDsaAlgorithm};
 use OpenPGP\Type\{
     KeyMaterialInterface,
     SlhDSASecretKeyMaterialInterface,
@@ -49,13 +49,13 @@ class SlhDSASecretKeyMaterial implements SlhDSASecretKeyMaterialInterface
      */
     public static function fromBytes(
         string $bytes,
-        SlhDSA $slhDSA,
+        SlhDsaAlgorithm $algo,
         KeyMaterialInterface $publicMaterial,
     ): self {
-        $slh =  match ($slhDSA) {
-            SlhDSA::SlhDsaShake128s => new SLHDSA('shake128', 'small'),
-            SlhDSA::SlhDsaShake128f => new SLHDSA('shake128', 'fast'),
-            SlhDSA::SlhDsaShake256s => new SLHDSA('shake256', 'small'),
+        $slh =  match ($algo) {
+            SlhDsaAlgorithm::SlhDsaShake128s => new SLHDSA('shake128', 'small'),
+            SlhDsaAlgorithm::SlhDsaShake128f => new SLHDSA('shake128', 'fast'),
+            SlhDsaAlgorithm::SlhDsaShake256s => new SLHDSA('shake256', 'small'),
         };
         return new self(
             $slh->importSigningKey($bytes),
@@ -66,25 +66,23 @@ class SlhDSASecretKeyMaterial implements SlhDSASecretKeyMaterialInterface
     /**
      * Generate key material by using SLHDSA generate key pair
      *
-     * @param SlhDSA $slhDSA
+     * @param SlhDsaAlgorithm $slhDSA
      * @return self
      */
     public static function generate(
-        SlhDSA $slhDSA = SlhDSA::SlhDsaShake128s,
+        SlhDsaAlgorithm $algo = SlhDsaAlgorithm::SlhDsaShake128s,
     ): self {
-        $slh =  match ($slhDSA) {
-            SlhDSA::SlhDsaShake128s => new SLHDSA('shake128', 'small'),
-            SlhDSA::SlhDsaShake128f => new SLHDSA('shake128', 'fast'),
-            SlhDSA::SlhDsaShake256s => new SLHDSA('shake256', 'small'),
+        $slh =  match ($algo) {
+            SlhDsaAlgorithm::SlhDsaShake128s => new SLHDSA('shake128', 'small'),
+            SlhDsaAlgorithm::SlhDsaShake128f => new SLHDSA('shake128', 'fast'),
+            SlhDsaAlgorithm::SlhDsaShake256s => new SLHDSA('shake256', 'small'),
         };
         [$signingKey, $verifyingKey] = $slh->generateKeypair();
 
         return new self(
             $signingKey,
-            $slhDSA,
             new EdDSAPublicKeyMaterial(
                 $verifyingKey,
-                $slhDSA,
             ),
         );
     }
