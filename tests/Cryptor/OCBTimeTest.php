@@ -3,6 +3,7 @@
 namespace OpenPGP\Tests\Cryptor;
 
 use OpenPGP\Cryptor\Aead\OCB;
+use OpenPGP\Enum\SymmetricAlgorithm;
 use OpenPGP\Tests\OpenPGPTestCase;
 
 /**
@@ -12,7 +13,8 @@ class OCBTimeTest extends OpenPGPTestCase
 {
     public function testDecryptTimeGrowsLinearly()
     {
-        $ocb = new OCB(str_repeat("k", 32));
+        // Camellia keeps OCB in the PHP code; with AES it may run in OpenSSL.
+        $ocb = new OCB(str_repeat("k", 32), SymmetricAlgorithm::Camellia256);
         $nonce = str_repeat("n", 15);
         $time = static function (int $length) use ($ocb, $nonce): float {
             $plainText = str_repeat("0123456789abcdef", $length >> 4);

@@ -6,6 +6,7 @@ PHP Privacy installation
 * [phpseclib](https://github.com/phpseclib/phpseclib) library provides cryptography algorithms,
 * [Argon2](https://github.com/P-H-C/phc-winner-argon2) for Argon2 string-to-key
 * (optional) the `gmp` extension: it makes reading keys on Curve25519 (Ed25519, X25519) much faster, for example about 1.5 ms instead of 41 ms for an Ed25519 public key,
+* (optional) the `openssl` extension: with an OpenSSL that offers AES-OCB (tested with 1.1.1 and 3.x), OCB runs in OpenSSL, for example about 1.5 ms instead of about 400 ms to encrypt or decrypt 1 MiB with AES-256,
 * (optional) PHPUnit to run tests,
 
 ## Installation
