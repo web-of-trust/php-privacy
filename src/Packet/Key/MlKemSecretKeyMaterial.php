@@ -54,21 +54,21 @@ class MlKemSecretKeyMaterial extends MontgomerySecretKeyMaterial
         string $bytes,
         KeyMaterialInterface $publicMaterial,
     ): self {
-        $curve = $publicMaterial->publicKey()->getCurve();
+        $curveName = $publicMaterial->getPublicKey()->getCurve();
+        $curve = constant(MontgomeryCurve::class . "::" . $curveName);
+
         $privateKey = EC::loadPrivateKeyFormat(
             "MontgomeryPrivate",
-            substr($bytes, 0, MontgomeryCurve::$curve->payloadSize()),
+            substr($bytes, 0, $curve->payloadSize()),
         );
-        if ($curve === MontgomeryCurve::Curve25519->name) {
-            $decapsulationKey = new MLKem768DecapKey(
-                substr($bytes, MontgomeryCurve::$curve->payloadSize())
-            );
-        }
-        else {
-            $decapsulationKey = new MLKem1024DecapKey(
-                substr($bytes, MontgomeryCurve::$curve->payloadSize())
-            );
-        }
+        $decapsulationKey = match ($curve) {
+            MontgomeryCurve::Curve25519 => new MLKem768DecapKey(
+                substr($bytes, $curve->payloadSize())
+            ),
+            MontgomeryCurve::Curve448 => new MLKem1024DecapKey(
+                substr($bytes, $curve->payloadSize())
+            ),
+        };
         return new self(
             $privateKey, $decapsulationKey, $publicMaterial,
         );
@@ -128,10 +128,11 @@ class MlKemSecretKeyMaterial extends MontgomerySecretKeyMaterial
     public function isValid(): bool
     {
         if ($this->publicMaterial instanceof MlKemPublicKeyMaterial) {
-            $curve = $this->publicMaterial->getPublicKey()->getCurve();
+            $curveName = $this->publicMaterial->getPublicKey()->getCurve();
+            $curve = constant(MontgomeryCurve::class . "::" . $curveName);
             $encapsKey = $this->publicMaterial->getEncapsulationKey();
 
-            if ($curve === MontgomeryCurve::Curve25519->name) {
+            if ($curve === MontgomeryCurve::Curve25519) {
                 ['sharedKey' => $ss, 'ciphertext' => $ct] = Compat::mlkem768_encaps($encapsKey);
                 $sharedKey = Compat::mlkem768_decaps($this->decapsulationKey, $ct);
             }

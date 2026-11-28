@@ -128,25 +128,25 @@ class MlDSAPublicKeyMaterial extends EdDSAPublicKeyMaterial
             );
         }
 
-        $curve = $this->getPublicKey()->getCurve();
-        if ($curve === EdDSACurve::Ed25519->name) {
-            var $eccSignatureSize = EdDSACurve::Ed25519->signatureSize();
-            var $mldsaSignature = substr(
+        $curveName = $this->getPublicKey()->getCurve();
+        $curve = constant(EdDSACurve::class . "::" . $curveName);
+        var $eccSignatureSize = $curve->signatureSize();
+        $mldsaSignature = match ($curve) {
+            EdDSACurve::Ed25519 => substr(
                 $signature, $eccSignatureSize, Compat::MLDSA65_SIGNATURE_BYTES
-            );
-            $isValid = Compat::mldsa65_verify(
-                $this->verificationKey, $mldsaSignature, $hash->hash($message)
-            );
-        }
-        else {
-            var $eccSignatureSize = EdDSACurve::Ed448->signatureSize();
-            var $mldsaSignature = substr(
+            ),
+            EdDSACurve::Ed448 => substr(
                 $signature, $eccSignatureSize, Compat::MLDSA87_SIGNATURE_BYTES
-            );
-            $isValid = Compat::mldsa87_verify(
+            ),
+        };
+        $isValid = match ($curve) {
+            EdDSACurve::Ed25519 => Compat::mldsa65_verify(
                 $this->verificationKey, $mldsaSignature, $hash->hash($message)
-            );
-        }
+            ),
+            EdDSACurve::Ed448 => Compat::mldsa87_verify(
+                $this->verificationKey, $mldsaSignature, $hash->hash($message)
+            ),
+        };
         var $eccSignature = substr($signature, 0, $eccSignatureSize);
 
         return $isValid && parent::verify($hash, $hash->hash($message), $eccSignature);

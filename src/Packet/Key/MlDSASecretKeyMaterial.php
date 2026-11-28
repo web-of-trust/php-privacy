@@ -140,11 +140,12 @@ class MlDSASecretKeyMaterial extends EdDSASecretKeyMaterial
     public function isValid(): bool
     {
         if ($this->publicMaterial instanceof MlDSAPublicKeyMaterial) {
-            $curve = $this->getPrivateKey()->getCurve();
+            $curveName = $this->getPrivateKey()->getCurve();
+            $curve = constant(EdDSACurve::class . "::" . $curveName);
             $verificationKey = $this->publicMaterial->getVerificationKey();
 
             $message = random_bytes(1024);
-            if ($curve === EdDSACurve::Ed25519->name) {
+            if ($curve === EdDSACurve::Ed25519) {
                 $signature = Compat::mldsa65_sign($this->signingKey, $message);
                 $isValid = Compat::mldsa65_verify($verificationKey, $signature, $message);
             }
@@ -181,13 +182,16 @@ class MlDSASecretKeyMaterial extends EdDSASecretKeyMaterial
                 "ML-DSA does not support {$hash->name} hash algorithm.",
             );
         }
-        $curve = $this->getPrivateKey()->getCurve();
-        if ($curve === EdDSACurve::Ed25519->name) {
-            $mldsaSignature = Compat::mldsa65_sign($this->signingKey, $hash->hash($message));
-        }
-        else {
-            $mldsaSignature = Compat::mldsa87_sign($this->signingKey, $hash->hash($message));
-        }
+        $curveName = $this->getPrivateKey()->getCurve();
+        $curve = constant(EdDSACurve::class . "::" . $curveName);
+        $mldsaSignature = match ($curve) {
+            EdDSACurve::Ed25519 => Compat::mldsa65_sign(
+                $this->signingKey, $hash->hash($message)
+            ),
+            EdDSACurve::Ed448 => Compat::mldsa87_sign(
+                $this->signingKey, $hash->hash($message)
+            ),
+        };
         return parent::sign($hash, $message) . $mldsaSignature;
     }
 }
