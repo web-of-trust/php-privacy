@@ -96,6 +96,7 @@ Settings marked **new** were added in the version named.
 | Methods | `getArgon2Iteration()`, `setArgon2Iteration(int)`; `getArgon2Parallelism()`, `setArgon2Parallelism(int)`; `getArgon2MemoryExponent()`, `setArgon2MemoryExponent(int)` |
 | Default | `3`, `4`, `16` (64 MiB of memory) |
 | What it does | Parameters of the Argon2 string-to-key, used together with AEAD protection when Argon2 is available. |
+| Exception | Without the `argon2` program in the `PATH`, the string-to-key runs in PHP (libsodium), which supports only a parallelism of 1. With the default of 4, encrypting with a password then throws an `InvalidArgumentException`: "PHP Argon2 only support 1 parallelism." Reading a message whose Argon2 parallelism is above 1 throws the same. To encrypt, call `setArgon2Parallelism(1)`. To read such messages, the `argon2` program is needed. |
 | When to change | To match the memory and time a server can spend on each password. |
 
 ### Armor
@@ -125,7 +126,7 @@ Settings marked **new** were added in the version named.
 | Methods | `checksumRequired()`, `setChecksumRequired(bool)` |
 | Default | `false` |
 | What it does | Writes the CRC-24 checksum line into armored output, and requires it when armored data is read. A checksum that is present is always checked. |
-| When to change | Turn it on for readers that still expect the checksum line of RFC 4880. |
+| When to change | Turn it on for readers that still expect the checksum line of RFC 4880. Some GnuPG versions, for example 2.4.4, decrypt armored messages without the line but exit with status 2 when the encoded data ends without padding (GnuPG issue T7071). Turning it on also rejects armored input without the line. |
 
 ### Reading messages
 
