@@ -9,13 +9,13 @@
 namespace OpenPGP\Enum;
 
 /**
- * Post-quantum ML-DSA Enum
+ * Post-quantum ML-DSA Algorithm Enum
  *
  * @package  OpenPGP
  * @category Enum
  * @author   Nguyen Van Nguyen - nguyennv1981@gmail.com
  */
-enum MlDSA
+enum MlDsaAlgorithm
 {
     case MlDsa65;
 

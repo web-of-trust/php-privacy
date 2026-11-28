@@ -8,7 +8,7 @@
 
 namespace OpenPGP\Packet\Key;
 
-use OpenPGP\Enum\{EdDSACurve, HashAlgorithm, MlDSA};
+use OpenPGP\Enum\{EdDSACurve, HashAlgorithm, MlDsaAlgorithm};
 use OpenPGP\Type\KeyMaterialInterface;
 use phpseclib4\Crypt\EC;
 use phpseclib4\Crypt\EC\PrivateKey;
@@ -107,7 +107,7 @@ class MlDSA87SecretKeyMaterial extends EdDSASecretKeyMaterial
     public static function payloadSize(): int
     {
         return EdDSACurve::Ed448->payloadSize()
-            + MlDSA::MlDSA87->secretSize();
+            + MlDsaAlgorithm::MlDSA87->secretSize();
     }
 
     /**

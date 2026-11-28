@@ -22,6 +22,7 @@ use OpenPGP\Enum\{
     RSAKeySize,
     S2kType,
     S2kUsage,
+    SlhDsaAlgorithm,
     SymmetricAlgorithm,
 };
 use OpenPGP\Type\{
@@ -542,6 +543,19 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
             KeyAlgorithm::X448 => Key\MontgomerySecretKeyMaterial::generateCurve448(),
             KeyAlgorithm::Ed25519 => Key\EdDSASecretKeyMaterial::generateEd25519(),
             KeyAlgorithm::Ed448 => Key\EdDSASecretKeyMaterial::generateEd448(),
+            KeyAlgorithm::MlDsa65Ed25519 => Key\MlDSA65SecretKeyMaterial::generate(),
+            KeyAlgorithm::MlDsa87Ed448 => Key\MlDSA87SecretKeyMaterial::generate(),
+            KeyAlgorithm::SlhDsaShake128s => Key\SlhDSASecretKeyMaterial::generate(
+                SlhDsaAlgorithm::SlhDsaShake128s
+            ),
+            KeyAlgorithm::SlhDsaShake128f => Key\SlhDSASecretKeyMaterial::generate(
+                SlhDsaAlgorithm::SlhDsaShake128f
+            ),
+            KeyAlgorithm::SlhDsaShake256s => Key\SlhDSASecretKeyMaterial::generate(
+                SlhDsaAlgorithm::SlhDsaShake256s
+            ),
+            KeyAlgorithm::MlKem768X25519 => Key\MlKem768SecretKeyMaterial::generate(),
+            KeyAlgorithm::MlKem1024X448 => Key\MlKem1024SecretKeyMaterial::generate(),
             default => throw new \RuntimeException(
                 "Key algorithm {$keyAlgorithm->name} is unsupported.",
             ),
@@ -746,6 +760,37 @@ class SecretKey extends AbstractPacket implements SecretKeyPacketInterface
                 $bytes,
                 $publicKey->getKeyMaterial(),
                 EdDSACurve::Ed448,
+            ),
+            KeyAlgorithm::MlDsa65Ed25519 => Key\MlDSA65SecretKeyMaterial::fromBytes(
+                $bytes,
+                $publicKey->getKeyMaterial(),
+            ),
+            KeyAlgorithm::MlDsa87Ed448 => Key\MlDSA87SecretKeyMaterial::fromBytes(
+                $bytes,
+                $publicKey->getKeyMaterial(),
+            ),
+            KeyAlgorithm::SlhDsaShake128s => Key\SlhDSASecretKeyMaterial::fromBytes(
+                $bytes,
+                SlhDsaAlgorithm::SlhDsaShake128s,
+                $publicKey->getKeyMaterial(),
+            ),
+            KeyAlgorithm::SlhDsaShake128f => Key\SlhDSASecretKeyMaterial::fromBytes(
+                $bytes,
+                SlhDsaAlgorithm::SlhDsaShake128f,
+                $publicKey->getKeyMaterial(),
+            ),
+            KeyAlgorithm::SlhDsaShake256s => Key\SlhDSASecretKeyMaterial::fromBytes(
+                $bytes,
+                SlhDsaAlgorithm::SlhDsaShake256s,
+                $publicKey->getKeyMaterial(),
+            ),
+            KeyAlgorithm::MlKem768X25519 => Key\MlKem768SecretKeyMaterial::fromBytes(
+                $bytes,
+                $publicKey->getKeyMaterial(),
+            ),
+            KeyAlgorithm::MlKem1024X448 => Key\MlKem1024SecretKeyMaterial::fromBytes(
+                $bytes,
+                $publicKey->getKeyMaterial(),
             ),
             default => throw new \RuntimeException(
                 "Key algorithm {$publicKey->getKeyAlgorithm()->name} is unsupported.",
