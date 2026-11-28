@@ -113,7 +113,6 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
      */
     public static function fromBytes(string $bytes): self
     {
-        // echo (chunk_split(base64_encode($bytes), 76, "\n"));exit;
         [$version, $creationTime, $keyAlgorithm, $keyMaterial] = self::decode(
             $bytes,
         );
