@@ -100,6 +100,15 @@ class PublicKey extends AbstractPacket implements PublicKeyPacketInterface
             }
         }
 
+        if (!extension_loaded('pqcrypto') &&
+            ($keyAlgorithm === KeyAlgorithm::SlhDsaShake128s ||
+            $keyAlgorithm === KeyAlgorithm::SlhDsaShake128f ||
+            $keyAlgorithm === KeyAlgorithm::SlhDsaShake256s)) {
+            throw new \InvalidArgumentException(
+                "SLH-DSA key algorithms require pqcrypto extension!",
+            );
+        }
+
         $this->fingerprint = $isV6
             ? hash(KeyVersion::V6->hashAlgo(), $this->getSignBytes(), true)
             : hash(KeyVersion::V4->hashAlgo(), $this->getSignBytes(), true);
